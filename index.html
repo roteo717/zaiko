@@ -820,8 +820,9 @@ async function doSend() {
   try {
     await fetch(GAS_URL, {
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(data)
+      headers:{"Content-Type":"text/plain;charset=UTF-8"},
+      body: JSON.stringify(data),
+      mode: "no-cors"
     });
     showToast("✓ 送信完了");
     return true;
@@ -1006,7 +1007,7 @@ async function saveEdit() {
     originalCode: document.getElementById('edit-id').value
   };
   try {
-    await fetch(GAS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+    await fetch(GAS_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'}, body:JSON.stringify(data), mode:'no-cors'});
     showToast("✓ 更新しました");
     closeEdit();
     loadStock();
@@ -1019,8 +1020,9 @@ function confirmDelete(code) {
   confirmCallback = async () => {
     try {
       await fetch(GAS_URL, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({action:'delete', code, user, role})
+        method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'},
+        body: JSON.stringify({action:'delete', code, user, role}),
+        mode: 'no-cors'
       });
       showToast("✓ 削除しました");
       loadStock();
