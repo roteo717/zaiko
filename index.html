@@ -724,7 +724,7 @@ select {
 
 <script>
 /* ===== CONFIG ===== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzMuJw-sh0nt1HAqxJGUuTzTXgQD5WztaKtJpvKlHsSgyhLpj-9ImGUnnC_ZTb0cjPsXA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz2lwtKP5J1JV8gRWKAJvwKA23eKZepgx2Q_FGfo3J6T__5ki-OWbr6kDky6AYBGBDgug/exec";
 
 /* ===== STATE ===== */
 let user = localStorage.getItem("inv_user") || "作業者";
@@ -871,9 +871,16 @@ async function loadStock() {
 }
 
 function processStock(raw) {
-  // raw: array of record objects or aggregate — handle both
-  if(!Array.isArray(raw)) return [];
-
+  // GAS getStock returns an object: {code: {name, p, pre, fin}}
+  if(!Array.isArray(raw)) {
+    const arr = [];
+    Object.entries(raw).forEach(([code, v]) => {
+      if(v.p  > 0) arr.push({code, name:v.name, category:'仕掛品',  process:'工程1',       qty:v.p,   type:'良品'});
+      if(v.pre > 0) arr.push({code, name:v.name, category:'バリ前',  process:'バリ取り未品', qty:v.pre, type:'良品'});
+      if(v.fin > 0) arr.push({code, name:v.name, category:'完成品',  process:'完成品',       qty:v.fin, type:'良品'});
+    });
+    return arr;
+  }
   // If raw records with process field → aggregate
   if(raw.length && raw[0].process !== undefined) {
     const map = {};
@@ -997,7 +1004,7 @@ function openEdit(r) {
 function closeEdit() { document.getElementById('edit-overlay').classList.remove('open'); }
 async function saveEdit() {
   const data = {
-    action: 'edit',
+    mode: 'edit',
     user, line, role,
     code: document.getElementById('edit-code').value,
     name: document.getElementById('edit-name').value,
@@ -1021,7 +1028,7 @@ function confirmDelete(code) {
     try {
       await fetch(GAS_URL, {
         method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'},
-        body: JSON.stringify({action:'delete', code, user, role}),
+        body: JSON.stringify({mode:'delete', code, user, role}),
         mode: 'no-cors'
       });
       showToast("✓ 削除しました");
