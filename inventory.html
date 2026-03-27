@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>在庫管理システム</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg: #0a0c10;
+  --bg2: #111419;
+  --bg3: #1a1e26;
+  --border: #252a35;
+  --border2: #2e3442;
+  --text: #e2e8f0;
+  --text2: #8892a4;
+  --text3: #4a5568;
+  --accent: #3b82f6;
+  --accent2: #1d4ed8;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --orange: #f97316;
+  --mono: 'Share Tech Mono', monospace;
+  --sans: 'Noto Sans JP', sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100dvh;
+  font-size: 14px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,12,16,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header-title {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.header-user {
+  font-size: 11px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px 10px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  transition: border-color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 160px;
+}
+.header-user:active { border-color: var(--accent); }
+.header-user span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ===== TABS ===== */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  user-select: none;
+}
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(59,130,246,0.06);
+}
+
+/* ===== PAGES ===== */
+.page { display: none; padding: 16px; }
+.page.active { display: block; }
+
+/* ===== FORM SECTION ===== */
+.section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.section-label {
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  font-family: var(--mono);
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+input, select {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--sans);
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus { border-color: var(--accent); }
+input::placeholder { color: var(--text3); }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+.mb8 { margin-bottom: 8px; }
+.mb4 { margin-bottom: 4px; }
+
+.select-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  user-select: none;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:active { background: var(--accent2); }
+.btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:active { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.btn-sm { padding: 6px 10px; font-size: 12px; }
+.btn-icon { padding: 10px; min-width: 42px; }
+.btn-full { width: 100%; }
+
+/* ===== PRODUCT NAME DISPLAY ===== */
+.product-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--green);
+  font-family: var(--mono);
+  min-height: 20px;
+  padding: 10px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+.product-name.empty { color: var(--text3); font-size: 13px; }
+
+/* ===== QR MODAL ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: min(90vw, 360px);
+}
+.modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#qr-preview {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: #000;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+/* ===== CONFIRM MODAL ===== */
+.confirm-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: min(90vw, 320px);
+  text-align: center;
+}
+.confirm-modal p { color: var(--text2); font-size: 13px; margin-bottom: 16px; }
+.confirm-btns { display: flex; gap: 8px; justify-content: center; }
+
+/* ===== STOCK PAGE ===== */
+.stock-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.search-row {
+  display: flex;
+  gap: 8px;
+}
+.filter-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  user-select: none;
+}
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.chip:active { opacity: 0.7; }
+
+/* ===== STOCK CARDS ===== */
+.stock-grid { display: flex; flex-direction: column; gap: 8px; }
+
+.stock-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  transition: border-color 0.2s;
+}
+.stock-card.low { border-color: rgba(245,158,11,0.4); }
+.stock-card.critical { border-color: rgba(239,68,68,0.4); }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+.card-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 2px;
+}
+.card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.card-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  font-family: var(--mono);
+}
+.badge-category { background: rgba(59,130,246,0.12); color: var(--accent); }
+.badge-type-good { background: rgba(16,185,129,0.12); color: var(--green); }
+.badge-type-bad { background: rgba(239,68,68,0.12); color: var(--red); }
+.badge-type-setup { background: rgba(245,158,11,0.12); color: var(--yellow); }
+
+.card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.stat {
+  background: var(--bg3);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--text3);
+  margin-bottom: 3px;
+  font-family: var(--mono);
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--mono);
+  line-height: 1;
+}
+.stat-value.normal { color: var(--text); }
+.stat-value.low { color: var(--yellow); }
+.stat-value.critical { color: var(--red); }
+
+.progress-bar {
+  height: 3px;
+  background: var(--bg3);
+  border-radius: 2px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.progress-fill.normal { background: var(--green); }
+.progress-fill.low { background: var(--yellow); }
+.progress-fill.critical { background: var(--red); }
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.card-meta {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: var(--mono);
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* ===== SORT ===== */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--text3);
+}
+.sort-btn {
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: var(--sans);
+  transition: all 0.15s;
+}
+.sort-btn.active { color: var(--accent); background: rgba(59,130,246,0.1); }
+
+/* ===== USER MODAL ===== */
+.user-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: min(90vw, 320px);
+}
+.user-modal h3 { font-size: 14px; margin-bottom: 16px; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text3);
+  font-size: 13px;
+}
+.empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  z-index: 300;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===== LOADING ===== */
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text3);
+  font-size: 13px;
+  padding: 20px;
+  justify-content: center;
+}
+
+/* ===== EDIT FORM ===== */
+.edit-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 200;
+  align-items: flex-end;
+}
+.edit-overlay.open { display: flex; }
+.edit-sheet {
+  background: var(--bg2);
+  border-top: 1px solid var(--border2);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 20px;
+  width: 100%;
+  max-height: 80dvh;
+  overflow-y: auto;
+}
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border2);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.sheet-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 480px) {
+  .page { padding: 20px; max-width: 600px; margin: 0 auto; }
+  .stock-grid { gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="header-title">⬡ INVENTORY SYS</div>
+  <div class="header-user" onclick="openUserModal()">
+    <div class="dot"></div>
+    <span id="header-user-display">作業者 / 1L</span>
+  </div>
+</div>
+
+<!-- ===== TABS ===== -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('input')">✏ 入力</div>
+  <div class="tab" onclick="switchTab('stock')">📦 在庫</div>
+</div>
+
+<!-- ===== INPUT PAGE ===== -->
+<div class="page active" id="page-input">
+
+  <div class="section">
+    <div class="section-label">品番検索</div>
+    <div class="input-row mb8">
+      <input id="code" placeholder="品番を入力" oninput="clearName()" onkeydown="if(event.key==='Enter')getProduct()">
+      <button class="btn btn-ghost btn-icon" onclick="getProduct()" title="検索">🔍</button>
+      <button class="btn btn-ghost btn-icon" onclick="openQR()" title="QR読取">📷</button>
+    </div>
+    <div class="product-name empty" id="name">品名がここに表示されます</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">入力内容</div>
+    <div class="select-row mb8">
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">工程</div>
+        <select id="process">
+          <option>工程1</option>
+          <option>工程2</option>
+          <option>工程3</option>
+          <option>工程4</option>
+          <option>工程5</option>
+          <option>工程6</option>
+          <option>バリ取り未品</option>
+          <option>完成品</option>
+          <option>出荷</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">種別</div>
+        <select id="type">
+          <option>良品</option>
+          <option>不良品</option>
+          <option>段取り品</option>
+        </select>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">数量</div>
+    <input id="qty" type="number" placeholder="数量" min="1" class="mb8">
+  </div>
+
+  <button class="btn btn-primary btn-full" onclick="send()" id="send-btn" style="margin-bottom:8px;padding:14px;">
+    送信する
+  </button>
+
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-ghost" style="flex:1;font-size:12px;" onclick="sendAndContinue()">✓ 続けて入力</button>
+    <button class="btn btn-ghost" style="flex:1;font-size:12px;" onclick="sendAndStock()">📦 在庫へ移動</button>
+  </div>
+
+</div>
+
+<!-- ===== STOCK PAGE ===== -->
+<div class="page" id="page-stock">
+
+  <div class="stock-controls">
+    <div class="search-row">
+      <input id="search" placeholder="品番 / 品名で検索" oninput="renderStock()">
+      <button class="btn btn-ghost btn-icon" onclick="loadStock()">↻</button>
+      <button class="btn btn-ghost btn-icon" onclick="downloadCSV()" title="CSV">⬇</button>
+    </div>
+    <div class="filter-row" id="filter-row">
+      <div class="chip active" data-filter="all" onclick="setFilter('all')">すべて</div>
+      <div class="chip" data-filter="仕掛品" onclick="setFilter('仕掛品')">仕掛品</div>
+      <div class="chip" data-filter="バリ前" onclick="setFilter('バリ前')">バリ前</div>
+      <div class="chip" data-filter="完成品" onclick="setFilter('完成品')">完成品</div>
+    </div>
+  </div>
+
+  <div class="sort-bar">
+    <span>並替:</span>
+    <button class="sort-btn active" data-sort="qty-asc" onclick="setSort('qty-asc')">数量↑</button>
+    <button class="sort-btn" data-sort="qty-desc" onclick="setSort('qty-desc')">数量↓</button>
+    <button class="sort-btn" data-sort="name" onclick="setSort('name')">品名</button>
+  </div>
+
+  <div id="stock-content">
+    <div class="empty-state">
+      <div class="empty-icon">📦</div>
+      「↻」ボタンで在庫を取得
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== QR MODAL ===== -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span>📷 QR読み取り</span>
+      <button class="btn btn-ghost btn-sm" onclick="closeQR()">✕</button>
+    </div>
+    <video id="qr-preview" autoplay playsinline muted></video>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center;">カメラにQRコードをかざしてください</p>
+    <button class="btn btn-ghost btn-full" style="margin-top:10px;" onclick="closeQR()">キャンセル</button>
+  </div>
+</div>
+
+<!-- ===== USER MODAL ===== -->
+<div class="modal-overlay" id="user-modal">
+  <div class="user-modal">
+    <div class="modal-title">
+      <span>👤 ユーザー設定</span>
+      <button class="btn btn-ghost btn-sm" onclick="closeUserModal()">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">ユーザー名</div>
+    <input id="u-name" class="mb8" placeholder="作業者名">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">ライン</div>
+    <select id="u-line" class="mb8">
+      <option>1L</option><option>2L</option><option>3L</option>
+      <option>4L</option><option>5L</option><option>6L</option>
+    </select>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">権限</div>
+    <select id="u-role" class="mb8">
+      <option value="user">一般ユーザー</option>
+      <option value="admin">管理者</option>
+    </select>
+    <button class="btn btn-primary btn-full" onclick="saveUser()">保存</button>
+  </div>
+</div>
+
+<!-- ===== EDIT SHEET ===== -->
+<div class="edit-overlay" id="edit-overlay">
+  <div class="edit-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">レコード編集</div>
+    <input type="hidden" id="edit-id">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">品番</div>
+    <input id="edit-code" class="mb8" placeholder="品番">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">品名</div>
+    <input id="edit-name" class="mb8" placeholder="品名">
+    <div class="select-row mb8">
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">工程</div>
+        <select id="edit-process">
+          <option>工程1</option><option>工程2</option><option>工程3</option>
+          <option>工程4</option><option>工程5</option><option>工程6</option>
+          <option>バリ取り未品</option><option>完成品</option><option>出荷</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">種別</div>
+        <select id="edit-type">
+          <option>良品</option><option>不良品</option><option>段取り品</option>
+        </select>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">数量</div>
+    <input id="edit-qty" type="number" class="mb8" placeholder="数量">
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="closeEdit()">キャンセル</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM MODAL ===== -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="confirm-modal">
+    <p id="confirm-msg">このレコードを削除しますか？</p>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost" onclick="closeConfirm()">キャンセル</button>
+      <button class="btn btn-danger" onclick="execConfirm()">削除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== CONFIG ===== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzMuJw-sh0nt1HAqxJGUuTzTXgQD5WztaKtJpvKlHsSgyhLpj-9ImGUnnC_ZTb0cjPsXA/exec";
+
+/* ===== STATE ===== */
+let user = localStorage.getItem("inv_user") || "作業者";
+let line = localStorage.getItem("inv_line") || "1L";
+let role = localStorage.getItem("inv_role") || "user";
+let stockData = [];
+let currentFilter = "all";
+let currentSort = "qty-asc";
+let confirmCallback = null;
+
+/* ===== INIT ===== */
+updateHeaderUser();
+
+/* ===== TAB ===== */
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', (i===0&&tab==='input')||(i===1&&tab==='stock'));
+  });
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  if(tab==='stock' && stockData.length===0) loadStock();
+}
+
+/* ===== USER ===== */
+function updateHeaderUser() {
+  document.getElementById('header-user-display').textContent = `${user} / ${line}`;
+}
+function openUserModal() {
+  document.getElementById('u-name').value = user;
+  document.getElementById('u-line').value = line;
+  document.getElementById('u-role').value = role;
+  document.getElementById('user-modal').classList.add('open');
+}
+function closeUserModal() { document.getElementById('user-modal').classList.remove('open'); }
+function saveUser() {
+  user = document.getElementById('u-name').value.trim() || "作業者";
+  line = document.getElementById('u-line').value;
+  role = document.getElementById('u-role').value;
+  localStorage.setItem("inv_user", user);
+  localStorage.setItem("inv_line", line);
+  localStorage.setItem("inv_role", role);
+  updateHeaderUser();
+  closeUserModal();
+  showToast("✓ 保存しました");
+}
+
+/* ===== PRODUCT NAME ===== */
+function clearName() {
+  const el = document.getElementById('name');
+  el.textContent = '品名がここに表示されます';
+  el.className = 'product-name empty';
+}
+async function getProduct() {
+  const code = document.getElementById('code').value.trim();
+  if(!code) return;
+  const el = document.getElementById('name');
+  el.textContent = '取得中...';
+  el.className = 'product-name empty';
+  try {
+    const r = await fetch(GAS_URL + "?code=" + encodeURIComponent(code));
+    const d = await r.json();
+    if(d.name) {
+      el.textContent = d.name;
+      el.className = 'product-name';
+    } else {
+      el.textContent = '未登録';
+      el.className = 'product-name empty';
+    }
+  } catch(e) {
+    el.textContent = '取得エラー';
+    el.className = 'product-name empty';
+  }
+}
+
+/* ===== SEND ===== */
+function buildData() {
+  return {
+    user, line,
+    code: document.getElementById('code').value.trim(),
+    name: document.getElementById('name').textContent,
+    process: document.getElementById('process').value,
+    type: document.getElementById('type').value,
+    qty: Number(document.getElementById('qty').value)
+  };
+}
+async function doSend() {
+  const data = buildData();
+  if(!data.code) { showToast("⚠ 品番を入力してください"); return false; }
+  if(!data.qty || data.qty <= 0) { showToast("⚠ 数量を入力してください"); return false; }
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 送信中...';
+  try {
+    await fetch(GAS_URL, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(data)
+    });
+    showToast("✓ 送信完了");
+    return true;
+  } catch(e) {
+    showToast("✗ 送信エラー");
+    return false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '送信する';
+  }
+}
+async function send() { await doSend(); }
+async function sendAndContinue() {
+  const ok = await doSend();
+  if(ok) {
+    document.getElementById('qty').value = '';
+    document.getElementById('qty').focus();
+  }
+}
+async function sendAndStock() {
+  const ok = await doSend();
+  if(ok) {
+    stockData = [];
+    switchTab('stock');
+  }
+}
+
+/* ===== STOCK ===== */
+function getCategory(process) {
+  if(['工程1','工程2','工程3','工程4','工程5','工程6'].includes(process)) return '仕掛品';
+  if(process === 'バリ取り未品') return 'バリ前';
+  return '完成品';
+}
+
+async function loadStock() {
+  const el = document.getElementById('stock-content');
+  el.innerHTML = '<div class="loading-row"><span class="spinner"></span> 在庫取得中...</div>';
+  try {
+    const r = await fetch(GAS_URL + "?stock=1");
+    const raw = await r.json();
+    stockData = processStock(raw);
+    renderStock();
+  } catch(e) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠</div>取得エラー</div>';
+  }
+}
+
+function processStock(raw) {
+  // raw: array of record objects or aggregate — handle both
+  if(!Array.isArray(raw)) return [];
+
+  // If raw records with process field → aggregate
+  if(raw.length && raw[0].process !== undefined) {
+    const map = {};
+    raw.forEach(r => {
+      const key = (r.code||'') + '_' + (r.name||'') + '_' + getCategory(r.process||'') + '_' + (r.type||'');
+      if(!map[key]) map[key] = {
+        code: r.code, name: r.name,
+        category: getCategory(r.process||''),
+        type: r.type, qty: 0,
+        records: [], line: r.line, user: r.user,
+        process: r.process
+      };
+      const qty = Number(r.qty) || 0;
+      if((r.process||'') === '出荷') {
+        map[key].qty -= qty;
+      } else {
+        map[key].qty += qty;
+      }
+      map[key].records.push(r);
+    });
+    return Object.values(map).filter(v => v.qty > 0);
+  }
+  // Pre-aggregated
+  return raw.map(r => ({...r, category: getCategory(r.process||r.category||'')}));
+}
+
+function renderStock() {
+  const q = (document.getElementById('search').value||'').toLowerCase();
+  let data = stockData.filter(r => {
+    if(currentFilter !== 'all' && r.category !== currentFilter) return false;
+    if(q && !((r.code||'').toLowerCase().includes(q)) && !((r.name||'').toLowerCase().includes(q))) return false;
+    return true;
+  });
+
+  // Sort
+  if(currentSort === 'qty-asc') data.sort((a,b)=>a.qty-b.qty);
+  else if(currentSort === 'qty-desc') data.sort((a,b)=>b.qty-a.qty);
+  else data.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+
+  if(!data.length) {
+    document.getElementById('stock-content').innerHTML =
+      '<div class="empty-state"><div class="empty-icon">🔍</div>該当する在庫がありません</div>';
+    return;
+  }
+
+  // Calculate max for progress bar
+  const maxQty = Math.max(...data.map(r=>r.qty), 1);
+
+  document.getElementById('stock-content').innerHTML =
+    '<div class="stock-grid">' + data.map(r => cardHTML(r, maxQty)).join('') + '</div>';
+}
+
+function qtyClass(qty) {
+  if(qty <= 5) return 'critical';
+  if(qty <= 20) return 'low';
+  return 'normal';
+}
+function typeClass(type) {
+  if(type==='不良品') return 'badge-type-bad';
+  if(type==='段取り品') return 'badge-type-setup';
+  return 'badge-type-good';
+}
+
+function cardHTML(r, maxQty) {
+  const qc = qtyClass(r.qty);
+  const pct = Math.min(100, Math.round((r.qty / maxQty) * 100));
+  const canEdit = role === 'admin' || r.user === user;
+  const actions = canEdit
+    ? `<div class="card-actions">
+        <button class="btn btn-ghost btn-sm" onclick='openEdit(${JSON.stringify(r)})'>編集</button>
+        <button class="btn btn-danger btn-sm" onclick='confirmDelete(${JSON.stringify(r.code)})'>削除</button>
+       </div>`
+    : '';
+
+  return `<div class="stock-card ${qc}">
+    <div class="card-header">
+      <div>
+        <div class="card-code">${r.code||'-'}</div>
+        <div class="card-name">${r.name||'不明'}</div>
+      </div>
+      <div class="card-badges">
+        <span class="badge badge-category">${r.category}</span>
+        <span class="badge ${typeClass(r.type)}">${r.type||'良品'}</span>
+      </div>
+    </div>
+    <div class="card-stats">
+      <div class="stat"><div class="stat-label">在庫</div><div class="stat-value ${qc}">${r.qty}</div></div>
+      <div class="stat"><div class="stat-label">工程</div><div class="stat-value" style="font-size:11px;color:var(--text2);padding-top:4px;">${r.process||'-'}</div></div>
+      <div class="stat"><div class="stat-label">ライン</div><div class="stat-value" style="font-size:14px;color:var(--text2);padding-top:2px;">${r.line||'-'}</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill ${qc}" style="width:${pct}%"></div></div>
+    <div class="card-footer">
+      <div class="card-meta">${r.user||''}</div>
+      ${actions}
+    </div>
+  </div>`;
+}
+
+/* ===== FILTER / SORT ===== */
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.filter===f));
+  renderStock();
+}
+function setSort(s) {
+  currentSort = s;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort===s));
+  renderStock();
+}
+
+/* ===== EDIT ===== */
+function openEdit(r) {
+  document.getElementById('edit-id').value = r.code;
+  document.getElementById('edit-code').value = r.code||'';
+  document.getElementById('edit-name').value = r.name||'';
+  document.getElementById('edit-process').value = r.process||'工程1';
+  document.getElementById('edit-type').value = r.type||'良品';
+  document.getElementById('edit-qty').value = r.qty||0;
+  document.getElementById('edit-overlay').classList.add('open');
+}
+function closeEdit() { document.getElementById('edit-overlay').classList.remove('open'); }
+async function saveEdit() {
+  const data = {
+    action: 'edit',
+    user, line, role,
+    code: document.getElementById('edit-code').value,
+    name: document.getElementById('edit-name').value,
+    process: document.getElementById('edit-process').value,
+    type: document.getElementById('edit-type').value,
+    qty: Number(document.getElementById('edit-qty').value),
+    originalCode: document.getElementById('edit-id').value
+  };
+  try {
+    await fetch(GAS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+    showToast("✓ 更新しました");
+    closeEdit();
+    loadStock();
+  } catch(e) { showToast("✗ エラー"); }
+}
+
+/* ===== DELETE ===== */
+function confirmDelete(code) {
+  document.getElementById('confirm-msg').textContent = `「${code}」を削除しますか？`;
+  confirmCallback = async () => {
+    try {
+      await fetch(GAS_URL, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'delete', code, user, role})
+      });
+      showToast("✓ 削除しました");
+      loadStock();
+    } catch(e) { showToast("✗ エラー"); }
+  };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirm-modal').classList.remove('open'); confirmCallback=null; }
+function execConfirm() { closeConfirm(); if(confirmCallback) confirmCallback(); }
+
+/* ===== CSV ===== */
+function downloadCSV() { window.open(GAS_URL + "?csv=1"); }
+
+/* ===== QR ===== */
+let qrStream = null;
+async function openQR() {
+  document.getElementById('qr-modal').classList.add('open');
+  try {
+    qrStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    document.getElementById('qr-preview').srcObject = qrStream;
+  } catch(e) {
+    showToast("カメラを利用できません");
+    closeQR();
+  }
+}
+function closeQR() {
+  document.getElementById('qr-modal').classList.remove('open');
+  if(qrStream) { qrStream.getTracks().forEach(t=>t.stop()); qrStream=null; }
+}
+
+// BarcodeDetector API for QR
+if('BarcodeDetector' in window) {
+  const detector = new BarcodeDetector({formats:['qr_code','code_128','ean_13']});
+  function scanQR() {
+    const video = document.getElementById('qr-preview');
+    if(video.readyState === video.HAVE_ENOUGH_DATA && qrStream) {
+      detector.detect(video).then(barcodes => {
+        if(barcodes.length > 0) {
+          document.getElementById('code').value = barcodes[0].rawValue;
+          closeQR();
+          getProduct();
+          showToast("✓ QR読取: " + barcodes[0].rawValue);
+        }
+      }).catch(()=>{});
+    }
+    if(qrStream) requestAnimationFrame(scanQR);
+  }
+  document.getElementById('qr-preview').addEventListener('play', scanQR);
+}
+
+/* ===== TOAST ===== */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2500);
+}
+
+/* ===== CLOSE MODALS ON OVERLAY CLICK ===== */
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => {
+    if(e.target === m) {
+      m.classList.remove('open');
+      if(m.id==='qr-modal') closeQR();
+    }
+  });
+});
+</script>
+</body>
+</html>
