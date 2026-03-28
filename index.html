@@ -2,285 +2,387 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>現場在庫管理アプリ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>現場向け・在庫管理アプリ</title>
+
 <style>
-  body {
-    font-family: "Helvetica Neue", sans-serif;
-    background: #f7f7f7;
-    margin: 0;
-    padding: 0;
-  }
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background: #f5f5f5;
+}
 
-  header {
-    background: #444;
-    color: #fff;
-    padding: 0.8em 1em;
-    text-align: center;
-    font-weight: bold;
-    letter-spacing: 1px;
-  }
+/* 一覧コンテナ */
+.list-container {
+  padding: 10px;
+}
 
-  .container {
-    padding: 0.5em;
-  }
+/* 1行＝1アイテム */
+.item-row {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.1);
+  justify-content: space-between;
+}
 
-  /* 一覧表示 */
-  .item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #fff;
-    margin: 6px 0;
-    padding: 0.6em 0.8em;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
+/* 左側（品名＋品番） */
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
 
-  .item-name {
-    font-size: 0.9em;
-    color: #333;
-  }
+/* 品名 */
+.item-name {
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .item-part {
-    font-size: 0.75em;
-    color: #888;
-  }
+/* 品番は小さく */
+.item-part {
+  font-size: 12px;
+  color: #666;
+}
 
-  .stock {
-    font-size: 1em;
-    font-weight: bold;
-    display: flex;
-    gap: 0.6em;
-  }
+/* 在庫表示（仕 / バ / 完） */
+.item-stock {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 8px;
+  white-space: nowrap;
+}
 
-  .stock span {
-    display: inline-block;
-    min-width: 40px;
-    text-align: right;
-  }
+/* 色（通常 / 注意 / 危険） */
+.normal { color: #444; }
+.warn { color: #ff8c00; }
+.danger { color: #d60000; }
 
-  .normal { color: #555; }
-  .warning { color: #f08000; }
-  .danger { color: #d00; }
+/* 詳細ボタン */
+.detail-btn {
+  font-size: 20px;
+  padding: 4px 8px;
+  background: #ddd;
+  border-radius: 4px;
+  margin-left: 6px;
+}
 
-  button.detail-btn {
-    font-size: 1em;
-    background: transparent;
-    border: none;
-    color: #666;
-  }
+/* モーダル背景 */
+.modal-bg {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.3);
+  justify-content: center;
+  align-items: center;
+}
 
-  /* 詳細モーダル */
-  .modal-bg {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-  }
+/* モーダル本体 */
+.modal {
+  background: #fff;
+  width: 92%;
+  max-width: 500px;
+  padding: 12px;
+  border-radius: 8px;
+}
 
-  .modal {
-    background: #fff;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    padding: 1em;
-  }
+/* 見出し */
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+}
 
-  .modal header {
-    background: none;
-    color: #333;
-    text-align: left;
-    padding: 0;
-    font-size: 1.1em;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 0.5em;
-  }
+/* ラベル */
+.label {
+  font-size: 12px;
+  color: #666;
+}
 
-  .info {
-    font-size: 0.85em;
-    color: #555;
-    margin-bottom: 0.8em;
-  }
+/* 工程ライン */
+.process-row {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
 
-  .process {
-    border-top: 1px solid #eee;
-    padding-top: 0.6em;
-  }
+/* 工程名 */
+.process-name {
+  width: 80px;
+  font-weight: bold;
+}
 
-  .process-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0.4em 0;
-  }
+/* 工程数値 */
+.process-value {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 10px;
+}
 
-  .process-name {
-    flex: 0 0 80px;
-    font-weight: bold;
-  }
+/* 工程の矢印ボタン */
+.move-btn {
+  font-size: 14px;
+  background: #ddd;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
 
-  .process-count {
-    flex: 1;
-    text-align: right;
-    font-size: 1.1em;
-    font-weight: 600;
-  }
+/* 数量入力 */
+.qty-input {
+  width: 80px;
+  font-size: 20px;
+  padding: 4px;
+  margin-top: 10px;
+}
 
-  .modal input[type="number"] {
-    width: 60px;
-    font-size: 1em;
-    text-align: right;
-    margin-right: 0.5em;
-  }
+/* 確認ダイアログ用 */
+.confirm-box {
+  display: none;
+  margin-top: 8px;
+  padding: 8px;
+  background: #ffe0b2;
+  border-radius: 4px;
+}
 
-  .modal button {
-    padding: 0.3em 0.6em;
-    border: none;
-    border-radius: 4px;
-    background: #555;
-    color: #fff;
-    font-size: 0.8em;
-    cursor: pointer;
-  }
+/* 管理者専用エリア */
+.admin-only {
+  display: none;
+  padding: 10px;
+  background: #fff6e5;
+  margin: 10px;
+  border-radius: 6px;
+}
 
-  .modal button.close {
-    background: #999;
-    float: right;
-  }
+/* 権限切り替え */
+.role-switch {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  font-size: 12px;
+  background: #ccc;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
 
-  .alert {
-    color: #d00;
-    font-size: 0.8em;
-    text-align: center;
-    margin-top: 0.4em;
-  }
-
-  @media (max-width: 600px) {
-    .item { font-size: 0.95em; }
-    .stock span { min-width: 34px; }
-  }
+/* スマホでも1行に収めるための調整 */
+@media (max-width: 480px) {
+  .item-name { font-size: 14px; }
+  .item-stock { font-size: 14px; }
+  .detail-btn { font-size: 18px; }
+}
 </style>
 </head>
+
 <body>
 
-<header>現場向け 在庫管理</header>
-<div class="container" id="itemList"></div>
+<div class="role-switch">
+  権限：<select id="roleSelect">
+    <option value="user">一般</option>
+    <option value="admin">管理者</option>
+  </select>
+</div>
 
-<!-- 詳細モーダル -->
+<div class="list-container" id="itemList"></div>
+
+<!-- モーダル -->
 <div class="modal-bg" id="modalBg">
-  <div class="modal" id="modal">
-    <header id="modalTitle"></header>
-    <div class="info" id="modalInfo"></div>
-    <div class="process" id="processSection"></div>
-    <div class="alert" id="alert"></div>
-    <button class="close" onclick="closeModal()">閉じる</button>
+  <div class="modal">
+    <div class="modal-title" id="modalName"></div>
+
+    <div class="label">メーカー</div>
+    <div id="modalMaker"></div>
+
+    <div class="label">品番</div>
+    <div id="modalPart"></div>
+
+    <div class="label">保管場所</div>
+    <div id="modalLoc"></div>
+
+    <div class="label">メモ</div>
+    <div id="modalMemo"></div>
+
+    <hr>
+
+    <div class="label">数量入力（テンキー用）</div>
+    <input type="number" id="qtyInput" class="qty-input" inputmode="numeric">
+
+    <div id="processArea"></div>
+
+    <div class="confirm-box" id="confirmBox">
+      この操作を実行しますか？
+      <button id="confirmYes">はい</button>
+      <button id="confirmNo">いいえ</button>
+    </div>
+
+    <button onclick="closeModal()">閉じる</button>
   </div>
 </div>
 
+<!-- 管理者設定 -->
+<div class="admin-only" id="adminPanel">
+  <h3>管理者メニュー</h3>
+  ・CSV出力  
+  ・在庫初期化  
+  ・最低在庫設定  
+  ・工程名変更  
+  （実装枠：必要に応じて追加処理可能）
+</div>
+
 <script>
-const STORAGE_KEY = "stockItems";
-let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
-  {
-    id: 1,
-    name: "六角ボルト",
-    partNumber: "AB-1234",
-    maker: "ボルト産業",
-    location: "A-01",
-    process_stock: {workInProgress:100, preDeburr:30, finished:20},
-    minStock: 10,
-    memo: "日常使用品"
-  },
-  {
-    id: 2,
-    name: "ナット（M6）",
-    partNumber: "NT-7788",
-    maker: "ナット工業",
-    location: "B-12",
-    process_stock: {workInProgress:20, preDeburr:10, finished:5},
-    minStock: 20,
-    memo: "要補充"
-  }
-];
+// ===== データ（ローカルストレージ） =====
 
-const save = ()=> localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+function loadData() {
+  const saved = localStorage.getItem("items");
+  if (saved) return JSON.parse(saved);
+  return [
+    {
+      id: 1,
+      name: "六角ボルト",
+      partNumber: "AB-1234",
+      maker: "A社",
+      location: "棚A-1",
+      memo: "",
+      process_stock: { workInProgress: 100, preDeburr: 30, finished: 20 },
+      minStock: 30
+    }
+  ];
+}
 
-const listEl = document.getElementById("itemList");
+let items = loadData();
+let currentItem = null;
+let pendingMove = null;
+
+// ===== 一覧描画 =====
+
 function renderList() {
-  listEl.innerHTML = "";
-  items.forEach(it => {
-    const total = Object.values(it.process_stock).reduce((a,b)=>a+b,0);
-    const color = total <= it.minStock ? "danger" : total <= it.minStock*1.5 ? "warning" : "normal";
-    const el = document.createElement("div");
-    el.className = "item";
-    el.innerHTML = `
-      <div>
-        <div class="item-name">${it.name}</div>
-        <div class="item-part">${it.partNumber || ""}</div>
+  const list = document.getElementById("itemList");
+  list.innerHTML = "";
+
+  items.forEach(item => {
+    const dangerous = item.process_stock.finished < item.minStock;
+
+    const row = document.createElement("div");
+    row.className = "item-row";
+
+    row.innerHTML = `
+      <div class="item-info">
+        <div class="item-name">${item.name}</div>
+        <div class="item-part">${item.partNumber || ""}</div>
       </div>
-      <div class="stock ${color}">
-        <span>仕${it.process_stock.workInProgress}</span>
-        <span>バ${it.process_stock.preDeburr}</span>
-        <span>完${it.process_stock.finished}</span>
+
+      <div class="item-stock ${dangerous ? "danger" : "normal"}">
+        仕${item.process_stock.workInProgress} / バ${item.process_stock.preDeburr} / 完${item.process_stock.finished}
       </div>
-      <button class="detail-btn" onclick="openModal(${it.id})">→</button>
+
+      <div class="detail-btn" onclick="openModal(${item.id})">→</div>
     `;
-    listEl.appendChild(el);
+
+    list.appendChild(row);
   });
 }
-renderList();
 
-let currentItem = null;
+// ===== モーダル操作 =====
 
-function openModal(id){
-  currentItem = items.find(i=>i.id===id);
-  document.getElementById("modalTitle").textContent = currentItem.name;
-  document.getElementById("modalInfo").innerHTML = `
-    📍${currentItem.location}<br>
-    メーカー：${currentItem.maker}<br>
-    品番：${currentItem.partNumber}<br>
-    メモ：${currentItem.memo}
-  `;
-  const ps = currentItem.process_stock;
-  const section = document.getElementById("processSection");
-  section.innerHTML = `
-    ${renderProcess("仕掛品","workInProgress","preDeburr")}
-    ${renderProcess("バリ前","preDeburr","finished")}
-    <div class="process-line"><div class="process-name">完成品</div><div class="process-count">${ps.finished}</div></div>
-  `;
+function openModal(id) {
+  currentItem = items.find(x => x.id === id);
+
+  document.getElementById("modalName").textContent = currentItem.name;
+  document.getElementById("modalMaker").textContent = currentItem.maker;
+  document.getElementById("modalPart").textContent = currentItem.partNumber;
+  document.getElementById("modalLoc").textContent = currentItem.location;
+  document.getElementById("modalMemo").textContent = currentItem.memo;
+
+  renderProcessLines();
   document.getElementById("modalBg").style.display = "flex";
 }
 
-function renderProcess(name,key,next){
-  const n = currentItem.process_stock[key];
-  return `
-  <div class="process-line">
-    <div class="process-name">${name}</div>
-    <div class="process-count">${n}</div>
-    <div>
-      <input type="number" min="1" id="num_${key}" placeholder="数量">
-      <button onclick="moveProcess('${key}','${next}')">→</button>
-    </div>
-  </div>`;
-}
-
-function moveProcess(from,to){
-  const num = Number(document.getElementById('num_'+from).value);
-  if(!num || num<=0) return alert("数量を入力してください");
-  const ps = currentItem.process_stock;
-  if(ps[from] < num) return alert("在庫が不足しています");
-  if(!confirm(`${num}個を${from}から${to}へ移動しますか？`)) return;
-  ps[from] -= num;
-  ps[to] += num;
-  save(); renderList(); openModal(currentItem.id);
-}
-
-function closeModal(){
+function closeModal() {
   document.getElementById("modalBg").style.display = "none";
+  document.getElementById("confirmBox").style.display = "none";
 }
+
+// ===== 工程ライン描画 =====
+
+function renderProcessLines() {
+  const p = currentItem.process_stock;
+  const area = document.getElementById("processArea");
+
+  area.innerHTML = `
+    <div class="process-row">
+      <div class="process-name">仕掛品</div>
+      <div class="process-value">${p.workInProgress}</div>
+      <button class="move-btn" onclick="askMove('workInProgress','preDeburr')">→ バリ前</button>
+    </div>
+
+    <div class="process-row">
+      <div class="process-name">バリ前</div>
+      <div class="process-value">${p.preDeburr}</div>
+      <button class="move-btn" onclick="askMove('preDeburr','finished')">→ 完成品</button>
+    </div>
+
+    <div class="process-row">
+      <div class="process-name">完成品</div>
+      <div class="process-value">${p.finished}</div>
+    </div>
+  `;
+}
+
+// ===== 移動処理 =====
+
+function askMove(from, to) {
+  const qty = Number(document.getElementById("qtyInput").value);
+  if (!qty || qty <= 0) return alert("数量を入力してください。");
+
+  pendingMove = { from, to, qty };
+  document.getElementById("confirmBox").style.display = "block";
+}
+
+document.getElementById("confirmYes").onclick = function() {
+  if (!pendingMove) return;
+  const { from, to, qty } = pendingMove;
+
+  const stock = currentItem.process_stock;
+  if (stock[from] < qty) {
+    alert("在庫が不足しています。");
+    return;
+  }
+
+  stock[from] -= qty;
+  stock[to] += qty;
+
+  saveData();
+  renderList();
+  renderProcessLines();
+
+  document.getElementById("confirmBox").style.display = "none";
+  pendingMove = null;
+};
+
+document.getElementById("confirmNo").onclick = function() {
+  document.getElementById("confirmBox").style.display = "none";
+  pendingMove = null;
+};
+
+// ===== 保存 =====
+
+function saveData() {
+  localStorage.setItem("items", JSON.stringify(items));
+}
+
+// ===== 権限管理 =====
+
+document.getElementById("roleSelect").onchange = function() {
+  const role = this.value;
+  document.getElementById("adminPanel").style.display = role === "admin" ? "block" : "none";
+};
+
+// 初期描画
+renderList();
 </script>
 
 </body>
