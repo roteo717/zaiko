@@ -205,8 +205,6 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 @keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(12px)}}
 
 /* ── PW BANNER ── */
-.pw-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;font-size:13px;color:#92400e}
-.pw-banner button{margin-left:auto;background:var(--amber);color:#fff;font-weight:700;font-size:11px;border:none;border-radius:4px;padding:4px 10px;cursor:pointer}
 
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:48px 20px;color:var(--text-muted)}
@@ -222,6 +220,57 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .text-red{color:var(--red)}
 .text-amber{color:var(--amber)}
 .text-green{color:var(--green)}
+
+
+
+/* ── OPERATOR DISPLAY ── */
+
+/* correction rows */
+.hist-row-correction td{background:#fff1f1;color:#991b1b;}
+.hist-row-correction:hover td{background:#ffe4e4 !important;}
+.ac-correction{background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;}
+.correction-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:5px;}
+.corrected-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#f3f4f6;color:#6b7280;border:1px solid #d1d5db;border-radius:4px;padding:1px 6px;margin-left:4px;}
+.correction-count-badge{font-size:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:4px;}
+.recent-correction-bar{display:flex;align-items:center;gap:10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--r);padding:10px 14px;margin-bottom:10px;font-size:13px;flex-wrap:wrap;gap:8px;}
+.rcb-info{flex:1;color:#92400e;min-width:0;}
+.rcb-info strong{color:#c2410c;}
+.btn-recent-correct{background:#fff;border:1.5px solid var(--red);color:var(--red);font-size:12px;font-weight:700;padding:5px 14px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);white-space:nowrap;transition:all .15s;}
+.btn-recent-correct:hover{background:var(--red);color:#fff;}
+.btn-correct-row{background:none;border:1px solid #fca5a5;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;font-family:var(--fj);transition:all .15s;}
+.btn-correct-row:hover{background:#fee2e2;}
+.btn-correct-row:disabled{opacity:.35;cursor:not-allowed;}
+
+.op-name-bar{display:flex;align-items:center;gap:10px;background:var(--accent-dim);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);padding:9px 14px;font-size:14px;font-weight:600;color:var(--accent);}
+.op-name-bar .op-name-lbl{flex:1;}
+.op-name-bar .op-change-btn{font-size:11px;font-weight:600;background:none;border:1px solid rgba(37,99,235,.35);color:var(--accent);border-radius:4px;padding:3px 10px;cursor:pointer;white-space:nowrap;}
+.op-name-bar .op-change-btn:hover{background:var(--accent);color:#fff;}
+.op-name-set{display:none;}
+.op-name-set.visible{display:flex;flex-direction:column;gap:6px;}
+/* 初回operator_name入力バナー */
+.op-setup-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:13px;color:#92400e;margin-bottom:0;}
+.op-setup-banner .osb-label{flex:1;}
+.op-setup-banner input{flex:1;background:#fff;border:1px solid #fcd34d;border-radius:var(--r);padding:7px 10px;font-size:14px;font-family:var(--fj);outline:none;}
+.op-setup-banner button{background:var(--amber);color:#fff;font-weight:700;font-size:12px;border:none;border-radius:4px;padding:7px 14px;cursor:pointer;white-space:nowrap;}
+/* ユーザー管理テーブルの作業者名欄 */
+.editable-operator{display:flex;align-items:center;gap:6px;}
+.editable-operator input{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-size:13px;font-family:var(--fj);color:var(--text);outline:none;width:100px;}
+.editable-operator input:focus{border-color:var(--accent);}
+.editable-operator button{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text-muted);}
+.editable-operator button:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* ── SUGGEST ── */
+.suggest-wrap{position:relative;}
+.suggest-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:500;max-height:180px;overflow-y:auto;display:none;margin-top:2px;}
+.suggest-list.open{display:block;}
+.suggest-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.suggest-item:last-child{border-bottom:none;}
+.suggest-item:hover,.suggest-item.active{background:var(--accent-dim);color:var(--accent);}
+.suggest-item .sug-icon{font-size:11px;color:var(--text-dim);}
+.line-btn-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.line-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:6px 14px;font-size:12px;font-weight:600;font-family:var(--fj);cursor:pointer;transition:all .15s;color:var(--text-muted);}
+.line-btn:hover,.line-btn.selected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.line-btn.recent::after{content:'★';font-size:9px;margin-left:4px;color:var(--amber);}
 
 /* ── HAMBURGER ── */
 .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;flex-shrink:0;margin-left:auto}
@@ -324,7 +373,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
     <div class="header-right">
       <div class="user-pill">
         <div class="user-av" id="hd-av">A</div>
-        <span id="hd-name">admin</span>
+        <span id="hd-name">admin</span><span id="hd-operator-name" style="font-size:11px;color:var(--text-muted);margin-left:2px"></span>
         <span class="role-chip admin" id="hd-role">管理者</span>
       </div>
       <button class="btn btn-ghost btn-sm admin-only" id="hd-pw-btn" onclick="showPwModal()">PW変更</button>
@@ -358,9 +407,11 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 
     <!-- ── 在庫一覧 ── -->
     <div id="page-inventory" class="page active">
-      <div id="pw-banner" class="pw-banner" style="display:none">
-        <span>⚠ 初回ログインです。パスワードを変更してください</span>
-        <button onclick="showPwModal()">今すぐ変更</button>
+      <!-- operator_name未設定時バナー -->
+      <div id="op-setup-banner" class="op-setup-banner" style="display:none;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <span class="osb-label">👋 あなたの<strong>作業者名</strong>を設定してください（操作ログに記録されます）</span>
+        <input id="op-setup-input" type="text" placeholder="例: 田中 太郎">
+        <button onclick="saveMyOperatorName()">設定して始める</button>
       </div>
       <div class="stats-row" id="stats-row"></div>
       <div class="toolbar">
@@ -383,6 +434,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
         <table class="inv-table">
           <thead><tr>
             <th class="th-name" style="text-align:left;min-width:160px">品目</th>
+            <th style="min-width:100px;text-align:left">メーカー</th>
             <th class="th-wip" style="min-width:90px">仕掛品</th>
             <th class="th-bari" style="min-width:90px">バリ前</th>
             <th class="th-done" style="min-width:90px">完成品</th>
@@ -409,15 +461,20 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
             <option value="バリ前移動">バリ前移動</option>
             <option value="完成">完成</option>
             <option value="出荷">出荷</option>
+            <option value="訂正">訂正のみ</option>
           </select>
           <button class="btn btn-ghost btn-sm admin-only" onclick="exportCSV('history')">CSV出力</button>
           <button class="btn btn-ghost btn-sm admin-only" onclick="confirmClearHistory()">クリア</button>
         </div>
       </div>
+      <div class="recent-correction-bar" id="recent-correction-bar" style="display:none">
+        <div class="rcb-info">直近の操作: <strong id="rcb-desc">—</strong></div>
+        <button class="btn-recent-correct" id="btn-recent-correct" onclick="quickCorrect()">⎌ 直近訂正</button>
+      </div>
       <div class="table-wrap">
         <table class="hist-table">
           <thead><tr>
-            <th>日時</th><th>操作</th><th>品目</th><th>数量</th><th>ライン</th><th>作業者</th>
+            <th>日時</th><th>操作</th><th>品目</th><th>数量</th><th>ライン</th><th>作業者</th><th style="width:70px">訂正</th>
           </tr></thead>
           <tbody id="hist-body"></tbody>
         </table>
@@ -435,7 +492,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
       <div class="table-wrap">
         <table class="user-table">
           <thead><tr>
-            <th>ユーザー名</th><th>権限</th><th>初回PW</th><th>登録日</th><th>操作</th>
+            <th>ユーザー名</th><th>権限</th><th>作業者名</th><th>登録日</th><th>操作</th>
           </tr></thead>
           <tbody id="user-body"></tbody>
         </table>
@@ -469,24 +526,34 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
       </div>
       <div class="sec-label">移動数量</div>
       <div class="qty-big-wrap">
-        <input type="number" id="op-qty" min="1" placeholder="0" oninput="checkOpWarn()">
+        <input type="number" id="op-qty" min="1" placeholder="0" oninput="checkOpWarn()" onkeydown="if(event.key==='Enter'){event.preventDefault();execOp();}">
         <span class="qty-unit-badge" id="op-unit">個</span>
       </div>
       <div class="qty-presets" id="op-presets"></div>
       <div class="transfer-warn" id="op-warn">⚠ 移動元在庫の80%以上を移動しようとしています。</div>
-      <div class="two-col">
-        <div class="form-row" id="op-line-row">
-          <label>ライン <span class="text-red">*</span></label>
-          <select id="op-line">
-            <option value="">— 選択してください —</option>
-          </select>
+      <div class="form-row" id="op-line-row">
+        <label>ライン <span class="text-red">*</span></label>
+        <div class="line-btn-group" id="op-line-btns"></div>
+        <input type="hidden" id="op-line">
+      </div>
+      <div class="form-row" style="margin-top:4px" id="op-operator-row">
+        <label>作業者名 <span class="text-red">*</span></label>
+        <!-- ログインユーザーのoperator_nameが設定済みの場合: バー表示 -->
+        <div class="op-name-bar" id="op-name-bar" style="display:none">
+          <span class="op-name-lbl" id="op-name-bar-txt"></span>
+          <button class="op-change-btn" onclick="toggleOperatorInput(true)">変更</button>
         </div>
-        <div class="form-row">
-          <label>作業者名 <span class="text-red">*</span></label>
-          <input id="op-operator" type="text" placeholder="例: 田中">
+        <!-- 手入力欄（管理者は常時表示、一般は「変更」クリック時のみ） -->
+        <div class="op-name-set" id="op-name-set">
+          <div class="suggest-wrap">
+            <input id="op-operator" type="text" placeholder="例: 田中" autocomplete="off"
+              oninput="onOperatorInput()" onkeydown="onOperatorKeydown(event)" onfocus="onOperatorInput()">
+            <div class="suggest-list" id="op-suggest"></div>
+          </div>
+          <button type="button" style="font-size:11px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-align:left;padding:0;" onclick="toggleOperatorInput(false)" id="op-cancel-change">← 自分の名前に戻す</button>
         </div>
       </div>
-      <div class="form-hint">※ ライン・作業者は必須入力です</div>
+      <div class="form-hint" id="op-hint">※ ライン（★=最近使用）・作業者は必須入力です</div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('modal-op')">キャンセル</button>
@@ -521,9 +588,13 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
           <input id="item-unit" type="text" placeholder="例: 個">
         </div>
         <div class="form-row">
-          <label>警告閾値（完成品）</label>
-          <input id="item-threshold" type="number" min="0" placeholder="例: 50">
+          <label>メーカー</label>
+          <input id="item-maker" type="text" placeholder="例: 山田製作所">
         </div>
+      </div>
+      <div class="form-row">
+        <label>警告閾値（完成品）</label>
+        <input id="item-threshold" type="number" min="0" placeholder="例: 50">
       </div>
       <div class="divider"></div>
       <div class="sec-label">初期在庫</div>
@@ -624,7 +695,11 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
           <option value="admin">管理者</option>
         </select>
       </div>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:4px">※ 初回ログイン時にPW変更が必要です</p>
+      <div class="form-row">
+        <label>作業者名（表示名）</label>
+        <input id="au-operator" type="text" placeholder="例: 田中 太郎">
+        <div class="form-hint">操作ログに記録される名前です。後から変更可能。</div>
+      </div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('modal-adduser')">キャンセル</button>
@@ -699,17 +774,17 @@ function loadDB(){
   }catch(e){}
   DB = {
     users:[
-      {id:'u1',username:'admin',passwordHash:hashPw('admin123'),role:'admin',mustChangePw:true,createdAt:now()},
-      {id:'u2',username:'user1',passwordHash:hashPw('user123'),role:'user',mustChangePw:true,createdAt:now()}
+      {id:'u1',username:'admin',passwordHash:hashPw('admin123'),role:'admin',operator_name:'管理者',createdAt:now()},
+      {id:'u2',username:'user1',passwordHash:hashPw('user123'),role:'user',operator_name:'田中',createdAt:now()}
     ],
     lines:['1号機','2号機','Aライン','Bライン'],
     items:[
-      {id:uuid(),name:'皿頭タッピングビス',code:'ITEM-001',unit:'本',process:{wip:500,bari:200,done:3000},threshold:500,updatedAt:now()},
-      {id:uuid(),name:'M5×50mm亜鉛メッキセルフタッピングねじ',code:'ITEM-002',unit:'本',process:{wip:2000,bari:3000,done:10000},threshold:1000,updatedAt:now()},
-      {id:uuid(),name:'ケーブルカッター',code:'ITEM-003',unit:'個',process:{wip:10,bari:20,done:30},threshold:10,updatedAt:now()},
-      {id:uuid(),name:'プラスチック柄プラスドライバー',code:'ITEM-004',unit:'本',process:{wip:5,bari:15,done:50},threshold:20,updatedAt:now()},
-      {id:uuid(),name:'M1チタン六角ナット',code:'ITEM-005',unit:'個',process:{wip:30,bari:100,done:8},threshold:50,updatedAt:now()},
-      {id:uuid(),name:'両口スパナ 19mm×22mm',code:'ITEM-006',unit:'本',process:{wip:0,bari:10,done:0},threshold:20,updatedAt:now()}
+      {id:uuid(),name:'皿頭タッピングビス',code:'ITEM-001',unit:'本',maker:'山田製作所',process:{wip:500,bari:200,done:3000},threshold:500,updatedAt:now()},
+      {id:uuid(),name:'M5×50mm亜鉛メッキセルフタッピングねじ',code:'ITEM-002',unit:'本',maker:'東京ネジ工業',process:{wip:2000,bari:3000,done:10000},threshold:1000,updatedAt:now()},
+      {id:uuid(),name:'ケーブルカッター',code:'ITEM-003',unit:'個',maker:'',process:{wip:10,bari:20,done:30},threshold:10,updatedAt:now()},
+      {id:uuid(),name:'プラスチック柄プラスドライバー',code:'ITEM-004',unit:'本',maker:'',process:{wip:5,bari:15,done:50},threshold:20,updatedAt:now()},
+      {id:uuid(),name:'M1チタン六角ナット',code:'ITEM-005',unit:'個',maker:'大阪金属',process:{wip:30,bari:100,done:8},threshold:50,updatedAt:now()},
+      {id:uuid(),name:'両口スパナ 19mm×22mm',code:'ITEM-006',unit:'本',maker:'',process:{wip:0,bari:10,done:0},threshold:20,updatedAt:now()}
     ],
     history:[]
   };
@@ -724,10 +799,74 @@ function addHistory(type, item, qty, line, operator){
   DB.history.unshift({
     id:uuid(), timestamp:now(),
     type:type, itemId:item.id, itemName:item.name,
-    qty:qty, line:line, operator:operator,
-    username:currentUser.username, role:currentUser.role
+    qty:qty, line:line,
+    operator:operator,
+    userId:currentUser.id, username:currentUser.username, role:currentUser.role
   });
   if(DB.history.length>5000) DB.history=DB.history.slice(0,5000);
+}
+
+
+// ═══════════════════════════════════════════════
+//  INPUT HISTORY UTILS（将来サーバー移行対応）
+// ═══════════════════════════════════════════════
+var HIST_OPERATOR_KEY = 'stocks_operator_hist';
+var HIST_LINE_KEY     = 'stocks_line_hist';
+var HIST_MAX = 20;
+
+function loadHist(key){
+  try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){return [];}
+}
+function saveHist(key, list){ localStorage.setItem(key, JSON.stringify(list)); }
+
+function pushHist(key, value){
+  if(!value)return;
+  var list = loadHist(key);
+  list = list.filter(function(v){return v!==value;});
+  list.unshift(value);
+  if(list.length>HIST_MAX) list=list.slice(0,HIST_MAX);
+  saveHist(key, list);
+}
+
+function getOperatorSuggests(q){
+  // 履歴から収集
+  var hist = loadHist(HIST_OPERATOR_KEY);
+  // DBの履歴からも補完
+  var fromDb = DB.history.map(function(h){return h.operator||'';}).filter(Boolean);
+  var all = hist.slice();
+  fromDb.forEach(function(v){if(all.indexOf(v)<0)all.push(v);});
+  // 重複排除・上限
+  var seen={};
+  all = all.filter(function(v){if(seen[v])return false;seen[v]=true;return true;});
+  // 前方一致フィルター
+  if(q){
+    q=q.toLowerCase();
+    all=all.filter(function(v){return v.toLowerCase().indexOf(q)===0;});
+  }
+  return all.slice(0,8);
+}
+
+function getLineSorted(){
+  // 使用頻度順でソート（localStorage に使用回数を保存）
+  var counts = {};
+  try{ counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}'); }catch(e){}
+  var lines = DB.lines.slice();
+  lines.sort(function(a,b){return (counts[b]||0)-(counts[a]||0);});
+  return lines;
+}
+
+function recordLineUse(line){
+  var counts={};
+  try{ counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}'); }catch(e){}
+  counts[line]=(counts[line]||0)+1;
+  localStorage.setItem('stocks_line_counts', JSON.stringify(counts));
+  localStorage.setItem('last_line', line);
+  pushHist(HIST_LINE_KEY, line);
+}
+
+function recordOperatorUse(op){
+  localStorage.setItem('last_operator', op);
+  pushHist(HIST_OPERATOR_KEY, op);
 }
 
 // ═══════════════════════════════════════════════
@@ -784,11 +923,18 @@ function bootApp(){
   mav.className='user-av'+(admin?' admin-av':'');
   document.getElementById('mob-name').textContent=currentUser.username;
   document.getElementById('mob-role').textContent=admin?'管理者':'一般ユーザー';
-  // PW banner
-  document.getElementById('pw-banner').style.display=currentUser.mustChangePw?'':'none';
-  document.getElementById('pw-modal-x').style.display=currentUser.mustChangePw?'none':'';
-  document.getElementById('pw-cancel-btn').style.display=currentUser.mustChangePw?'none':'';
-  if(currentUser.mustChangePw) setTimeout(function(){showPwModal();},600);
+  // 作業者名をヘッダーのuser-pillに追加表示
+  var opName = currentUser.operator_name||'';
+  var opDisp = document.getElementById('hd-operator-name');
+  if(opDisp) opDisp.textContent = opName ? '('+opName+')' : '';
+
+  // operator_name未設定バナー
+  var setupBanner = document.getElementById('op-setup-banner');
+  if(setupBanner){
+    setupBanner.style.display = (!opName) ? '' : 'none';
+    document.getElementById('op-setup-input').value = '';
+  }
+
   showPage('inventory');
 }
 
@@ -844,15 +990,16 @@ document.addEventListener('click',function(e){
 // ═══════════════════════════════════════════════
 function renderStats(){
   var items=DB.items;
-  var totalDone=items.reduce(function(s,i){return s+i.process.done;},0);
   var warnItems=items.filter(function(i){return i.process.done<=i.threshold&&i.process.done>0;});
   var zeroItems=items.filter(function(i){return i.process.done===0;});
   var todayHist=DB.history.filter(function(h){return h.timestamp.slice(0,10)===now().slice(0,10);});
+  var todayShip=todayHist.filter(function(h){return h.type==='出荷';});
+  var zeroItems=items.filter(function(i){return i.process.done===0;});
   document.getElementById('stats-row').innerHTML=
-    '<div class="stat-card"><div class="stat-label">品目数</div><div class="stat-val">'+items.length+'</div></div>'+
-    '<div class="stat-card"><div class="stat-label">完成品 合計</div><div class="stat-val">'+fmtNum(totalDone)+'</div></div>'+
-    '<div class="stat-card"><div class="stat-label">要注意</div><div class="stat-val '+(warnItems.length>0?'amber':'')+'">'+warnItems.length+'</div><div class="stat-sub">閾値以下</div></div>'+
-    '<div class="stat-card"><div class="stat-label">本日の操作</div><div class="stat-val">'+todayHist.length+'</div><div class="stat-sub">件</div></div>';
+    '<div class="stat-card"><div class="stat-label">品目数</div><div class="stat-val">'+items.length+'</div><div class="stat-sub">登録品目</div></div>'+
+    '<div class="stat-card"><div class="stat-label">在庫ゼロ</div><div class="stat-val '+(zeroItems.length>0?'red':'')+'">'+zeroItems.length+'</div><div class="stat-sub">完成品ゼロ品目</div></div>'+
+    '<div class="stat-card"><div class="stat-label">要注意</div><div class="stat-val '+(warnItems.length>0?'amber':'')+'">'+warnItems.length+'</div><div class="stat-sub">閾値以下の品目</div></div>'+
+    '<div class="stat-card"><div class="stat-label">本日の出荷</div><div class="stat-val">'+todayShip.length+'</div><div class="stat-sub">操作 '+todayHist.length+' 件</div></div>';
 }
 
 // ═══════════════════════════════════════════════
@@ -891,6 +1038,7 @@ function renderInventory(){
       :'';
     return '<tr class="'+rowCls+'">'
       +'<td class="td-name"><div class="item-name-txt">'+esc(it.name)+'</div><div class="item-code-txt">'+esc(it.code)+'</div></td>'
+      +'<td style="font-size:12px;color:var(--text-muted)">'+esc(it.maker||'—')+'</td>'
       +'<td class="num-cell"><span class="num-wip">'+fmtNum(it.process.wip)+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
       +'<td class="num-cell"><span class="num-bari">'+fmtNum(it.process.bari)+warnBari+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
       +'<td class="num-cell"><span class="'+doneClass+'">'+fmtNum(it.process.done)+wi+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
@@ -925,7 +1073,7 @@ function renderInvCards(items, admin){
     return '<div class="'+cls+'">'
       +'<div class="icard-top">'
         +'<div class="icard-name">'+esc(it.name)+(wi?' <span style="color:var(--red)">'+wi+'</span>':'')+'</div>'
-        +'<div class="icard-code">'+esc(it.code)+'</div>'
+        +'<div class="icard-code">'+esc(it.code)+(it.maker?' · <span style="color:var(--text-muted)">'+esc(it.maker)+'</span>':'')+'</div>'
       +'</div>'
       +'<div class="icard-stocks">'
         +'<div class="icard-stock" style="background:rgba(99,102,241,.05)">'
@@ -954,6 +1102,133 @@ function renderInvCards(items, admin){
     +'</div>';
   }).join('');
 }
+
+
+
+// ═══════════════════════════════════════════════
+//  OPERATOR NAME MANAGEMENT
+// ═══════════════════════════════════════════════
+function toggleOperatorInput(show){
+  var barEl=document.getElementById('op-name-bar');
+  var setEl=document.getElementById('op-name-set');
+  if(show){
+    barEl.style.display='none';
+    setEl.classList.add('visible');
+    var opInput=document.getElementById('op-operator');
+    var suggests=getOperatorSuggests('');
+    opInput.value='';
+    setTimeout(function(){opInput.focus();onOperatorInput();},50);
+  }else{
+    // 自分の名前に戻す
+    var myOpName=currentUser&&currentUser.operator_name?currentUser.operator_name:'';
+    barEl.style.display=myOpName?'flex':'none';
+    if(myOpName) document.getElementById('op-name-bar-txt').textContent=myOpName;
+    setEl.classList.remove('visible');
+    document.getElementById('op-operator').value=myOpName;
+    closeSuggest();
+  }
+}
+
+function saveMyOperatorName(){
+  var val=document.getElementById('op-setup-input').value.trim();
+  if(!val){toast('作業者名を入力してください','err');return;}
+  var user=DB.users.find(function(u){return u.id===currentUser.id;});
+  if(!user)return;
+  user.operator_name=val;
+  currentUser=user;
+  saveDB();
+  document.getElementById('op-setup-banner').style.display='none';
+  var opDisp=document.getElementById('hd-operator-name');
+  if(opDisp) opDisp.textContent='('+val+')';
+  toast('作業者名「'+val+'」を設定しました','ok');
+}
+
+function updateOperatorName(userId, val){
+  if(!isAdmin())return;
+  var user=DB.users.find(function(u){return u.id===userId;});
+  if(!user)return;
+  user.operator_name=val;
+  if(userId===currentUser.id){
+    currentUser=user;
+    var opDisp=document.getElementById('hd-operator-name');
+    if(opDisp) opDisp.textContent=val?'('+val+')':'';
+  }
+  saveDB();
+  toast(user.username+'の作業者名を「'+val+'」に更新しました','ok');
+}
+
+// ═══════════════════════════════════════════════
+//  LINE & OPERATOR INPUT HELPERS
+// ═══════════════════════════════════════════════
+function selectLine(btn, line){
+  document.getElementById('op-line').value=line;
+  document.querySelectorAll('.line-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+}
+
+var _suggestIdx = -1;
+function onOperatorInput(){
+  var q=document.getElementById('op-operator').value;
+  var candidates=getOperatorSuggests(q);
+  var el=document.getElementById('op-suggest');
+  _suggestIdx=-1;
+  if(!candidates.length){el.classList.remove('open');return;}
+  el.innerHTML=candidates.map(function(c,i){
+    return '<div class="suggest-item" data-val="'+esc(c)+'" onmousedown="pickOperator(this.dataset.val)">'
+      +'<span class="sug-icon">👤</span>'+esc(c)+'</div>';
+  }).join('');
+  el.classList.add('open');
+}
+
+function onOperatorKeydown(e){
+  var el=document.getElementById('op-suggest');
+  var items=el.querySelectorAll('.suggest-item');
+  if(!el.classList.contains('open')){
+    if(e.key==='Enter'){e.preventDefault();execOp();}
+    return;
+  }
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    _suggestIdx=Math.min(_suggestIdx+1,items.length-1);
+    items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});
+  }else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    _suggestIdx=Math.max(_suggestIdx-1,-1);
+    items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});
+  }else if(e.key==='Enter'){
+    e.preventDefault();
+    if(_suggestIdx>=0&&items[_suggestIdx]){
+      pickOperator(items[_suggestIdx].dataset.val);
+    }else{
+      closeSuggest();
+      execOp();
+    }
+  }else if(e.key==='Escape'){
+    closeSuggest();
+  }
+}
+
+function pickOperator(val){
+  document.getElementById('op-operator').value=val;
+  closeSuggest();
+  // フォーカスを実行ボタンへ移動（Enterしやすく）
+  document.getElementById('op-submit-btn').focus();
+}
+
+function closeSuggest(){
+  var el=document.getElementById('op-suggest');
+  if(el) el.classList.remove('open');
+  _suggestIdx=-1;
+}
+
+// サジェスト外クリックで閉じる
+document.addEventListener('click',function(e){
+  var wrap=document.getElementById('op-operator');
+  var sug=document.getElementById('op-suggest');
+  if(wrap&&sug&&!wrap.contains(e.target)&&!sug.contains(e.target)){
+    closeSuggest();
+  }
+});
 
 // ═══════════════════════════════════════════════
 //  OPERATION MODAL
@@ -1000,23 +1275,47 @@ function showOpModal(itemId, opType){
     return '<button class="qty-pre" onclick="document.getElementById(\'op-qty\').value='+p+';checkOpWarn()">'+fmtNum(p)+'</button>';
   }).join('');
 
-  // Line selector
-  var lineSelect=document.getElementById('op-line');
-  lineSelect.innerHTML='<option value="">— 選択してください —</option>';
-  DB.lines.forEach(function(ln){
-    lineSelect.innerHTML+='<option value="'+esc(ln)+'">'+esc(ln)+'</option>';
-  });
-
-  // Restore last used line/operator
+  // Line buttons（使用頻度順）
   var lastLine=localStorage.getItem('last_line')||'';
-  var lastOp=localStorage.getItem('last_operator')||'';
-  if(lastLine) lineSelect.value=lastLine;
-  document.getElementById('op-operator').value=lastOp;
+  var sortedLines=getLineSorted();
+  var recentLines=loadHist(HIST_LINE_KEY).slice(0,3);
+  var lineBtnsEl=document.getElementById('op-line-btns');
+  document.getElementById('op-line').value=lastLine;
+  lineBtnsEl.innerHTML=sortedLines.map(function(ln){
+    var isRecent=recentLines.indexOf(ln)>=0;
+    var isSel=ln===lastLine;
+        return '<button type="button" class="line-btn'+(isRecent?' recent':'')+(isSel?' selected':'')+'" data-line="'+esc(ln)+'" onclick="selectLine(this,this.dataset.line)">'
+      +esc(ln)+'</button>';
+  }).join('');
+
+  // 作業者欄の表示ロジック
+  var myOpName = currentUser&&currentUser.operator_name ? currentUser.operator_name : '';
+  var isAdm = isAdmin();
+  var barEl = document.getElementById('op-name-bar');
+  var setEl = document.getElementById('op-name-set');
+  var cancelBtn = document.getElementById('op-cancel-change');
+  var opInput = document.getElementById('op-operator');
+  if(myOpName && !isAdm){
+    // 一般ユーザー＋operator_name設定済み → バー表示、入力欄非表示
+    barEl.style.display='flex';
+    document.getElementById('op-name-bar-txt').textContent = myOpName;
+    setEl.classList.remove('visible');
+    opInput.value = myOpName;
+    if(cancelBtn) cancelBtn.style.display='block';
+  } else {
+    // 管理者 or operator_name未設定 → 入力欄を常時表示
+    barEl.style.display='none';
+    setEl.classList.add('visible');
+    var lastOp = myOpName || localStorage.getItem('last_operator')||'';
+    opInput.value = lastOp;
+    if(cancelBtn) cancelBtn.style.display = myOpName ? 'block':'none';
+  }
+  document.getElementById('op-suggest').classList.remove('open');
 
   document.getElementById('op-submit-btn').style.background=cfg.fromKey==='done'?'var(--red)':'var(--accent)';
 
   openModal('modal-op');
-  setTimeout(function(){document.getElementById('op-qty').focus();},100);
+  setTimeout(function(){document.getElementById('op-qty').focus();},120);
 }
 
 function checkOpWarn(){
@@ -1039,7 +1338,14 @@ function execOp(){
 
   var qty=parseInt(document.getElementById('op-qty').value);
   var line=document.getElementById('op-line').value.trim();
-  var operator=document.getElementById('op-operator').value.trim();
+  // operator: バー表示中は currentUser.operator_name を使用
+  var barEl=document.getElementById('op-name-bar');
+  var operator='';
+  if(barEl&&barEl.style.display!=='none'&&currentUser&&currentUser.operator_name){
+    operator=currentUser.operator_name;
+  }else{
+    operator=document.getElementById('op-operator').value.trim();
+  }
   var errEl=document.getElementById('op-err');
   errEl.classList.remove('show');
 
@@ -1067,9 +1373,9 @@ function execOp(){
   addHistory(cfg.label, item, qty, line, operator);
   saveDB();
 
-  // Remember last line/operator
-  localStorage.setItem('last_line', line);
-  localStorage.setItem('last_operator', operator);
+  // 履歴記録
+  recordLineUse(line);
+  recordOperatorUse(operator);
 
   closeModal('modal-op');
   renderInventory();
@@ -1083,7 +1389,7 @@ function showAddModal(){
   if(!isAdmin())return;
   document.getElementById('item-modal-title').textContent='品目登録';
   document.getElementById('item-id').value='';
-  ['item-name','item-code','item-unit'].forEach(function(id){document.getElementById(id).value='';});
+  ['item-name','item-code','item-unit','item-maker'].forEach(function(id){document.getElementById(id).value='';});
   ['item-threshold','item-wip','item-bari','item-done'].forEach(function(id){document.getElementById(id).value='0';});
   document.getElementById('init-stock-row').style.display='';
   document.getElementById('item-err').classList.remove('show');
@@ -1100,6 +1406,7 @@ function showEditModal(id){
   document.getElementById('item-code').value=item.code;
   document.getElementById('item-unit').value=item.unit;
   document.getElementById('item-threshold').value=item.threshold;
+  document.getElementById('item-maker').value=item.maker||'';
   document.getElementById('init-stock-row').style.display='none';
   document.getElementById('item-err').classList.remove('show');
   openModal('modal-item');
@@ -1112,6 +1419,7 @@ function saveItem(){
   var code=document.getElementById('item-code').value.trim();
   var unit=document.getElementById('item-unit').value.trim();
   var threshold=parseInt(document.getElementById('item-threshold').value)||0;
+  var maker=document.getElementById('item-maker').value.trim();
   var errEl=document.getElementById('item-err');
   errEl.classList.remove('show');
   if(!name||!code||!unit){errEl.textContent='品目名・コード・単位は必須です';errEl.classList.add('show');return;}
@@ -1119,13 +1427,13 @@ function saveItem(){
   if(id){
     var item=DB.items.find(function(i){return i.id===id;});
     if(!item)return;
-    item.name=name;item.code=code;item.unit=unit;item.threshold=threshold;item.updatedAt=now();
+    item.name=name;item.code=code;item.unit=unit;item.threshold=threshold;item.maker=maker;item.updatedAt=now();
     toast(name+' を更新しました','ok');
   }else{
     var wip=parseInt(document.getElementById('item-wip').value)||0;
     var bari=parseInt(document.getElementById('item-bari').value)||0;
     var done=parseInt(document.getElementById('item-done').value)||0;
-    DB.items.push({id:uuid(),name:name,code:code,unit:unit,process:{wip:wip,bari:bari,done:done},threshold:threshold,updatedAt:now()});
+    DB.items.push({id:uuid(),name:name,code:code,unit:unit,maker:maker,process:{wip:wip,bari:bari,done:done},threshold:threshold,updatedAt:now()});
     toast(name+' を登録しました','ok');
   }
   saveDB();closeModal('modal-item');renderInventory();
@@ -1197,8 +1505,10 @@ var ACT_CLASS={
   '加工':'ac-wip',
   'バリ前移動':'ac-w2b',
   '完成':'ac-b2d',
-  '出荷':'ac-d2s'
+  '出荷':'ac-d2s',
+  '訂正':'ac-correction'
 };
+var CORRECTION_LIMIT=3;
 
 function renderHistory(){
   var filterLine=document.getElementById('hist-filter-line').value;
@@ -1221,20 +1531,107 @@ function renderHistory(){
   document.getElementById('hist-count').textContent=logs.length+'件';
   var body=document.getElementById('hist-body');
   if(!logs.length){
-    body.innerHTML='<tr><td colspan="6"><div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div></td></tr>';
+    body.innerHTML='<tr><td colspan="7"><div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div></td></tr>';
+    updateRecentCorrectionBar();
     return;
   }
-  body.innerHTML=logs.slice(0,1000).map(function(h){
-    var cls=ACT_CLASS[h.type]||'ac-sys';
-    return '<tr>'
-      +'<td style="white-space:nowrap;color:var(--text-muted);font-size:12px;font-family:var(--fn)">'+fmtDate(h.timestamp)+'</td>'
-      +'<td><span class="act-chip '+cls+'">'+esc(h.type)+'</span></td>'
-      +'<td style="font-size:13px">'+esc(h.itemName||'—')+'</td>'
-      +'<td style="font-family:var(--fn);text-align:right;font-weight:600">'+fmtNum(h.qty)+'</td>'
-      +'<td><span style="font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px">'+esc(h.line||'—')+'</span></td>'
-      +'<td style="font-size:13px;font-weight:500">'+esc(h.operator||'—')+'</td>'
+  body.innerHTML=logs.slice(0,1000).map(function(entry){
+    var isCorr=entry.type==='訂正';
+    var isCorrected=!!entry.corrected;
+    var rowCls=isCorr?'hist-row-correction':'';
+    var cls=ACT_CLASS[entry.type]||'ac-sys';
+    var chip='<span class="act-chip '+cls+'">'+esc(entry.type)+'</span>';
+    if(isCorrected) chip+='<span class="corrected-badge">訂正済</span>';
+    if(isCorr) chip+='<span class="correction-badge">&#x23CE; 訂正</span>';
+    var cntBadge=(entry.correction_count&&entry.correction_count>0)
+      ?'<span class="correction-count-badge">訂正'+entry.correction_count+'回</span>':'';
+    var correctBtn='';
+    if(!isCorr&&!isCorrected&&isAdmin()){
+      var overLimit=(entry.correction_count||0)>=CORRECTION_LIMIT;
+      correctBtn=overLimit
+        ?'<button class="btn-correct-row" disabled>不可(上限)</button>'
+        :'<button class="btn-correct-row" data-hid="'+entry.id+'" onclick="confirmCorrect(this.dataset.hid)">訂正</button>';
+    }
+    return '<tr class="'+rowCls+'">'
+      +'<td style="white-space:nowrap;color:var(--text-muted);font-size:12px;font-family:var(--fn)">'+fmtDate(entry.timestamp)+'</td>'
+      +'<td>'+chip+'</td>'
+      +'<td style="font-size:13px">'+esc(entry.itemName||'—')+cntBadge+'</td>'
+      +'<td style="font-family:var(--fn);text-align:right;font-weight:600">'+fmtNum(entry.qty)+'</td>'
+      +'<td><span style="font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px">'+esc(entry.line||'—')+'</span></td>'
+      +'<td style="font-size:13px;font-weight:500">'+esc(entry.operator||'—')+'</td>'
+      +'<td>'+correctBtn+'</td>'
     +'</tr>';
   }).join('');
+  updateRecentCorrectionBar();
+}
+
+
+// correction functions
+function updateRecentCorrectionBar(){
+  var bar=document.getElementById('recent-correction-bar');
+  var desc=document.getElementById('rcb-desc');
+  if(!bar)return;
+  if(!isAdmin()){bar.style.display='none';return;}
+  var target=DB.history.find(function(e){return e.type!=='correction'&&e.type!=='訂正'&&!e.corrected;});
+  if(!target){bar.style.display='none';return;}
+  if((target.correction_count||0)>=CORRECTION_LIMIT){bar.style.display='none';return;}
+  bar.style.display='flex';
+  desc.textContent=fmtDate(target.timestamp)+' / '+target.type+' / '+esc(target.itemName)+' '+fmtNum(target.qty)+' / '+(target.operator||'—');
+  document.getElementById('btn-recent-correct').dataset.hid=target.id;
+}
+
+function quickCorrect(){
+  var btn=document.getElementById('btn-recent-correct');
+  if(!btn||!btn.dataset.hid)return;
+  confirmCorrect(btn.dataset.hid);
+}
+
+function confirmCorrect(histId){
+  if(!isAdmin()){toast('訂正は管理者のみ実行できます','err');return;}
+  var entry=DB.history.find(function(e){return e.id===histId;});
+  if(!entry){toast('対象データが見つかりません','err');return;}
+  if(entry.type==='訂正'){toast('訂正レコードは訂正できません','err');return;}
+  if(entry.corrected){toast('このデータはすでに訂正済みです','err');return;}
+  if((entry.correction_count||0)>=CORRECTION_LIMIT){toast('訂正回数の上限('+CORRECTION_LIMIT+'回)に達しています','err');return;}
+  var msg='以下の操作を訂正（取り消し）しますか？\n\n操作: '+entry.type+'\n品目: '+entry.itemName+'\n数量: '+fmtNum(entry.qty)+'\n作業者: '+(entry.operator||'—')+'\n日時: '+fmtDate(entry.timestamp);
+  openConfirm('訂正確認', msg, function(){execCorrect(histId);});
+}
+
+function execCorrect(histId){
+  var entry=DB.history.find(function(e){return e.id===histId;});
+  if(!entry||entry.type==='訂正'||entry.corrected){toast('訂正できないデータです','err');return;}
+  if((entry.correction_count||0)>=CORRECTION_LIMIT){toast('訂正上限に達しています','err');return;}
+  var cfgMap={
+    '加工':      {fromKey:null,  toKey:'wip'},
+    'バリ前移動': {fromKey:'wip', toKey:'bari'},
+    '完成':      {fromKey:'bari',toKey:'done'},
+    '出荷':      {fromKey:'done',toKey:null}
+  };
+  var cfg=cfgMap[entry.type];
+  if(!cfg){toast('この操作種別は訂正できません','err');return;}
+  var item=DB.items.find(function(i){return i.id===entry.itemId;});
+  if(!item){toast('品目が見つかりません（削除済みの可能性があります）','err');return;}
+  var qty=entry.qty;
+  if(cfg.toKey&&item.process[cfg.toKey]-qty<0){
+    toast('訂正できません：'+cfg.toKey+'の在庫が不足します（現在 '+fmtNum(item.process[cfg.toKey])+'）','err');return;
+  }
+  if(cfg.toKey)   item.process[cfg.toKey]-=qty;
+  if(cfg.fromKey) item.process[cfg.fromKey]+=qty;
+  item.updatedAt=now();
+  entry.corrected=true;
+  entry.correction_count=(entry.correction_count||0)+1;
+  DB.history.unshift({
+    id:uuid(),timestamp:now(),type:'訂正',
+    itemId:item.id,itemName:item.name,
+    qty:qty,line:entry.line||'',
+    operator:currentUser.operator_name||currentUser.username,
+    userId:currentUser.id,username:currentUser.username,role:currentUser.role,
+    original_id:histId,correction_count:0
+  });
+  saveDB();
+  renderInventory();
+  renderHistory();
+  toast('訂正完了: '+esc(item.name)+' '+fmtNum(qty)+' を戻しました','ok');
 }
 
 function confirmClearHistory(){
@@ -1252,18 +1649,31 @@ function renderUsers(){
     var del=u.id!==currentUser.id
       ?'<button class="btn-proc bp-del" onclick="deleteUser(\''+u.id+'\')">削除</button>'
       :'<span style="font-size:11px;color:var(--text-dim)">（自分）</span>';
+    var opCell = isAdmin()
+      ? '<div class="editable-operator">'
+          +'<input type="text" value="'+esc(u.operator_name||'')+'" id="opn-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpName(this.dataset.uid)">'
+          +'<button data-uid="'+u.id+'" onclick="saveOpName(this.dataset.uid)">保存</button>'
+        +'</div>'
+      : (u.operator_name ? esc(u.operator_name) : '<span style="color:var(--text-dim)">未設定</span>');
     return '<tr>'
       +'<td><strong>'+esc(u.username)+'</strong></td>'
       +'<td><span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span></td>'
-      +'<td style="font-size:12px;color:'+(u.mustChangePw?'var(--amber)':'var(--text-muted)')+'">'+(u.mustChangePw?'⚠ 未変更':'変更済')+'</td>'
+      +'<td>'+opCell+'</td>'
       +'<td style="font-size:12px;color:var(--text-muted)">'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</td>'
       +'<td>'+del+'</td>'
     +'</tr>';
   }).join('');
 }
 
+function saveOpName(userId){
+  var inp=document.getElementById('opn-'+userId);
+  if(!inp)return;
+  updateOperatorName(userId, inp.value.trim());
+  renderUsers();
+}
+
 function showAddUserModal(){
-  ['au-name','au-pw'].forEach(function(id){document.getElementById(id).value='';});
+  ['au-name','au-pw','au-operator'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('au-role').value='user';
   document.getElementById('adduser-err').classList.remove('show');
   openModal('modal-adduser');
@@ -1279,7 +1689,8 @@ function addUser(){
   if(!/^[a-zA-Z0-9_]+$/.test(username)){errEl.textContent='ユーザー名は英数字とアンダースコアのみ';errEl.classList.add('show');return;}
   if(DB.users.find(function(u){return u.username===username;})){errEl.textContent='このユーザー名は既に使用されています';errEl.classList.add('show');return;}
   if(pw.length<6){errEl.textContent='パスワードは6文字以上にしてください';errEl.classList.add('show');return;}
-  DB.users.push({id:uuid(),username:username,passwordHash:hashPw(pw),role:role,mustChangePw:true,createdAt:now()});
+  var opName=document.getElementById('au-operator').value.trim();
+  DB.users.push({id:uuid(),username:username,passwordHash:hashPw(pw),role:role,operator_name:opName,createdAt:now()});
   saveDB();closeModal('modal-adduser');renderUsers();toast(username+' を追加しました','ok');
 }
 
@@ -1297,15 +1708,10 @@ function deleteUser(id){
 //  PASSWORD
 // ═══════════════════════════════════════════════
 function showPwModal(){
-  if(!isAdmin()&&!(currentUser&&currentUser.mustChangePw)){
-    toast('パスワード変更は管理者のみ可能です','err');return;
-  }
+  if(!isAdmin()){toast('パスワード変更は管理者のみ可能です','err');return;}
   ['pw-current','pw-new','pw-confirm'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('pw-err').classList.remove('show');
   document.getElementById('pw-bar').style.width='0';
-  var must=currentUser&&currentUser.mustChangePw;
-  document.getElementById('pw-modal-x').style.display=must?'none':'';
-  document.getElementById('pw-cancel-btn').style.display=must?'none':'';
   openModal('modal-pw');
 }
 
@@ -1334,11 +1740,9 @@ function changePassword(){
   if(nw!==cf){errEl.textContent='確認パスワードが一致しません';errEl.classList.add('show');return;}
   var user=DB.users.find(function(u){return u.id===currentUser.id;});
   user.passwordHash=hashPw(nw);
-  user.mustChangePw=false;
   currentUser=user;
   saveDB();saveSession();
   closeModal('modal-pw');
-  document.getElementById('pw-banner').style.display='none';
   toast('パスワードを変更しました','ok');
 }
 
@@ -1349,8 +1753,8 @@ function exportCSV(type){
   if(!isAdmin())return;
   var csv='',filename='';
   if(type==='items'){
-    csv='品目ID,品目名,品目コード,単位,仕掛品,バリ前,完成品,警告閾値,更新日時\n';
-    csv+=DB.items.map(function(i){return [i.id,qt(i.name),qt(i.code),qt(i.unit),i.process.wip,i.process.bari,i.process.done,i.threshold,i.updatedAt].join(',');}).join('\n');
+    csv='品目ID,品目名,品目コード,単位,メーカー,仕掛品,バリ前,完成品,警告閾値,更新日時\n';
+    csv+=DB.items.map(function(i){return [i.id,qt(i.name),qt(i.code),qt(i.unit),qt(i.maker||''),i.process.wip,i.process.bari,i.process.done,i.threshold,i.updatedAt].join(',');}).join('\n');
     filename='在庫一覧_'+dateStr()+'.csv';
   }else{
     csv='ID,日時,操作,品目名,数量,ライン,作業者,ユーザー,権限\n';
@@ -1381,7 +1785,6 @@ function openConfirm(title,msg,onOk){
 document.querySelectorAll('.overlay').forEach(function(ov){
   ov.addEventListener('mousedown',function(e){
     if(e.target===ov){
-      if(ov.id==='modal-pw'&&currentUser&&currentUser.mustChangePw)return;
       closeModal(ov.id);
     }
   });
