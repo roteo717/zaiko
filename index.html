@@ -2,1103 +2,710 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>在庫管理システム</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Share+Tech+Mono&display=swap');
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: #2e2e3e;
+    --accent: #4f8ef7;
+    --accent2: #7c5cfc;
+    --ok: #22c55e;
+    --ng: #ef4444;
+    --warn: #f59e0b;
+    --text: #e8e8f0;
+    --text2: #8888aa;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Hiragino Sans', 'Meiryo', sans-serif; font-size: 15px; }
 
-:root {
-  --bg: #0a0c10;
-  --bg2: #111419;
-  --bg3: #1a1e26;
-  --border: #252a35;
-  --border2: #2e3442;
-  --text: #e2e8f0;
-  --text2: #8892a4;
-  --text3: #4a5568;
-  --accent: #3b82f6;
-  --accent2: #1d4ed8;
-  --green: #10b981;
-  --yellow: #f59e0b;
-  --red: #ef4444;
-  --orange: #f97316;
-  --mono: 'Share Tech Mono', monospace;
-  --sans: 'Noto Sans JP', sans-serif;
-  --radius: 12px;
-  --radius-sm: 8px;
-}
+  /* ── Layout ── */
+  #app { display: flex; flex-direction: column; height: 100dvh; }
+  #header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  #header h1 { font-size: 17px; font-weight: 700; letter-spacing: .5px; }
+  #header .user-info { font-size: 12px; color: var(--text2); text-align: right; line-height: 1.4; }
+  #nav { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .nav-btn { flex: 1; padding: 12px 4px; font-size: 13px; font-weight: 600; color: var(--text2); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; transition: color .15s, border-color .15s; }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  #main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .page { display: none; padding: 14px; }
+  .page.active { display: block; }
 
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  /* ── Cards / Sections ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+  .section-label { font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100dvh;
-  font-size: 14px;
-}
+  /* ── Form elements ── */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 600; }
+  .field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; padding: 11px 14px; outline: none; }
+  .field input:focus { border-color: var(--accent); }
+  .field .hint { font-size: 12px; color: var(--ok); margin-top: 5px; min-height: 18px; }
 
-/* ===== HEADER ===== */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(10,12,16,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 16px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
+  /* ── Button groups ── */
+  .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn-group .gbtn { flex: 1 0 calc(33% - 8px); min-width: 70px; padding: 10px 6px; font-size: 13px; font-weight: 600; border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); color: var(--text2); cursor: pointer; text-align: center; transition: all .12s; }
+  .btn-group .gbtn.sel { border-color: var(--accent); background: rgba(79,142,247,.15); color: var(--accent); }
+  .btn-group .gbtn.ok-sel { border-color: var(--ok); background: rgba(34,197,94,.15); color: var(--ok); }
+  .btn-group .gbtn.ng-sel { border-color: var(--ng); background: rgba(239,68,68,.15); color: var(--ng); }
+  .btn-group .gbtn.warn-sel { border-color: var(--warn); background: rgba(245,158,11,.15); color: var(--warn); }
 
-.header-title {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--accent);
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
+  /* ── Qty buttons ── */
+  .qty-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .qty-input { width: 90px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 20px; font-weight: 700; text-align: center; padding: 10px; outline: none; }
+  .qty-input:focus { border-color: var(--accent); }
+  .qty-btns { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+  .qbtn { padding: 9px 12px; font-size: 13px; font-weight: 700; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); color: var(--text); cursor: pointer; }
 
-.header-user {
-  font-size: 11px;
-  color: var(--text2);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  padding: 4px 10px;
-  border: 1px solid var(--border2);
-  border-radius: 20px;
-  transition: border-color 0.2s;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 160px;
-}
-.header-user:active { border-color: var(--accent); }
-.header-user span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* ── Submit ── */
+  .submit-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; cursor: pointer; letter-spacing: .5px; }
+  .submit-btn:active { opacity: .85; }
+  .submit-btn:disabled { background: var(--border); color: var(--text2); cursor: default; }
 
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  /* ── After-submit options ── */
+  #after-actions { display: none; gap: 10px; margin-top: 12px; }
+  #after-actions.show { display: flex; }
+  .after-btn { flex: 1; padding: 14px 6px; font-size: 14px; font-weight: 600; border: 2px solid var(--border); border-radius: var(--radius); background: var(--surface2); color: var(--text); cursor: pointer; text-align: center; }
+  .after-btn.go { border-color: var(--accent); color: var(--accent); }
 
-/* ===== TABS ===== */
-.tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-}
-.tab {
-  padding: 12px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text3);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  user-select: none;
-}
-.tab.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  background: rgba(59,130,246,0.06);
-}
+  /* ── Stock page ── */
+  .stock-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .stock-controls input { flex: 1; min-width: 120px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 14px; padding: 10px 12px; outline: none; }
+  .stock-controls input:focus { border-color: var(--accent); }
+  .filter-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); border-radius: 20px; background: var(--surface2); color: var(--text2); cursor: pointer; }
+  .filter-btn.active { border-color: var(--accent); background: rgba(79,142,247,.15); color: var(--accent); }
 
-/* ===== PAGES ===== */
-.page { display: none; padding: 16px; }
-.page.active { display: block; }
+  .stock-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .stock-card-header { display: flex; align-items: center; padding: 13px 14px; gap: 10px; cursor: pointer; }
+  .stock-card-header .part-name { font-size: 15px; font-weight: 700; flex: 1; }
+  .stock-card-header .part-qty { font-size: 20px; font-weight: 800; min-width: 50px; text-align: right; }
+  .qty-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+  .badge-wip { background: rgba(124,92,252,.2); color: var(--accent2); }
+  .badge-done { background: rgba(34,197,94,.2); color: var(--ok); }
+  .badge-low { background: rgba(239,68,68,.2); color: var(--ng); }
+  .stock-detail { display: none; border-top: 1px solid var(--border); padding: 10px 14px; background: var(--surface2); }
+  .stock-detail.open { display: block; }
+  .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { color: var(--text2); }
+  .detail-val { font-weight: 700; }
 
-/* ===== FORM SECTION ===== */
-.section {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 12px;
-}
-.section-label {
-  font-size: 11px;
-  color: var(--text3);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-  font-family: var(--mono);
-}
+  /* ── Log page ── */
+  .log-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 13px; margin-bottom: 8px; }
+  .log-card .log-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 5px; }
+  .log-card .log-body { font-size: 14px; font-weight: 600; }
+  .log-card .log-sub { font-size: 12px; color: var(--text2); margin-top: 3px; }
+  .del-btn { font-size: 11px; padding: 4px 10px; border: 1px solid var(--ng); border-radius: 6px; background: none; color: var(--ng); cursor: pointer; }
+  .edit-btn { font-size: 11px; padding: 4px 10px; border: 1px solid var(--accent); border-radius: 6px; background: none; color: var(--accent); cursor: pointer; margin-right: 4px; }
 
-.input-row {
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
-}
+  /* ── Login ── */
+  #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; padding: 24px; }
+  #login-screen h2 { font-size: 22px; margin-bottom: 28px; }
+  #login-screen input { width: 100%; max-width: 320px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; padding: 13px 16px; margin-bottom: 12px; outline: none; display: block; }
+  #login-screen button { width: 100%; max-width: 320px; padding: 14px; font-size: 16px; font-weight: 700; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; cursor: pointer; }
+  #login-err { color: var(--ng); font-size: 13px; margin-top: 8px; min-height: 20px; }
 
-input, select {
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 14px;
-  font-family: var(--sans);
-  width: 100%;
-  outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
-  appearance: none;
-}
-input:focus, select:focus { border-color: var(--accent); }
-input::placeholder { color: var(--text3); }
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 30px;
-}
+  /* ── Toast ── */
+  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: #222235; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 20px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; white-space: nowrap; z-index: 9999; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.ok { border-color: var(--ok); color: var(--ok); }
+  #toast.err { border-color: var(--ng); color: var(--ng); }
 
-.mb8 { margin-bottom: 8px; }
-.mb4 { margin-bottom: 4px; }
+  /* ── Loading ── */
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-.select-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 8px;
-}
+  /* ── QR ── */
+  #qr-modal { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; }
+  #qr-modal.open { display: flex; }
+  #qr-modal video { width: 100%; max-width: 360px; border-radius: var(--radius); }
+  #qr-modal .qr-close { margin-top: 16px; padding: 12px 28px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: 15px; cursor: pointer; }
 
-/* ===== BUTTONS ===== */
-.btn {
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: var(--sans);
-  cursor: pointer;
-  transition: all 0.15s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  white-space: nowrap;
-  user-select: none;
-}
-.btn:active { transform: scale(0.96); }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:active { background: var(--accent2); }
-.btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
-.btn-ghost:active { border-color: var(--accent); color: var(--accent); }
-.btn-danger { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
-.btn-sm { padding: 6px 10px; font-size: 12px; }
-.btn-icon { padding: 10px; min-width: 42px; }
-.btn-full { width: 100%; }
+  /* ── Edit modal ── */
+  #edit-modal { position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 600; display: none; align-items: center; justify-content: center; padding: 20px; }
+  #edit-modal.open { display: flex; }
+  #edit-modal .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 360px; }
+  #edit-modal h3 { font-size: 16px; margin-bottom: 14px; }
+  #edit-modal input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; padding: 11px 14px; outline: none; margin-bottom: 12px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions button { flex: 1; padding: 12px; font-size: 14px; font-weight: 700; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; }
+  .modal-actions button.save { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-/* ===== PRODUCT NAME DISPLAY ===== */
-.product-name {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--green);
-  font-family: var(--mono);
-  min-height: 20px;
-  padding: 10px 12px;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
-}
-.product-name.empty { color: var(--text3); font-size: 13px; }
+  /* ── CSV button ── */
+  .csv-btn { padding: 9px 16px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); color: var(--text2); cursor: pointer; }
+  .csv-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ===== QR MODAL ===== */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  padding: 20px;
-  width: min(90vw, 360px);
-}
-.modal-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-#qr-preview {
-  width: 100%;
-  border-radius: var(--radius-sm);
-  background: #000;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-
-/* ===== CONFIRM MODAL ===== */
-.confirm-modal {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  padding: 20px;
-  width: min(90vw, 320px);
-  text-align: center;
-}
-.confirm-modal p { color: var(--text2); font-size: 13px; margin-bottom: 16px; }
-.confirm-btns { display: flex; gap: 8px; justify-content: center; }
-
-/* ===== STOCK PAGE ===== */
-.stock-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.search-row {
-  display: flex;
-  gap: 8px;
-}
-.filter-row {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.filter-row::-webkit-scrollbar { display: none; }
-
-.chip {
-  flex-shrink: 0;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--border2);
-  background: var(--bg3);
-  color: var(--text2);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-  user-select: none;
-}
-.chip.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-.chip:active { opacity: 0.7; }
-
-/* ===== STOCK CARDS ===== */
-.stock-grid { display: flex; flex-direction: column; gap: 8px; }
-
-.stock-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  transition: border-color 0.2s;
-}
-.stock-card.low { border-color: rgba(245,158,11,0.4); }
-.stock-card.critical { border-color: rgba(239,68,68,0.4); }
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  gap: 8px;
-}
-.card-code {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text3);
-  margin-bottom: 2px;
-}
-.card-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.3;
-}
-
-.card-badges {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
-.badge {
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
-  font-family: var(--mono);
-}
-.badge-category { background: rgba(59,130,246,0.12); color: var(--accent); }
-.badge-type-good { background: rgba(16,185,129,0.12); color: var(--green); }
-.badge-type-bad { background: rgba(239,68,68,0.12); color: var(--red); }
-.badge-type-setup { background: rgba(245,158,11,0.12); color: var(--yellow); }
-
-.card-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.stat {
-  background: var(--bg3);
-  border-radius: 6px;
-  padding: 8px;
-  text-align: center;
-}
-.stat-label {
-  font-size: 10px;
-  color: var(--text3);
-  margin-bottom: 3px;
-  font-family: var(--mono);
-}
-.stat-value {
-  font-size: 18px;
-  font-weight: 700;
-  font-family: var(--mono);
-  line-height: 1;
-}
-.stat-value.normal { color: var(--text); }
-.stat-value.low { color: var(--yellow); }
-.stat-value.critical { color: var(--red); }
-
-.progress-bar {
-  height: 3px;
-  background: var(--bg3);
-  border-radius: 2px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.3s;
-}
-.progress-fill.normal { background: var(--green); }
-.progress-fill.low { background: var(--yellow); }
-.progress-fill.critical { background: var(--red); }
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-.card-meta {
-  font-size: 11px;
-  color: var(--text3);
-  font-family: var(--mono);
-}
-
-.card-actions {
-  display: flex;
-  gap: 6px;
-}
-
-/* ===== SORT ===== */
-.sort-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 12px;
-  color: var(--text3);
-}
-.sort-btn {
-  background: none;
-  border: none;
-  color: var(--text2);
-  font-size: 12px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-family: var(--sans);
-  transition: all 0.15s;
-}
-.sort-btn.active { color: var(--accent); background: rgba(59,130,246,0.1); }
-
-/* ===== USER MODAL ===== */
-.user-modal {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  padding: 20px;
-  width: min(90vw, 320px);
-}
-.user-modal h3 { font-size: 14px; margin-bottom: 16px; }
-
-/* ===== EMPTY STATE ===== */
-.empty-state {
-  text-align: center;
-  padding: 48px 16px;
-  color: var(--text3);
-  font-size: 13px;
-}
-.empty-icon { font-size: 32px; margin-bottom: 8px; }
-
-/* ===== TOAST ===== */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  padding: 10px 20px;
-  border-radius: 24px;
-  font-size: 13px;
-  z-index: 300;
-  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  white-space: nowrap;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* ===== LOADING ===== */
-.spinner {
-  display: inline-block;
-  width: 14px; height: 14px;
-  border: 2px solid var(--border2);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.loading-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text3);
-  font-size: 13px;
-  padding: 20px;
-  justify-content: center;
-}
-
-/* ===== EDIT FORM ===== */
-.edit-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  z-index: 200;
-  align-items: flex-end;
-}
-.edit-overlay.open { display: flex; }
-.edit-sheet {
-  background: var(--bg2);
-  border-top: 1px solid var(--border2);
-  border-radius: var(--radius) var(--radius) 0 0;
-  padding: 20px;
-  width: 100%;
-  max-height: 80dvh;
-  overflow-y: auto;
-}
-.sheet-handle {
-  width: 36px;
-  height: 4px;
-  background: var(--border2);
-  border-radius: 2px;
-  margin: 0 auto 16px;
-}
-.sheet-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
-
-/* ===== RESPONSIVE ===== */
-@media (min-width: 480px) {
-  .page { padding: 20px; max-width: 600px; margin: 0 auto; }
-  .stock-grid { gap: 10px; }
-}
+  .empty { text-align: center; color: var(--text2); padding: 40px 0; font-size: 14px; }
+  .sort-btn { padding: 7px 12px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); border-radius: 20px; background: var(--surface2); color: var(--text2); cursor: pointer; }
+  .sort-btn.active { border-color: var(--warn); color: var(--warn); }
 </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
-<div class="header">
-  <div class="header-title">⬡ INVENTORY SYS</div>
-  <div class="header-user" onclick="openUserModal()">
-    <div class="dot"></div>
-    <span id="header-user-display">作業者 / 1L</span>
-  </div>
+<!-- Login -->
+<div id="login-screen">
+  <h2>🏭 在庫管理システム</h2>
+  <input id="li-user" type="text" placeholder="ユーザー名" autocomplete="username">
+  <input id="li-line" type="text" placeholder="ライン名（例: A-1）">
+  <input id="li-pass" type="password" placeholder="パスワード" autocomplete="current-password">
+  <button onclick="doLogin()">ログイン</button>
+  <div id="login-err"></div>
 </div>
 
-<!-- ===== TABS ===== -->
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('input')">✏ 入力</div>
-  <div class="tab" onclick="switchTab('stock')">📦 在庫</div>
-</div>
-
-<!-- ===== INPUT PAGE ===== -->
-<div class="page active" id="page-input">
-
-  <div class="section">
-    <div class="section-label">品番検索</div>
-    <div class="input-row mb8">
-      <input id="code" placeholder="品番を入力" oninput="clearName()" onkeydown="if(event.key==='Enter')getProduct()">
-      <button class="btn btn-ghost btn-icon" onclick="getProduct()" title="検索">🔍</button>
-      <button class="btn btn-ghost btn-icon" onclick="openQR()" title="QR読取">📷</button>
+<!-- App -->
+<div id="app" style="display:none">
+  <div id="header">
+    <h1>📦 在庫管理</h1>
+    <div class="user-info">
+      <div id="hdr-user">-</div>
+      <div id="hdr-line" style="color:var(--accent);font-size:11px;"></div>
     </div>
-    <div class="product-name empty" id="name">品名がここに表示されます</div>
   </div>
+  <div id="nav">
+    <button class="nav-btn active" onclick="showPage('input')">➕ 入力</button>
+    <button class="nav-btn" onclick="showPage('stock')">📊 在庫</button>
+    <button class="nav-btn" onclick="showPage('log')">📋 ログ</button>
+  </div>
+  <div id="main">
 
-  <div class="section">
-    <div class="section-label">入力内容</div>
-    <div class="select-row mb8">
-      <div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">工程</div>
-        <select id="process">
-          <option>工程1</option>
-          <option>工程2</option>
-          <option>工程3</option>
-          <option>工程4</option>
-          <option>工程5</option>
-          <option>工程6</option>
-          <option>バリ取り未品</option>
-          <option>完成品</option>
-          <option>出荷</option>
-        </select>
+    <!-- INPUT PAGE -->
+    <div id="page-input" class="page active">
+      <div class="card">
+        <div class="field">
+          <label>品番</label>
+          <div style="display:flex;gap:8px;">
+            <input id="inp-partno" type="text" placeholder="品番を入力 or QR読取" oninput="onPartnoChange()" style="flex:1">
+            <button onclick="openQR()" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-size:18px;cursor:pointer;">⊡</button>
+          </div>
+          <div class="hint" id="part-hint">品番を入力してください</div>
+        </div>
       </div>
-      <div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">種別</div>
-        <select id="type">
-          <option>良品</option>
-          <option>不良品</option>
-          <option>段取り品</option>
-        </select>
+
+      <div class="card">
+        <div class="section-label">工程選択</div>
+        <div class="btn-group" id="proc-btns">
+          <button class="gbtn" onclick="selProc(this,'工程1')">工程1</button>
+          <button class="gbtn" onclick="selProc(this,'工程2')">工程2</button>
+          <button class="gbtn" onclick="selProc(this,'工程3')">工程3</button>
+          <button class="gbtn" onclick="selProc(this,'工程4')">工程4</button>
+          <button class="gbtn" onclick="selProc(this,'工程5')">工程5</button>
+          <button class="gbtn" onclick="selProc(this,'工程6')">工程6</button>
+          <button class="gbtn" onclick="selProc(this,'バリ取り未品')">バリ取り未品</button>
+          <button class="gbtn" onclick="selProc(this,'完成品')">完成品</button>
+          <button class="gbtn" onclick="selProc(this,'出荷')">出荷</button>
+        </div>
       </div>
-    </div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">数量</div>
-    <input id="qty" type="number" placeholder="数量" min="1" class="mb8">
-  </div>
 
-  <button class="btn btn-primary btn-full" onclick="send()" id="send-btn" style="margin-bottom:8px;padding:14px;">
-    送信する
-  </button>
-
-  <div style="display:flex;gap:8px;">
-    <button class="btn btn-ghost" style="flex:1;font-size:12px;" onclick="sendAndContinue()">✓ 続けて入力</button>
-    <button class="btn btn-ghost" style="flex:1;font-size:12px;" onclick="sendAndStock()">📦 在庫へ移動</button>
-  </div>
-
-</div>
-
-<!-- ===== STOCK PAGE ===== -->
-<div class="page" id="page-stock">
-
-  <div class="stock-controls">
-    <div class="search-row">
-      <input id="search" placeholder="品番 / 品名で検索" oninput="renderStock()">
-      <button class="btn btn-ghost btn-icon" onclick="loadStock()">↻</button>
-      <button class="btn btn-ghost btn-icon" onclick="downloadCSV()" title="CSV">⬇</button>
-    </div>
-    <div class="filter-row" id="filter-row">
-      <div class="chip active" data-filter="all" onclick="setFilter('all')">すべて</div>
-      <div class="chip" data-filter="仕掛品" onclick="setFilter('仕掛品')">仕掛品</div>
-      <div class="chip" data-filter="バリ前" onclick="setFilter('バリ前')">バリ前</div>
-      <div class="chip" data-filter="完成品" onclick="setFilter('完成品')">完成品</div>
-    </div>
-  </div>
-
-  <div class="sort-bar">
-    <span>並替:</span>
-    <button class="sort-btn active" data-sort="qty-asc" onclick="setSort('qty-asc')">数量↑</button>
-    <button class="sort-btn" data-sort="qty-desc" onclick="setSort('qty-desc')">数量↓</button>
-    <button class="sort-btn" data-sort="name" onclick="setSort('name')">品名</button>
-  </div>
-
-  <div id="stock-content">
-    <div class="empty-state">
-      <div class="empty-icon">📦</div>
-      「↻」ボタンで在庫を取得
-    </div>
-  </div>
-
-</div>
-
-<!-- ===== QR MODAL ===== -->
-<div class="modal-overlay" id="qr-modal">
-  <div class="modal">
-    <div class="modal-title">
-      <span>📷 QR読み取り</span>
-      <button class="btn btn-ghost btn-sm" onclick="closeQR()">✕</button>
-    </div>
-    <video id="qr-preview" autoplay playsinline muted></video>
-    <p style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center;">カメラにQRコードをかざしてください</p>
-    <button class="btn btn-ghost btn-full" style="margin-top:10px;" onclick="closeQR()">キャンセル</button>
-  </div>
-</div>
-
-<!-- ===== USER MODAL ===== -->
-<div class="modal-overlay" id="user-modal">
-  <div class="user-modal">
-    <div class="modal-title">
-      <span>👤 ユーザー設定</span>
-      <button class="btn btn-ghost btn-sm" onclick="closeUserModal()">✕</button>
-    </div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">ユーザー名</div>
-    <input id="u-name" class="mb8" placeholder="作業者名">
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">ライン</div>
-    <select id="u-line" class="mb8">
-      <option>1L</option><option>2L</option><option>3L</option>
-      <option>4L</option><option>5L</option><option>6L</option>
-    </select>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">権限</div>
-    <select id="u-role" class="mb8">
-      <option value="user">一般ユーザー</option>
-      <option value="admin">管理者</option>
-    </select>
-    <button class="btn btn-primary btn-full" onclick="saveUser()">保存</button>
-  </div>
-</div>
-
-<!-- ===== EDIT SHEET ===== -->
-<div class="edit-overlay" id="edit-overlay">
-  <div class="edit-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">レコード編集</div>
-    <input type="hidden" id="edit-id">
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">品番</div>
-    <input id="edit-code" class="mb8" placeholder="品番">
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">品名</div>
-    <input id="edit-name" class="mb8" placeholder="品名">
-    <div class="select-row mb8">
-      <div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">工程</div>
-        <select id="edit-process">
-          <option>工程1</option><option>工程2</option><option>工程3</option>
-          <option>工程4</option><option>工程5</option><option>工程6</option>
-          <option>バリ取り未品</option><option>完成品</option><option>出荷</option>
-        </select>
+      <div class="card">
+        <div class="section-label">区分</div>
+        <div class="btn-group" id="kubun-btns">
+          <button class="gbtn" onclick="selKubun(this,'良品','ok')">✅ 良品</button>
+          <button class="gbtn" onclick="selKubun(this,'不良品','ng')">❌ 不良品</button>
+          <button class="gbtn" onclick="selKubun(this,'段取り品','warn')">⚙️ 段取り品</button>
+        </div>
       </div>
-      <div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">種別</div>
-        <select id="edit-type">
-          <option>良品</option><option>不良品</option><option>段取り品</option>
-        </select>
+
+      <div class="card">
+        <div class="section-label">数量</div>
+        <div class="qty-row">
+          <input id="inp-qty" class="qty-input" type="number" value="1" min="1">
+          <div class="qty-btns">
+            <button class="qbtn" onclick="addQty(1)">+1</button>
+            <button class="qbtn" onclick="addQty(5)">+5</button>
+            <button class="qbtn" onclick="addQty(10)">+10</button>
+            <button class="qbtn" onclick="addQty(50)">+50</button>
+            <button class="qbtn" onclick="addQty(100)">+100</button>
+            <button class="qbtn" style="color:var(--ng)" onclick="document.getElementById('inp-qty').value=1">RST</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitEntry()">送信</button>
+
+      <div id="after-actions">
+        <button class="after-btn" onclick="resetInputForm()">🔄 続けて入力</button>
+        <button class="after-btn go" onclick="showPage('stock');loadStock()">📊 在庫へ →</button>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">数量</div>
-    <input id="edit-qty" type="number" class="mb8" placeholder="数量">
-    <div style="display:flex;gap:8px;margin-top:8px;">
-      <button class="btn btn-ghost" style="flex:1;" onclick="closeEdit()">キャンセル</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="saveEdit()">保存</button>
+
+    <!-- STOCK PAGE -->
+    <div id="page-stock" class="page">
+      <div class="stock-controls">
+        <input id="stock-search" type="text" placeholder="🔍 品名・品番で検索" oninput="renderStock()">
+        <button class="csv-btn" onclick="downloadCSV()">CSV</button>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="setFilter('all',this)">全体</button>
+        <button class="filter-btn" onclick="setFilter('done',this)">完成品</button>
+        <button class="filter-btn" onclick="setFilter('mine',this)">自ライン</button>
+        <button class="sort-btn" id="sort-asc" onclick="toggleSort()">少ない順↑</button>
+      </div>
+      <div id="stock-list"></div>
+    </div>
+
+    <!-- LOG PAGE -->
+    <div id="page-log" class="page">
+      <div class="stock-controls" style="margin-bottom:10px;">
+        <input id="log-search" type="text" placeholder="🔍 品番・担当者で検索" oninput="renderLogs()">
+        <button class="csv-btn" onclick="downloadCSV()">CSV</button>
+      </div>
+      <div id="log-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- QR Modal -->
+<div id="qr-modal">
+  <video id="qr-video" autoplay playsinline></video>
+  <button class="qr-close" onclick="closeQR()">✕ 閉じる</button>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal">
+  <div class="modal-box">
+    <h3>数量を修正</h3>
+    <input id="edit-qty" type="number" min="1">
+    <div class="modal-actions">
+      <button onclick="closeEdit()">キャンセル</button>
+      <button class="save" onclick="saveEdit()">保存</button>
     </div>
   </div>
 </div>
 
-<!-- ===== CONFIRM MODAL ===== -->
-<div class="modal-overlay" id="confirm-modal">
-  <div class="confirm-modal">
-    <p id="confirm-msg">このレコードを削除しますか？</p>
-    <div class="confirm-btns">
-      <button class="btn btn-ghost" onclick="closeConfirm()">キャンセル</button>
-      <button class="btn btn-danger" onclick="execConfirm()">削除</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== TOAST ===== -->
-<div class="toast" id="toast"></div>
+<!-- Toast -->
+<div id="toast"></div>
 
 <script>
-/* ===== CONFIG ===== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz2lwtKP5J1JV8gRWKAJvwKA23eKZepgx2Q_FGfo3J6T__5ki-OWbr6kDky6AYBGBDgug/exec";
+// ═══════════════════════════════════════════════
+//  CONFIG — GAS WebアプリURLをここに貼る
+// ═══════════════════════════════════════════════
+const GAS_URL = 'YOUR_GAS_WEB_APP_URL';
 
-/* ===== STATE ===== */
-let user = localStorage.getItem("inv_user") || "作業者";
-let line = localStorage.getItem("inv_line") || "1L";
-let role = localStorage.getItem("inv_role") || "user";
-let stockData = [];
-let currentFilter = "all";
-let currentSort = "qty-asc";
-let confirmCallback = null;
+// ═══════════════════════════════════════════════
+//  State
+// ═══════════════════════════════════════════════
+let state = {
+  user: '', line: '', role: '',
+  proc: '', kubun: '',
+  stockData: [], logData: [],
+  filter: 'all', sortAsc: false,
+  editId: null,
+};
 
-/* ===== INIT ===== */
-updateHeaderUser();
+// ═══════════════════════════════════════════════
+//  Init
+// ═══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = ls('inv_session');
+  if (saved) {
+    Object.assign(state, JSON.parse(saved));
+    startApp();
+  }
+});
 
-/* ===== TAB ===== */
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', (i===0&&tab==='input')||(i===1&&tab==='stock'));
-  });
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-'+tab).classList.add('active');
-  if(tab==='stock' && stockData.length===0) loadStock();
-}
+// ═══════════════════════════════════════════════
+//  Login
+// ═══════════════════════════════════════════════
+async function doLogin() {
+  const user = v('li-user').trim();
+  const line = v('li-line').trim();
+  const pass = v('li-pass');
+  if (!user || !line || !pass) { set('login-err','全項目入力してください'); return; }
 
-/* ===== USER ===== */
-function updateHeaderUser() {
-  document.getElementById('header-user-display').textContent = `${user} / ${line}`;
-}
-function openUserModal() {
-  document.getElementById('u-name').value = user;
-  document.getElementById('u-line').value = line;
-  document.getElementById('u-role').value = role;
-  document.getElementById('user-modal').classList.add('open');
-}
-function closeUserModal() { document.getElementById('user-modal').classList.remove('open'); }
-function saveUser() {
-  user = document.getElementById('u-name').value.trim() || "作業者";
-  line = document.getElementById('u-line').value;
-  role = document.getElementById('u-role').value;
-  localStorage.setItem("inv_user", user);
-  localStorage.setItem("inv_line", line);
-  localStorage.setItem("inv_role", role);
-  updateHeaderUser();
-  closeUserModal();
-  showToast("✓ 保存しました");
-}
-
-/* ===== PRODUCT NAME ===== */
-function clearName() {
-  const el = document.getElementById('name');
-  el.textContent = '品名がここに表示されます';
-  el.className = 'product-name empty';
-}
-async function getProduct() {
-  const code = document.getElementById('code').value.trim();
-  if(!code) return;
-  const el = document.getElementById('name');
-  el.textContent = '取得中...';
-  el.className = 'product-name empty';
   try {
-    const r = await fetch(GAS_URL + "?code=" + encodeURIComponent(code));
-    const d = await r.json();
-    if(d.name) {
-      el.textContent = d.name;
-      el.className = 'product-name';
+    const res = await gasPost({ action:'login', user, pass });
+    if (!res.ok) { set('login-err', res.msg || 'ログイン失敗'); return; }
+    state.user = user;
+    state.line = line;
+    state.role = res.role;
+    lsSave('inv_session', JSON.stringify({ user, line, role: res.role }));
+    set('login-err','');
+    startApp();
+  } catch(e) {
+    set('login-err','接続エラー: ' + e.message);
+  }
+}
+
+function startApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  set('hdr-user', `${state.user} [${state.role}]`);
+  set('hdr-line', state.line);
+}
+
+// ═══════════════════════════════════════════════
+//  Navigation
+// ═══════════════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const idx = { input:0, stock:1, log:2 }[name];
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  if (name === 'stock') loadStock();
+  if (name === 'log') loadLogs();
+}
+
+// ═══════════════════════════════════════════════
+//  Part lookup
+// ═══════════════════════════════════════════════
+let partnoTimer;
+function onPartnoChange() {
+  clearTimeout(partnoTimer);
+  const no = v('inp-partno').trim();
+  if (!no) { set('part-hint','品番を入力してください'); return; }
+  set('part-hint','検索中...');
+  partnoTimer = setTimeout(() => lookupPart(no), 400);
+}
+
+async function lookupPart(no) {
+  try {
+    const res = await gasGet({ action:'master', partno: no });
+    if (res.ok && res.name) {
+      set('part-hint', `✅ ${res.name}`);
     } else {
-      el.textContent = '未登録';
-      el.className = 'product-name empty';
+      set('part-hint', '⚠️ 品番が見つかりません');
     }
   } catch(e) {
-    el.textContent = '取得エラー';
-    el.className = 'product-name empty';
+    set('part-hint', '接続エラー');
   }
 }
 
-/* ===== SEND ===== */
-function buildData() {
-  return {
-    user, line,
-    code: document.getElementById('code').value.trim(),
-    name: document.getElementById('name').textContent,
-    process: document.getElementById('process').value,
-    type: document.getElementById('type').value,
-    qty: Number(document.getElementById('qty').value)
-  };
+// ═══════════════════════════════════════════════
+//  Process / Kubun select
+// ═══════════════════════════════════════════════
+function selProc(el, val) {
+  state.proc = val;
+  document.querySelectorAll('#proc-btns .gbtn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
 }
-async function doSend() {
-  const data = buildData();
-  if(!data.code) { showToast("⚠ 品番を入力してください"); return false; }
-  if(!data.qty || data.qty <= 0) { showToast("⚠ 数量を入力してください"); return false; }
-  const btn = document.getElementById('send-btn');
+
+function selKubun(el, val, cls) {
+  state.kubun = val;
+  document.querySelectorAll('#kubun-btns .gbtn').forEach(b => {
+    b.classList.remove('sel','ok-sel','ng-sel','warn-sel');
+  });
+  el.classList.add(cls + '-sel');
+}
+
+// ═══════════════════════════════════════════════
+//  Quantity
+// ═══════════════════════════════════════════════
+function addQty(n) {
+  const el = document.getElementById('inp-qty');
+  el.value = Math.max(1, (parseInt(el.value) || 0) + n);
+}
+
+// ═══════════════════════════════════════════════
+//  Submit
+// ═══════════════════════════════════════════════
+async function submitEntry() {
+  const partno = v('inp-partno').trim();
+  const qty = parseInt(document.getElementById('inp-qty').value) || 0;
+
+  if (!partno) { toast('品番を入力してください','err'); return; }
+  if (!state.proc) { toast('工程を選択してください','err'); return; }
+  if (!state.kubun) { toast('区分を選択してください','err'); return; }
+  if (qty < 1) { toast('数量を入力してください','err'); return; }
+
+  const btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> 送信中...';
+  btn.innerHTML = '<span class="spinner"></span>送信中...';
+
   try {
-    await fetch(GAS_URL, {
-      method:"POST",
-      headers:{"Content-Type":"text/plain;charset=UTF-8"},
-      body: JSON.stringify(data),
-      mode: "no-cors"
+    const res = await gasPost({
+      action: 'log',
+      user: state.user,
+      line: state.line,
+      partno,
+      proc: state.proc,
+      kubun: state.kubun,
+      qty,
     });
-    showToast("✓ 送信完了");
-    return true;
+    if (res.ok) {
+      toast('✅ 送信しました','ok');
+      document.getElementById('after-actions').classList.add('show');
+    } else {
+      toast('送信失敗: ' + (res.msg || ''), 'err');
+    }
   } catch(e) {
-    showToast("✗ 送信エラー");
-    return false;
+    toast('接続エラー: ' + e.message, 'err');
   } finally {
     btn.disabled = false;
-    btn.textContent = '送信する';
-  }
-}
-async function send() { await doSend(); }
-async function sendAndContinue() {
-  const ok = await doSend();
-  if(ok) {
-    document.getElementById('qty').value = '';
-    document.getElementById('qty').focus();
-  }
-}
-async function sendAndStock() {
-  const ok = await doSend();
-  if(ok) {
-    stockData = [];
-    switchTab('stock');
+    btn.textContent = '送信';
   }
 }
 
-/* ===== STOCK ===== */
-function getCategory(process) {
-  if(['工程1','工程2','工程3','工程4','工程5','工程6'].includes(process)) return '仕掛品';
-  if(process === 'バリ取り未品') return 'バリ前';
-  return '完成品';
+function resetInputForm() {
+  document.getElementById('inp-partno').value = '';
+  document.getElementById('inp-qty').value = 1;
+  set('part-hint','品番を入力してください');
+  state.proc = ''; state.kubun = '';
+  document.querySelectorAll('#proc-btns .gbtn, #kubun-btns .gbtn').forEach(b => {
+    b.classList.remove('sel','ok-sel','ng-sel','warn-sel');
+  });
+  document.getElementById('after-actions').classList.remove('show');
 }
 
+// ═══════════════════════════════════════════════
+//  Stock
+// ═══════════════════════════════════════════════
 async function loadStock() {
-  const el = document.getElementById('stock-content');
-  el.innerHTML = '<div class="loading-row"><span class="spinner"></span> 在庫取得中...</div>';
+  document.getElementById('stock-list').innerHTML = '<div class="empty"><span class="spinner"></span>読込中...</div>';
   try {
-    const r = await fetch(GAS_URL + "?stock=1");
-    const raw = await r.json();
-    stockData = processStock(raw);
+    const res = await gasGet({ action: 'stock' });
+    state.stockData = res.data || [];
     renderStock();
   } catch(e) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠</div>取得エラー</div>';
+    document.getElementById('stock-list').innerHTML = `<div class="empty">接続エラー</div>`;
   }
 }
 
-function processStock(raw) {
-  // GAS getStock returns an object: {code: {name, p, pre, fin}}
-  if(!Array.isArray(raw)) {
-    const arr = [];
-    Object.entries(raw).forEach(([code, v]) => {
-      if(v.p  > 0) arr.push({code, name:v.name, category:'仕掛品',  process:'工程1',       qty:v.p,   type:'良品'});
-      if(v.pre > 0) arr.push({code, name:v.name, category:'バリ前',  process:'バリ取り未品', qty:v.pre, type:'良品'});
-      if(v.fin > 0) arr.push({code, name:v.name, category:'完成品',  process:'完成品',       qty:v.fin, type:'良品'});
-    });
-    return arr;
-  }
-  // If raw records with process field → aggregate
-  if(raw.length && raw[0].process !== undefined) {
-    const map = {};
-    raw.forEach(r => {
-      const key = (r.code||'') + '_' + (r.name||'') + '_' + getCategory(r.process||'') + '_' + (r.type||'');
-      if(!map[key]) map[key] = {
-        code: r.code, name: r.name,
-        category: getCategory(r.process||''),
-        type: r.type, qty: 0,
-        records: [], line: r.line, user: r.user,
-        process: r.process
-      };
-      const qty = Number(r.qty) || 0;
-      if((r.process||'') === '出荷') {
-        map[key].qty -= qty;
-      } else {
-        map[key].qty += qty;
-      }
-      map[key].records.push(r);
-    });
-    return Object.values(map).filter(v => v.qty > 0);
-  }
-  // Pre-aggregated
-  return raw.map(r => ({...r, category: getCategory(r.process||r.category||'')}));
+function setFilter(f, el) {
+  state.filter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderStock();
+}
+
+function toggleSort() {
+  state.sortAsc = !state.sortAsc;
+  const btn = document.getElementById('sort-asc');
+  btn.classList.toggle('active', state.sortAsc);
+  renderStock();
 }
 
 function renderStock() {
-  const q = (document.getElementById('search').value||'').toLowerCase();
-  let data = stockData.filter(r => {
-    if(currentFilter !== 'all' && r.category !== currentFilter) return false;
-    if(q && !((r.code||'').toLowerCase().includes(q)) && !((r.name||'').toLowerCase().includes(q))) return false;
+  const q = v('stock-search').toLowerCase();
+  let data = state.stockData.filter(s => {
+    if (q && !s.name.toLowerCase().includes(q) && !s.partno.toLowerCase().includes(q)) return false;
+    if (state.filter === 'done' && s.category !== '完成品') return false;
+    if (state.filter === 'mine' && s.line !== state.line) return false;
     return true;
   });
 
-  // Sort
-  if(currentSort === 'qty-asc') data.sort((a,b)=>a.qty-b.qty);
-  else if(currentSort === 'qty-desc') data.sort((a,b)=>b.qty-a.qty);
-  else data.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if (state.sortAsc) data = data.sort((a,b) => a.total - b.total);
 
-  if(!data.length) {
-    document.getElementById('stock-content').innerHTML =
-      '<div class="empty-state"><div class="empty-icon">🔍</div>該当する在庫がありません</div>';
-    return;
-  }
+  const el = document.getElementById('stock-list');
+  if (!data.length) { el.innerHTML = '<div class="empty">データなし</div>'; return; }
 
-  // Calculate max for progress bar
-  const maxQty = Math.max(...data.map(r=>r.qty), 1);
+  el.innerHTML = data.map(s => {
+    const catBadge = s.category === '完成品'
+      ? `<span class="qty-badge badge-done">完成品</span>`
+      : s.category === 'バリ前'
+      ? `<span class="qty-badge badge-wip" style="color:#f59e0b">バリ前</span>`
+      : `<span class="qty-badge badge-wip">仕掛</span>`;
+    const lowBadge = s.total < 5 ? `<span class="qty-badge badge-low" style="margin-left:4px">少</span>` : '';
+    const color = s.total < 0 ? 'var(--ng)' : s.total < 5 ? 'var(--warn)' : 'var(--ok)';
+    const details = s.details.map(d => `
+      <div class="detail-row">
+        <span class="detail-label">${d.proc} / ${d.kubun}</span>
+        <span class="detail-val" style="color:${d.qty>=0?'var(--ok)':'var(--ng)'}">
+          ${d.qty >= 0 ? '+' : ''}${d.qty}
+        </span>
+      </div>`).join('');
 
-  document.getElementById('stock-content').innerHTML =
-    '<div class="stock-grid">' + data.map(r => cardHTML(r, maxQty)).join('') + '</div>';
-}
-
-function qtyClass(qty) {
-  if(qty <= 5) return 'critical';
-  if(qty <= 20) return 'low';
-  return 'normal';
-}
-function typeClass(type) {
-  if(type==='不良品') return 'badge-type-bad';
-  if(type==='段取り品') return 'badge-type-setup';
-  return 'badge-type-good';
-}
-
-function cardHTML(r, maxQty) {
-  const qc = qtyClass(r.qty);
-  const pct = Math.min(100, Math.round((r.qty / maxQty) * 100));
-  const canEdit = role === 'admin' || r.user === user;
-  const actions = canEdit
-    ? `<div class="card-actions">
-        <button class="btn btn-ghost btn-sm" onclick='openEdit(${JSON.stringify(r)})'>編集</button>
-        <button class="btn btn-danger btn-sm" onclick='confirmDelete(${JSON.stringify(r.code)})'>削除</button>
-       </div>`
-    : '';
-
-  return `<div class="stock-card ${qc}">
-    <div class="card-header">
-      <div>
-        <div class="card-code">${r.code||'-'}</div>
-        <div class="card-name">${r.name||'不明'}</div>
+    return `<div class="stock-card">
+      <div class="stock-card-header" onclick="toggleDetail(this)">
+        <div>
+          <div class="part-name">${esc(s.name)}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;">${esc(s.partno)} ${catBadge}${lowBadge}</div>
+        </div>
+        <div class="part-qty" style="color:${color}">${s.total}</div>
       </div>
-      <div class="card-badges">
-        <span class="badge badge-category">${r.category}</span>
-        <span class="badge ${typeClass(r.type)}">${r.type||'良品'}</span>
-      </div>
-    </div>
-    <div class="card-stats">
-      <div class="stat"><div class="stat-label">在庫</div><div class="stat-value ${qc}">${r.qty}</div></div>
-      <div class="stat"><div class="stat-label">工程</div><div class="stat-value" style="font-size:11px;color:var(--text2);padding-top:4px;">${r.process||'-'}</div></div>
-      <div class="stat"><div class="stat-label">ライン</div><div class="stat-value" style="font-size:14px;color:var(--text2);padding-top:2px;">${r.line||'-'}</div></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill ${qc}" style="width:${pct}%"></div></div>
-    <div class="card-footer">
-      <div class="card-meta">${r.user||''}</div>
-      ${actions}
-    </div>
-  </div>`;
+      <div class="stock-detail">${details || '<div style="color:var(--text2);font-size:13px;">詳細なし</div>'}</div>
+    </div>`;
+  }).join('');
 }
 
-/* ===== FILTER / SORT ===== */
-function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.filter===f));
-  renderStock();
-}
-function setSort(s) {
-  currentSort = s;
-  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort===s));
-  renderStock();
+function toggleDetail(header) {
+  const detail = header.nextElementSibling;
+  detail.classList.toggle('open');
 }
 
-/* ===== EDIT ===== */
-function openEdit(r) {
-  document.getElementById('edit-id').value = r.code;
-  document.getElementById('edit-code').value = r.code||'';
-  document.getElementById('edit-name').value = r.name||'';
-  document.getElementById('edit-process').value = r.process||'工程1';
-  document.getElementById('edit-type').value = r.type||'良品';
-  document.getElementById('edit-qty').value = r.qty||0;
-  document.getElementById('edit-overlay').classList.add('open');
-}
-function closeEdit() { document.getElementById('edit-overlay').classList.remove('open'); }
-async function saveEdit() {
-  const data = {
-    mode: 'edit',
-    user, line, role,
-    code: document.getElementById('edit-code').value,
-    name: document.getElementById('edit-name').value,
-    process: document.getElementById('edit-process').value,
-    type: document.getElementById('edit-type').value,
-    qty: Number(document.getElementById('edit-qty').value),
-    originalCode: document.getElementById('edit-id').value
-  };
+// ═══════════════════════════════════════════════
+//  Logs
+// ═══════════════════════════════════════════════
+async function loadLogs() {
+  document.getElementById('log-list').innerHTML = '<div class="empty"><span class="spinner"></span>読込中...</div>';
   try {
-    await fetch(GAS_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'}, body:JSON.stringify(data), mode:'no-cors'});
-    showToast("✓ 更新しました");
-    closeEdit();
-    loadStock();
-  } catch(e) { showToast("✗ エラー"); }
+    const res = await gasGet({ action: 'logs' });
+    state.logData = res.data || [];
+    renderLogs();
+  } catch(e) {
+    document.getElementById('log-list').innerHTML = `<div class="empty">接続エラー</div>`;
+  }
 }
 
-/* ===== DELETE ===== */
-function confirmDelete(code) {
-  document.getElementById('confirm-msg').textContent = `「${code}」を削除しますか？`;
-  confirmCallback = async () => {
-    try {
-      await fetch(GAS_URL, {
-        method:'POST', headers:{'Content-Type':'text/plain;charset=UTF-8'},
-        body: JSON.stringify({mode:'delete', code, user, role}),
-        mode: 'no-cors'
-      });
-      showToast("✓ 削除しました");
-      loadStock();
-    } catch(e) { showToast("✗ エラー"); }
-  };
-  document.getElementById('confirm-modal').classList.add('open');
+function renderLogs() {
+  const q = v('log-search').toLowerCase();
+  let data = state.logData.filter(l => {
+    if (q && !l.partno.toLowerCase().includes(q) && !l.user.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const el = document.getElementById('log-list');
+  if (!data.length) { el.innerHTML = '<div class="empty">ログなし</div>'; return; }
+
+  el.innerHTML = data.slice(0, 200).map(l => {
+    const canEdit = state.role === 'admin' || l.user === state.user;
+    const sign = l.kubun === '良品' ? '+' : '-';
+    const col = l.kubun === '良品' ? 'var(--ok)' : 'var(--ng)';
+    const delStyle = l.deleted ? 'opacity:.4;' : '';
+    const editBtns = canEdit && !l.deleted ? `
+      <button class="edit-btn" onclick="openEdit('${l.id}',${l.qty})">編集</button>
+      <button class="del-btn" onclick="deleteLog('${l.id}')">削除</button>` : '';
+    return `<div class="log-card" style="${delStyle}">
+      <div class="log-top">
+        <span>${l.datetime}</span>
+        <div>${editBtns}</div>
+      </div>
+      <div class="log-body">
+        ${esc(l.partno)} / ${esc(l.name)}
+        <span style="color:${col};margin-left:8px;">${sign}${l.qty}</span>
+        ${l.deleted ? '<span style="color:var(--ng);font-size:11px;"> [削除済]</span>' : ''}
+      </div>
+      <div class="log-sub">${esc(l.proc)} | ${esc(l.kubun)} | ${esc(l.user)} | ${esc(l.line)}</div>
+    </div>`;
+  }).join('');
 }
-function closeConfirm() { document.getElementById('confirm-modal').classList.remove('open'); confirmCallback=null; }
-function execConfirm() { closeConfirm(); if(confirmCallback) confirmCallback(); }
 
-/* ===== CSV ===== */
-function downloadCSV() { window.open(GAS_URL + "?csv=1"); }
+// ═══════════════════════════════════════════════
+//  Edit / Delete
+// ═══════════════════════════════════════════════
+function openEdit(id, qty) {
+  state.editId = id;
+  document.getElementById('edit-qty').value = qty;
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeEdit() {
+  document.getElementById('edit-modal').classList.remove('open');
+  state.editId = null;
+}
+async function saveEdit() {
+  const qty = parseInt(document.getElementById('edit-qty').value);
+  if (!qty || qty < 1) { toast('正しい数量を入力してください','err'); return; }
+  try {
+    const res = await gasPost({ action:'edit', id: state.editId, qty, user: state.user });
+    if (res.ok) { toast('更新しました','ok'); closeEdit(); loadLogs(); }
+    else toast(res.msg || 'エラー','err');
+  } catch(e) { toast('接続エラー','err'); }
+}
 
-/* ===== QR ===== */
-let qrStream = null;
+async function deleteLog(id) {
+  if (!confirm('このログを削除しますか？')) return;
+  try {
+    const res = await gasPost({ action:'delete', id, user: state.user });
+    if (res.ok) { toast('削除しました','ok'); loadLogs(); }
+    else toast(res.msg || 'エラー','err');
+  } catch(e) { toast('接続エラー','err'); }
+}
+
+// ═══════════════════════════════════════════════
+//  CSV Download
+// ═══════════════════════════════════════════════
+async function downloadCSV() {
+  try {
+    const url = GAS_URL + '?action=csv&user=' + encodeURIComponent(state.user);
+    window.open(url, '_blank');
+  } catch(e) { toast('CSVエラー','err'); }
+}
+
+// ═══════════════════════════════════════════════
+//  QR Scanner (jsQR)
+// ═══════════════════════════════════════════════
+let qrStream = null, qrAnimId = null;
+
 async function openQR() {
   document.getElementById('qr-modal').classList.add('open');
+  const video = document.getElementById('qr-video');
   try {
-    qrStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-    document.getElementById('qr-preview').srcObject = qrStream;
+    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = qrStream;
+    await video.play();
+    scanFrame(video);
   } catch(e) {
-    showToast("カメラを利用できません");
+    toast('カメラにアクセスできません','err');
     closeQR();
   }
 }
-function closeQR() {
-  document.getElementById('qr-modal').classList.remove('open');
-  if(qrStream) { qrStream.getTracks().forEach(t=>t.stop()); qrStream=null; }
-}
 
-// BarcodeDetector API for QR
-if('BarcodeDetector' in window) {
-  const detector = new BarcodeDetector({formats:['qr_code','code_128','ean_13']});
-  function scanQR() {
-    const video = document.getElementById('qr-preview');
-    if(video.readyState === video.HAVE_ENOUGH_DATA && qrStream) {
-      detector.detect(video).then(barcodes => {
-        if(barcodes.length > 0) {
-          document.getElementById('code').value = barcodes[0].rawValue;
+function scanFrame(video) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  function tick() {
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      // jsQR がロードされている場合のみ処理
+      if (typeof jsQR !== 'undefined') {
+        const code = jsQR(imgData.data, imgData.width, imgData.height);
+        if (code) {
+          document.getElementById('inp-partno').value = code.data;
+          onPartnoChange();
           closeQR();
-          getProduct();
-          showToast("✓ QR読取: " + barcodes[0].rawValue);
+          return;
         }
-      }).catch(()=>{});
+      }
     }
-    if(qrStream) requestAnimationFrame(scanQR);
+    qrAnimId = requestAnimationFrame(tick);
   }
-  document.getElementById('qr-preview').addEventListener('play', scanQR);
+  qrAnimId = requestAnimationFrame(tick);
 }
 
-/* ===== TOAST ===== */
+function closeQR() {
+  cancelAnimationFrame(qrAnimId);
+  if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+  document.getElementById('qr-video').srcObject = null;
+  document.getElementById('qr-modal').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════
+//  API helpers
+// ═══════════════════════════════════════════════
+async function gasGet(params) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(GAS_URL + '?' + qs, { redirect: 'follow' });
+  return res.json();
+}
+
+async function gasPost(body) {
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    redirect: 'follow',
+  });
+  return res.json();
+}
+
+// ═══════════════════════════════════════════════
+//  Utils
+// ═══════════════════════════════════════════════
+function v(id) { return document.getElementById(id)?.value || ''; }
+function set(id, html) { const el=document.getElementById(id); if(el) el.innerHTML=html; }
+function ls(k) { try { return localStorage.getItem(k); } catch{ return null; } }
+function lsSave(k, v) { try { localStorage.setItem(k, v); } catch{} }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
 let toastTimer;
-function showToast(msg) {
+function toast(msg, type='') {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.classList.add('show');
+  el.className = 'show ' + type;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.classList.remove('show'), 2500);
+  toastTimer = setTimeout(() => el.className = '', 2500);
 }
-
-/* ===== CLOSE MODALS ON OVERLAY CLICK ===== */
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => {
-    if(e.target === m) {
-      m.classList.remove('open');
-      if(m.id==='qr-modal') closeQR();
-    }
-  });
-});
 </script>
+
+<!-- jsQR (QRコード読み取りライブラリ) -->
+<script src="[cdn.jsdelivr.net](https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js)"></script>
 </body>
 </html>
