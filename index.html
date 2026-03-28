@@ -2,1660 +2,1406 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>在庫管理システム - Zaico風</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>STOCKS — 在庫管理システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-/* ===== RESET & BASE ===== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #f7f7f7;
-  --card: #ffffff;
-  --border: #eeeeee;
-  --primary: #2563eb;
-  --primary-light: #e8f0fe;
-  --text: #1a1a1a;
-  --text-sub: #888888;
-  --text-muted: #b0b0b0;
-  --danger: #dc2626;
-  --danger-light: #fef2f2;
-  --warning: #ea580c;
-  --warning-light: #fff7ed;
-  --success: #16a34a;
-  --success-light: #f0fdf4;
-  --badge-bg: #f3f4f6;
-  --shadow: 0 1px 3px rgba(0,0,0,0.04);
-  --radius: 8px;
-}
-
-html { font-size: 14px; }
-
-body {
-  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-/* ===== HEADER ===== */
-.header-top {
-  background: #1e293b;
-  color: #fff;
-  padding: 0 24px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-.header-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: 1px;
-}
-
-.header-logo .logo-icon {
-  background: var(--primary);
-  color: #fff;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 16px;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.header-right .company-name {
-  color: #94a3b8;
-  font-size: 12px;
-}
-
-.header-right .user-name {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-}
-
-.header-right .user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #3b82f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.header-right .notification {
-  position: relative;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.header-right .notification .badge-dot {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  background: var(--danger);
-  border-radius: 50%;
-}
-
-/* ===== NAV BAR ===== */
-.nav-bar {
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.nav-link {
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  text-decoration: none;
-}
-
-.nav-link:hover { background: #f1f5f9; color: var(--text); }
-.nav-link.active { color: var(--primary); font-weight: 500; }
-
-.nav-add-btn {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  padding: 7px 16px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: background 0.15s;
-}
-
-.nav-add-btn:hover { background: #1d4ed8; }
-
-/* ===== MAIN CONTENT ===== */
-.main-content {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-/* ===== PAGE HEADER ===== */
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.page-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.page-title .count {
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-sub);
-  background: var(--badge-bg);
-  padding: 2px 10px;
-  border-radius: 12px;
-}
-
-/* ===== TOOLBAR ===== */
-.toolbar {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.search-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 280px;
-}
-
-.search-box {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-}
-
-.search-box input {
-  width: 100%;
-  padding: 9px 14px 9px 38px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  transition: border 0.15s;
-  background: #fafafa;
-}
-
-.search-box input:focus {
-  border-color: var(--primary);
-  background: #fff;
-}
-
-.search-box .search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #aaa;
-  font-size: 14px;
-}
-
-.action-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.15s;
-  white-space: nowrap;
-  border: 1px solid transparent;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
-}
-.btn-primary:hover { background: #1d4ed8; }
-
-.btn-danger {
-  background: var(--danger);
-  color: #fff;
-  border-color: var(--danger);
-}
-.btn-danger:hover { background: #b91c1c; }
-
-.btn-outline {
-  background: #fff;
-  color: #555;
-  border: 1px solid #ddd;
-}
-.btn-outline:hover { background: #f9fafb; border-color: #bbb; }
-
-.btn-warning {
-  background: var(--warning);
-  color: #fff;
-  border-color: var(--warning);
-}
-
-.btn-sm { padding: 5px 10px; font-size: 12px; }
-
-/* ===== TABLE (DESKTOP) ===== */
-.table-wrapper {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.inventory-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.inventory-table thead {
-  background: #fafbfc;
-  border-bottom: 1px solid var(--border);
-}
-
-.inventory-table th {
-  padding: 12px 16px;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-sub);
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
-.inventory-table td {
-  padding: 16px;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle;
-}
-
-.inventory-table tbody tr {
-  transition: background 0.12s;
-  cursor: pointer;
-}
-
-.inventory-table tbody tr:hover {
-  background: #f8fafc;
-}
-
-.inventory-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* Item cell */
-.item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.item-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text);
-}
-
-.item-code {
-  font-size: 11px;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-}
-
-.item-maker {
-  font-size: 11px;
-  color: var(--text-sub);
-}
-
-/* Stock badges */
-.stock-badges {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.stock-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  background: var(--badge-bg);
-  color: #555;
-  white-space: nowrap;
-}
-
-.stock-badge .label {
-  font-size: 10px;
-  font-weight: 400;
-  color: var(--text-sub);
-}
-
-.stock-badge .value {
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--text);
-}
-
-.stock-badge.danger {
-  background: var(--danger-light);
-}
-.stock-badge.danger .value { color: var(--danger); }
-
-.stock-badge.warning {
-  background: var(--warning-light);
-}
-.stock-badge.warning .value { color: var(--warning); }
-
-/* Location */
-.location {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: #555;
-}
-
-.location .pin { color: var(--primary); font-size: 14px; }
-
-/* Action arrow */
-.row-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.detail-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-  color: #888;
-  font-size: 16px;
-}
-
-.detail-btn:hover {
-  background: var(--primary-light);
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
-/* ===== STATUS INDICATOR ===== */
-.status-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 6px;
-}
-.status-dot.ok { background: #22c55e; }
-.status-dot.low { background: var(--warning); }
-.status-dot.critical { background: var(--danger); }
-
-/* ===== TABLE FOOTER ===== */
-.table-footer {
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid var(--border);
-  background: #fafbfc;
-  font-size: 12px;
-  color: var(--text-sub);
-}
-
-.sort-control {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.sort-control select {
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: inherit;
-  outline: none;
-  background: #fff;
-}
-
-/* ===== MOBILE CARDS ===== */
-.mobile-cards { display: none; }
-
-.mobile-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 10px;
-  transition: box-shadow 0.15s;
-}
-
-.mobile-card:active {
-  box-shadow: 0 0 0 2px var(--primary-light);
-}
-
-.mobile-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-}
-
-.mobile-card .item-name {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.mobile-card .item-code {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.mobile-card .item-maker {
-  font-size: 11px;
-  color: var(--text-sub);
-  margin-top: 1px;
-}
-
-.mobile-card-stocks {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0;
-  flex-wrap: wrap;
-}
-
-.mobile-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mobile-card-footer .location {
-  font-size: 12px;
-}
-
-/* ===== MODAL ===== */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.35);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  animation: fadeIn 0.15s;
-}
-
-.modal-overlay.active { display: flex; }
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.modal {
-  background: var(--card);
-  border-radius: 12px;
-  width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: slideUp 0.2s;
-}
-
-.modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  background: var(--card);
-  z-index: 1;
-  border-radius: 12px 12px 0 0;
-}
-
-.modal-header h2 {
-  font-size: 17px;
-  font-weight: 700;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: var(--badge-bg);
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-size: 18px;
-  transition: all 0.15s;
-}
-
-.modal-close:hover { background: #e5e7eb; color: #333; }
-
-.modal-body { padding: 24px; }
-
-.detail-section {
-  margin-bottom: 24px;
-}
-
-.detail-section:last-child { margin-bottom: 0; }
-
-.detail-section-title {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-sub);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.detail-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  font-size: 13px;
-}
-
-.detail-row .label { color: var(--text-sub); }
-.detail-row .value { font-weight: 500; }
-
-/* Process operations */
-.process-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.process-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  background: #fafbfc;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-.process-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.process-label {
-  font-size: 12px;
-  color: var(--text-sub);
-  font-weight: 500;
-}
-
-.process-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.process-unit {
-  font-size: 12px;
-  color: var(--text-sub);
-  margin-left: 2px;
-}
-
-.process-action {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.process-input {
-  width: 70px;
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-  text-align: center;
-  outline: none;
+:root{
+  --bg:#f0f2f5;--surface:#ffffff;--surface2:#f8f9fb;--surface3:#eef0f4;
+  --border:#e2e5ec;--border2:#d0d4de;
+  --text:#1a1d27;--text-muted:#6b7280;--text-dim:#9ca3af;
+  --accent:#2563eb;--accent-dim:rgba(37,99,235,.1);--accent-glow:rgba(37,99,235,.15);
+  --red:#ef4444;--red-dim:rgba(239,68,68,.08);--red-mid:rgba(239,68,68,.15);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,.1);
+  --green:#10b981;--green-dim:rgba(16,185,129,.1);
+  --wip:#6366f1;--bari:#0ea5e9;--done:#059669;
+  --fn:'JetBrains Mono',monospace;--fj:'Noto Sans JP',sans-serif;
+  --r:6px;--r2:10px;--sh:0 2px 12px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:600;transition:all .15s;white-space:nowrap;user-select:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#1d4ed8}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#dc2626}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#059669}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-full{width:100%;padding:12px}
+
+/* ── FORMS ── */
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:9px 12px;font-size:14px;font-family:var(--fj);outline:none;transition:border-color .15s}
+.form-row input:focus,.form-row select:focus{border-color:var(--accent);background:#fff}
+.form-row select option{background:#fff}
+.form-row input::placeholder{color:var(--text-dim)}
+.form-row.error input,.form-row.error select{border-color:var(--red)}
+.form-hint{font-size:11px;color:var(--text-dim);margin-top:3px}
+.error-box{background:var(--red-dim);border:1px solid var(--red);color:var(--red);border-radius:var(--r);padding:8px 12px;font-size:13px;margin-bottom:12px;display:none}
+.error-box.show{display:block}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e0e7ff 0%,#f0f9ff 50%,#ecfdf5 100%)}
+.login-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:44px 40px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.12)}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo .brand{font-size:28px;font-weight:900;letter-spacing:.06em;color:var(--text)}
+.login-logo .brand span{color:var(--accent)}
+.login-logo .sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+.pw-strength{height:3px;border-radius:2px;background:var(--border);margin-top:5px;overflow:hidden}
+.pw-bar{height:100%;border-radius:2px;width:0;transition:width .3s,background .3s}
+
+/* ── APP SHELL ── */
+#app{display:none;flex-direction:column;height:100vh}
+#app.active{display:flex}
+
+/* ── HEADER ── */
+.header{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.header-brand{font-size:15px;font-weight:900;letter-spacing:.06em;white-space:nowrap;color:var(--text)}
+.header-brand span{color:var(--accent)}
+.header-sep{width:1px;height:20px;background:var(--border2)}
+.header-nav{display:flex;gap:2px}
+.nav-tab{background:transparent;border:none;color:var(--text-muted);padding:6px 12px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap}
+.nav-tab:hover{background:var(--surface2);color:var(--text)}
+.nav-tab.active{background:var(--accent-dim);color:var(--accent);font-weight:700}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.user-pill{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 5px;font-size:13px}
+.user-av{width:26px;height:26px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.user-av.admin-av{background:var(--amber)}
+.role-chip{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;text-transform:uppercase}
+.role-chip.admin{background:var(--amber-dim);color:var(--amber)}
+.role-chip.user{background:var(--surface3);color:var(--text-muted)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 20px}
+.page{display:none}
+.page.active{display:block}
+.page-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.page-title{font-size:18px;font-weight:700}
+.badge-count{background:var(--surface2);border:1px solid var(--border2);color:var(--text-muted);font-size:11px;padding:2px 8px;border-radius:10px;font-family:var(--fn)}
+.page-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;height:80px;display:flex;flex-direction:column;justify-content:space-between}
+.stat-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
+.stat-val{font-size:24px;font-weight:700;font-family:var(--fn);line-height:1}
+.stat-val.red{color:var(--red)}
+.stat-val.amber{color:var(--amber)}
+.stat-sub{font-size:10px;color:var(--text-dim)}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;flex:1;min-width:160px;max-width:280px}
+.search-wrap svg{flex-shrink:0;color:var(--text-dim)}
+.search-wrap input{background:none;border:none;outline:none;color:var(--text);font-family:var(--fj);font-size:13px;width:100%}
+.filter-sel{background:#fff;border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:7px 10px;font-family:var(--fj);font-size:13px;outline:none;cursor:pointer}
+
+/* ── TABLE ── */
+.table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
+.inv-table{width:100%;border-collapse:collapse}
+.inv-table thead th{background:var(--surface2);padding:9px 14px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);white-space:nowrap;text-align:center}
+.inv-table thead th.th-name{text-align:left}
+.inv-table tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;text-align:center}
+.inv-table tbody tr:last-child td{border-bottom:none}
+.inv-table tbody tr:hover td{background:var(--surface2)}
+.inv-table tbody tr.row-warn td{background:#fffbeb}
+.inv-table tbody tr.row-zero td{background:#fef2f2}
+.num-cell{font-family:var(--fn);white-space:nowrap}
+.num-wip{font-size:13px;color:var(--wip);font-weight:600}
+.num-bari{font-size:14px;color:var(--bari);font-weight:600}
+.num-done{font-size:16px;color:var(--done);font-weight:700;line-height:1.2}
+.num-warn{color:var(--red)!important}
+.num-zero{color:var(--red)!important;font-weight:900!important}
+.w-icon{font-size:11px;margin-left:2px;vertical-align:middle;color:var(--red)}
+.unit-tag{font-size:10px;color:var(--text-muted);margin-left:2px}
+.td-name{text-align:left}
+.item-name-txt{font-weight:600;font-size:14px;line-height:1.3;color:var(--text)}
+.item-code-txt{font-size:11px;color:var(--text-muted);font-family:var(--fn);margin-top:1px}
+.th-wip{color:var(--wip)!important}
+.th-bari{color:var(--bari)!important}
+.th-done{color:var(--done)!important}
+.act-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.btn-proc{padding:5px 9px;border-radius:var(--r);border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--fj);transition:all .15s;white-space:nowrap}
+.btn-proc:active{transform:scale(.95)}
+.bp-wip{background:rgba(99,102,241,.1);color:var(--wip);border:1px solid rgba(99,102,241,.25)}
+.bp-wip:hover{background:rgba(99,102,241,.2)}
+.bp-w2b{background:rgba(14,165,233,.1);color:var(--bari);border:1px solid rgba(14,165,233,.25)}
+.bp-w2b:hover{background:rgba(14,165,233,.2)}
+.bp-b2d{background:rgba(5,150,105,.1);color:var(--done);border:1px solid rgba(5,150,105,.25)}
+.bp-b2d:hover{background:rgba(5,150,105,.2)}
+.bp-d2s{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.bp-d2s:hover{background:var(--red-mid)}
+.bp-edit{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(37,99,235,.2)}
+.bp-edit:hover{background:var(--accent-glow)}
+.bp-del{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.bp-del:hover{background:var(--red-mid)}
+
+/* ── HISTORY TABLE ── */
+.hist-table{width:100%;border-collapse:collapse;font-size:13px}
+.hist-table th{background:var(--surface2);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);white-space:nowrap}
+.hist-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.hist-table tr:last-child td{border-bottom:none}
+.hist-table tr:hover td{background:var(--surface2)}
+.act-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap}
+.ac-wip{background:rgba(99,102,241,.1);color:var(--wip)}
+.ac-w2b{background:rgba(14,165,233,.1);color:var(--bari)}
+.ac-b2d{background:rgba(5,150,105,.1);color:var(--done)}
+.ac-d2s{background:var(--red-dim);color:var(--red)}
+.ac-sys{background:var(--accent-dim);color:var(--accent)}
+
+/* ── USER TABLE ── */
+.user-table{width:100%;border-collapse:collapse}
+.user-table th,.user-table td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}
+.user-table th{background:var(--surface2);font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
+.user-table tr:last-child td{border-bottom:none}
+.user-table tr:hover td{background:var(--surface2)}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:16px}
+.overlay.show{display:flex}
+.modal{background:#fff;border:1px solid var(--border);border-radius:14px;width:100%;max-width:480px;box-shadow:0 16px 48px rgba(0,0,0,.15);display:flex;flex-direction:column;max-height:calc(100vh - 32px)}
+.modal-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:15px;font-weight:700}
+.modal-x{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;padding:4px;border-radius:4px}
+.modal-x:hover{color:var(--text);background:var(--surface2)}
+.modal-body{padding:18px 22px;overflow-y:auto;flex:1}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+
+/* ── TRANSFER MODAL ── */
+.transfer-block{background:var(--surface2);border-radius:var(--r);padding:14px;margin-bottom:14px;border:1px solid var(--border)}
+.transfer-flow{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:14px;font-weight:700}
+.tf-arrow{color:var(--text-dim);font-size:16px}
+.transfer-stock{font-size:12px;color:var(--text-muted);font-family:var(--fn)}
+.qty-big-wrap{position:relative;margin:8px 0 6px}
+.qty-big-wrap input{width:100%;background:var(--surface2);border:2px solid var(--border2);border-radius:var(--r);color:var(--text);padding:12px 44px 12px 16px;font-size:28px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;transition:border-color .15s}
+.qty-big-wrap input:focus{border-color:var(--accent);background:#fff}
+.qty-unit-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;pointer-events:none}
+.qty-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.qty-pre{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:4px 12px;color:var(--text-muted);font-family:var(--fn);font-size:12px;cursor:pointer;transition:all .15s}
+.qty-pre:hover{background:var(--accent-dim);color:var(--accent);border-color:var(--accent)}
+.transfer-warn{background:var(--amber-dim);border:1px solid var(--amber);color:#92400e;border-radius:var(--r);padding:8px 12px;font-size:12px;margin-top:8px;display:none}
+.transfer-warn.show{display:block}
+.op-info-bar{background:var(--accent-dim);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--accent);margin-bottom:12px;display:flex;gap:12px}
+.op-info-bar span{font-weight:600}
+
+/* ── TOAST ── */
+#toasts{position:fixed;bottom:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;min-width:240px;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;align-items:center;gap:10px;font-size:13px;pointer-events:all;border-left:3px solid var(--accent);animation:tIn .2s ease}
+.toast.ok{border-left-color:var(--green)}
+.toast.err{border-left-color:var(--red)}
+.toast.warn{border-left-color:var(--amber)}
+@keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(12px)}}
+
+/* ── PW BANNER ── */
+.pw-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;font-size:13px;color:#92400e}
+.pw-banner button{margin-left:auto;background:var(--amber);color:#fff;font-weight:700;font-size:11px;border:none;border-radius:4px;padding:4px 10px;cursor:pointer}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:48px 20px;color:var(--text-muted)}
+.empty .ei{font-size:36px;margin-bottom:10px}
+.empty p{font-size:13px}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--border);margin:14px 0}
+.sec-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.mt8{margin-top:8px}
+.text-red{color:var(--red)}
+.text-amber{color:var(--amber)}
+.text-green{color:var(--green)}
+
+/* ── HAMBURGER ── */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;flex-shrink:0;margin-left:auto}
+.hamburger span{display:block;width:20px;height:2px;background:var(--text-muted);border-radius:2px;transition:all .2s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mob-menu{display:none;position:fixed;top:54px;left:0;right:0;background:#fff;border-bottom:1px solid var(--border);z-index:200;padding:8px 0 12px;flex-direction:column;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.mob-menu.open{display:flex}
+.mob-menu-tab{background:none;border:none;color:var(--text-muted);padding:12px 20px;font-size:14px;font-weight:500;font-family:var(--fj);text-align:left;cursor:pointer;width:100%}
+.mob-menu-tab:hover,.mob-menu-tab.active{background:var(--surface2);color:var(--accent)}
+.mob-div{height:1px;background:var(--border);margin:6px 0}
+.mob-user{display:flex;align-items:center;gap:10px;padding:10px 20px}
+.mob-acts{display:flex;gap:8px;padding:6px 20px 0}
+
+/* ── CARD VIEW (mobile) ── */
+.inv-cards{display:none;flex-direction:column;gap:10px}
+.icard{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:14px;box-shadow:var(--sh)}
+.icard.row-warn{border-left:3px solid var(--amber)}
+.icard.row-zero{border-left:3px solid var(--red)}
+.icard-top{margin-bottom:10px}
+.icard-name{font-weight:700;font-size:14px;line-height:1.3}
+.icard-code{font-size:11px;color:var(--text-muted);font-family:var(--fn);margin-top:2px}
+.icard-stocks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.icard-stock{border-radius:var(--r);padding:8px 6px;text-align:center;border:1px solid var(--border)}
+.icard-slabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.icard-sval{font-family:var(--fn);font-weight:700;font-size:16px;line-height:1}
+.icard-sunit{font-size:9px;color:var(--text-muted);margin-top:2px}
+.icard-btns{display:flex;flex-wrap:wrap;gap:5px}
+.icard-btns .btn-proc{flex:1;min-width:68px;text-align:center;padding:7px 4px;font-size:10px}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  .header{padding:0 12px;gap:8px;height:52px}
+  .header-brand{font-size:14px}
+  .header-sep,.header-nav,.header-right .btn-ghost{display:none}
+  .hamburger{display:flex}
+  .user-pill{padding:3px 8px 3px 4px}
+  .role-chip{display:none}
+  .main{padding:10px 12px}
+  .stats-row{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-card{height:70px;padding:10px 12px}
+  .stat-val{font-size:20px}
+  .table-wrap .inv-table{display:none}
+  .inv-cards{display:flex}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .hist-table{min-width:600px}
+  .user-table{min-width:440px}
+  .toolbar{flex-wrap:wrap;gap:6px}
+  .search-wrap{flex:1;min-width:0;max-width:none}
+  .page-header{flex-wrap:wrap;gap:6px}
+  .page-actions{width:100%;margin-left:0}
+  .page-actions .btn{flex:1}
+  .modal{max-width:100%;border-radius:14px 14px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:92vh}
+  .overlay{align-items:flex-end;padding:0}
+  .two-col{grid-template-columns:1fr 1fr}
+  .three-col{grid-template-columns:1fr 1fr 1fr}
+  .login-card{padding:32px 20px;margin:16px}
+  #toasts{bottom:8px;right:8px;left:8px}
+  .toast{min-width:0;max-width:100%}
+  .mob-menu{top:52px}
 }
-
-.process-input:focus { border-color: var(--primary); }
-
-.process-btn {
-  padding: 7px 14px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.15s;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.process-btn:hover { background: #1d4ed8; }
-
-.process-arrow {
-  color: var(--text-muted);
-  font-size: 16px;
-  text-align: center;
-  padding: 4px 0;
-}
-
-/* Confirm message */
-.confirm-msg {
-  display: none;
-  padding: 10px 14px;
-  background: var(--success-light);
-  border: 1px solid #bbf7d0;
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--success);
-  margin-top: 12px;
-  align-items: center;
-  gap: 6px;
-}
-
-.confirm-msg.active { display: flex; }
-
-/* Memo */
-.memo-area {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
-  resize: vertical;
-  min-height: 60px;
-  outline: none;
-}
-
-.memo-area:focus { border-color: var(--primary); }
-
-/* ===== ADD/EDIT MODAL ===== */
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-sub);
-  margin-bottom: 6px;
-}
-
-.form-input {
-  width: 100%;
-  padding: 9px 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-}
-
-.form-input:focus { border-color: var(--primary); }
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-}
-
-/* ===== ROLE SWITCH ===== */
-.role-switch {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-sub);
-}
-
-.role-switch select {
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: inherit;
-  outline: none;
-}
-
-/* ===== TOAST ===== */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  padding: 12px 20px;
-  background: #1e293b;
-  color: #fff;
-  border-radius: 8px;
-  font-size: 13px;
-  z-index: 2000;
-  display: none;
-  animation: slideUp 0.2s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.toast.active { display: block; }
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .main-content { padding: 16px; }
-  .nav-bar { display: none; }
-
-  .header-top {
-    padding: 0 16px;
-    height: 44px;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 12px 14px;
-  }
-
-  .search-area { min-width: 100%; }
-  .search-box { max-width: 100%; }
-
-  .action-buttons {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-
-  .table-wrapper { display: none; }
-  .mobile-cards { display: block; }
-
-  .page-header { margin-bottom: 14px; }
-  .page-title { font-size: 18px; }
-
-  .btn { padding: 8px 12px; font-size: 12px; }
-
-  .modal {
-    max-width: 100%;
-    max-height: 95vh;
-    border-radius: 12px 12px 0 0;
-    margin-top: auto;
-  }
-
-  .modal-overlay {
-    align-items: flex-end;
-    padding: 0;
-  }
-
-  .process-item {
-    flex-direction: column;
-    gap: 10px;
-    align-items: flex-start;
-  }
-
-  .process-action { width: 100%; }
-  .process-input { flex: 1; }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .header-right .company-name { display: none; }
-}
-
-/* ===== ADMIN ELEMENTS ===== */
-.admin-only { display: none; }
-body.admin .admin-only { display: flex; }
-body.admin .admin-only-inline { display: inline-flex; }
-body.admin .admin-only-block { display: block; }
-
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-
-/* ===== EMPTY STATE ===== */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text-sub);
-}
-
-.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
-.empty-state .text { font-size: 14px; }
-
-/* ===== SUMMARY BAR ===== */
-.summary-bar {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.summary-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  flex: 1;
-  min-width: 140px;
-}
-
-.summary-card .summary-label {
-  font-size: 11px;
-  color: var(--text-sub);
-  margin-bottom: 4px;
-}
-
-.summary-card .summary-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.summary-card .summary-sub {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.summary-card.alert { border-left: 3px solid var(--danger); }
-.summary-card.warn { border-left: 3px solid var(--warning); }
 </style>
 </head>
-<body class="admin">
+<body>
 
-<!-- ===== HEADER TOP ===== -->
-<header class="header-top">
-  <div class="header-logo">
-    <div class="logo-icon">Z</div>
-    <span>zaico</span>
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="brand">STOCK<span>S</span></div>
+      <div class="sub">現場在庫管理システム</div>
+    </div>
+    <div id="login-err" class="error-box"></div>
+    <div class="form-row">
+      <label>ユーザー名</label>
+      <input id="li-user" type="text" placeholder="username" autocomplete="username">
+    </div>
+    <div class="form-row">
+      <label>パスワード</label>
+      <input id="li-pw" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-full mt8" onclick="doLogin()">ログイン</button>
+    <p style="text-align:center;margin-top:14px;font-size:11px;color:var(--text-muted)">
+      初期: admin / admin123 &nbsp;|&nbsp; user1 / user123
+    </p>
   </div>
-  <div class="header-right">
-    <span class="company-name">デモ株式会社</span>
-    <div class="notification">
-      🔔
-      <span class="badge-dot"></span>
-    </div>
-    <div class="user-name">
-      <div class="user-avatar">太</div>
-      <span>在庫太郎</span>
-    </div>
-    <div class="role-switch">
-      <select id="roleSwitch" onchange="switchRole(this.value)">
-        <option value="admin">管理者</option>
-        <option value="user">一般</option>
-      </select>
-    </div>
-  </div>
-</header>
+</div>
 
-<!-- ===== NAV BAR ===== -->
-<nav class="nav-bar">
-  <div class="nav-links">
-    <button class="nav-add-btn admin-only" onclick="openAddModal()">＋ 新規在庫データ追加</button>
-    <a class="nav-link active" href="#">📦 在庫情報</a>
-    <a class="nav-link" href="#">↔️ 入庫/出庫</a>
-    <a class="nav-link" href="#">🔧 ツール</a>
-    <a class="nav-link admin-only" href="#">📊 データ管理</a>
-    <a class="nav-link admin-only" href="#">👥 ユーザー管理</a>
-    <a class="nav-link admin-only" href="#">⚙️ 設定</a>
-    <a class="nav-link" href="#">❓ ヘルプ</a>
-  </div>
-</nav>
-
-<!-- ===== MAIN CONTENT ===== -->
-<main class="main-content">
-
-  <!-- Page Header -->
-  <div class="page-header">
-    <h1 class="page-title">
-      在庫一覧
-      <span class="count" id="itemCount">0件</span>
-    </h1>
-  </div>
-
-  <!-- Summary Cards -->
-  <div class="summary-bar">
-    <div class="summary-card">
-      <div class="summary-label">総アイテム数</div>
-      <div class="summary-value" id="totalItems">0</div>
-      <div class="summary-sub">登録品目</div>
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <header class="header">
+    <div class="header-brand">STOCK<span>S</span></div>
+    <div class="header-sep"></div>
+    <nav class="header-nav">
+      <button class="nav-tab active" onclick="showPage('inventory')">在庫一覧</button>
+      <button class="nav-tab" onclick="showPage('history')">操作履歴</button>
+      <button class="nav-tab admin-only" id="tab-users" style="display:none" onclick="showPage('users')">ユーザー管理</button>
+    </nav>
+    <div class="header-right">
+      <div class="user-pill">
+        <div class="user-av" id="hd-av">A</div>
+        <span id="hd-name">admin</span>
+        <span class="role-chip admin" id="hd-role">管理者</span>
+      </div>
+      <button class="btn btn-ghost btn-sm admin-only" id="hd-pw-btn" onclick="showPwModal()">PW変更</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">ログアウト</button>
     </div>
-    <div class="summary-card">
-      <div class="summary-label">総在庫数</div>
-      <div class="summary-value" id="totalStock">0</div>
-      <div class="summary-sub">全工程合計</div>
-    </div>
-    <div class="summary-card warn">
-      <div class="summary-label">在庫注意</div>
-      <div class="summary-value" id="warningCount">0</div>
-      <div class="summary-sub">残少アイテム</div>
-    </div>
-    <div class="summary-card alert">
-      <div class="summary-label">在庫不足</div>
-      <div class="summary-value" id="criticalCount">0</div>
-      <div class="summary-sub">要発注</div>
-    </div>
-  </div>
+    <button class="hamburger" id="hbg" onclick="toggleMobMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
 
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="search-area">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="品名・品番・メーカーで検索..." oninput="filterItems()">
+  <!-- Mobile menu -->
+  <div class="mob-menu" id="mob-menu">
+    <button class="mob-menu-tab" onclick="navTo('inventory')">📦 在庫一覧</button>
+    <button class="mob-menu-tab" onclick="navTo('history')">📋 操作履歴</button>
+    <button class="mob-menu-tab admin-only" id="mob-tab-users" style="display:none" onclick="navTo('users')">👥 ユーザー管理</button>
+    <div class="mob-div"></div>
+    <div class="mob-user">
+      <div class="user-av" id="mob-av">A</div>
+      <div>
+        <div style="font-size:13px;font-weight:600" id="mob-name">—</div>
+        <div style="font-size:11px;color:var(--text-muted)" id="mob-role">—</div>
       </div>
     </div>
-    <div class="action-buttons">
-      <button class="btn btn-primary admin-only" onclick="openAddModal()">＋ 新規登録</button>
-      <button class="btn btn-outline" onclick="exportCSV()">📥 エクスポート</button>
-      <div class="sort-control">
-        <span>並び替え:</span>
-        <select id="sortSelect" onchange="sortItems()">
-          <option value="name">品名順</option>
-          <option value="shortage">不足順</option>
-          <option value="stock-asc">在庫少順</option>
-          <option value="stock-desc">在庫多順</option>
+    <div class="mob-acts">
+      <button class="btn btn-ghost btn-sm admin-only" id="mob-pw-btn" style="display:none" onclick="showPwModal();closeMobMenu()">🔑 PW変更</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">ログアウト</button>
+    </div>
+  </div>
+
+  <main class="main">
+
+    <!-- ── 在庫一覧 ── -->
+    <div id="page-inventory" class="page active">
+      <div id="pw-banner" class="pw-banner" style="display:none">
+        <span>⚠ 初回ログインです。パスワードを変更してください</span>
+        <button onclick="showPwModal()">今すぐ変更</button>
+      </div>
+      <div class="stats-row" id="stats-row"></div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="search-input" type="text" placeholder="品目検索..." oninput="renderInventory()">
+        </div>
+        <select class="filter-sel" id="filter-status" onchange="renderInventory()">
+          <option value="">全て表示</option>
+          <option value="warn">要注意のみ</option>
+          <option value="zero">在庫0のみ</option>
         </select>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm admin-only" onclick="showAddModal()">＋ 品目登録</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="showLineModal()">⚙ ライン設定</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="exportCSV('items')">CSV出力</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="inv-table">
+          <thead><tr>
+            <th class="th-name" style="text-align:left;min-width:160px">品目</th>
+            <th class="th-wip" style="min-width:90px">仕掛品</th>
+            <th class="th-bari" style="min-width:90px">バリ前</th>
+            <th class="th-done" style="min-width:90px">完成品</th>
+            <th style="min-width:260px">操作</th>
+          </tr></thead>
+          <tbody id="inv-body"></tbody>
+        </table>
+      </div>
+      <div class="inv-cards" id="inv-cards"></div>
+    </div>
+
+    <!-- ── 操作履歴 ── -->
+    <div id="page-history" class="page">
+      <div class="page-header">
+        <div class="page-title">操作履歴</div>
+        <span class="badge-count" id="hist-count">0件</span>
+        <div class="page-actions">
+          <select class="filter-sel" id="hist-filter-line" onchange="renderHistory()" style="font-size:12px">
+            <option value="">全ライン</option>
+          </select>
+          <select class="filter-sel" id="hist-filter-op" onchange="renderHistory()" style="font-size:12px">
+            <option value="">全操作</option>
+            <option value="加工">加工</option>
+            <option value="バリ前移動">バリ前移動</option>
+            <option value="完成">完成</option>
+            <option value="出荷">出荷</option>
+          </select>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="exportCSV('history')">CSV出力</button>
+          <button class="btn btn-ghost btn-sm admin-only" onclick="confirmClearHistory()">クリア</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="hist-table">
+          <thead><tr>
+            <th>日時</th><th>操作</th><th>品目</th><th>数量</th><th>ライン</th><th>作業者</th>
+          </tr></thead>
+          <tbody id="hist-body"></tbody>
+        </table>
       </div>
     </div>
-  </div>
 
-  <!-- Desktop Table -->
-  <div class="table-wrapper">
-    <table class="inventory-table">
-      <thead>
-        <tr>
-          <th style="width:36%">品名</th>
-          <th style="width:30%">在庫数</th>
-          <th style="width:14%">保管場所</th>
-          <th style="width:12%">状態</th>
-          <th style="width:8%"></th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-      </tbody>
-    </table>
-    <div class="table-footer">
-      <span id="footerCount">0件表示</span>
-      <span>データ更新日 降順</span>
+    <!-- ── ユーザー管理 ── -->
+    <div id="page-users" class="page">
+      <div class="page-header">
+        <div class="page-title">ユーザー管理</div>
+        <div class="page-actions">
+          <button class="btn btn-ghost btn-sm" onclick="showAddUserModal()">＋ ユーザー追加</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="user-table">
+          <thead><tr>
+            <th>ユーザー名</th><th>権限</th><th>初回PW</th><th>登録日</th><th>操作</th>
+          </tr></thead>
+          <tbody id="user-body"></tbody>
+        </table>
+      </div>
     </div>
-  </div>
 
-  <!-- Mobile Cards -->
-  <div class="mobile-cards" id="mobileCards">
-  </div>
+  </main>
+</div>
 
-</main>
+<!-- ═══ MODALS ═══ -->
 
-<!-- ===== DETAIL MODAL ===== -->
-<div class="modal-overlay" id="detailModal">
+<!-- Operation Modal (加工/バリ前移動/完成/出荷) -->
+<div class="overlay" id="modal-op">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="modalTitle">品名</h2>
-      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    <div class="modal-head">
+      <span class="modal-title" id="op-title">操作</span>
+      <button class="modal-x" onclick="closeModal('modal-op')">✕</button>
     </div>
     <div class="modal-body">
-      <!-- Info Section -->
-      <div class="detail-section">
-        <div class="detail-section-title">基本情報</div>
-        <div class="detail-row">
-          <span class="label">品番</span>
-          <span class="value" id="modalCode">—</span>
+      <div id="op-err" class="error-box"></div>
+      <div class="transfer-block">
+        <div class="transfer-flow">
+          <span id="op-from-lbl" style="font-weight:700"></span>
+          <span class="tf-arrow" id="op-arrow">→</span>
+          <span id="op-to-lbl" style="font-weight:700"></span>
         </div>
-        <div class="detail-row">
-          <span class="label">メーカー</span>
-          <span class="value" id="modalMaker">—</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">保管場所</span>
-          <span class="value" id="modalLocation">—</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">単位</span>
-          <span class="value" id="modalUnit">—</span>
+        <div class="transfer-stock">
+          <span id="op-item-name">—</span>
+          <span id="op-stock-info" style="margin-left:12px"></span>
         </div>
       </div>
-
-      <!-- Process Section -->
-      <div class="detail-section">
-        <div class="detail-section-title">工程別在庫・移動</div>
-        <div class="process-list" id="processList">
-        </div>
-        <div class="confirm-msg" id="confirmMsg">
-          ✅ <span id="confirmText">移動完了</span>
-        </div>
+      <div class="sec-label">移動数量</div>
+      <div class="qty-big-wrap">
+        <input type="number" id="op-qty" min="1" placeholder="0" oninput="checkOpWarn()">
+        <span class="qty-unit-badge" id="op-unit">個</span>
       </div>
-
-      <!-- Memo Section -->
-      <div class="detail-section">
-        <div class="detail-section-title">メモ</div>
-        <textarea class="memo-area" id="modalMemo" placeholder="メモを入力..."></textarea>
-      </div>
-
-      <!-- Admin Actions -->
-      <div class="detail-section admin-only" style="display:none">
-        <div class="detail-section-title">管理操作</div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-outline btn-sm" onclick="editCurrentItem()">✏️ 編集</button>
-          <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="deleteCurrentItem()">🗑 削除</button>
+      <div class="qty-presets" id="op-presets"></div>
+      <div class="transfer-warn" id="op-warn">⚠ 移動元在庫の80%以上を移動しようとしています。</div>
+      <div class="two-col">
+        <div class="form-row" id="op-line-row">
+          <label>ライン <span class="text-red">*</span></label>
+          <select id="op-line">
+            <option value="">— 選択してください —</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>作業者名 <span class="text-red">*</span></label>
+          <input id="op-operator" type="text" placeholder="例: 田中">
         </div>
       </div>
+      <div class="form-hint">※ ライン・作業者は必須入力です</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-op')">キャンセル</button>
+      <button class="btn btn-primary" id="op-submit-btn" onclick="execOp()">実行</button>
     </div>
   </div>
 </div>
 
-<!-- ===== ADD/EDIT MODAL ===== -->
-<div class="modal-overlay" id="addModal">
+<!-- Add/Edit Item -->
+<div class="overlay" id="modal-item">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="addModalTitle">新規登録</h2>
-      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    <div class="modal-head">
+      <span class="modal-title" id="item-modal-title">品目登録</span>
+      <button class="modal-x" onclick="closeModal('modal-item')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">品名 *</label>
-        <input class="form-input" id="formName" placeholder="例：六角ボルト M10">
+      <div id="item-err" class="error-box"></div>
+      <input type="hidden" id="item-id">
+      <div class="two-col">
+        <div class="form-row">
+          <label>品目名 *</label>
+          <input id="item-name" type="text" placeholder="例: M5タッピングビス">
+        </div>
+        <div class="form-row">
+          <label>品目コード *</label>
+          <input id="item-code" type="text" placeholder="例: ITEM-001">
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">品番</label>
-        <input class="form-input" id="formCode" placeholder="例：AB-1234">
+      <div class="two-col">
+        <div class="form-row">
+          <label>単位 *</label>
+          <input id="item-unit" type="text" placeholder="例: 個">
+        </div>
+        <div class="form-row">
+          <label>警告閾値（完成品）</label>
+          <input id="item-threshold" type="number" min="0" placeholder="例: 50">
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">メーカー</label>
-        <input class="form-input" id="formMaker" placeholder="例：ミスミ">
+      <div class="divider"></div>
+      <div class="sec-label">初期在庫</div>
+      <div class="three-col" id="init-stock-row">
+        <div class="form-row">
+          <label style="color:var(--wip)">仕掛品</label>
+          <input id="item-wip" type="number" min="0" placeholder="0">
+        </div>
+        <div class="form-row">
+          <label style="color:var(--bari)">バリ前</label>
+          <input id="item-bari" type="number" min="0" placeholder="0">
+        </div>
+        <div class="form-row">
+          <label style="color:var(--done)">完成品</label>
+          <input id="item-done" type="number" min="0" placeholder="0">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-item')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveItem()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Line Settings -->
+<div class="overlay" id="modal-lines">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <span class="modal-title">ライン設定</span>
+      <button class="modal-x" onclick="closeModal('modal-lines')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">操作時に選択できるラインを管理します。</p>
+      <div id="lines-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
+      <div style="display:flex;gap:8px">
+        <input id="new-line-input" type="text" placeholder="例: 1号機" style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:8px 12px;font-size:14px;font-family:var(--fj);outline:none">
+        <button class="btn btn-primary btn-sm" onclick="addLine()">追加</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-lines')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password change -->
+<div class="overlay" id="modal-pw">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <span class="modal-title">パスワード変更</span>
+      <button class="modal-x" id="pw-modal-x" onclick="closeModal('modal-pw')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="pw-err" class="error-box"></div>
+      <div class="form-row">
+        <label>現在のパスワード</label>
+        <input id="pw-current" type="password" placeholder="現在のパスワード">
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">仕掛品</label>
-          <input class="form-input" id="formWip" type="number" value="0" min="0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">バリ前</label>
-          <input class="form-input" id="formBurr" type="number" value="0" min="0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">完成品</label>
-          <input class="form-input" id="formDone" type="number" value="0" min="0">
-        </div>
+        <label>新しいパスワード（6文字以上）</label>
+        <input id="pw-new" type="password" placeholder="新しいパスワード" oninput="updatePwStrength()">
+        <div class="pw-strength"><div class="pw-bar" id="pw-bar"></div></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">保管場所</label>
-        <input class="form-input" id="formLocation" placeholder="例：A倉庫">
+      <div class="form-row">
+        <label>確認</label>
+        <input id="pw-confirm" type="password" placeholder="もう一度入力">
       </div>
-      <div class="form-group">
-        <label class="form-label">単位</label>
-        <input class="form-input" id="formUnit" placeholder="例：個、本、枚" value="個">
-      </div>
-      <div class="form-group">
-        <label class="form-label">メモ</label>
-        <textarea class="memo-area" id="formMemo" placeholder="任意のメモ..."></textarea>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;">
-        <button class="btn btn-outline" onclick="closeModal('addModal')">キャンセル</button>
-        <button class="btn btn-primary" id="formSubmitBtn" onclick="saveItem()">登録</button>
-      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="pw-cancel-btn" onclick="closeModal('modal-pw')">キャンセル</button>
+      <button class="btn btn-primary" onclick="changePassword()">変更する</button>
     </div>
   </div>
 </div>
 
-<!-- ===== TOAST ===== -->
-<div class="toast" id="toast"></div>
+<!-- Add User -->
+<div class="overlay" id="modal-adduser">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <span class="modal-title">ユーザー追加</span>
+      <button class="modal-x" onclick="closeModal('modal-adduser')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="adduser-err" class="error-box"></div>
+      <div class="form-row">
+        <label>ユーザー名 *</label>
+        <input id="au-name" type="text" placeholder="英数字・アンダースコア">
+      </div>
+      <div class="form-row">
+        <label>初期パスワード（6文字以上）*</label>
+        <input id="au-pw" type="password" placeholder="初期パスワード">
+      </div>
+      <div class="form-row">
+        <label>権限</label>
+        <select id="au-role">
+          <option value="user">一般ユーザー</option>
+          <option value="admin">管理者</option>
+        </select>
+      </div>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:4px">※ 初回ログイン時にPW変更が必要です</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-adduser')">キャンセル</button>
+      <button class="btn btn-primary" onclick="addUser()">追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm -->
+<div class="overlay" id="modal-delete">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <span class="modal-title text-red">削除確認</span>
+      <button class="modal-x" onclick="closeModal('modal-delete')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px">以下の品目を削除しますか？この操作は取り消せません。</p>
+      <p style="margin-top:10px;font-weight:700" id="del-item-name">—</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-delete')">キャンセル</button>
+      <button class="btn btn-danger" onclick="execDelete()">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generic confirm -->
+<div class="overlay" id="modal-confirm">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-head">
+      <span class="modal-title" id="conf-title">確認</span>
+      <button class="modal-x" onclick="closeModal('modal-confirm')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="conf-msg" style="font-size:14px"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">キャンセル</button>
+      <button class="btn btn-danger" id="conf-ok-btn">実行</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
 
 <script>
-// ===== DATA =====
-let inventory = [
-  { id: 1, name: '六角ボルト M10×30', code: 'AB-1234', maker: 'ミスミ', wip: 100, burr: 30, done: 20, location: 'A倉庫', unit: '個', memo: '定期発注品' },
-  { id: 2, name: 'フランジナット M8', code: 'FN-0821', maker: '鉄鋼商事', wip: 250, burr: 80, done: 150, location: 'A倉庫', unit: '個', memo: '' },
-  { id: 3, name: 'SUS304 平ワッシャー', code: 'PW-3045', maker: 'ミスミ', wip: 500, burr: 120, done: 300, location: 'B倉庫', unit: '枚', memo: 'ステンレス製' },
-  { id: 4, name: '皿頭タッピングビス', code: 'TB-5510', maker: '大阪螺子', wip: 3000, burr: 800, done: 2600, location: 'A倉庫', unit: '本', memo: '' },
-  { id: 5, name: 'ケーブルカッター 200mm', code: 'CC-2001', maker: 'HOZAN', wip: 50, burr: 10, done: 30, location: 'C倉庫 工具棚', unit: '丁', memo: '刃の交換注意' },
-  { id: 6, name: 'プラスドライバー PH2', code: 'PD-0200', maker: 'VESSEL', wip: 50, burr: 0, done: 50, location: 'C倉庫 工具棚', unit: '本', memo: '' },
-  { id: 7, name: 'チタン六角ナット M1', code: 'TN-0100', maker: 'チタン工業', wip: 200, burr: 100, done: 5, location: 'B倉庫', unit: '個', memo: '高精度品 取扱注意' },
-  { id: 8, name: '両口スパナ 19×22mm', code: 'WR-1922', maker: 'KTC', wip: 200, burr: 50, done: 400, location: 'C倉庫 工具棚', unit: '本', memo: '' },
-  { id: 9, name: 'スプリングワッシャー M6', code: 'SW-0600', maker: '鉄鋼商事', wip: 800, burr: 200, done: 600, location: 'A倉庫', unit: '枚', memo: '' },
-  { id: 10, name: 'ステンレスキャップボルト M5', code: 'SC-0520', maker: 'ミスミ', wip: 15, burr: 5, done: 3, location: 'B倉庫', unit: '個', memo: '在庫僅少！要発注' },
-  { id: 11, name: 'ニッパー 150mm', code: 'NP-1500', maker: 'HOZAN', wip: 30, burr: 0, done: 25, location: 'C倉庫 工具棚', unit: '丁', memo: '' },
-  { id: 12, name: 'M16×50mm 亜鉛メッキネジ', code: 'ZB-1650', maker: '大阪螺子', wip: 10000, burr: 3000, done: 10000, location: 'A倉庫', unit: '本', memo: '大量在庫品' },
-];
+// ═══════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════
+function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)})}
+function now(){return new Date().toISOString()}
+function fmtDate(iso){var d=new Date(iso);return d.toLocaleDateString('ja-JP',{month:'2-digit',day:'2-digit'})+' '+d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}
+function fmtNum(n){return n==null?'0':Number(n).toLocaleString('ja-JP')}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function hashPw(s){var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h)+s.charCodeAt(i);h=h&h}return Math.abs(h).toString(36)+'_'+s.length}
 
-let currentItemId = null;
-let editMode = false;
-let currentRole = 'admin';
-let nextId = 13;
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+var DB = {users:[], items:[], history:[], lines:[]};
+var currentUser = null;
+var pendingDeleteId = null;
+var pendingOp = null; // {itemId, type:'wip_add'|'wip_to_bari'|'bari_to_done'|'done_to_ship'}
 
-// ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
-  renderAll();
-});
+var DB_KEY = 'stocks_v2';
+var SESS_KEY = 'stocks_sess_v2';
 
-// ===== RENDER =====
-function renderAll() {
-  const filtered = getFilteredItems();
-  renderTable(filtered);
-  renderMobileCards(filtered);
-  updateSummary();
-}
-
-function getFilteredItems() {
-  const query = document.getElementById('searchInput').value.toLowerCase().trim();
-  let items = [...inventory];
-
-  if (query) {
-    items = items.filter(item =>
-      item.name.toLowerCase().includes(query) ||
-      item.code.toLowerCase().includes(query) ||
-      item.maker.toLowerCase().includes(query)
-    );
-  }
-
-  // Sort
-  const sort = document.getElementById('sortSelect').value;
-  switch(sort) {
-    case 'name':
-      items.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
-      break;
-    case 'shortage':
-      items.sort((a,b) => getTotal(a) - getTotal(b));
-      break;
-    case 'stock-asc':
-      items.sort((a,b) => getTotal(a) - getTotal(b));
-      break;
-    case 'stock-desc':
-      items.sort((a,b) => getTotal(b) - getTotal(a));
-      break;
-  }
-
-  return items;
-}
-
-function getTotal(item) {
-  return item.wip + item.burr + item.done;
-}
-
-function getStatus(item) {
-  const total = getTotal(item);
-  if (total <= 30) return 'critical';
-  if (total <= 100) return 'low';
-  return 'ok';
-}
-
-function getStatusText(item) {
-  const s = getStatus(item);
-  if (s === 'critical') return '不足';
-  if (s === 'low') return '注意';
-  return '正常';
-}
-
-function getBadgeClass(item, type) {
-  const status = getStatus(item);
-  if (status === 'critical') return 'danger';
-  if (status === 'low' && type === 'wip') return 'warning';
-  return '';
-}
-
-function renderTable(items) {
-  const tbody = document.getElementById('tableBody');
-
-  if (items.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📦</div><div class="text">該当するアイテムがありません</div></div></td></tr>`;
-  } else {
-    tbody.innerHTML = items.map(item => `
-      <tr onclick="openDetail(${item.id})">
-        <td>
-          <div class="item-info">
-            <span class="item-name">${item.name}</span>
-            <span class="item-code">${item.code}</span>
-            <span class="item-maker">${item.maker}</span>
-          </div>
-        </td>
-        <td>
-          <div class="stock-badges">
-            <span class="stock-badge ${getBadgeClass(item, 'wip')}">
-              <span class="label">仕</span>
-              <span class="value">${item.wip.toLocaleString()}</span>
-            </span>
-            <span class="stock-badge ${getBadgeClass(item, 'burr')}">
-              <span class="label">バ</span>
-              <span class="value">${item.burr.toLocaleString()}</span>
-            </span>
-            <span class="stock-badge ${getBadgeClass(item, 'done')}">
-              <span class="label">完</span>
-              <span class="value">${item.done.toLocaleString()}</span>
-            </span>
-          </div>
-        </td>
-        <td>
-          <div class="location">
-            <span class="pin">📍</span>
-            ${item.location}
-          </div>
-        </td>
-        <td>
-          <span class="status-dot ${getStatus(item)}"></span>
-          ${getStatusText(item)}
-        </td>
-        <td>
-          <div class="row-action">
-            <button class="detail-btn" title="詳細">→</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  document.getElementById('itemCount').textContent = `${items.length}件`;
-  document.getElementById('footerCount').textContent = `${items.length}件表示`;
-}
-
-function renderMobileCards(items) {
-  const container = document.getElementById('mobileCards');
-
-  if (items.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="icon">📦</div><div class="text">該当するアイテムがありません</div></div>`;
-  } else {
-    container.innerHTML = items.map(item => `
-      <div class="mobile-card" onclick="openDetail(${item.id})">
-        <div class="mobile-card-header">
-          <div>
-            <div class="item-name">${item.name}</div>
-            <div class="item-code">${item.code}</div>
-            <div class="item-maker">${item.maker}</div>
-          </div>
-          <span class="status-dot ${getStatus(item)}"></span>
-        </div>
-        <div class="mobile-card-stocks">
-          <span class="stock-badge ${getBadgeClass(item, 'wip')}">
-            <span class="label">仕</span>
-            <span class="value">${item.wip.toLocaleString()}</span>
-          </span>
-          <span class="stock-badge ${getBadgeClass(item, 'burr')}">
-            <span class="label">バ</span>
-            <span class="value">${item.burr.toLocaleString()}</span>
-          </span>
-          <span class="stock-badge ${getBadgeClass(item, 'done')}">
-            <span class="label">完</span>
-            <span class="value">${item.done.toLocaleString()}</span>
-          </span>
-        </div>
-        <div class="mobile-card-footer">
-          <div class="location">
-            <span class="pin">📍</span>
-            ${item.location}
-          </div>
-          <button class="detail-btn" title="詳細">→</button>
-        </div>
-      </div>
-    `).join('');
-  }
-}
-
-function updateSummary() {
-  const total = inventory.length;
-  const totalStock = inventory.reduce((sum, i) => sum + getTotal(i), 0);
-  const warnings = inventory.filter(i => getStatus(i) === 'low').length;
-  const criticals = inventory.filter(i => getStatus(i) === 'critical').length;
-
-  document.getElementById('totalItems').textContent = total;
-  document.getElementById('totalStock').textContent = totalStock.toLocaleString();
-  document.getElementById('warningCount').textContent = warnings;
-  document.getElementById('criticalCount').textContent = criticals;
-}
-
-// ===== FILTER & SORT =====
-function filterItems() { renderAll(); }
-function sortItems() { renderAll(); }
-
-// ===== DETAIL MODAL =====
-function openDetail(id) {
-  const item = inventory.find(i => i.id === id);
-  if (!item) return;
-  currentItemId = id;
-
-  document.getElementById('modalTitle').textContent = item.name;
-  document.getElementById('modalCode').textContent = item.code || '—';
-  document.getElementById('modalMaker').textContent = item.maker || '—';
-  document.getElementById('modalLocation').textContent = '📍 ' + item.location;
-  document.getElementById('modalUnit').textContent = item.unit;
-  document.getElementById('modalMemo').value = item.memo || '';
-
-  // Process list
-  const isAdmin = currentRole === 'admin';
-  const processList = document.getElementById('processList');
-  processList.innerHTML = `
-    <div class="process-item">
-      <div class="process-info">
-        <div>
-          <div class="process-label">仕掛品</div>
-          <div><span class="process-value" id="pWip">${item.wip.toLocaleString()}</span><span class="process-unit">${item.unit}</span></div>
-        </div>
-      </div>
-      <div class="process-action">
-        <input class="process-input" type="number" id="moveWipToBurr" min="1" placeholder="数量" inputmode="numeric">
-        <button class="process-btn" onclick="moveStock('wip','burr')">→ バリ前へ</button>
-      </div>
-    </div>
-    <div class="process-arrow">↓</div>
-    <div class="process-item">
-      <div class="process-info">
-        <div>
-          <div class="process-label">バリ前</div>
-          <div><span class="process-value" id="pBurr">${item.burr.toLocaleString()}</span><span class="process-unit">${item.unit}</span></div>
-        </div>
-      </div>
-      <div class="process-action">
-        <input class="process-input" type="number" id="moveBurrToDone" min="1" placeholder="数量" inputmode="numeric">
-        <button class="process-btn" onclick="moveStock('burr','done')">→ 完成品へ</button>
-      </div>
-    </div>
-    <div class="process-arrow">↓</div>
-    <div class="process-item">
-      <div class="process-info">
-        <div>
-          <div class="process-label">完成品</div>
-          <div><span class="process-value" id="pDone">${item.done.toLocaleString()}</span><span class="process-unit">${item.unit}</span></div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  // Admin actions
-  const adminSection = document.querySelector('#detailModal .admin-only');
-  if (adminSection) {
-    adminSection.style.display = currentRole === 'admin' ? 'block' : 'none';
-  }
-
-  document.getElementById('confirmMsg').classList.remove('active');
-  document.getElementById('detailModal').classList.add('active');
-}
-
-function moveStock(from, to) {
-  const item = inventory.find(i => i.id === currentItemId);
-  if (!item) return;
-
-  const inputId = from === 'wip' ? 'moveWipToBurr' : 'moveBurrToDone';
-  const qty = parseInt(document.getElementById(inputId).value);
-
-  if (!qty || qty <= 0) {
-    showToast('⚠️ 数量を入力してください');
-    return;
-  }
-
-  if (qty > item[from]) {
-    showToast('⚠️ 在庫数を超えています');
-    return;
-  }
-
-  // Move
-  item[from] -= qty;
-  if (to === 'burr') item.burr += qty;
-  if (to === 'done') item.done += qty;
-
-  // Update display
-  document.getElementById('pWip').textContent = item.wip.toLocaleString();
-  document.getElementById('pBurr').textContent = item.burr.toLocaleString();
-  document.getElementById('pDone').textContent = item.done.toLocaleString();
-
-  // Clear input
-  document.getElementById(inputId).value = '';
-
-  // Show confirm
-  const fromLabel = from === 'wip' ? '仕掛品' : 'バリ前';
-  const toLabel = to === 'burr' ? 'バリ前' : '完成品';
-  document.getElementById('confirmText').textContent = `${fromLabel} → ${toLabel}：${qty}${item.unit} 移動完了`;
-  document.getElementById('confirmMsg').classList.add('active');
-
-  renderAll();
-  showToast(`✅ ${qty}${item.unit}を${toLabel}へ移動しました`);
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
-
-  // Save memo if detail modal
-  if (id === 'detailModal' && currentItemId) {
-    const item = inventory.find(i => i.id === currentItemId);
-    if (item) {
-      item.memo = document.getElementById('modalMemo').value;
-    }
-  }
-}
-
-// Close modal on overlay click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) {
-      closeModal(overlay.id);
-    }
-  });
-});
-
-// ===== ADD/EDIT =====
-function openAddModal() {
-  editMode = false;
-  document.getElementById('addModalTitle').textContent = '新規登録';
-  document.getElementById('formSubmitBtn').textContent = '登録';
-  document.getElementById('formName').value = '';
-  document.getElementById('formCode').value = '';
-  document.getElementById('formMaker').value = '';
-  document.getElementById('formWip').value = 0;
-  document.getElementById('formBurr').value = 0;
-  document.getElementById('formDone').value = 0;
-  document.getElementById('formLocation').value = '';
-  document.getElementById('formUnit').value = '個';
-  document.getElementById('formMemo').value = '';
-  document.getElementById('addModal').classList.add('active');
-}
-
-function editCurrentItem() {
-  const item = inventory.find(i => i.id === currentItemId);
-  if (!item) return;
-
-  editMode = true;
-  closeModal('detailModal');
-
-  document.getElementById('addModalTitle').textContent = '編集';
-  document.getElementById('formSubmitBtn').textContent = '更新';
-  document.getElementById('formName').value = item.name;
-  document.getElementById('formCode').value = item.code;
-  document.getElementById('formMaker').value = item.maker;
-  document.getElementById('formWip').value = item.wip;
-  document.getElementById('formBurr').value = item.burr;
-  document.getElementById('formDone').value = item.done;
-  document.getElementById('formLocation').value = item.location;
-  document.getElementById('formUnit').value = item.unit;
-  document.getElementById('formMemo').value = item.memo;
-  document.getElementById('addModal').classList.add('active');
-}
-
-function saveItem() {
-  const name = document.getElementById('formName').value.trim();
-  if (!name) {
-    showToast('⚠️ 品名を入力してください');
-    return;
-  }
-
-  const data = {
-    name,
-    code: document.getElementById('formCode').value.trim(),
-    maker: document.getElementById('formMaker').value.trim(),
-    wip: parseInt(document.getElementById('formWip').value) || 0,
-    burr: parseInt(document.getElementById('formBurr').value) || 0,
-    done: parseInt(document.getElementById('formDone').value) || 0,
-    location: document.getElementById('formLocation').value.trim(),
-    unit: document.getElementById('formUnit').value.trim() || '個',
-    memo: document.getElementById('formMemo').value.trim(),
+function loadDB(){
+  try{
+    var raw = localStorage.getItem(DB_KEY);
+    if(raw){DB = JSON.parse(raw); return;}
+  }catch(e){}
+  DB = {
+    users:[
+      {id:'u1',username:'admin',passwordHash:hashPw('admin123'),role:'admin',mustChangePw:true,createdAt:now()},
+      {id:'u2',username:'user1',passwordHash:hashPw('user123'),role:'user',mustChangePw:true,createdAt:now()}
+    ],
+    lines:['1号機','2号機','Aライン','Bライン'],
+    items:[
+      {id:uuid(),name:'皿頭タッピングビス',code:'ITEM-001',unit:'本',process:{wip:500,bari:200,done:3000},threshold:500,updatedAt:now()},
+      {id:uuid(),name:'M5×50mm亜鉛メッキセルフタッピングねじ',code:'ITEM-002',unit:'本',process:{wip:2000,bari:3000,done:10000},threshold:1000,updatedAt:now()},
+      {id:uuid(),name:'ケーブルカッター',code:'ITEM-003',unit:'個',process:{wip:10,bari:20,done:30},threshold:10,updatedAt:now()},
+      {id:uuid(),name:'プラスチック柄プラスドライバー',code:'ITEM-004',unit:'本',process:{wip:5,bari:15,done:50},threshold:20,updatedAt:now()},
+      {id:uuid(),name:'M1チタン六角ナット',code:'ITEM-005',unit:'個',process:{wip:30,bari:100,done:8},threshold:50,updatedAt:now()},
+      {id:uuid(),name:'両口スパナ 19mm×22mm',code:'ITEM-006',unit:'本',process:{wip:0,bari:10,done:0},threshold:20,updatedAt:now()}
+    ],
+    history:[]
   };
-
-  if (editMode && currentItemId) {
-    const item = inventory.find(i => i.id === currentItemId);
-    if (item) Object.assign(item, data);
-    showToast('✅ 更新しました');
-  } else {
-    data.id = nextId++;
-    inventory.push(data);
-    showToast('✅ 登録しました');
-  }
-
-  closeModal('addModal');
-  renderAll();
+  saveDB();
 }
 
-function deleteCurrentItem() {
-  if (!confirm('このアイテムを削除しますか？')) return;
-  inventory = inventory.filter(i => i.id !== currentItemId);
-  closeModal('detailModal');
-  renderAll();
-  showToast('🗑 削除しました');
-}
+function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(DB))}
+function saveSession(){if(currentUser)localStorage.setItem(SESS_KEY,currentUser.id)}
+function clearSession(){localStorage.removeItem(SESS_KEY)}
 
-// ===== CSV EXPORT =====
-function exportCSV() {
-  const headers = ['品名','品番','メーカー','仕掛品','バリ前','完成品','合計','保管場所','単位','メモ'];
-  const rows = inventory.map(item => [
-    item.name, item.code, item.maker,
-    item.wip, item.burr, item.done, getTotal(item),
-    item.location, item.unit, item.memo
-  ]);
-
-  const bom = '\uFEFF';
-  let csv = bom + headers.join(',') + '\n';
-  rows.forEach(row => {
-    csv += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
+function addHistory(type, item, qty, line, operator){
+  DB.history.unshift({
+    id:uuid(), timestamp:now(),
+    type:type, itemId:item.id, itemName:item.name,
+    qty:qty, line:line, operator:operator,
+    username:currentUser.username, role:currentUser.role
   });
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `在庫一覧_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('📥 CSVをエクスポートしました');
+  if(DB.history.length>5000) DB.history=DB.history.slice(0,5000);
 }
 
-// ===== ROLE SWITCH =====
-function switchRole(role) {
-  currentRole = role;
-  if (role === 'admin') {
-    document.body.classList.add('admin');
-  } else {
-    document.body.classList.remove('admin');
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+function doLogin(){
+  var username=document.getElementById('li-user').value.trim();
+  var pw=document.getElementById('li-pw').value;
+  var errEl=document.getElementById('login-err');
+  errEl.classList.remove('show');
+  if(!username||!pw){errEl.textContent='ユーザー名とパスワードを入力してください';errEl.classList.add('show');return;}
+  var user=DB.users.find(function(u){return u.username===username;});
+  if(!user||user.passwordHash!==hashPw(pw)){
+    errEl.textContent='ユーザー名またはパスワードが違います';
+    errEl.classList.add('show');
+    return;
   }
-  // Re-render to update admin-only elements
-  renderAll();
-  showToast(role === 'admin' ? '🔓 管理者モード' : '🔒 一般ユーザーモード');
+  currentUser=user;
+  saveSession();
+  bootApp();
+}
+document.getElementById('li-pw').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+document.getElementById('li-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('li-pw').focus();});
+
+function doLogout(){
+  currentUser=null;
+  clearSession();
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login-screen').style.display='';
+  document.getElementById('li-pw').value='';
 }
 
-// ===== TOAST =====
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('active');
-  setTimeout(() => toast.classList.remove('active'), 2500);
+function bootApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('active');
+  var admin=currentUser.role==='admin';
+  // Header
+  var av=document.getElementById('hd-av');
+  av.textContent=currentUser.username.charAt(0).toUpperCase();
+  av.className='user-av'+(admin?' admin-av':'');
+  document.getElementById('hd-name').textContent=currentUser.username;
+  var roleEl=document.getElementById('hd-role');
+  roleEl.textContent=admin?'管理者':'一般';
+  roleEl.className='role-chip '+(admin?'admin':'user');
+  // Admin-only elements
+  document.querySelectorAll('.admin-only').forEach(function(el){el.style.display=admin?'':'none';});
+  document.getElementById('tab-users').style.display=admin?'':'none';
+  document.getElementById('mob-tab-users').style.display=admin?'':'none';
+  document.getElementById('hd-pw-btn').style.display=admin?'':'none';
+  document.getElementById('mob-pw-btn').style.display=admin?'':'none';
+  // Mobile menu info
+  var mav=document.getElementById('mob-av');
+  mav.textContent=currentUser.username.charAt(0).toUpperCase();
+  mav.className='user-av'+(admin?' admin-av':'');
+  document.getElementById('mob-name').textContent=currentUser.username;
+  document.getElementById('mob-role').textContent=admin?'管理者':'一般ユーザー';
+  // PW banner
+  document.getElementById('pw-banner').style.display=currentUser.mustChangePw?'':'none';
+  document.getElementById('pw-modal-x').style.display=currentUser.mustChangePw?'none':'';
+  document.getElementById('pw-cancel-btn').style.display=currentUser.mustChangePw?'none':'';
+  if(currentUser.mustChangePw) setTimeout(function(){showPwModal();},600);
+  showPage('inventory');
 }
 
-// ===== KEYBOARD =====
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m.id));
+// Restore session
+loadDB();
+(function(){
+  var sid=localStorage.getItem(SESS_KEY);
+  if(sid){
+    var u=DB.users.find(function(u){return u.id===sid;});
+    if(u){currentUser=u;bootApp();}
+  }
+}());
+
+// ═══════════════════════════════════════════════
+//  PAGES
+// ═══════════════════════════════════════════════
+function showPage(name){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.header-nav .nav-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('page-'+name).classList.add('active');
+  var tabIdx={inventory:0,history:1,users:2}[name];
+  var tabs=document.querySelectorAll('.header-nav .nav-tab');
+  if(tabs[tabIdx]) tabs[tabIdx].classList.add('active');
+  if(name==='inventory'){renderInventory();renderStats();}
+  if(name==='history'){renderHistory();}
+  if(name==='users'){renderUsers();}
+}
+function navTo(name){showPage(name);closeMobMenu();}
+
+// ═══════════════════════════════════════════════
+//  MOBILE MENU
+// ═══════════════════════════════════════════════
+function toggleMobMenu(){
+  var m=document.getElementById('mob-menu');
+  var b=document.getElementById('hbg');
+  var open=m.classList.toggle('open');
+  b.classList.toggle('open',open);
+}
+function closeMobMenu(){
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('hbg').classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  var menu=document.getElementById('mob-menu');
+  var hbg=document.getElementById('hbg');
+  if(menu&&menu.classList.contains('open')&&!menu.contains(e.target)&&hbg&&!hbg.contains(e.target)){
+    closeMobMenu();
   }
 });
-</script>
 
+// ═══════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════
+function renderStats(){
+  var items=DB.items;
+  var totalDone=items.reduce(function(s,i){return s+i.process.done;},0);
+  var warnItems=items.filter(function(i){return i.process.done<=i.threshold&&i.process.done>0;});
+  var zeroItems=items.filter(function(i){return i.process.done===0;});
+  var todayHist=DB.history.filter(function(h){return h.timestamp.slice(0,10)===now().slice(0,10);});
+  document.getElementById('stats-row').innerHTML=
+    '<div class="stat-card"><div class="stat-label">品目数</div><div class="stat-val">'+items.length+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">完成品 合計</div><div class="stat-val">'+fmtNum(totalDone)+'</div></div>'+
+    '<div class="stat-card"><div class="stat-label">要注意</div><div class="stat-val '+(warnItems.length>0?'amber':'')+'">'+warnItems.length+'</div><div class="stat-sub">閾値以下</div></div>'+
+    '<div class="stat-card"><div class="stat-label">本日の操作</div><div class="stat-val">'+todayHist.length+'</div><div class="stat-sub">件</div></div>';
+}
+
+// ═══════════════════════════════════════════════
+//  INVENTORY RENDER
+// ═══════════════════════════════════════════════
+function renderInventory(){
+  var q=(document.getElementById('search-input').value||'').toLowerCase();
+  var filter=document.getElementById('filter-status').value;
+  var admin=currentUser&&currentUser.role==='admin';
+
+  var items=DB.items.filter(function(it){
+    if(q&&!it.name.toLowerCase().includes(q)&&!it.code.toLowerCase().includes(q))return false;
+    if(filter==='warn'&&!(it.process.done<=it.threshold&&it.process.done>0))return false;
+    if(filter==='zero'&&it.process.done!==0)return false;
+    return true;
+  });
+
+  var body=document.getElementById('inv-body');
+  if(!items.length){
+    body.innerHTML='<tr><td colspan="5"><div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div></td></tr>';
+    document.getElementById('inv-cards').innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';
+    renderStats();
+    return;
+  }
+
+  body.innerHTML=items.map(function(it){
+    var dw=it.process.done>0&&it.process.done<=it.threshold;
+    var dz=it.process.done===0;
+    var rowCls=dz?'row-zero':dw?'row-warn':'';
+    var wi=(dw||dz)?'<span class="w-icon">&#9888;</span>':'';
+    var doneClass='num-done'+(dz?' num-zero':dw?' num-warn':'');
+    var warnBari=it.process.bari===0?'<span class="w-icon">&#9888;</span>':'';
+    var adminBtns=admin
+      ?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+it.id+'\')">編集</button>'
+       +'<button class="btn-proc bp-del" onclick="showDeleteModal(\''+it.id+'\')">削除</button>'
+      :'';
+    return '<tr class="'+rowCls+'">'
+      +'<td class="td-name"><div class="item-name-txt">'+esc(it.name)+'</div><div class="item-code-txt">'+esc(it.code)+'</div></td>'
+      +'<td class="num-cell"><span class="num-wip">'+fmtNum(it.process.wip)+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
+      +'<td class="num-cell"><span class="num-bari">'+fmtNum(it.process.bari)+warnBari+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
+      +'<td class="num-cell"><span class="'+doneClass+'">'+fmtNum(it.process.done)+wi+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
+      +'<td><div class="act-btns">'
+        +'<button class="btn-proc bp-wip" onclick="showOpModal(\''+it.id+'\',\'wip_add\')">＋加工</button>'
+        +'<button class="btn-proc bp-w2b" onclick="showOpModal(\''+it.id+'\',\'wip_to_bari\')">バリ前移動</button>'
+        +'<button class="btn-proc bp-b2d" onclick="showOpModal(\''+it.id+'\',\'bari_to_done\')">完成</button>'
+        +'<button class="btn-proc bp-d2s" onclick="showOpModal(\''+it.id+'\',\'done_to_ship\')">出荷</button>'
+        +adminBtns
+      +'</div></td>'
+    +'</tr>';
+  }).join('');
+
+  renderInvCards(items, admin);
+  renderStats();
+}
+
+function renderInvCards(items, admin){
+  var el=document.getElementById('inv-cards');
+  if(!el)return;
+  el.innerHTML=items.map(function(it){
+    var dw=it.process.done>0&&it.process.done<=it.threshold;
+    var dz=it.process.done===0;
+    var cls='icard'+(dz?' row-zero':dw?' row-warn':'');
+    var dc=dz?'var(--red)':dw?'var(--amber)':'var(--done)';
+    var wi=(dw||dz)?'&#9888;':'';
+    var id=it.id;
+    var adminBtns=admin
+      ?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+id+'\')">編集</button>'
+       +'<button class="btn-proc bp-del" onclick="showDeleteModal(\''+id+'\')">削除</button>'
+      :'';
+    return '<div class="'+cls+'">'
+      +'<div class="icard-top">'
+        +'<div class="icard-name">'+esc(it.name)+(wi?' <span style="color:var(--red)">'+wi+'</span>':'')+'</div>'
+        +'<div class="icard-code">'+esc(it.code)+'</div>'
+      +'</div>'
+      +'<div class="icard-stocks">'
+        +'<div class="icard-stock" style="background:rgba(99,102,241,.05)">'
+          +'<div class="icard-slabel" style="color:var(--wip)">仕掛品</div>'
+          +'<div class="icard-sval" style="color:var(--wip)">'+fmtNum(it.process.wip)+'</div>'
+          +'<div class="icard-sunit">'+esc(it.unit)+'</div>'
+        +'</div>'
+        +'<div class="icard-stock" style="background:rgba(14,165,233,.05)">'
+          +'<div class="icard-slabel" style="color:var(--bari)">バリ前</div>'
+          +'<div class="icard-sval" style="color:var(--bari)">'+fmtNum(it.process.bari)+'</div>'
+          +'<div class="icard-sunit">'+esc(it.unit)+'</div>'
+        +'</div>'
+        +'<div class="icard-stock" style="background:rgba(5,150,105,.05)">'
+          +'<div class="icard-slabel" style="color:'+dc+'">完成品</div>'
+          +'<div class="icard-sval" style="color:'+dc+'">'+fmtNum(it.process.done)+'</div>'
+          +'<div class="icard-sunit">'+esc(it.unit)+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="icard-btns">'
+        +'<button class="btn-proc bp-wip" onclick="showOpModal(\''+id+'\',\'wip_add\')">＋加工</button>'
+        +'<button class="btn-proc bp-w2b" onclick="showOpModal(\''+id+'\',\'wip_to_bari\')">バリ前移動</button>'
+        +'<button class="btn-proc bp-b2d" onclick="showOpModal(\''+id+'\',\'bari_to_done\')">完成</button>'
+        +'<button class="btn-proc bp-d2s" onclick="showOpModal(\''+id+'\',\'done_to_ship\')">出荷</button>'
+        +adminBtns
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  OPERATION MODAL
+// ═══════════════════════════════════════════════
+var OP_CONFIG = {
+  wip_add:     {label:'＋加工',      from:null,   to:'仕掛品',   fromKey:null,    toKey:'wip',  color:'var(--wip)',  btnClass:'bp-wip'},
+  wip_to_bari: {label:'バリ前移動', from:'仕掛品', to:'バリ前',   fromKey:'wip',   toKey:'bari', color:'var(--bari)', btnClass:'bp-w2b'},
+  bari_to_done:{label:'完成',       from:'バリ前', to:'完成品',   fromKey:'bari',  toKey:'done', color:'var(--done)', btnClass:'bp-b2d'},
+  done_to_ship:{label:'出荷',       from:'完成品', to:'出荷',     fromKey:'done',  toKey:null,   color:'var(--red)',  btnClass:'bp-d2s'}
+};
+
+function showOpModal(itemId, opType){
+  var item=DB.items.find(function(i){return i.id===itemId;});
+  if(!item)return;
+  var cfg=OP_CONFIG[opType];
+  pendingOp={itemId:itemId, opType:opType};
+
+  document.getElementById('op-title').textContent=cfg.label+' — '+item.name;
+  document.getElementById('op-from-lbl').textContent=cfg.from||'新規';
+  document.getElementById('op-from-lbl').style.color=cfg.color;
+  document.getElementById('op-arrow').style.display=cfg.from?'':'none';
+  document.getElementById('op-to-lbl').textContent=cfg.to;
+  document.getElementById('op-to-lbl').style.color=cfg.color;
+  document.getElementById('op-item-name').textContent=item.name;
+
+  var stockInfo='';
+  if(cfg.fromKey){
+    stockInfo='移動元在庫: '+fmtNum(item.process[cfg.fromKey])+item.unit;
+  }
+  document.getElementById('op-stock-info').textContent=stockInfo;
+  document.getElementById('op-unit').textContent=item.unit;
+  document.getElementById('op-qty').value='';
+  document.getElementById('op-err').classList.remove('show');
+  document.getElementById('op-warn').classList.remove('show');
+
+  // Presets
+  var presets=[10,50,100,500,1000];
+  if(cfg.fromKey){
+    var max=item.process[cfg.fromKey];
+    presets=presets.filter(function(p){return p<=max;});
+    if(max>0&&!presets.includes(max))presets.push(max);
+  }
+  document.getElementById('op-presets').innerHTML=presets.map(function(p){
+    return '<button class="qty-pre" onclick="document.getElementById(\'op-qty\').value='+p+';checkOpWarn()">'+fmtNum(p)+'</button>';
+  }).join('');
+
+  // Line selector
+  var lineSelect=document.getElementById('op-line');
+  lineSelect.innerHTML='<option value="">— 選択してください —</option>';
+  DB.lines.forEach(function(ln){
+    lineSelect.innerHTML+='<option value="'+esc(ln)+'">'+esc(ln)+'</option>';
+  });
+
+  // Restore last used line/operator
+  var lastLine=localStorage.getItem('last_line')||'';
+  var lastOp=localStorage.getItem('last_operator')||'';
+  if(lastLine) lineSelect.value=lastLine;
+  document.getElementById('op-operator').value=lastOp;
+
+  document.getElementById('op-submit-btn').style.background=cfg.fromKey==='done'?'var(--red)':'var(--accent)';
+
+  openModal('modal-op');
+  setTimeout(function(){document.getElementById('op-qty').focus();},100);
+}
+
+function checkOpWarn(){
+  if(!pendingOp)return;
+  var cfg=OP_CONFIG[pendingOp.opType];
+  if(!cfg.fromKey)return;
+  var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
+  if(!item)return;
+  var qty=parseInt(document.getElementById('op-qty').value)||0;
+  var src=item.process[cfg.fromKey]||0;
+  var w=document.getElementById('op-warn');
+  w.classList.toggle('show',qty>0&&src>0&&qty/src>=0.8&&qty<=src);
+}
+
+function execOp(){
+  if(!pendingOp)return;
+  var cfg=OP_CONFIG[pendingOp.opType];
+  var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
+  if(!item)return;
+
+  var qty=parseInt(document.getElementById('op-qty').value);
+  var line=document.getElementById('op-line').value.trim();
+  var operator=document.getElementById('op-operator').value.trim();
+  var errEl=document.getElementById('op-err');
+  errEl.classList.remove('show');
+
+  // Validation
+  if(!qty||qty<=0){errEl.textContent='数量を入力してください（1以上）';errEl.classList.add('show');return;}
+  if(qty>99999){errEl.textContent='異常値：99,999を超える数量は入力できません';errEl.classList.add('show');return;}
+  if(!line){errEl.textContent='ラインを選択してください';errEl.classList.add('show');return;}
+  if(!operator){errEl.textContent='作業者名を入力してください';errEl.classList.add('show');return;}
+
+  // Stock check
+  if(cfg.fromKey){
+    var src=item.process[cfg.fromKey];
+    if(src<qty){
+      errEl.textContent='在庫不足：'+cfg.from+'の在庫は '+fmtNum(src)+item.unit+' です';
+      errEl.classList.add('show');
+      return;
+    }
+  }
+
+  // Execute
+  if(cfg.fromKey) item.process[cfg.fromKey]-=qty;
+  if(cfg.toKey)   item.process[cfg.toKey]+=qty;
+  item.updatedAt=now();
+
+  addHistory(cfg.label, item, qty, line, operator);
+  saveDB();
+
+  // Remember last line/operator
+  localStorage.setItem('last_line', line);
+  localStorage.setItem('last_operator', operator);
+
+  closeModal('modal-op');
+  renderInventory();
+  toast(cfg.label+': '+item.name+' '+fmtNum(qty)+item.unit+' ('+line+' / '+operator+')','ok');
+}
+
+// ═══════════════════════════════════════════════
+//  ITEM CRUD
+// ═══════════════════════════════════════════════
+function showAddModal(){
+  if(!isAdmin())return;
+  document.getElementById('item-modal-title').textContent='品目登録';
+  document.getElementById('item-id').value='';
+  ['item-name','item-code','item-unit'].forEach(function(id){document.getElementById(id).value='';});
+  ['item-threshold','item-wip','item-bari','item-done'].forEach(function(id){document.getElementById(id).value='0';});
+  document.getElementById('init-stock-row').style.display='';
+  document.getElementById('item-err').classList.remove('show');
+  openModal('modal-item');
+}
+
+function showEditModal(id){
+  if(!isAdmin())return;
+  var item=DB.items.find(function(i){return i.id===id;});
+  if(!item)return;
+  document.getElementById('item-modal-title').textContent='品目編集';
+  document.getElementById('item-id').value=item.id;
+  document.getElementById('item-name').value=item.name;
+  document.getElementById('item-code').value=item.code;
+  document.getElementById('item-unit').value=item.unit;
+  document.getElementById('item-threshold').value=item.threshold;
+  document.getElementById('init-stock-row').style.display='none';
+  document.getElementById('item-err').classList.remove('show');
+  openModal('modal-item');
+}
+
+function saveItem(){
+  if(!isAdmin())return;
+  var id=document.getElementById('item-id').value;
+  var name=document.getElementById('item-name').value.trim();
+  var code=document.getElementById('item-code').value.trim();
+  var unit=document.getElementById('item-unit').value.trim();
+  var threshold=parseInt(document.getElementById('item-threshold').value)||0;
+  var errEl=document.getElementById('item-err');
+  errEl.classList.remove('show');
+  if(!name||!code||!unit){errEl.textContent='品目名・コード・単位は必須です';errEl.classList.add('show');return;}
+  if(!id&&DB.items.find(function(i){return i.code===code;})){errEl.textContent='品目コードが重複しています';errEl.classList.add('show');return;}
+  if(id){
+    var item=DB.items.find(function(i){return i.id===id;});
+    if(!item)return;
+    item.name=name;item.code=code;item.unit=unit;item.threshold=threshold;item.updatedAt=now();
+    toast(name+' を更新しました','ok');
+  }else{
+    var wip=parseInt(document.getElementById('item-wip').value)||0;
+    var bari=parseInt(document.getElementById('item-bari').value)||0;
+    var done=parseInt(document.getElementById('item-done').value)||0;
+    DB.items.push({id:uuid(),name:name,code:code,unit:unit,process:{wip:wip,bari:bari,done:done},threshold:threshold,updatedAt:now()});
+    toast(name+' を登録しました','ok');
+  }
+  saveDB();closeModal('modal-item');renderInventory();
+}
+
+function showDeleteModal(id){
+  if(!isAdmin())return;
+  var item=DB.items.find(function(i){return i.id===id;});
+  if(!item)return;
+  pendingDeleteId=id;
+  document.getElementById('del-item-name').textContent=item.code+' — '+item.name;
+  openModal('modal-delete');
+}
+
+function execDelete(){
+  if(!isAdmin()||!pendingDeleteId)return;
+  var item=DB.items.find(function(i){return i.id===pendingDeleteId;});
+  if(item){
+    DB.items=DB.items.filter(function(i){return i.id!==pendingDeleteId;});
+    saveDB();renderInventory();toast(item.name+' を削除しました','warn');
+  }
+  pendingDeleteId=null;closeModal('modal-delete');
+}
+
+// ═══════════════════════════════════════════════
+//  LINE SETTINGS
+// ═══════════════════════════════════════════════
+function showLineModal(){
+  if(!isAdmin())return;
+  renderLinesList();
+  document.getElementById('new-line-input').value='';
+  openModal('modal-lines');
+}
+
+function renderLinesList(){
+  var el=document.getElementById('lines-list');
+  if(!DB.lines.length){el.innerHTML='<p style="font-size:13px;color:var(--text-muted)">ラインが登録されていません</p>';return;}
+  el.innerHTML=DB.lines.map(function(ln,idx){
+    return '<div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px">'
+      +'<span style="flex:1;font-size:13px;font-weight:500">'+esc(ln)+'</span>'
+      +'<button class="btn btn-ghost btn-sm" onclick="deleteLine('+idx+')" style="padding:3px 8px;font-size:11px;color:var(--red);border-color:rgba(239,68,68,.3)">削除</button>'
+    +'</div>';
+  }).join('');
+}
+
+function addLine(){
+  var val=document.getElementById('new-line-input').value.trim();
+  if(!val){toast('ライン名を入力してください','err');return;}
+  if(DB.lines.includes(val)){toast('このライン名は既に存在します','err');return;}
+  DB.lines.push(val);
+  saveDB();
+  renderLinesList();
+  document.getElementById('new-line-input').value='';
+  toast(val+' を追加しました','ok');
+}
+
+function deleteLine(idx){
+  var name=DB.lines[idx];
+  DB.lines.splice(idx,1);
+  saveDB();
+  renderLinesList();
+  toast(name+' を削除しました','warn');
+}
+
+// ═══════════════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════════════
+var ACT_CLASS={
+  '加工':'ac-wip',
+  'バリ前移動':'ac-w2b',
+  '完成':'ac-b2d',
+  '出荷':'ac-d2s'
+};
+
+function renderHistory(){
+  var filterLine=document.getElementById('hist-filter-line').value;
+  var filterOp=document.getElementById('hist-filter-op').value;
+
+  // Populate line filter
+  var lineFilter=document.getElementById('hist-filter-line');
+  var currentVal=lineFilter.value;
+  lineFilter.innerHTML='<option value="">全ライン</option>';
+  DB.lines.forEach(function(ln){
+    lineFilter.innerHTML+='<option value="'+esc(ln)+'"'+(currentVal===ln?' selected':'')+'>'+esc(ln)+'</option>';
+  });
+
+  var logs=DB.history.filter(function(h){
+    if(filterLine&&h.line!==filterLine)return false;
+    if(filterOp&&h.type!==filterOp)return false;
+    return true;
+  });
+
+  document.getElementById('hist-count').textContent=logs.length+'件';
+  var body=document.getElementById('hist-body');
+  if(!logs.length){
+    body.innerHTML='<tr><td colspan="6"><div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div></td></tr>';
+    return;
+  }
+  body.innerHTML=logs.slice(0,1000).map(function(h){
+    var cls=ACT_CLASS[h.type]||'ac-sys';
+    return '<tr>'
+      +'<td style="white-space:nowrap;color:var(--text-muted);font-size:12px;font-family:var(--fn)">'+fmtDate(h.timestamp)+'</td>'
+      +'<td><span class="act-chip '+cls+'">'+esc(h.type)+'</span></td>'
+      +'<td style="font-size:13px">'+esc(h.itemName||'—')+'</td>'
+      +'<td style="font-family:var(--fn);text-align:right;font-weight:600">'+fmtNum(h.qty)+'</td>'
+      +'<td><span style="font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px">'+esc(h.line||'—')+'</span></td>'
+      +'<td style="font-size:13px;font-weight:500">'+esc(h.operator||'—')+'</td>'
+    +'</tr>';
+  }).join('');
+}
+
+function confirmClearHistory(){
+  openConfirm('履歴クリア','操作履歴をすべて削除しますか？この操作は取り消せません。',function(){
+    DB.history=[];saveDB();renderHistory();toast('履歴をクリアしました','warn');
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  USERS
+// ═══════════════════════════════════════════════
+function renderUsers(){
+  var body=document.getElementById('user-body');
+  body.innerHTML=DB.users.map(function(u){
+    var del=u.id!==currentUser.id
+      ?'<button class="btn-proc bp-del" onclick="deleteUser(\''+u.id+'\')">削除</button>'
+      :'<span style="font-size:11px;color:var(--text-dim)">（自分）</span>';
+    return '<tr>'
+      +'<td><strong>'+esc(u.username)+'</strong></td>'
+      +'<td><span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span></td>'
+      +'<td style="font-size:12px;color:'+(u.mustChangePw?'var(--amber)':'var(--text-muted)')+'">'+(u.mustChangePw?'⚠ 未変更':'変更済')+'</td>'
+      +'<td style="font-size:12px;color:var(--text-muted)">'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</td>'
+      +'<td>'+del+'</td>'
+    +'</tr>';
+  }).join('');
+}
+
+function showAddUserModal(){
+  ['au-name','au-pw'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('au-role').value='user';
+  document.getElementById('adduser-err').classList.remove('show');
+  openModal('modal-adduser');
+}
+
+function addUser(){
+  var username=document.getElementById('au-name').value.trim();
+  var pw=document.getElementById('au-pw').value;
+  var role=document.getElementById('au-role').value;
+  var errEl=document.getElementById('adduser-err');
+  errEl.classList.remove('show');
+  if(!username){errEl.textContent='ユーザー名を入力してください';errEl.classList.add('show');return;}
+  if(!/^[a-zA-Z0-9_]+$/.test(username)){errEl.textContent='ユーザー名は英数字とアンダースコアのみ';errEl.classList.add('show');return;}
+  if(DB.users.find(function(u){return u.username===username;})){errEl.textContent='このユーザー名は既に使用されています';errEl.classList.add('show');return;}
+  if(pw.length<6){errEl.textContent='パスワードは6文字以上にしてください';errEl.classList.add('show');return;}
+  DB.users.push({id:uuid(),username:username,passwordHash:hashPw(pw),role:role,mustChangePw:true,createdAt:now()});
+  saveDB();closeModal('modal-adduser');renderUsers();toast(username+' を追加しました','ok');
+}
+
+function deleteUser(id){
+  if(id===currentUser.id){toast('自分自身は削除できません','err');return;}
+  var u=DB.users.find(function(u){return u.id===id;});
+  if(!u)return;
+  openConfirm('ユーザー削除','「'+u.username+'」を削除しますか？',function(){
+    DB.users=DB.users.filter(function(u){return u.id!==id;});
+    saveDB();renderUsers();toast(u.username+' を削除しました','warn');
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  PASSWORD
+// ═══════════════════════════════════════════════
+function showPwModal(){
+  if(!isAdmin()&&!(currentUser&&currentUser.mustChangePw)){
+    toast('パスワード変更は管理者のみ可能です','err');return;
+  }
+  ['pw-current','pw-new','pw-confirm'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('pw-err').classList.remove('show');
+  document.getElementById('pw-bar').style.width='0';
+  var must=currentUser&&currentUser.mustChangePw;
+  document.getElementById('pw-modal-x').style.display=must?'none':'';
+  document.getElementById('pw-cancel-btn').style.display=must?'none':'';
+  openModal('modal-pw');
+}
+
+function updatePwStrength(){
+  var pw=document.getElementById('pw-new').value;
+  var bar=document.getElementById('pw-bar');
+  var score=0;
+  if(pw.length>=6)score++;
+  if(pw.length>=8)score++;
+  if(/[0-9]/.test(pw))score++;
+  if(/[^a-zA-Z0-9]/.test(pw))score++;
+  var colors=['','#ef4444','#f59e0b','#10b981','#2563eb'];
+  bar.style.width=(score*25)+'%';
+  bar.style.background=colors[score]||'#ef4444';
+}
+
+function changePassword(){
+  var cur=document.getElementById('pw-current').value;
+  var nw=document.getElementById('pw-new').value;
+  var cf=document.getElementById('pw-confirm').value;
+  var errEl=document.getElementById('pw-err');
+  errEl.classList.remove('show');
+  if(!currentUser)return;
+  if(currentUser.passwordHash!==hashPw(cur)){errEl.textContent='現在のパスワードが違います';errEl.classList.add('show');return;}
+  if(nw.length<6){errEl.textContent='新しいパスワードは6文字以上にしてください';errEl.classList.add('show');return;}
+  if(nw!==cf){errEl.textContent='確認パスワードが一致しません';errEl.classList.add('show');return;}
+  var user=DB.users.find(function(u){return u.id===currentUser.id;});
+  user.passwordHash=hashPw(nw);
+  user.mustChangePw=false;
+  currentUser=user;
+  saveDB();saveSession();
+  closeModal('modal-pw');
+  document.getElementById('pw-banner').style.display='none';
+  toast('パスワードを変更しました','ok');
+}
+
+// ═══════════════════════════════════════════════
+//  CSV EXPORT
+// ═══════════════════════════════════════════════
+function exportCSV(type){
+  if(!isAdmin())return;
+  var csv='',filename='';
+  if(type==='items'){
+    csv='品目ID,品目名,品目コード,単位,仕掛品,バリ前,完成品,警告閾値,更新日時\n';
+    csv+=DB.items.map(function(i){return [i.id,qt(i.name),qt(i.code),qt(i.unit),i.process.wip,i.process.bari,i.process.done,i.threshold,i.updatedAt].join(',');}).join('\n');
+    filename='在庫一覧_'+dateStr()+'.csv';
+  }else{
+    csv='ID,日時,操作,品目名,数量,ライン,作業者,ユーザー,権限\n';
+    csv+=DB.history.map(function(h){return [h.id,h.timestamp,qt(h.type),qt(h.itemName),h.qty,qt(h.line||''),qt(h.operator||''),qt(h.username),qt(h.role)].join(',');}).join('\n');
+    filename='操作履歴_'+dateStr()+'.csv';
+  }
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+  toast(filename+' をダウンロードしました','ok');
+}
+function qt(s){return '"'+String(s||'').replace(/"/g,'""')+'"';}
+function dateStr(){return new Date().toISOString().slice(0,10).replace(/-/g,'');}
+
+// ═══════════════════════════════════════════════
+//  MODALS & TOAST
+// ═══════════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+function openConfirm(title,msg,onOk){
+  document.getElementById('conf-title').textContent=title;
+  document.getElementById('conf-msg').textContent=msg;
+  var btn=document.getElementById('conf-ok-btn');
+  btn.onclick=function(){closeModal('modal-confirm');onOk();};
+  openModal('modal-confirm');
+}
+
+document.querySelectorAll('.overlay').forEach(function(ov){
+  ov.addEventListener('mousedown',function(e){
+    if(e.target===ov){
+      if(ov.id==='modal-pw'&&currentUser&&currentUser.mustChangePw)return;
+      closeModal(ov.id);
+    }
+  });
+});
+
+function toast(msg,type){
+  type=type||'';
+  var el=document.createElement('div');
+  el.className='toast'+(type?' '+type:'');
+  var icon={ok:'✓',err:'✕',warn:'⚠'}[type]||'ℹ';
+  el.innerHTML='<span style="font-size:14px">'+icon+'</span><span>'+msg+'</span>';
+  var cont=document.getElementById('toasts');
+  cont.appendChild(el);
+  setTimeout(function(){el.style.animation='tOut .25s ease forwards';setTimeout(function(){el.remove();},250);},3000);
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function isAdmin(){return currentUser&&currentUser.role==='admin';}
+</script>
 </body>
 </html>
