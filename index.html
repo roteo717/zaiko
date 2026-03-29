@@ -190,6 +190,36 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .qty-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .qty-pre{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:4px 12px;color:var(--text-muted);font-family:var(--fn);font-size:12px;cursor:pointer;transition:all .15s}
 .qty-pre:hover{background:var(--accent-dim);color:var(--accent);border-color:var(--accent)}
+
+/* ── QTY ADJUSTER (新プリセットUI) ── */
+.qty-adjuster{display:flex;align-items:center;gap:4px;margin:8px 0 14px}
+.qty-adj-center{flex:1;position:relative;min-width:0}
+.qty-adj-input{width:100%;background:var(--surface2);border:2px solid var(--border2);border-radius:var(--r);color:var(--text);padding:10px 44px 10px 8px;font-size:26px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;transition:border-color .15s;appearance:textfield;-moz-appearance:textfield}
+.qty-adj-input::-webkit-inner-spin-button,.qty-adj-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.qty-adj-input:focus{border-color:var(--accent);background:#fff}
+.qty-adj-unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;pointer-events:none}
+.qty-adj-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:var(--r);cursor:pointer;font-family:var(--fn);font-weight:700;line-height:1;transition:transform .1s,filter .1s,background .1s;user-select:none;-webkit-user-select:none;touch-action:manipulation;flex-shrink:0;outline:none}
+.qty-adj-btn:active{transform:scale(.88)!important}
+.adj-minus{background:#e5e7eb;color:#4b5563}
+.adj-minus:hover{background:#d1d5db;color:#1f2937}
+.adj-minus.pressing{transform:scale(.86)!important;background:#c9cdd4!important}
+.adj-plus{background:var(--accent);color:#fff}
+.adj-plus:hover{background:#1d4ed8}
+.adj-plus.pressing{transform:scale(.86)!important;background:#1e40af!important}
+.adj-sz-s{width:46px;height:46px;font-size:14px;border-radius:8px}
+.adj-sz-m{width:40px;height:46px;font-size:12px;border-radius:7px}
+.adj-sz-l{width:36px;height:46px;font-size:11px;border-radius:6px}
+.adj-repeating{box-shadow:0 0 0 2px var(--accent)}
+.adj-minus.adj-repeating{box-shadow:0 0 0 2px #9ca3af}
+@keyframes adjTick{0%{transform:scale(.84)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+.adj-tick{animation:adjTick .12s ease}
+@media(max-width:700px){
+  .qty-adjuster{gap:3px}
+  .adj-sz-s{width:48px;height:50px;font-size:15px}
+  .adj-sz-m{width:40px;height:50px;font-size:12px}
+  .adj-sz-l{width:36px;height:50px;font-size:11px}
+  .qty-adj-input{font-size:22px;padding:10px 36px 10px 6px}
+}
 .transfer-warn{background:var(--amber-dim);border:1px solid var(--amber);color:#92400e;border-radius:var(--r);padding:8px 12px;font-size:12px;margin-top:8px;display:none}
 .transfer-warn.show{display:block}
 .op-info-bar{background:var(--accent-dim);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--accent);margin-bottom:12px;display:flex;gap:12px}
@@ -525,11 +555,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
         </div>
       </div>
       <div class="sec-label">移動数量</div>
-      <div class="qty-big-wrap">
-        <input type="number" id="op-qty" min="1" placeholder="0" oninput="checkOpWarn()" onkeydown="if(event.key==='Enter'){event.preventDefault();execOp();}">
-        <span class="qty-unit-badge" id="op-unit">個</span>
-      </div>
-      <div class="qty-presets" id="op-presets"></div>
+      <div class="qty-adjuster" id="op-adj-row"></div>
       <div class="transfer-warn" id="op-warn">⚠ 移動元在庫の80%以上を移動しようとしています。</div>
       <div class="form-row" id="op-line-row">
         <label>ライン <span class="text-red">*</span></label>
@@ -1231,8 +1257,95 @@ document.addEventListener('click',function(e){
 });
 
 // ═══════════════════════════════════════════════
-//  OPERATION MODAL
+//  QTY ADJUSTER — プリセットボタン (+/- UI)
 // ═══════════════════════════════════════════════
+var presetValues = [1, 10, 50]; // ← ここを変えるだけでボタン値を変更できる
+var _adjHoldTimer = null;
+var _adjHoldInterval = null;
+
+function renderQtyAdjuster(unit){
+  var row = document.getElementById('op-adj-row');
+  if(!row) return;
+
+  var html = '';
+  // マイナスボタン（大→小の順で左から）
+  presetValues.slice().reverse().forEach(function(v, i){
+    var sz = i===0 ? 'adj-sz-l' : i===1 ? 'adj-sz-m' : 'adj-sz-s';
+    html += '<button type="button" class="qty-adj-btn adj-minus '+sz+'" data-delta="-'+v+'">−'+v+'</button>';
+  });
+
+  // 中央の数量入力欄
+  html += '<div class="qty-adj-center">'
+    + '<input type="number" id="op-qty" min="0" placeholder="0" class="qty-adj-input"'
+    + ' oninput="checkOpWarn()"'
+    + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();execOp();}">'
+    + '<span class="qty-adj-unit" id="op-unit">'+(unit||'')+'</span>'
+    + '</div>';
+
+  // プラスボタン（小→大の順で右へ）
+  presetValues.forEach(function(v, i){
+    var sz = i===0 ? 'adj-sz-s' : i===1 ? 'adj-sz-m' : 'adj-sz-l';
+    html += '<button type="button" class="qty-adj-btn adj-plus '+sz+'" data-delta="+'+v+'">＋'+v+'</button>';
+  });
+
+  row.innerHTML = html;
+
+  // イベント付与
+  row.querySelectorAll('.qty-adj-btn').forEach(function(btn){
+    var delta = parseInt(btn.dataset.delta, 10);
+    var isUnit = Math.abs(delta) === 1; // ±1 のみ長押し対応
+
+    function applyDelta(isRepeat){
+      var inp = document.getElementById('op-qty');
+      var val = parseInt(inp.value) || 0;
+      val = Math.max(0, val + delta);
+      inp.value = val;
+      checkOpWarn();
+      // tick アニメーション
+      if(isRepeat){
+        btn.classList.remove('adj-tick');
+        // force reflow
+        void btn.offsetWidth;
+        btn.classList.add('adj-tick');
+      }
+    }
+
+    function stopHold(){
+      if(_adjHoldTimer){clearTimeout(_adjHoldTimer);_adjHoldTimer=null;}
+      if(_adjHoldInterval){clearInterval(_adjHoldInterval);_adjHoldInterval=null;}
+      btn.classList.remove('pressing','adj-repeating');
+    }
+
+    function startHold(){
+      btn.classList.add('pressing');
+      applyDelta(false);
+      if(isUnit){
+        _adjHoldTimer = setTimeout(function(){
+          btn.classList.add('adj-repeating');
+          _adjHoldInterval = setInterval(function(){applyDelta(true);}, 120);
+        }, 350);
+      }
+    }
+
+    // マウスイベント
+    btn.addEventListener('mousedown', function(e){
+      e.preventDefault();
+      startHold();
+    });
+    btn.addEventListener('mouseup', stopHold);
+    btn.addEventListener('mouseleave', stopHold);
+
+    // タッチイベント（スマホ対応）
+    btn.addEventListener('touchstart', function(e){
+      e.preventDefault();
+      startHold();
+    }, {passive:false});
+    btn.addEventListener('touchend', stopHold);
+    btn.addEventListener('touchcancel', stopHold);
+  });
+}
+
+
 var OP_CONFIG = {
   wip_add:     {label:'＋加工',      from:null,   to:'仕掛品',   fromKey:null,    toKey:'wip',  color:'var(--wip)',  btnClass:'bp-wip'},
   wip_to_bari: {label:'バリ前移動', from:'仕掛品', to:'バリ前',   fromKey:'wip',   toKey:'bari', color:'var(--bari)', btnClass:'bp-w2b'},
@@ -1259,21 +1372,11 @@ function showOpModal(itemId, opType){
     stockInfo='移動元在庫: '+fmtNum(item.process[cfg.fromKey])+item.unit;
   }
   document.getElementById('op-stock-info').textContent=stockInfo;
-  document.getElementById('op-unit').textContent=item.unit;
-  document.getElementById('op-qty').value='';
   document.getElementById('op-err').classList.remove('show');
   document.getElementById('op-warn').classList.remove('show');
 
-  // Presets
-  var presets=[10,50,100,500,1000];
-  if(cfg.fromKey){
-    var max=item.process[cfg.fromKey];
-    presets=presets.filter(function(p){return p<=max;});
-    if(max>0&&!presets.includes(max))presets.push(max);
-  }
-  document.getElementById('op-presets').innerHTML=presets.map(function(p){
-    return '<button class="qty-pre" onclick="document.getElementById(\'op-qty\').value='+p+';checkOpWarn()">'+fmtNum(p)+'</button>';
-  }).join('');
+  // 新プリセット調整UIをレンダリング（unitと入力欄もここで生成）
+  renderQtyAdjuster(item.unit);
 
   // Line buttons（使用頻度順）
   var lastLine=localStorage.getItem('last_line')||'';
