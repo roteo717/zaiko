@@ -462,12 +462,13 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   .modal-foot .btn-ghost{width:100%}
   /* Qty adjuster mobile: 3-row layout */
   .qty-adjuster{flex-direction:column;border-radius:10px;min-height:140px}
-  .adj-minus-row{border-bottom:1px solid var(--border2);flex:1}
+  .adj-minus-row{border-bottom:1px solid var(--border2);flex:0 0 auto;min-width:100%}
   .adj-minus-row .qty-adj-btn{border-right:1px solid var(--border2);font-size:14px;min-height:44px;flex:1}
   .adj-minus-row .qty-adj-btn:last-child{border-right:none}
-  .qty-adj-center{border-left:none;border-right:none;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
-  .qty-adj-input{font-size:28px;min-height:56px;width:100%}
-  .adj-plus-row{border-top:none;flex:1}
+  .qty-adj-center{width:100%!important;flex:1 1 auto!important;border-left:none;border-right:none;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);display:block!important;min-height:70px}
+  .qty-adj-input{font-size:36px;min-height:70px;width:100%;padding:10px 48px 10px 16px;text-align:left}
+  .qty-adj-unit{font-size:14px;right:12px}
+  .adj-plus-row{border-top:none;flex:0 0 auto;min-width:100%}
   .adj-plus-row .qty-adj-btn{border-left:1px solid var(--border2);font-size:14px;min-height:44px;flex:1}
   .adj-plus-row .qty-adj-btn:first-child{border-left:none}
   /* Group buttons mobile */
@@ -1203,7 +1204,7 @@ function renderInventory(){
   var filter=document.getElementById('filter-status').value;
   var admin=currentUser&&currentUser.role==='admin';
   var items=DB.items.filter(function(it){
-    if(q&&!it.name.toLowerCase().includes(q)&&!it.code.toLowerCase().includes(q))return false;
+    if(q&&!it.name.toLowerCase().includes(q)&&!it.code.toLowerCase().includes(q)&&!(it.maker||'').toLowerCase().includes(q))return false;
     if(filter==='warn'&&!(it.process.done<=it.threshold&&it.process.done>0))return false;
     if(filter==='zero'&&it.process.done!==0)return false;
     return true;
