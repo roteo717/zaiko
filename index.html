@@ -424,6 +424,88 @@ body {
 .footer-stat-value.teal  { color: var(--teal); }
 .footer-stat-value.done-c { color: var(--done); }
 
+/* Admin button groups */
+.admin-btn-group { display: flex; gap: 8px; }
+
+/* Admin mobile cards */
+#admin-cards { display: none; }
+.admin-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  padding: 11px 14px;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.admin-card-body { display: none; padding: 0 12px 12px; }
+.admin-card.expanded .admin-card-body { display: block; }
+.admin-card.expanded .expand-icon { transform: rotate(180deg); }
+.acard-processes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.acard-proc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 8px;
+  min-width: 52px;
+}
+.acard-proc.deburr { background: var(--amber-bg); border-color: var(--amber-bd); }
+.acard-proc.done-p { background: var(--done-bg); border-color: var(--done-bd); }
+.acard-proc-label { font-size: 9px; color: var(--text3); margin-bottom: 2px; white-space: nowrap; }
+.acard-proc-val { font-size: 16px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.acard-proc.deburr .acard-proc-val { color: var(--amber); }
+.acard-proc.done-p .acard-proc-val { color: var(--done); }
+.acard-proc-inactive .acard-proc-val { color: var(--text3); font-size: 13px; }
+.acard-stats {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.acard-stat {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.acard-stat-label { font-size: 9px; color: var(--text3); margin-bottom: 2px; }
+.acard-stat-val { font-size: 14px; font-weight: 700; font-family: var(--mono); }
+.acard-stat-val.red { color: var(--red); }
+.acard-stat-val.teal { color: var(--teal); }
+.acard-stat-val.blue { color: var(--accent); }
+.acard-edit-btn {
+  width: 100%;
+  padding: 9px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+}
+.acard-edit-btn:hover { color: var(--accent); border-color: var(--accent); }
+
 /* ===== ADMIN MODE ===== */
 .admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; }
 .admin-toolbar {
@@ -858,9 +940,13 @@ body {
   .footer-stat-label { font-size: 10px; }
 
   /* Admin */
-  .admin-toolbar { gap: 6px; }
-  .btn-primary, .btn-secondary { padding: 7px 10px; font-size: 11px; }
-  .admin-search { max-width: 100%; }
+  .admin-toolbar { flex-direction: column; gap: 8px; }
+  .admin-search { max-width: 100%; width: 100%; min-width: unset; }
+  .admin-btn-group { width: 100%; }
+  .admin-btn-group .btn-primary,
+  .admin-btn-group .btn-secondary { flex: 1; text-align: center; padding: 9px 8px; font-size: 12px; }
+  #admin-table-wrapper { display: none; }
+  #admin-cards { display: block; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .process-config-grid { grid-template-columns: 1fr; }
 }
@@ -905,12 +991,16 @@ body {
   <div class="stats-row" id="admin-stats" style="display:none"></div>
   <div class="admin-toolbar">
     <input class="search-input admin-search" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
-    <button class="btn-secondary" onclick="exportCSV()">⬇ CSV</button>
-    <button class="btn-primary" onclick="openItemForm()">＋ 品目登録</button>
-    <button class="btn-secondary" onclick="openAdjustModal()">📝 調整</button>
-    <button class="btn-secondary" onclick="showHistory()">📋 履歴</button>
+    <div class="admin-btn-group">
+      <button class="btn-secondary" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn-primary" onclick="openItemForm()">＋ 品目登録</button>
+    </div>
+    <div class="admin-btn-group admin-btn-group-sub">
+      <button class="btn-secondary" onclick="openAdjustModal()">📝 調整</button>
+      <button class="btn-secondary" onclick="showHistory()">📋 履歴</button>
+    </div>
   </div>
-  <div class="table-wrapper">
+  <div class="table-wrapper" id="admin-table-wrapper">
     <table class="data-table">
       <thead>
         <tr>
@@ -927,6 +1017,7 @@ body {
       <tbody id="admin-tbody"></tbody>
     </table>
   </div>
+  <div id="admin-cards"></div>
   <div id="history-panel-admin" class="history-panel" style="display:none">
     <div class="history-header">📋 操作履歴（最新50件）</div>
     <div class="history-list" id="history-list-admin"></div>
@@ -1332,7 +1423,7 @@ function confirmOp(){
 }
 
 // ADMIN
-function renderAdmin(){ renderAdminStats(); renderAdminTable(); }
+function renderAdmin(){ renderAdminStats(); renderAdminTable(); renderAdminCards(); }
 function renderAdminStats(){
   const tS=db.items.reduce((s,i)=>s+getTotalStock(i),0);
   const tD=db.items.reduce((s,i)=>s+i.doneCount,0);
@@ -1374,8 +1465,51 @@ function renderAdminTable(){
     </tr>`;
   }).join('');
 }
-function filterAdmin(v){ adminFilter=v; renderAdminTable(); }
-function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminTable(); }
+function filterAdmin(v){ adminFilter=v; renderAdminTable(); renderAdminCards(); }
+function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminTable(); renderAdminCards(); }
+
+function renderAdminCards(){
+  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase()));
+  gid('admin-cards').innerHTML=items.map(item=>{
+    const total=getTotalStock(item);
+    const procs=item.processConfig.map((c,i)=>{
+      if(!c.active) return '';
+      const cls=c.type==='deburr'?' deburr':c.type==='done'?' done-p':'';
+      const label=c.type==='deburr'?`バリ取り`:c.type==='done'?`完成置き場`:PNAMES[i];
+      return `<div class="acard-proc${cls}">
+        <div class="acard-proc-label">${label}</div>
+        <div class="acard-proc-val">${item.processCounts[i]}</div>
+      </div>`;
+    }).join('');
+    return `<div class="admin-card" id="acard-${item.id}">
+      <div class="admin-card-header" onclick="toggleAdminCard('${item.id}')">
+        <span class="item-code">${escH(item.code)}</span>
+        <span class="item-name" style="flex:1">${escH(item.name)}</span>
+        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent)">${total}</span>
+        <span class="expand-icon">▼</span>
+      </div>
+      <div class="admin-card-body">
+        <div class="acard-processes">${procs}</div>
+        <div class="acard-stats">
+          <div class="acard-stat">
+            <div class="acard-stat-label">完成</div>
+            <div class="acard-stat-val">${item.doneCount}</div>
+          </div>
+          <div class="acard-stat">
+            <div class="acard-stat-label">不良</div>
+            <div class="acard-stat-val red">${item.defectiveCount}</div>
+          </div>
+          <div class="acard-stat">
+            <div class="acard-stat-label">出荷済</div>
+            <div class="acard-stat-val teal">${item.shippedCount}</div>
+          </div>
+        </div>
+        <button class="acard-edit-btn" onclick="openItemFormEdit('${item.id}')">✏️ 編集</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleAdminCard(id){ gid('acard-'+id).classList.toggle('expanded'); }
 
 function showHistory(){
   const panel=gid('history-panel-admin');
