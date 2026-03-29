@@ -2,751 +2,1514 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>STOCKS — 現場在庫管理</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>工程管理システム</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
 :root {
-  --bg: #f4f6f9; --surface: #ffffff; --surface2: #f8f9fb;
-  --border: #e2e5ec; --border2: #d0d4de;
-  --text: #1a1d27; --text-muted: #6b7280; --text-dim: #9ca3af;
-  --accent: #2563eb; --accent-dim: rgba(37,99,235,0.1);
-  --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
-  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
-  --green: #10b981; --green-dim: rgba(16,185,129,0.1);
-  --wip: #8b5cf6; --wip-dim: rgba(139,92,246,0.1); --wip-border: rgba(139,92,246,0.25);
-  --done: #10b981; --done-dim: rgba(16,185,129,0.1); --done-border: rgba(16,185,129,0.25);
-  --fn: 'JetBrains Mono', monospace; --fj: 'Noto Sans JP', sans-serif;
-  --r: 8px; --r2: 12px; --sh: 0 4px 16px rgba(0,0,0,0.06);
+  --bg: #0f1117;
+  --bg2: #1a1d27;
+  --bg3: #222636;
+  --bg4: #2a2f42;
+  --border: #2e3349;
+  --border2: #3d4460;
+  --text: #e8eaf2;
+  --text2: #9198b5;
+  --text3: #5d6485;
+  --accent: #4f7eff;
+  --accent2: #3d65d4;
+  --teal: #00c9a7;
+  --amber: #ffb340;
+  --red: #ff4d6d;
+  --green: #36d399;
+  --purple: #a78bfa;
+  --process: #4f7eff;
+  --deburr: #ffb340;
+  --font: 'Noto Sans JP', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --r: 10px;
+  --r-sm: 6px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; }
-body { font-family: var(--fj); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
-/* ── BUTTONS & FORMS ── */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: var(--r); border: none; cursor: pointer; font-family: var(--fj); font-size: 14px; font-weight: 700; transition: background 0.1s; white-space: nowrap; user-select: none; min-height: 44px; }
-.btn:active { opacity: 0.8; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-danger { background: var(--red); color: #fff; }
-.btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border2); }
-.btn-ghost:active { background: var(--surface2); color: var(--text); }
-.btn-sm { padding: 6px 12px; font-size: 12px; min-height: 36px; }
-.btn-full { width: 100%; padding: 14px; font-size: 16px; min-height: 52px; }
-.form-row { margin-bottom: 16px; }
-.form-row label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
-.form-row input, .form-row select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--r); color: var(--text); padding: 12px; font-size: 15px; font-family: var(--fj); outline: none; min-height: 48px; }
-.form-row input:focus, .form-row select:focus { border-color: var(--accent); background: #fff; }
-.error-box { background: var(--red-dim); border: 1px solid var(--red); color: var(--red); border-radius: var(--r); padding: 10px 14px; font-size: 13px; font-weight: 700; margin-bottom: 12px; display: none; }
-.error-box.show { display: block; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── LAYOUT ── */
-#app { display: none; flex-direction: column; height: 100vh; }
-#app.active { display: flex; }
-.header { background: #fff; border-bottom: 1px solid var(--border); padding: 0 16px; height: 56px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 10; }
-.header-brand { font-size: 18px; font-weight: 900; letter-spacing: 0.05em; color: var(--text); }
-.header-brand span { color: var(--accent); }
-.header-nav { display: flex; gap: 4px; }
-.nav-tab { background: none; border: none; color: var(--text-muted); padding: 8px 12px; border-radius: var(--r); cursor: pointer; font-family: var(--fj); font-size: 14px; font-weight: 700; }
-.nav-tab.active { background: var(--accent-dim); color: var(--accent); }
-.user-pill { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px 4px 6px; font-size: 12px; font-weight: 700; }
-.user-av { width: 24px; height: 24px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-.main { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px; }
-.page { display: none; }
-.page.active { display: block; }
+/* ===== LAYOUT ===== */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* ── PAGE: INVENTORY (在庫一覧) ── */
-.toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.search-wrap { flex: 1; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--border2); border-radius: var(--r); padding: 0 12px; min-width: 200px; height: 44px; }
-.search-wrap input { background: none; border: none; outline: none; width: 100%; font-size: 15px; font-family: var(--fj); }
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-.inv-list { display: flex; flex-direction: column; gap: 12px; }
-.inv-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r2); padding: 16px; box-shadow: var(--sh); cursor: pointer; transition: transform 0.1s; }
-.inv-card:active { transform: scale(0.98); }
-.inv-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.inv-card-title { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.3; }
-.inv-card-code { font-size: 12px; color: var(--text-muted); font-family: var(--fn); margin-top: 4px; }
-.inv-card-stocks { display: flex; gap: 8px; }
-.stock-box { flex: 1; padding: 12px 8px; border-radius: var(--r); text-align: center; border: 1px solid transparent; }
-.stock-box.done { background: var(--done-dim); border-color: var(--done-border); color: var(--done); }
-.stock-box.wip { background: var(--wip-dim); border-color: var(--wip-border); color: var(--wip); }
-.stock-box.warn { background: var(--red-dim); border-color: rgba(239,68,68,0.2); color: var(--red); }
-.stock-label { font-size: 11px; font-weight: 700; opacity: 0.8; margin-bottom: 4px; }
-.stock-val { font-size: 24px; font-weight: 800; font-family: var(--fn); line-height: 1; }
-.inv-details-btn { margin-top: 12px; font-size: 12px; font-weight: 700; color: var(--text-muted); text-align: center; padding: 10px; background: var(--surface2); border-radius: var(--r); }
-.inv-details-content { display: none; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
-.inv-details-content.open { display: block; }
-.detail-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; padding: 6px 0; border-bottom: 1px dashed var(--border); }
-.detail-row:last-child { border-bottom: none; }
+.logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
 
-/* ── PAGE: PROCESS (工程管理/操作専用) ── */
-.proc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.proc-target-name { font-size: 18px; font-weight: 900; }
-.proc-tabs-wrap { overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
-.proc-tabs { display: flex; gap: 8px; }
-.step-tab { padding: 10px 16px; border-radius: 20px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text-muted); font-weight: 700; font-size: 14px; white-space: nowrap; cursor: pointer; transition: all 0.1s; }
-.step-tab.active { background: var(--text); color: #fff; border-color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-.proc-action-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 16px; box-shadow: var(--sh); }
-.proc-stock-display { text-align: center; margin-bottom: 24px; }
-.proc-stock-label { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
-.proc-stock-value { font-size: 48px; font-weight: 900; font-family: var(--fn); line-height: 1; color: var(--accent); }
+.mode-tabs {
+  display: flex;
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+.mode-tab {
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  border: none;
+  background: transparent;
+  transition: all 0.15s;
+}
+.mode-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
 
-.proc-qty-section { margin-bottom: 24px; }
-.qty-quick-btns { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 12px; }
-.btn-quick { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; font-size: 15px; font-weight: 800; font-family: var(--fn); color: var(--text); height: 48px; cursor: pointer; }
-.btn-quick:active { background: var(--border); }
-#proc-input-qty { width: 100%; height: 64px; font-size: 32px; font-weight: 900; font-family: var(--fn); text-align: center; border: 2px solid var(--border2); border-radius: 12px; background: var(--surface2); color: var(--text); outline: none; transition: border-color 0.1s; }
-#proc-input-qty:focus { border-color: var(--accent); background: #fff; }
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: var(--bg3);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text2);
+}
+.user-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+}
 
-.proc-action-grid { display: flex; flex-direction: column; gap: 16px; }
-.proc-destinations { display: flex; flex-direction: column; gap: 8px; }
-.btn-dest { width: 100%; min-height: 60px; border-radius: 12px; font-size: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border: none; cursor: pointer; transition: opacity 0.1s; }
-.btn-dest:active { opacity: 0.8; }
-.proc-ng-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-top: 1px solid var(--border); padding-top: 16px; }
-.btn-ng { height: 52px; border-radius: 10px; font-size: 14px; font-weight: 700; border: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
-.nt-setup { background: var(--amber-dim); color: var(--amber); border-color: rgba(245,158,11,0.3); }
-.nt-defect { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.2); }
-.nt-setup:active, .nt-defect:active { opacity: 0.8; }
+/* ===== FIELD MODE ===== */
+.field-mode { padding: 16px; max-width: 1200px; margin: 0 auto; width: 100%; }
 
-/* ── HISTORY / USERS (既存テーブルの簡易レスポンシブ化) ── */
-.table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--r2); overflow-x: auto; box-shadow: var(--sh); }
-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; }
-th { background: var(--surface2); font-size: 11px; font-weight: 700; color: var(--text-muted); }
-.act-chip { display: inline-flex; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--surface2); color: var(--text); }
-.ac-corr { background: #fee2e2; color: #b91c1c; }
+.field-search {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.search-input {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--text3); }
 
-/* ── MODALS & TOAST ── */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end; justify-content: center; }
-.overlay.show { display: flex; }
-.modal { background: #fff; border-radius: 16px 16px 0 0; width: 100%; max-height: 90vh; display: flex; flex-direction: column; }
-.modal-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.modal-title { font-size: 16px; font-weight: 700; }
-.modal-x { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 4px; }
-.modal-body { padding: 20px; overflow-y: auto; }
-.modal-foot { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+.field-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
 
-#toasts { position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-.toast { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--r); padding: 14px 16px; box-shadow: var(--sh); font-size: 14px; font-weight: 700; animation: tIn 0.2s ease; }
-.toast.ok { border-left-color: var(--green); }
-.toast.err { border-left-color: var(--red); }
-@keyframes tIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+/* Item Cards */
+.item-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.item-card:hover { border-color: var(--border2); }
 
-/* ── LOGIN ── */
-#login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f0f4f8; padding: 20px; }
-.login-card { background: #fff; border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; box-shadow: var(--sh); text-align: center; }
-.login-brand { font-size: 24px; font-weight: 900; margin-bottom: 24px; }
-.login-brand span { color: var(--accent); }
-.empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+.item-card-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.item-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  background: var(--bg3);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.item-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.item-unit {
+  font-size: 11px;
+  color: var(--text3);
+  margin-left: 2px;
+}
+.item-summary {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.summary-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.summary-label { font-size: 10px; color: var(--text3); }
+.summary-value { font-size: 14px; font-weight: 700; font-family: var(--mono); }
+.summary-value.danger { color: var(--red); }
+.summary-value.shipped { color: var(--teal); }
+.summary-value.total { color: var(--accent); }
+
+.expand-icon {
+  color: var(--text3);
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+.item-card.expanded .expand-icon { transform: rotate(180deg); }
+
+.item-card-body {
+  display: none;
+  padding: 0 16px 16px;
+}
+.item-card.expanded .item-card-body { display: block; }
+
+/* Process Grid */
+.process-grid {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+}
+
+.process-block {
+  flex: 0 0 auto;
+  min-width: 160px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+  position: relative;
+}
+
+.process-block.deburr-block {
+  border-color: var(--deburr);
+  background: rgba(255,179,64,0.06);
+}
+.deburr-label {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--deburr);
+  color: #1a0f00;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.process-name {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.process-count {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+  margin-bottom: 10px;
+  line-height: 1;
+}
+.process-count.zero { color: var(--text3); }
+
+.process-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.process-actions-row {
+  display: flex;
+  gap: 4px;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-family: var(--font);
+  font-weight: 500;
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.btn:active { transform: scale(0.96); }
+.btn:disabled { opacity: 0.35; cursor: default; }
+
+.btn-move {
+  flex: 1;
+  padding: 7px 6px;
+  font-size: 12px;
+  background: var(--bg4);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-move:hover:not(:disabled) { background: var(--accent2); border-color: var(--accent); color: #fff; }
+
+.btn-next { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+.btn-next:hover:not(:disabled) { background: #6b94ff !important; }
+
+.btn-defect {
+  flex: 1;
+  padding: 7px 6px;
+  font-size: 12px;
+  background: rgba(255,77,109,0.1);
+  color: var(--red);
+  border: 1px solid rgba(255,77,109,0.25);
+}
+.btn-defect:hover:not(:disabled) { background: rgba(255,77,109,0.2); }
+
+.btn-ship {
+  width: 100%;
+  padding: 7px 6px;
+  font-size: 12px;
+  background: rgba(0,201,167,0.1);
+  color: var(--teal);
+  border: 1px solid rgba(0,201,167,0.25);
+}
+.btn-ship:hover:not(:disabled) { background: rgba(0,201,167,0.2); }
+
+/* Qty selector */
+.qty-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.qty-btn {
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: background 0.1s;
+}
+.qty-btn:hover { background: var(--bg3); color: var(--text); }
+.qty-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.qty-display {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 6px;
+  outline: none;
+}
+
+/* Defective / Shipped summary */
+.item-footer {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.footer-stat {
+  flex: 1;
+  background: var(--bg3);
+  border-radius: var(--r-sm);
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-stat-label { font-size: 11px; color: var(--text3); }
+.footer-stat-value { font-size: 16px; font-weight: 700; font-family: var(--mono); }
+.footer-stat-value.red { color: var(--red); }
+.footer-stat-value.teal { color: var(--teal); }
+
+/* ===== ADMIN MODE ===== */
+.admin-mode { padding: 16px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+.admin-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.admin-toolbar .search-input { max-width: 280px; }
+
+.btn-primary {
+  padding: 9px 16px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 500;
+}
+.btn-primary:hover { background: #6b94ff; }
+
+.btn-secondary {
+  padding: 9px 16px;
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 500;
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--border2); }
+
+/* Table */
+.table-wrapper {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th {
+  background: var(--bg3);
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.data-table th:hover { color: var(--text2); }
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  white-space: nowrap;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table .mono { font-family: var(--mono); }
+.data-table .num { text-align: right; font-family: var(--mono); }
+.data-table .num-zero { color: var(--text3); }
+.data-table .num-red { color: var(--red); font-weight: 600; }
+.data-table .num-teal { color: var(--teal); font-weight: 600; }
+.data-table .num-blue { color: var(--accent); font-weight: 600; }
+
+.process-cell {
+  display: inline-block;
+  min-width: 36px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg3);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.process-cell.deburr { background: rgba(255,179,64,0.12); color: var(--amber); }
+
+.action-btn {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--bg4);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  transition: all 0.1s;
+}
+.action-btn:hover { color: var(--text); border-color: var(--border2); }
+
+/* Stats Row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+}
+.stat-card-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.stat-card-value { font-size: 24px; font-weight: 700; font-family: var(--mono); }
+.stat-card-value.blue { color: var(--accent); }
+.stat-card-value.teal { color: var(--teal); }
+.stat-card-value.red { color: var(--red); }
+.stat-card-value.amber { color: var(--amber); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+.modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.modal-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.modal-icon.move { background: rgba(79,126,255,0.15); }
+.modal-icon.defect { background: rgba(255,77,109,0.15); }
+.modal-icon.ship { background: rgba(0,201,167,0.15); }
+.modal-icon.receive { background: rgba(54,211,153,0.15); }
+
+.modal-info {
+  background: var(--bg3);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--text2);
+}
+.modal-info strong { color: var(--text); }
+
+.form-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 6px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.form-group { margin-bottom: 14px; }
+
+.form-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+  cursor: pointer;
+}
+.form-select option { background: var(--bg2); }
+
+.qty-input-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.qty-preset-btn {
+  padding: 7px 12px;
+  background: var(--bg4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--mono);
+  transition: all 0.1s;
+}
+.qty-preset-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.qty-main-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 7px 12px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--mono);
+  text-align: center;
+  outline: none;
+}
+.qty-main-input:focus { border-color: var(--accent); }
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+.btn-confirm {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  transition: background 0.1s;
+}
+.btn-confirm:hover { background: #6b94ff; }
+.btn-confirm.danger { background: var(--red); }
+.btn-confirm.danger:hover { background: #ff6b86; }
+.btn-confirm.teal { background: var(--teal); color: #003a30; }
+.btn-cancel {
+  padding: 10px 16px;
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  cursor: pointer;
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+.btn-cancel:hover { color: var(--text); }
+
+/* ===== HISTORY PANEL ===== */
+.history-panel {
+  margin-top: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.history-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.history-list { max-height: 300px; overflow-y: auto; }
+.history-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.history-item:last-child { border-bottom: none; }
+.history-type {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  min-width: 44px;
+  text-align: center;
+}
+.type-move { background: rgba(79,126,255,0.15); color: var(--accent); }
+.type-receive { background: rgba(54,211,153,0.15); color: var(--green); }
+.type-ship { background: rgba(0,201,167,0.15); color: var(--teal); }
+.type-defect { background: rgba(255,77,109,0.15); color: var(--red); }
+.type-adjust { background: rgba(167,139,250,0.15); color: var(--purple); }
+
+.history-desc { flex: 1; color: var(--text2); }
+.history-qty {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.history-time { color: var(--text3); font-size: 10px; }
+
+/* ===== TOAST ===== */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideIn 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+.toast-dot { width: 6px; height: 6px; border-radius: 50%; }
+.toast.success .toast-dot { background: var(--green); }
+.toast.error .toast-dot { background: var(--red); }
+
+@keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+/* ===== ITEM FORM ===== */
+.process-config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.process-config-item {
+  background: var(--bg3);
+  border-radius: var(--r-sm);
+  padding: 8px;
+  border: 1px solid var(--border);
+}
+.process-config-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+.process-toggle { display: flex; gap: 4px; }
+.type-btn {
+  flex: 1;
+  padding: 4px 8px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.1s;
+  font-family: var(--font);
+}
+.type-btn.active-process { background: rgba(79,126,255,0.2); color: var(--accent); border-color: var(--accent); }
+.type-btn.active-deburr { background: rgba(255,179,64,0.2); color: var(--amber); border-color: var(--amber); }
+.type-btn.active-off { background: rgba(255,77,109,0.1); color: var(--text3); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+
+@media (max-width: 600px) {
+  .header { padding: 0 12px; }
+  .field-mode, .admin-mode { padding: 12px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .process-config-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
+<div class="app" id="app">
 
-<!-- ═══ LOGIN ═══ -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-brand">STOCK<span>S</span></div>
-    <div id="login-err" class="error-box"></div>
-    <div class="form-row"><input id="li-user" type="text" placeholder="ユーザー名 (admin)"></div>
-    <div class="form-row"><input id="li-pw" type="password" placeholder="パスワード (admin123)"></div>
-    <button class="btn btn-primary btn-full mt8" onclick="doLogin()">ログイン</button>
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">⚙</div>
+    工程管理
+  </div>
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="switchMode('field')">📱 現場</button>
+    <button class="mode-tab" onclick="switchMode('admin')">🖥 管理</button>
+  </div>
+  <div class="header-right">
+    <div class="user-badge">
+      <div class="user-dot"></div>
+      <span id="current-user">田中 一郎</span>
+    </div>
+  </div>
+</header>
+
+<!-- FIELD MODE -->
+<div id="field-mode" class="field-mode">
+  <div class="field-search">
+    <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterItems(this.value)">
+  </div>
+  <div class="field-header-row">
+    <span class="section-title" id="item-count-label">品目一覧</span>
+  </div>
+  <div id="field-items"></div>
+</div>
+
+<!-- ADMIN MODE -->
+<div id="admin-mode" class="admin-mode" style="display:none">
+  <div class="stats-row" id="admin-stats"></div>
+  <div class="admin-toolbar">
+    <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
+    <button class="btn btn-secondary" onclick="exportCSV()">⬇ CSV出力</button>
+    <button class="btn btn-primary" onclick="openItemForm()">＋ 品目登録</button>
+    <button class="btn btn-secondary" onclick="openAdjustModal()">📝 在庫調整</button>
+    <button class="btn btn-secondary" onclick="showHistory()">📋 操作履歴</button>
+  </div>
+  <div class="table-wrapper">
+    <table class="data-table" id="admin-table">
+      <thead>
+        <tr>
+          <th onclick="sortAdmin('code')">品番 ↕</th>
+          <th onclick="sortAdmin('name')">品名 ↕</th>
+          <th>工程1</th><th>工程2</th><th>工程3</th><th>工程4</th><th>工程5</th><th>工程6</th>
+          <th onclick="sortAdmin('defective')">不良 ↕</th>
+          <th onclick="sortAdmin('shipped')">出荷 ↕</th>
+          <th>合計在庫</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="admin-tbody"></tbody>
+    </table>
+  </div>
+  <div id="history-panel-admin" class="history-panel" style="display:none">
+    <div class="history-header">
+      <span>📋</span> 操作履歴（最新50件）
+    </div>
+    <div class="history-list" id="history-list-admin"></div>
   </div>
 </div>
 
-<!-- ═══ APP ═══ -->
-<div id="app">
-  <header class="header">
-    <div class="header-brand">STOCK<span>S</span></div>
-    <nav class="header-nav">
-      <button class="nav-tab active" onclick="showPage('inventory')">在庫一覧</button>
-      <button class="nav-tab" onclick="showPage('history')">履歴</button>
-      <button class="nav-tab admin-only" onclick="showPage('users')" style="display:none">設定</button>
-    </nav>
-    <div class="user-pill" onclick="doLogout()">
-      <div class="user-av" id="hd-av">A</div>ログアウト
-    </div>
-  </header>
-
-  <main class="main">
-    
-    <!-- ── 1. 在庫一覧 ── -->
-    <div id="page-inventory" class="page active">
-      <div class="toolbar">
-        <div class="search-wrap">
-          <input id="search-input" type="text" placeholder="製品名で検索..." oninput="renderInventory()">
-        </div>
-        <button class="btn btn-primary btn-sm admin-only" onclick="showAddModal()">＋ 製品登録</button>
-        <button class="btn btn-ghost btn-sm admin-only" onclick="showProcConfigModal()">⚙ 工程設定</button>
-      </div>
-      <div class="inv-list" id="new-inv-list"></div>
-    </div>
-
-    <!-- ── 2. 工程管理 (操作画面) ── -->
-    <div id="page-process" class="page">
-      <div class="proc-header">
-        <button class="btn btn-ghost btn-sm" onclick="showPage('inventory')">← 戻る</button>
-        <div class="proc-target-name" id="proc-target-name">製品名</div>
-      </div>
-
-      <div class="proc-tabs-wrap">
-        <div class="proc-tabs" id="proc-tabs"></div>
-      </div>
-
-      <div class="proc-action-card">
-        <div class="proc-stock-display">
-          <div class="proc-stock-label" id="proc-stock-label">現在在庫（良品）</div>
-          <div class="proc-stock-value" id="proc-current-stock">0</div>
-          <div class="proc-stock-unit" id="proc-current-unit">個</div>
-        </div>
-        
-        <div class="proc-qty-section">
-          <div class="qty-quick-btns">
-            <button class="btn-quick" onclick="addProcQty(-10)">-10</button>
-            <button class="btn-quick" onclick="addProcQty(-5)">-5</button>
-            <button class="btn-quick" onclick="addProcQty(-1)">-1</button>
-            <button class="btn-quick" onclick="addProcQty(1)">+1</button>
-            <button class="btn-quick" onclick="addProcQty(5)">+5</button>
-            <button class="btn-quick" onclick="addProcQty(10)">+10</button>
-          </div>
-          <input type="number" id="proc-input-qty" placeholder="数量を入力" />
-        </div>
-
-        <div class="proc-action-grid">
-          <div id="proc-destinations" class="proc-destinations"></div>
-          <div class="proc-ng-actions" id="proc-ng-actions">
-            <button class="btn-ng nt-setup" onclick="execNg('setup')">段取り品NG<br><small style="font-size:11px; opacity:0.8">タップで確定</small></button>
-            <button class="btn-ng nt-defect" onclick="execNg('defect')">不良品NG<br><small style="font-size:11px; opacity:0.8">タップで確定</small></button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── 3. 操作履歴 ── -->
-    <div id="page-history" class="page">
-      <div class="toolbar" style="justify-content:space-between">
-        <div style="font-size:16px; font-weight:700;">操作履歴 <span id="hist-count" style="font-size:12px; color:var(--text-muted)"></span></div>
-        <button class="btn btn-ghost btn-sm admin-only" onclick="exportCSV()">CSV出力</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>日時</th><th>操作</th><th>工程</th><th>製品</th><th>数量</th><th>作業者</th><th>取消</th></tr></thead>
-          <tbody id="hist-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ── 4. ユーザー管理 ── -->
-    <div id="page-users" class="page">
-      <div class="toolbar" style="justify-content:space-between">
-        <div style="font-size:16px; font-weight:700;">ユーザー設定</div>
-        <button class="btn btn-primary btn-sm" onclick="showAddUserModal()">＋ 追加</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>ユーザー名</th><th>権限</th><th>削除</th></tr></thead>
-          <tbody id="user-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<!-- ═══ MODALS ═══ -->
-
-<!-- 製品登録 -->
-<div class="overlay" id="modal-item">
+<!-- OPERATION MODAL -->
+<div class="modal-overlay" id="op-modal">
   <div class="modal">
-    <div class="modal-head"><span class="modal-title" id="item-modal-title">製品登録</span><button class="modal-x" onclick="closeModal('modal-item')">✕</button></div>
-    <div class="modal-body">
-      <div id="item-err" class="error-box"></div>
-      <input type="hidden" id="item-id">
-      <div class="form-row"><label>製品名 *</label><input id="item-name" type="text" placeholder="例: 製品A"></div>
-      <div class="form-row"><label>製品コード *</label><input id="item-code" type="text" placeholder="例: ITEM-001"></div>
-      <div class="form-row"><label>単位 *</label><input id="item-unit" type="text" placeholder="例: 個"></div>
-      <div class="form-row" id="init-stock-row"><label>初期在庫（成形素材）</label><input id="item-init-stock" type="number" min="0" placeholder="0"></div>
+    <div class="modal-title">
+      <div class="modal-icon" id="op-icon">→</div>
+      <span id="op-title">操作</span>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-primary btn-full" onclick="saveItem()">保存する</button>
-      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-item')">キャンセル</button>
+    <div class="modal-info" id="op-info"></div>
+    <div class="form-group">
+      <label class="form-label">数量</label>
+      <div class="qty-input-row">
+        <button class="qty-preset-btn" onclick="addQty(1)">+1</button>
+        <button class="qty-preset-btn" onclick="addQty(10)">+10</button>
+        <button class="qty-preset-btn" onclick="addQty(50)">+50</button>
+        <input class="qty-main-input" id="op-qty" type="number" min="1" value="1">
+      </div>
+    </div>
+    <div class="form-group" id="op-to-process-group" style="display:none">
+      <label class="form-label">移動先工程</label>
+      <select class="form-select" id="op-to-process"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('op-modal')">キャンセル</button>
+      <button class="btn-confirm" id="op-confirm-btn" onclick="confirmOp()">確定</button>
     </div>
   </div>
 </div>
 
-<!-- 工程設定 -->
-<div class="overlay" id="modal-proc-config">
+<!-- ITEM FORM MODAL -->
+<div class="modal-overlay" id="item-form-modal">
   <div class="modal">
-    <div class="modal-head"><span class="modal-title">工程設定</span><button class="modal-x" onclick="closeModal('modal-proc-config')">✕</button></div>
-    <div class="modal-body">
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">加工工程は最大6つ。完成品は自動で末尾に追加されます。</p>
-      <div id="proc-config-list" style="display:flex; flex-direction:column; gap:12px;"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:12px; width:100%" onclick="addProcStep()" id="proc-add-step-btn">＋ 工程を追加</button>
+    <div class="modal-title">
+      <div class="modal-icon receive" style="font-size:18px">📦</div>
+      <span id="form-modal-title">品目登録</span>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-primary btn-full" onclick="saveProcConfig()">保存する</button>
-      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-proc-config')">キャンセル</button>
+    <div class="form-group">
+      <label class="form-label">品番</label>
+      <input class="form-input" id="form-code" placeholder="例: A-001" type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">品名</label>
+      <input class="form-input" id="form-name" placeholder="例: フランジ部品" type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">単位</label>
+      <input class="form-input" id="form-unit" placeholder="例: 個" type="text" value="個">
+    </div>
+    <div class="form-group">
+      <label class="form-label">工程設定（使用する工程を設定）</label>
+      <div class="process-config-grid" id="process-config-grid"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('item-form-modal')">キャンセル</button>
+      <button class="btn-confirm" id="item-form-confirm" onclick="saveItem()">登録</button>
     </div>
   </div>
 </div>
 
-<!-- ユーザー追加 -->
-<div class="overlay" id="modal-adduser">
+<!-- ADJUST MODAL -->
+<div class="modal-overlay" id="adjust-modal">
   <div class="modal">
-    <div class="modal-head"><span class="modal-title">ユーザー追加</span><button class="modal-x" onclick="closeModal('modal-adduser')">✕</button></div>
-    <div class="modal-body">
-      <div id="adduser-err" class="error-box"></div>
-      <div class="form-row"><label>ユーザー名 *</label><input id="au-name" type="text"></div>
-      <div class="form-row"><label>初期パスワード *</label><input id="au-pw" type="password"></div>
-      <div class="form-row"><label>権限</label><select id="au-role"><option value="user">一般</option><option value="admin">管理者</option></select></div>
+    <div class="modal-title">
+      <div class="modal-icon" style="background:rgba(167,139,250,0.15);font-size:18px">📝</div>
+      在庫調整（管理者）
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-primary btn-full" onclick="addUser()">追加する</button>
-      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-adduser')">キャンセル</button>
+    <div class="form-group">
+      <label class="form-label">品目</label>
+      <select class="form-select" id="adj-item" onchange="updateAdjProcess()"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">対象工程</label>
+      <select class="form-select" id="adj-process"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">調整後数量（現在値を上書き）</label>
+      <input class="form-input" id="adj-qty" type="number" min="0" value="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">理由</label>
+      <input class="form-input" id="adj-reason" placeholder="棚卸し差異、計測ミスなど" type="text">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('adjust-modal')">キャンセル</button>
+      <button class="btn-confirm" style="background:var(--purple)" onclick="confirmAdjust()">調整実行</button>
     </div>
   </div>
 </div>
 
-<div id="toasts"></div>
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
 
 <script>
-// ═══════════════════════════════════════════════
-//  UTILS & CONSTANTS
-// ═══════════════════════════════════════════════
-function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)})}
-function now(){return new Date().toISOString()}
-function fmtDate(iso){var d=new Date(iso);return d.toLocaleDateString('ja-JP',{month:'2-digit',day:'2-digit'})+' '+d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}
-function fmtNum(n){return n==null?'0':Number(n).toLocaleString('ja-JP')}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function hashPw(s){var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h)+s.charCodeAt(i);h=h&h}return Math.abs(h).toString(36)+'_'+s.length}
-function hexToRgba(hex,a){hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];return 'rgba('+parseInt(hex.substring(0,2),16)+','+parseInt(hex.substring(2,4),16)+','+parseInt(hex.substring(4,6),16)+','+a+')';}
+// ===== DATA STORE =====
+const PROCESS_NAMES = ['工程1','工程2','工程3','工程4','工程5','工程6'];
 
-var PROC_COLORS =['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#06b6d4','#10b981'];
-var PROC_DONE_ID = '__done__';
-var DB_KEY = 'stocks_v11';
-var SESS_KEY = 'stocks_sess_v11';
-var DB = {users:[], items:[], history:[], procConfig:[], procStock:{}};
-var currentUser = null;
-
-// ═══════════════════════════════════════════════
-//  DB & INIT
-// ═══════════════════════════════════════════════
-function loadDB(){
-  try{ var raw=localStorage.getItem(DB_KEY); if(raw) DB=JSON.parse(raw); }catch(e){}
-  if(!DB.users || !DB.users.length){
-    DB.users =[{id:'u1',username:'admin',passwordHash:hashPw('admin123'),role:'admin'}];
-  }
-  if(!DB.items) DB.items = [];
-  if(!DB.history) DB.history =[];
-  initProcConfig();
-}
-function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(DB))}
-function saveSession(){if(currentUser)localStorage.setItem(SESS_KEY,currentUser.id)}
-function clearSession(){localStorage.removeItem(SESS_KEY)}
-
-function defaultProcConfig(){
-  return[
-    {id:'p0', label:'成形素材', color:PROC_COLORS[0], next:['p1']},
-    {id:'p1', label:'加工①', color:PROC_COLORS[1], next:['p2']},
-    {id:'p2', label:'バリ取り', color:PROC_COLORS[2], next:[PROC_DONE_ID]}
-  ];
-}
-
-function initProcConfig(){
-  if(!DB.procConfig || !DB.procConfig.length) DB.procConfig = defaultProcConfig();
-  if(!DB.procStock) DB.procStock = {};
-  
-  // 既存アイテムのprocStock初期化とデータマイグレーション
-  DB.items.forEach(function(it){
-    if(!DB.procStock[it.id]) {
-      DB.procStock[it.id] = {};
-      DB.procConfig.forEach(function(p){ DB.procStock[it.id][p.id] = {good:0, ng:0}; });
-      DB.procStock[it.id][PROC_DONE_ID] = {good: (it.process && it.process.done)||0, ng:0};
-      
-      // 旧システムのwip, bariがあれば適当な工程に引き継ぐ
-      if(it.process && DB.procConfig[1]) {
-        if(it.process.wip) DB.procStock[it.id][DB.procConfig[1].id].good += it.process.wip;
-        var lastP = DB.procConfig[DB.procConfig.length-1];
-        if(it.process.bari) DB.procStock[it.id][lastP.id].good += it.process.bari;
-      }
-    } else {
-      // Configが増減した場合の補填
-      DB.procConfig.forEach(function(p){ if(!DB.procStock[it.id][p.id]) DB.procStock[it.id][p.id] = {good:0, ng:0}; });
-      if(!DB.procStock[it.id][PROC_DONE_ID]) DB.procStock[it.id][PROC_DONE_ID] = {good:(it.process&&it.process.done)||0, ng:0};
+let db = {
+  items: [
+    {
+      id: 'i1', code: 'A-001', name: 'フランジ部品', unit: '個',
+      processCounts: [45, 28, 12, 8, 0, 0],
+      defectiveCount: 3, shippedCount: 120,
+      processConfig: [
+        {type:'process',active:true},{type:'process',active:true},
+        {type:'deburr',active:true},{type:'process',active:true},
+        {type:'process',active:false},{type:'process',active:false}
+      ]
+    },
+    {
+      id: 'i2', code: 'B-042', name: 'シャフトカラー', unit: '個',
+      processCounts: [80, 0, 35, 0, 0, 0],
+      defectiveCount: 1, shippedCount: 340,
+      processConfig: [
+        {type:'process',active:true},{type:'deburr',active:true},
+        {type:'process',active:true},{type:'process',active:false},
+        {type:'process',active:false},{type:'process',active:false}
+      ]
+    },
+    {
+      id: 'i3', code: 'C-017', name: 'ブラケット', unit: '個',
+      processCounts: [120, 60, 20, 15, 5, 0],
+      defectiveCount: 8, shippedCount: 88,
+      processConfig: [
+        {type:'process',active:true},{type:'process',active:true},
+        {type:'process',active:true},{type:'deburr',active:true},
+        {type:'process',active:true},{type:'process',active:false}
+      ]
+    },
+    {
+      id: 'i4', code: 'D-003', name: 'スペーサー', unit: '個',
+      processCounts: [200, 0, 0, 0, 0, 0],
+      defectiveCount: 0, shippedCount: 500,
+      processConfig: [
+        {type:'process',active:true},{type:'deburr',active:true},
+        {type:'process',active:false},{type:'process',active:false},
+        {type:'process',active:false},{type:'process',active:false}
+      ]
     }
+  ],
+  transactions: [],
+  editingItemId: null
+};
+
+// ===== STATE =====
+let currentMode = 'field';
+let pendingOp = null;
+let fieldFilter = '';
+let adminFilter = '';
+let adminSortKey = null;
+let adminSortDir = 1;
+let editingItem = null;
+const formProcessConfig = Array.from({length:6}, () => ({type:'process', active:false}));
+
+// ===== UTILS =====
+function generateId() { return '_' + Math.random().toString(36).slice(2,9); }
+function now() { return new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function getUser() { return '田中 一郎'; }
+
+function getActiveProcesses(item) {
+  return item.processConfig.map((c,i)=>({...c,idx:i})).filter(c=>c.active);
+}
+function getTotalStock(item) {
+  return item.processCounts.reduce((s,n)=>s+n,0);
+}
+
+function addTransaction(itemId, type, qty, fromProcess, toProcess, note='') {
+  db.transactions.unshift({
+    id: generateId(), itemId, type, quantity: qty,
+    fromProcess, toProcess, userId: getUser(),
+    timestamp: now(), note
   });
-  saveDB();
+  if (db.transactions.length > 500) db.transactions = db.transactions.slice(0,500);
 }
 
-function addHistory(type, item, qty, operator, group){
-  DB.history.unshift({
-    id: uuid(), timestamp: now(), type: type, group: group,
-    itemId: item.id, itemName: item.name, qty: qty, operator: operator,
-    user: currentUser?currentUser.username:''
+// ===== MODE SWITCH =====
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('field-mode').style.display = mode==='field' ? '' : 'none';
+  document.getElementById('admin-mode').style.display = mode==='admin' ? '' : 'none';
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>{
+    t.classList.toggle('active', (i===0&&mode==='field')||(i===1&&mode==='admin'));
   });
-  if(DB.history.length > 3000) DB.history.length = 3000;
+  if (mode==='field') renderField();
+  else renderAdmin();
 }
 
-// ═══════════════════════════════════════════════
-//  AUTH
-// ═══════════════════════════════════════════════
-function doLogin(){
-  var user = document.getElementById('li-user').value.trim();
-  var pw = document.getElementById('li-pw').value;
-  var err = document.getElementById('login-err');
-  if(!user || !pw){err.textContent='入力してください'; err.classList.add('show'); return;}
-  var u = DB.users.find(function(x){return x.username===user;});
-  if(!u || u.passwordHash!==hashPw(pw)){err.textContent='エラー'; err.classList.add('show'); return;}
-  currentUser = u; saveSession(); bootApp();
-}
-function doLogout(){ currentUser=null; clearSession(); document.getElementById('app').classList.remove('active'); document.getElementById('login-screen').style.display=''; }
-
-function bootApp(){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app').classList.add('active');
-  var isAdm = currentUser.role==='admin';
-  document.getElementById('hd-av').textContent = currentUser.username.charAt(0).toUpperCase();
-  document.querySelectorAll('.admin-only').forEach(function(el){el.style.display=isAdm?'':'none';});
-  showPage('inventory');
+// ===== FIELD RENDER =====
+function renderField() {
+  const container = document.getElementById('field-items');
+  const items = db.items.filter(it =>
+    !fieldFilter ||
+    it.name.includes(fieldFilter) ||
+    it.code.toLowerCase().includes(fieldFilter.toLowerCase())
+  );
+  document.getElementById('item-count-label').textContent = `品目一覧（${items.length}件）`;
+  container.innerHTML = items.map(item => renderItemCard(item)).join('');
 }
 
-loadDB();
-(function(){ var sid=localStorage.getItem(SESS_KEY); if(sid){ var u=DB.users.find(function(x){return x.id===sid;}); if(u){currentUser=u;bootApp();} } })();
-
-// ═══════════════════════════════════════════════
-//  PAGES & NAVIGATION
-// ═══════════════════════════════════════════════
-function showPage(name){
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
-  var pg=document.getElementById('page-'+name); if(pg) pg.classList.add('active');
-  var tabs = document.querySelectorAll('.nav-tab');
-  if(name==='inventory') { tabs[0].classList.add('active'); renderInventory(); }
-  if(name==='history') { tabs[1].classList.add('active'); renderHistory(); }
-  if(name==='users') { tabs[2].classList.add('active'); renderUsers(); }
+function filterItems(val) {
+  fieldFilter = val;
+  renderField();
 }
 
-// ═══════════════════════════════════════════════
-//  1. 在庫一覧
-// ═══════════════════════════════════════════════
-function renderInventory(){
-  initProcConfig();
-  var q = document.getElementById('search-input').value.toLowerCase();
-  var items = DB.items.filter(function(it){ return !q || it.name.toLowerCase().includes(q) || it.code.toLowerCase().includes(q); });
-  var list = document.getElementById('new-inv-list');
-  
-  if(!items.length){ list.innerHTML = '<div class="empty">該当する製品がありません</div>'; return; }
+function renderItemCard(item) {
+  const actives = getActiveProcesses(item);
+  const total = getTotalStock(item);
+  return `
+  <div class="item-card expanded" id="card-${item.id}">
+    <div class="item-card-header" onclick="toggleCard('${item.id}')">
+      <span class="item-code">${escHtml(item.code)}</span>
+      <span class="item-name">${escHtml(item.name)}<span class="item-unit">（${escHtml(item.unit)}）</span></span>
+      <div class="item-summary">
+        <div class="summary-badge">
+          <span class="summary-label">在庫合計</span>
+          <span class="summary-value total">${total}</span>
+        </div>
+        <div class="summary-badge">
+          <span class="summary-label">不良</span>
+          <span class="summary-value danger">${item.defectiveCount}</span>
+        </div>
+        <div class="summary-badge">
+          <span class="summary-label">出荷済</span>
+          <span class="summary-value shipped">${item.shippedCount}</span>
+        </div>
+      </div>
+      <span class="expand-icon">▼</span>
+    </div>
+    <div class="item-card-body">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:11px;color:var(--text3)">入庫数：</span>
+        <div class="qty-selector">
+          <button class="qty-btn" onclick="setReceiveQty('${item.id}',1)">+1</button>
+          <button class="qty-btn" onclick="setReceiveQty('${item.id}',10)">+10</button>
+          <button class="qty-btn" onclick="setReceiveQty('${item.id}',50)">+50</button>
+          <input class="qty-display" id="rq-${item.id}" type="number" min="1" value="1" style="max-width:70px">
+        </div>
+        <button class="btn btn-primary" onclick="receiveItem('${item.id}')" style="padding:7px 14px;font-size:13px;border-radius:6px">入庫</button>
+      </div>
+      <div class="process-grid">
+        ${actives.map((p,pi) => renderProcessBlock(item, p, pi, actives)).join('')}
+      </div>
+      <div class="item-footer">
+        <div class="footer-stat">
+          <span class="footer-stat-label">🔴 不良</span>
+          <span class="footer-stat-value red">${item.defectiveCount} ${escHtml(item.unit)}</span>
+        </div>
+        <div class="footer-stat">
+          <span class="footer-stat-label">🚚 出荷済</span>
+          <span class="footer-stat-value teal">${item.shippedCount} ${escHtml(item.unit)}</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
 
-  list.innerHTML = items.map(function(it){
-    var st = DB.procStock[it.id] || {};
-    var done = st[PROC_DONE_ID] ? st[PROC_DONE_ID].good : 0;
-    
-    // 仕掛品(完成品以外の良品合計)と内訳
-    var wipTotal = 0; var details = '';
-    DB.procConfig.forEach(function(p){
-      var g = st[p.id] ? st[p.id].good : 0;
-      var ng = st[p.id] ? st[p.id].ng : 0;
-      wipTotal += g;
-      if(g>0 || ng>0) details += '<div class="detail-row"><span>'+esc(p.label)+'</span><span>'+fmtNum(g)+(ng>0?' <span style="color:var(--red)">(NG:'+ng+')</span>':'')+' '+esc(it.unit)+'</span></div>';
+function renderProcessBlock(item, p, pi, allActives) {
+  const count = item.processCounts[p.idx];
+  const isDeburr = p.type === 'deburr';
+  const isFirst = pi === 0;
+  const isLast = pi === allActives.length - 1;
+  const hasNext = !isLast;
+  const hasPrev = !isFirst;
+  return `
+  <div class="process-block ${isDeburr?'deburr-block':''}">
+    ${isDeburr ? '<span class="deburr-label">バリ取り</span>' : ''}
+    <div class="process-name">${PROCESS_NAMES[p.idx]}</div>
+    <div class="process-count ${count===0?'zero':''}">${count}</div>
+    <div class="process-actions">
+      <div class="process-actions-row">
+        <button class="btn btn-move" ${hasPrev && count>0 ? '' : 'disabled'}
+          onclick="openOp('${item.id}',${p.idx},'move-back')">← 戻す</button>
+        <button class="btn btn-move btn-next" ${hasNext && count>0 ? '' : 'disabled'}
+          onclick="openOp('${item.id}',${p.idx},'move-next')">次へ →</button>
+      </div>
+      <div class="process-actions-row">
+        <button class="btn btn-defect" ${count>0 ? '' : 'disabled'}
+          onclick="openOp('${item.id}',${p.idx},'defect')">不良</button>
+        <button class="btn btn-ship" ${count>0 ? '' : 'disabled'}
+          onclick="openOp('${item.id}',${p.idx},'ship')">出荷</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleCard(itemId) {
+  const card = document.getElementById('card-'+itemId);
+  card.classList.toggle('expanded');
+}
+
+// ===== RECEIVE =====
+function setReceiveQty(itemId, delta) {
+  const input = document.getElementById('rq-'+itemId);
+  input.value = Math.max(1, parseInt(input.value||0) + delta);
+}
+
+function receiveItem(itemId) {
+  const item = db.items.find(i=>i.id===itemId);
+  if (!item) return;
+  const actives = getActiveProcesses(item);
+  if (!actives.length) { toast('工程が設定されていません','error'); return; }
+  const qty = parseInt(document.getElementById('rq-'+itemId).value);
+  if (!qty || qty < 1) { toast('数量を入力してください','error'); return; }
+  const firstIdx = actives[0].idx;
+  item.processCounts[firstIdx] += qty;
+  addTransaction(itemId, '入庫', qty, null, firstIdx);
+  toast(`${item.name} を ${qty}${item.unit} 入庫しました`, 'success');
+  renderField();
+}
+
+// ===== OPERATION MODAL =====
+function openOp(itemId, processIdx, opType) {
+  const item = db.items.find(i=>i.id===itemId);
+  if (!item) return;
+  const actives = getActiveProcesses(item);
+  const pi = actives.findIndex(p=>p.idx===processIdx);
+  pendingOp = { itemId, processIdx, opType, actives, pi };
+
+  const count = item.processCounts[processIdx];
+  const opTitle = document.getElementById('op-title');
+  const opIcon = document.getElementById('op-icon');
+  const opInfo = document.getElementById('op-info');
+  const opQty = document.getElementById('op-qty');
+  const toGroup = document.getElementById('op-to-process-group');
+  const confirmBtn = document.getElementById('op-confirm-btn');
+  opQty.value = 1; opQty.max = count;
+
+  if (opType==='move-next') {
+    const nextActives = actives.slice(pi+1);
+    opTitle.textContent = '次工程へ移動';
+    opIcon.textContent = '→'; opIcon.className = 'modal-icon move';
+    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）`;
+    toGroup.style.display = '';
+    const toSelect = document.getElementById('op-to-process');
+    toSelect.innerHTML = nextActives.map(p=>`<option value="${p.idx}">${PROCESS_NAMES[p.idx]}${p.type==='deburr'?' ★バリ取り':''}</option>`).join('');
+    confirmBtn.className = 'btn-confirm';
+    confirmBtn.textContent = '移動';
+  } else if (opType==='move-back') {
+    const prevActives = actives.slice(0,pi).reverse();
+    opTitle.textContent = '前工程へ戻す';
+    opIcon.textContent = '←'; opIcon.className = 'modal-icon move';
+    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）`;
+    toGroup.style.display = '';
+    const toSelect = document.getElementById('op-to-process');
+    toSelect.innerHTML = prevActives.map(p=>`<option value="${p.idx}">${PROCESS_NAMES[p.idx]}</option>`).join('');
+    confirmBtn.className = 'btn-confirm';
+    confirmBtn.textContent = '戻す';
+  } else if (opType==='defect') {
+    opTitle.textContent = '不良処理';
+    opIcon.textContent = '⚠'; opIcon.className = 'modal-icon defect';
+    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）<br>不良に移動します。戻し不可です。`;
+    toGroup.style.display = 'none';
+    confirmBtn.className = 'btn-confirm danger';
+    confirmBtn.textContent = '不良確定';
+  } else if (opType==='ship') {
+    opTitle.textContent = '出荷処理';
+    opIcon.textContent = '🚚'; opIcon.className = 'modal-icon ship';
+    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）<br>在庫から減算し出荷済に加算します。`;
+    toGroup.style.display = 'none';
+    confirmBtn.className = 'btn-confirm teal';
+    confirmBtn.textContent = '出荷確定';
+  }
+  document.getElementById('op-modal').classList.add('open');
+}
+
+function addQty(n) {
+  const input = document.getElementById('op-qty');
+  const max = parseInt(input.max||9999);
+  input.value = Math.min(max, parseInt(input.value||0)+n);
+}
+
+function confirmOp() {
+  if (!pendingOp) return;
+  const { itemId, processIdx, opType, actives, pi } = pendingOp;
+  const item = db.items.find(i=>i.id===itemId);
+  if (!item) return;
+  const qty = parseInt(document.getElementById('op-qty').value);
+  if (!qty || qty < 1) { toast('数量を入力してください','error'); return; }
+  const current = item.processCounts[processIdx];
+  if (qty > current) { toast('在庫数を超えています','error'); return; }
+
+  if (opType==='move-next' || opType==='move-back') {
+    const toIdx = parseInt(document.getElementById('op-to-process').value);
+    item.processCounts[processIdx] -= qty;
+    item.processCounts[toIdx] += qty;
+    addTransaction(itemId, '移動', qty, processIdx, toIdx);
+    toast(`${qty}${item.unit} を ${PROCESS_NAMES[toIdx]}へ移動しました`, 'success');
+  } else if (opType==='defect') {
+    item.processCounts[processIdx] -= qty;
+    item.defectiveCount += qty;
+    addTransaction(itemId, '不良', qty, processIdx, null);
+    toast(`${qty}${item.unit} を不良処理しました`, 'success');
+  } else if (opType==='ship') {
+    item.processCounts[processIdx] -= qty;
+    item.shippedCount += qty;
+    addTransaction(itemId, '出荷', qty, processIdx, null);
+    toast(`${qty}${item.unit} を出荷しました`, 'success');
+  }
+  closeModal('op-modal');
+  pendingOp = null;
+  renderField();
+  if (currentMode==='admin') renderAdmin();
+}
+
+// ===== ADMIN RENDER =====
+function renderAdmin() {
+  renderAdminStats();
+  renderAdminTable();
+}
+
+function renderAdminStats() {
+  const totalStock = db.items.reduce((s,i)=>s+getTotalStock(i),0);
+  const totalShipped = db.items.reduce((s,i)=>s+i.shippedCount,0);
+  const totalDefective = db.items.reduce((s,i)=>s+i.defectiveCount,0);
+  const totalItems = db.items.length;
+  document.getElementById('admin-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-card-label">品目数</div><div class="stat-card-value blue">${totalItems}</div></div>
+    <div class="stat-card"><div class="stat-card-label">在庫合計</div><div class="stat-card-value blue">${totalStock}</div></div>
+    <div class="stat-card"><div class="stat-card-label">出荷済</div><div class="stat-card-value teal">${totalShipped}</div></div>
+    <div class="stat-card"><div class="stat-card-label">不良</div><div class="stat-card-value red">${totalDefective}</div></div>
+    <div class="stat-card"><div class="stat-card-label">直行率</div><div class="stat-card-value amber">${totalShipped>0?((totalShipped/(totalShipped+totalDefective))*100).toFixed(1):100}%</div></div>
+  `;
+}
+
+function renderAdminTable() {
+  let items = db.items.filter(it =>
+    !adminFilter ||
+    it.name.includes(adminFilter) ||
+    it.code.toLowerCase().includes(adminFilter.toLowerCase())
+  );
+  if (adminSortKey) {
+    items = [...items].sort((a,b) => {
+      let va = adminSortKey==='code'?a.code : adminSortKey==='name'?a.name :
+               adminSortKey==='defective'?a.defectiveCount : a.shippedCount;
+      let vb = adminSortKey==='code'?b.code : adminSortKey==='name'?b.name :
+               adminSortKey==='defective'?b.defectiveCount : b.shippedCount;
+      return typeof va==='string' ? va.localeCompare(vb)*adminSortDir : (va-vb)*adminSortDir;
     });
-    if(!details) details = '<div class="detail-row"><span style="color:var(--text-dim)">仕掛中の工程はありません</span></div>';
-
-    var warn = done === 0 ? 'warn' : 'done';
-    
-    return '<div class="inv-card" onclick="goToProcess(\''+it.id+'\')">'
-      +'<div class="inv-card-header">'
-        +'<div><div class="inv-card-title">'+esc(it.name)+(done===0?' <span style="color:var(--red)">⚠</span>':'')+'</div><div class="inv-card-code">'+esc(it.code)+'</div></div>'
-      +'</div>'
-      +'<div class="inv-card-stocks">'
-        +'<div class="stock-box wip"><div class="stock-label">仕掛品</div><div class="stock-val">'+fmtNum(wipTotal)+'</div></div>'
-        +'<div class="stock-box '+warn+'"><div class="stock-label">完成品</div><div class="stock-val">'+fmtNum(done)+'</div></div>'
-      +'</div>'
-      +'<div class="inv-details-btn" onclick="event.stopPropagation(); toggleInvDetails(\''+it.id+'\')">▼ 工程別の内訳を見る</div>'
-      +'<div class="inv-details-content" id="inv-det-'+it.id+'">'+details+'</div>'
-    +'</div>';
+  }
+  document.getElementById('admin-tbody').innerHTML = items.map(item => {
+    const total = getTotalStock(item);
+    const cols = item.processConfig.map((c,i) => {
+      const cnt = item.processCounts[i];
+      const isDeburr = c.type==='deburr' && c.active;
+      if (!c.active) return `<td><span class="process-cell num-zero">—</span></td>`;
+      return `<td class="num"><span class="process-cell ${isDeburr?'deburr':''}">${cnt}</span></td>`;
+    }).join('');
+    return `<tr>
+      <td class="mono">${escHtml(item.code)}</td>
+      <td>${escHtml(item.name)}</td>
+      ${cols}
+      <td class="num ${item.defectiveCount>0?'num-red':''}">${item.defectiveCount}</td>
+      <td class="num num-teal">${item.shippedCount}</td>
+      <td class="num num-blue">${total}</td>
+      <td><button class="action-btn" onclick="openItemFormEdit('${item.id}')">編集</button></td>
+    </tr>`;
   }).join('');
 }
-function toggleInvDetails(id){ document.getElementById('inv-det-'+id).classList.toggle('open'); }
 
-// ═══════════════════════════════════════════════
-//  2. 工程管理 (操作専用)
-// ═══════════════════════════════════════════════
-var _curItem = null;
-var _curProcId = null;
-
-function goToProcess(itemId){
-  _curItem = DB.items.find(function(i){return i.id === itemId;});
-  if(!_curItem) return;
-  
-  // デフォルト: 在庫がある最初の工程、なければスタート工程
-  _curProcId = DB.procConfig[0].id;
-  for(var i=0; i<DB.procConfig.length; i++){
-    if(DB.procStock[itemId][DB.procConfig[i].id].good > 0) { _curProcId = DB.procConfig[i].id; break; }
-  }
-
-  showPage('process');
-  document.getElementById('proc-target-name').textContent = _curItem.name;
-  
-  renderProcTabs();
-  selectProcTab(_curProcId);
+function filterAdmin(val) {
+  adminFilter = val;
+  renderAdminTable();
+}
+function sortAdmin(key) {
+  if (adminSortKey===key) adminSortDir *= -1;
+  else { adminSortKey=key; adminSortDir=1; }
+  renderAdminTable();
 }
 
-function renderProcTabs(){
-  var tabs = DB.procConfig.map(function(p){
-    return '<button class="step-tab" id="ptab-'+p.id+'" onclick="selectProcTab(\''+p.id+'\')">'+esc(p.label)+'</button>';
+function showHistory() {
+  const panel = document.getElementById('history-panel-admin');
+  panel.style.display = panel.style.display==='none' ? '' : 'none';
+  if (panel.style.display !== 'none') renderHistoryList();
+}
+
+function renderHistoryList() {
+  const list = document.getElementById('history-list-admin');
+  const typeMap = {入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
+  list.innerHTML = db.transactions.slice(0,50).map(tx => {
+    const item = db.items.find(i=>i.id===tx.itemId);
+    const itemName = item ? item.name : '不明';
+    let desc = `${itemName}：`;
+    if (tx.type==='移動') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'} → ${PROCESS_NAMES[tx.toProcess]||'?'}`;
+    else if (tx.type==='入庫') desc += `${PROCESS_NAMES[tx.toProcess]||'工程1'}へ入庫`;
+    else if (tx.type==='出荷') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'}から出荷`;
+    else if (tx.type==='不良') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'}から不良処理`;
+    else if (tx.type==='修正') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'} 在庫調整${tx.note?'（'+tx.note+'）':''}`;
+    return `<div class="history-item">
+      <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
+      <span class="history-desc">${escHtml(desc)}</span>
+      <span class="history-qty">${tx.quantity}</span>
+      <span class="history-time">${tx.timestamp} ${tx.userId}</span>
+    </div>`;
+  }).join('') || '<div style="padding:16px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
+}
+
+// ===== ITEM FORM =====
+function initFormProcessConfig() {
+  const grid = document.getElementById('process-config-grid');
+  grid.innerHTML = Array.from({length:6},(_,i) => `
+    <div class="process-config-item">
+      <div class="process-config-label">${PROCESS_NAMES[i]}</div>
+      <div class="process-toggle">
+        <button class="type-btn" id="pc-off-${i}" onclick="setPCType(${i},'off')">なし</button>
+        <button class="type-btn" id="pc-process-${i}" onclick="setPCType(${i},'process')">通常</button>
+        <button class="type-btn" id="pc-deburr-${i}" onclick="setPCType(${i},'deburr')">バリ取</button>
+      </div>
+    </div>
+  `).join('');
+  formProcessConfig.forEach((c,i) => {
+    c.active = false; c.type = 'process';
+    updatePCUI(i);
   });
-  tabs.push('<button class="step-tab" id="ptab-'+PROC_DONE_ID+'" onclick="selectProcTab(\''+PROC_DONE_ID+'\')">完成品</button>');
-  document.getElementById('proc-tabs').innerHTML = tabs.join('');
 }
 
-function selectProcTab(procId){
-  _curProcId = procId;
-  document.querySelectorAll('.step-tab').forEach(function(el){ el.classList.remove('active'); });
-  var tab = document.getElementById('ptab-'+procId);
-  if(tab) { tab.classList.add('active'); tab.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'}); }
+function setPCType(i, type) {
+  formProcessConfig[i].type = type === 'off' ? 'process' : type;
+  formProcessConfig[i].active = type !== 'off';
+  updatePCUI(i);
+}
+function updatePCUI(i) {
+  const c = formProcessConfig[i];
+  ['off','process','deburr'].forEach(t => {
+    const btn = document.getElementById(`pc-${t}-${i}`);
+    if (!btn) return;
+    btn.className = 'type-btn';
+    if (!c.active && t==='off') btn.classList.add('active-off');
+    else if (c.active && c.type===t) btn.classList.add(`active-${t}`);
+  });
+}
 
-  var isDone = procId === PROC_DONE_ID;
-  var st = DB.procStock[_curItem.id][procId];
-  
-  document.getElementById('proc-stock-label').textContent = isDone ? '完成品 在庫' : '現在在庫（良品）';
-  document.getElementById('proc-current-stock').textContent = fmtNum(st.good);
-  document.getElementById('proc-current-unit').textContent = _curItem.unit;
-  document.getElementById('proc-input-qty').value = '';
+function openItemForm() {
+  editingItem = null;
+  document.getElementById('form-modal-title').textContent = '品目登録';
+  document.getElementById('item-form-confirm').textContent = '登録';
+  document.getElementById('form-code').value = '';
+  document.getElementById('form-name').value = '';
+  document.getElementById('form-unit').value = '個';
+  initFormProcessConfig();
+  document.getElementById('item-form-modal').classList.add('open');
+}
 
-  var destHtml = '';
-  if(isDone) {
-    destHtml = '<button class="btn-dest" style="background:var(--red-dim); color:var(--red); border: 1px solid rgba(239,68,68,0.3)" onclick="execProcMove(\'ship\')">'
-      +'<span>🚚 出荷する</span><span style="font-size:12px; opacity:0.8">タップで確定</span></button>';
-    document.getElementById('proc-ng-actions').style.display = 'none';
+function openItemFormEdit(itemId) {
+  const item = db.items.find(i=>i.id===itemId);
+  if (!item) return;
+  editingItem = item;
+  document.getElementById('form-modal-title').textContent = '品目編集';
+  document.getElementById('item-form-confirm').textContent = '保存';
+  document.getElementById('form-code').value = item.code;
+  document.getElementById('form-name').value = item.name;
+  document.getElementById('form-unit').value = item.unit;
+  initFormProcessConfig();
+  item.processConfig.forEach((c,i) => {
+    formProcessConfig[i].active = c.active;
+    formProcessConfig[i].type = c.type;
+    updatePCUI(i);
+  });
+  document.getElementById('item-form-modal').classList.add('open');
+}
+
+function saveItem() {
+  const code = document.getElementById('form-code').value.trim();
+  const name = document.getElementById('form-name').value.trim();
+  const unit = document.getElementById('form-unit').value.trim();
+  if (!code || !name) { toast('品番と品名は必須です','error'); return; }
+  if (!formProcessConfig.some(c=>c.active)) { toast('1つ以上の工程を設定してください','error'); return; }
+  const config = formProcessConfig.map(c=>({type:c.type, active:c.active}));
+  if (editingItem) {
+    editingItem.code = code; editingItem.name = name; editingItem.unit = unit;
+    editingItem.processConfig = config;
+    toast(`${name} を更新しました`,'success');
   } else {
-    document.getElementById('proc-ng-actions').style.display = 'grid';
-    var proc = DB.procConfig.find(function(p){return p.id === procId;});
-    (proc.next ||[]).forEach(function(nid){
-      var nIsDone = nid === PROC_DONE_ID;
-      var dLabel = nIsDone ? '完成品' : DB.procConfig.find(function(p){return p.id === nid;}).label;
-      var dColor = nIsDone ? '#10b981' : DB.procConfig.find(function(p){return p.id === nid;}).color;
-      destHtml += '<button class="btn-dest" style="background:'+hexToRgba(dColor,0.1)+'; color:'+dColor+'; border: 1px solid '+hexToRgba(dColor,0.3)+'" onclick="execProcMove(\''+nid+'\')">'
-        +'<span>→ '+esc(dLabel)+'へ移動</span><span style="font-size:12px; opacity:0.8">タップで確定</span></button>';
+    db.items.push({
+      id: generateId(), code, name, unit,
+      processCounts: [0,0,0,0,0,0],
+      defectiveCount: 0, shippedCount: 0,
+      processConfig: config
     });
+    toast(`${name} を登録しました`,'success');
   }
-  document.getElementById('proc-destinations').innerHTML = destHtml || '<p style="text-align:center; color:var(--text-dim); padding:10px;">移動先がありません</p>';
+  closeModal('item-form-modal');
+  if (currentMode==='admin') renderAdmin();
+  else renderField();
 }
 
-function addProcQty(delta){
-  var inp = document.getElementById('proc-input-qty');
-  inp.value = Math.max(0, (parseInt(inp.value)||0) + delta);
+// ===== ADJUST =====
+function openAdjustModal() {
+  const select = document.getElementById('adj-item');
+  select.innerHTML = db.items.map(i=>`<option value="${i.id}">${escHtml(i.code)} ${escHtml(i.name)}</option>`).join('');
+  updateAdjProcess();
+  document.getElementById('adj-reason').value = '';
+  document.getElementById('adj-qty').value = 0;
+  document.getElementById('adjust-modal').classList.add('open');
+}
+function updateAdjProcess() {
+  const itemId = document.getElementById('adj-item').value;
+  const item = db.items.find(i=>i.id===itemId);
+  if (!item) return;
+  const actives = getActiveProcesses(item);
+  const sel = document.getElementById('adj-process');
+  sel.innerHTML = actives.map(p=>`<option value="${p.idx}">${PROCESS_NAMES[p.idx]}（現在：${item.processCounts[p.idx]}）</option>`).join('');
+  const currentIdx = parseInt(sel.value||0);
+  document.getElementById('adj-qty').value = item.processCounts[actives[0]?.idx||0] || 0;
+}
+function confirmAdjust() {
+  const itemId = document.getElementById('adj-item').value;
+  const item = db.items.find(i=>i.id===itemId);
+  const procIdx = parseInt(document.getElementById('adj-process').value);
+  const qty = parseInt(document.getElementById('adj-qty').value);
+  const reason = document.getElementById('adj-reason').value.trim();
+  if (isNaN(qty) || qty < 0) { toast('0以上の数値を入力してください','error'); return; }
+  const oldQty = item.processCounts[procIdx];
+  item.processCounts[procIdx] = qty;
+  addTransaction(itemId, '修正', Math.abs(qty-oldQty), procIdx, procIdx, reason);
+  toast(`在庫調整：${item.name} ${PROCESS_NAMES[procIdx]} ${oldQty}→${qty}`,'success');
+  closeModal('adjust-modal');
+  renderAdmin();
 }
 
-function execProcMove(destId){
-  var qty = parseInt(document.getElementById('proc-input-qty').value) || 0;
-  if(qty <= 0) { toast('数量を入力してください', 'err'); return; }
-  var st = DB.procStock[_curItem.id][_curProcId];
-  if(qty > st.good) { toast('在庫が不足しています', 'err'); return; }
-
-  if(destId === 'ship'){
-    st.good -= qty;
-    _curItem.process.done = st.good; // 旧仕様との互換同期
-    addHistory('出荷', _curItem, qty, currentUser.username, '完成品 → 出荷');
-    saveDB(); toast(fmtNum(qty)+_curItem.unit+' を出荷しました', 'ok');
-    selectProcTab(_curProcId); return;
-  }
-
-  // 移動
-  st.good -= qty;
-  DB.procStock[_curItem.id][destId].good += qty;
-  
-  var procLabel = DB.procConfig.find(function(p){return p.id === _curProcId;}).label;
-  var isDone = destId === PROC_DONE_ID;
-  var destLabel = isDone ? '完成品' : DB.procConfig.find(function(p){return p.id === destId;}).label;
-  
-  if(isDone) _curItem.process.done = DB.procStock[_curItem.id][PROC_DONE_ID].good;
-
-  addHistory('工程移動', _curItem, qty, currentUser.username, procLabel + ' → ' + destLabel);
-  saveDB(); toast(fmtNum(qty)+_curItem.unit+' を '+destLabel+' へ移動しました', 'ok');
-  selectProcTab(_curProcId);
+// ===== CSV EXPORT =====
+function exportCSV() {
+  const headers = ['品番','品名','単位','工程1','工程2','工程3','工程4','工程5','工程6','不良','出荷','在庫合計'];
+  const rows = db.items.map(item => [
+    item.code, item.name, item.unit,
+    ...item.processCounts,
+    item.defectiveCount, item.shippedCount, getTotalStock(item)
+  ]);
+  const csv = [headers, ...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='inventory_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('CSVをエクスポートしました','success');
 }
 
-function execNg(type){
-  var qty = parseInt(document.getElementById('proc-input-qty').value) || 0;
-  if(qty <= 0) { toast('数量を入力してください', 'err'); return; }
-  var st = DB.procStock[_curItem.id][_curProcId];
-  if(qty > st.good) { toast('在庫が不足しています', 'err'); return; }
-
-  st.good -= qty; st.ng += qty;
-  var procLabel = DB.procConfig.find(function(p){return p.id === _curProcId;}).label;
-  var opName = type === 'setup' ? '段取り品NG' : '不良品NG';
-  
-  addHistory(opName, _curItem, qty, currentUser.username, procLabel);
-  saveDB(); toast(opName+'を '+fmtNum(qty)+_curItem.unit+' 登録しました', 'err');
-  selectProcTab(_curProcId);
+// ===== MODAL =====
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
 }
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target===overlay) overlay.classList.remove('open'); });
+});
 
-// ═══════════════════════════════════════════════
-//  3. 操作履歴 / 4. ユーザー
-// ═══════════════════════════════════════════════
-function renderHistory(){
-  document.getElementById('hist-count').textContent = DB.history.length+'件';
-  var html = DB.history.slice(0, 100).map(function(h){
-    var isCorr = h.type==='訂正';
-    var cls = h.type.includes('NG') ? 'ac-corr' : '';
-    var btn = (!isCorr && !h.corrected && currentUser.role==='admin') ? '<button class="btn-ghost btn-sm" onclick="execCorrect(\''+h.id+'\')">取消</button>' : (h.corrected?'<span style="font-size:11px;color:var(--text-muted)">取消済</span>':'');
-    return '<tr style="'+(isCorr?'background:#fff1f1':'')+'">'
-      +'<td style="font-family:var(--fn)">'+fmtDate(h.timestamp)+'</td>'
-      +'<td><span class="act-chip '+cls+'">'+esc(h.type)+'</span></td>'
-      +'<td>'+esc(h.group)+'</td><td>'+esc(h.itemName)+'</td><td style="font-family:var(--fn); font-weight:700">'+fmtNum(h.qty)+'</td>'
-      +'<td>'+esc(h.operator)+'</td><td>'+btn+'</td></tr>';
-  }).join('');
-  document.getElementById('hist-body').innerHTML = html || '<tr><td colspan="7" class="empty">履歴がありません</td></tr>';
+// ===== TOAST =====
+function toast(msg, type='success') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span class="toast-dot"></span>${escHtml(msg)}`;
+  container.appendChild(el);
+  setTimeout(()=>el.remove(), 3000);
 }
 
-function execCorrect(histId){
-  if(currentUser.role!=='admin') return;
-  var entry = DB.history.find(function(e){return e.id===histId;});
-  if(!entry || entry.corrected) return;
-  
-  var item = DB.items.find(function(i){return i.id===entry.itemId;});
-  if(!item) { toast('品目が見つかりません','err'); return; }
-  var qty = entry.qty;
-
-  // 新仕様の取消ロジック
-  if(entry.type === '工程移動' && entry.group){
-    var parts = entry.group.split(' → ');
-    if(parts.length===2){
-      var srcP = DB.procConfig.find(function(p){return p.label===parts[0];});
-      var dstP = parts[1]==='完成品'?{id:PROC_DONE_ID}:DB.procConfig.find(function(p){return p.label===parts[1];});
-      if(srcP && dstP){
-        if(DB.procStock[item.id][dstP.id].good < qty) { toast('移動先の在庫が不足しています','err'); return; }
-        DB.procStock[item.id][dstP.id].good -= qty;
-        DB.procStock[item.id][srcP.id].good += qty;
-        if(dstP.id===PROC_DONE_ID) item.process.done -= qty;
-      }
-    }
-  } else if(entry.type.includes('NG')){
-    var proc = DB.procConfig.find(function(p){return p.label===entry.group;});
-    if(proc){
-      if(DB.procStock[item.id][proc.id].ng < qty) { toast('NG在庫が不足しています','err'); return; }
-      DB.procStock[item.id][proc.id].ng -= qty;
-      DB.procStock[item.id][proc.id].good += qty;
-    }
-  } else if(entry.type === '出荷') {
-    DB.procStock[item.id][PROC_DONE_ID].good += qty;
-    item.process.done += qty;
-  } else {
-    toast('この操作は取消できません','err'); return;
-  }
-
-  entry.corrected = true;
-  addHistory('訂正', item, qty, currentUser.username, '取消: '+entry.type);
-  saveDB(); renderHistory(); renderInventory();
-  if(_curItem && _curItem.id===item.id) selectProcTab(_curProcId);
-  toast('操作を取り消しました','ok');
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function renderUsers(){
-  document.getElementById('user-body').innerHTML = DB.users.map(function(u){
-    var del = u.id!==currentUser.id?'<button class="btn-ghost btn-sm" onclick="delUser(\''+u.id+'\')">削除</button>':'';
-    return '<tr><td>'+esc(u.username)+'</td><td>'+(u.role==='admin'?'管理者':'一般')+'</td><td>'+del+'</td></tr>';
-  }).join('');
-}
-function delUser(id){ DB.users=DB.users.filter(function(u){return u.id!==id;}); saveDB(); renderUsers(); }
-
-// ═══════════════════════════════════════════════
-//  MODALS & ACTIONS
-// ═══════════════════════════════════════════════
-function openModal(id){ document.getElementById(id).classList.add('show'); }
-function closeModal(id){ document.getElementById(id).classList.remove('show'); }
-document.querySelectorAll('.overlay').forEach(function(ov){ ov.addEventListener('mousedown',function(e){if(e.target===ov) closeModal(ov.id);}); });
-
-function toast(msg,type){
-  var el = document.createElement('div'); el.className = 'toast '+(type||''); el.innerHTML = msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(function(){ el.style.opacity=0; setTimeout(function(){el.remove();},200); }, 2500);
-}
-
-function showAddModal(){
-  document.getElementById('item-id').value='';
-  ['item-name','item-code','item-unit','item-init-stock'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('item-err').classList.remove('show');
-  document.getElementById('init-stock-row').style.display = '';
-  openModal('modal-item');
-}
-
-function saveItem(){
-  var name=document.getElementById('item-name').value.trim(), code=document.getElementById('item-code').value.trim(), unit=document.getElementById('item-unit').value.trim();
-  var err=document.getElementById('item-err'); err.classList.remove('show');
-  if(!name||!code||!unit){ err.textContent='必須項目を入力してください'; err.classList.add('show'); return; }
-  
-  var initStock = parseInt(document.getElementById('item-init-stock').value)||0;
-  var newItem = {id:uuid(), name:name, code:code, unit:unit, process:{done:0}, updatedAt:now()};
-  DB.items.push(newItem);
-  
-  DB.procStock[newItem.id] = {};
-  DB.procConfig.forEach(function(p){ DB.procStock[newItem.id][p.id] = {good:0, ng:0}; });
-  DB.procStock[newItem.id][PROC_DONE_ID] = {good:0, ng:0};
-  
-  if(initStock > 0){
-    var startP = DB.procConfig[0];
-    DB.procStock[newItem.id][startP.id].good = initStock;
-    addHistory('初期在庫', newItem, initStock, currentUser.username, startP.label);
-  }
-  
-  saveDB(); closeModal('modal-item'); renderInventory(); toast(name+' を登録しました','ok');
-}
-
-// ── 工程設定モーダル ──
-var _editProcConfig =[];
-function showProcConfigModal(){
-  _editProcConfig = JSON.parse(JSON.stringify(DB.procConfig));
-  renderProcConfigUI(); openModal('modal-proc-config');
-}
-function renderProcConfigUI(){
-  var html = _editProcConfig.map(function(p, i){
-    return '<div style="display:flex; gap:8px; align-items:center;">'
-      +'<div style="width:16px; height:16px; border-radius:50%; background:'+PROC_COLORS[i%6]+'"></div>'
-      +'<input type="text" value="'+esc(p.label)+'" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:var(--r);" onchange="_editProcConfig['+i+'].label=this.value">'
-      +(_editProcConfig.length>1?'<button class="btn-ghost btn-sm" onclick="removeProcStep('+i+')">削除</button>':'')
-      +'</div>';
-  }).join('');
-  document.getElementById('proc-config-list').innerHTML = html;
-  document.getElementById('proc-add-step-btn').style.display = _editProcConfig.length>=6 ? 'none' : '';
-}
-function addProcStep(){
-  if(_editProcConfig.length>=6) return;
-  var id = 'p'+Date.now();
-  if(_editProcConfig.length>0) _editProcConfig[_editProcConfig.length-1].next = [id];
-  _editProcConfig.push({id:id, label:'新工程', color:PROC_COLORS[_editProcConfig.length%6], next:[PROC_DONE_ID]});
-  renderProcConfigUI();
-}
-function removeProcStep(i){
-  _editProcConfig.splice(i,1);
-  for(var j=0; j<_editProcConfig.length; j++){
-    _editProcConfig[j].next = j === _editProcConfig.length-1 ? [PROC_DONE_ID] : [_editProcConfig[j+1].id];
-    _editProcConfig[j].color = PROC_COLORS[j%6];
-  }
-  renderProcConfigUI();
-}
-function saveProcConfig(){
-  DB.procConfig = _editProcConfig;
-  // 既存アイテムへのプロパティ追加
-  DB.items.forEach(function(it){
-    DB.procConfig.forEach(function(p){ if(!DB.procStock[it.id][p.id]) DB.procStock[it.id][p.id] = {good:0, ng:0}; });
-  });
-  saveDB(); closeModal('modal-proc-config'); renderInventory(); toast('工程設定を保存しました','ok');
-}
-
-// ── ユーザー追加 ──
-function showAddUserModal(){ document.getElementById('au-name').value=''; document.getElementById('au-pw').value=''; openModal('modal-adduser'); }
-function addUser(){
-  var n=document.getElementById('au-name').value.trim(), p=document.getElementById('au-pw').value, r=document.getElementById('au-role').value;
-  var err=document.getElementById('adduser-err'); err.classList.remove('show');
-  if(!n||!p){ err.textContent='入力してください'; err.classList.add('show'); return; }
-  DB.users.push({id:uuid(), username:n, passwordHash:hashPw(p), role:r});
-  saveDB(); closeModal('modal-adduser'); renderUsers(); toast(n+' を追加しました','ok');
-}
-
-function exportCSV(){
-  var csv = '日時,操作,工程,製品,数量,作業者\n' + DB.history.map(function(h){ return[h.timestamp, h.type, h.group, h.itemName, h.qty, h.operator].join(','); }).join('\n');
-  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'})); a.download='履歴.csv'; a.click();
-}
+// ===== INIT =====
+renderField();
 </script>
 </body>
 </html>
