@@ -886,7 +886,7 @@ body {
     <button class="mode-tab" onclick="switchMode('admin')">🖥 管理</button>
   </div>
   <div class="header-right">
-    <div class="user-badge">
+    <div class="user-badge" onclick="openUserModal()" style="cursor:pointer" title="名前を変更">
       <div class="user-dot"></div>
       <span class="user-name" id="current-user">田中 一郎</span>
     </div>
@@ -902,7 +902,7 @@ body {
 </div>
 
 <div id="admin-mode" class="admin-mode" style="display:none">
-  <div class="stats-row" id="admin-stats"></div>
+  <div class="stats-row" id="admin-stats" style="display:none"></div>
   <div class="admin-toolbar">
     <input class="search-input admin-search" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
     <button class="btn-secondary" onclick="exportCSV()">⬇ CSV</button>
@@ -916,11 +916,11 @@ body {
         <tr>
           <th onclick="sortAdmin('code')">品番↕</th>
           <th onclick="sortAdmin('name')">品名↕</th>
-          <th>工程1</th><th>工程2</th><th>工程3</th><th>工程4</th><th>工程5</th><th>工程6</th>
-          <th onclick="sortAdmin('done')">完成↕</th>
-          <th onclick="sortAdmin('defective')">不良↕</th>
-          <th onclick="sortAdmin('shipped')">出荷↕</th>
-          <th>在庫合計</th>
+          <th style="text-align:center">工程1</th><th style="text-align:center">工程2</th><th style="text-align:center">工程3</th><th style="text-align:center">工程4</th><th style="text-align:center">工程5</th><th style="text-align:center">工程6</th>
+          <th onclick="sortAdmin('done')" style="text-align:right">完成↕</th>
+          <th onclick="sortAdmin('defective')" style="text-align:right">不良↕</th>
+          <th onclick="sortAdmin('shipped')" style="text-align:right">出荷↕</th>
+          <th style="text-align:right">在庫合計</th>
           <th>操作</th>
         </tr>
       </thead>
@@ -1021,6 +1021,25 @@ body {
   </div>
 </div>
 
+<!-- USER SELECT MODAL -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <div class="modal-icon" style="background:#e8effe;font-size:16px">👤</div>
+      <span>作業者名を選択</span>
+    </div>
+    <div class="form-group">
+      <label class="form-label">作業者名</label>
+      <div id="user-preset-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+      <input class="form-input" id="user-name-input" placeholder="または直接入力..." type="text">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('user-modal')">キャンセル</button>
+      <button class="btn-confirm" onclick="saveUserName()">確定</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 
 <script>
@@ -1076,6 +1095,36 @@ let currentMode='field', pendingOp=null, fieldFilter='', adminFilter='';
 let adminSortKey=null, adminSortDir=1, editingItem=null;
 const formPC = Array.from({length:6},()=>({type:'process',active:false}));
 
+// USER
+const USER_PRESETS = ['田中 一郎','鈴木 次郎','佐藤 三郎','高橋 四郎','山田 五郎'];
+let currentUser = localStorage.getItem('inv_user') || '';
+
+function openUserModal(){
+  const list = gid('user-preset-list');
+  list.innerHTML = USER_PRESETS.map(n=>`
+    <button onclick="selectUserPreset('${escH(n)}')" style="
+      padding:7px 12px;border-radius:6px;border:1px solid var(--border);
+      background:var(--bg3);color:var(--text2);font-size:13px;
+      cursor:pointer;font-family:var(--font);transition:all 0.1s;
+    " onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'"
+    >${escH(n)}</button>`).join('');
+  gid('user-name-input').value = currentUser;
+  gid('user-modal').classList.add('open');
+}
+function selectUserPreset(name){
+  gid('user-name-input').value = name;
+}
+function saveUserName(){
+  const name = gid('user-name-input').value.trim();
+  if(!name){ toast('名前を入力または選択してください','error'); return; }
+  currentUser = name;
+  localStorage.setItem('inv_user', name);
+  gid('current-user').textContent = name;
+  closeModal('user-modal');
+  toast(`作業者を「${name}」に設定しました`,'success');
+}
+
 function gid(id){ return document.getElementById(id); }
 function genId(){ return '_'+Math.random().toString(36).slice(2,9); }
 function nowStr(){ return new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
@@ -1083,7 +1132,7 @@ function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 function getActives(item){ return item.processConfig.map((c,i)=>({...c,idx:i})).filter(c=>c.active); }
 function getTotalStock(item){ return item.processCounts.reduce((s,n)=>s+n,0); }
 function addTx(itemId,type,qty,from,to,note=''){
-  db.transactions.unshift({id:genId(),itemId,type,quantity:qty,fromProcess:from,toProcess:to,userId:'田中 一郎',timestamp:nowStr(),note});
+  db.transactions.unshift({id:genId(),itemId,type,quantity:qty,fromProcess:from,toProcess:to,userId:currentUser,timestamp:nowStr(),note});
   if(db.transactions.length>500) db.transactions=db.transactions.slice(0,500);
 }
 
@@ -1108,10 +1157,10 @@ function renderItemCard(item){
   const actives=getActives(item);
   const total=getTotalStock(item);
   return `
-<div class="item-card expanded" id="card-${item.id}">
+<div class="item-card" id="card-${item.id}">
   <div class="item-card-header" onclick="toggleCard('${item.id}')">
     <span class="item-code">${escH(item.code)}</span>
-    <span class="item-name">${escH(item.name)}<span class="item-unit">（${escH(item.unit)}）</span></span>
+    <span class="item-name">${escH(item.name)}</span>
     <div class="item-summary">
       <div class="summary-badge"><span class="summary-label">在庫合計</span><span class="summary-value total">${total}</span></div>
       <div class="summary-badge"><span class="summary-label">不良</span><span class="summary-value danger">${item.defectiveCount}</span></div>
@@ -1131,11 +1180,6 @@ function renderItemCard(item){
       <button class="btn-receive" onclick="receiveItem('${item.id}')">入庫</button>
     </div>
     <div class="process-grid">${actives.map((p,pi)=>renderPBlock(item,p,pi,actives)).join('')}</div>
-    <div class="item-footer">
-      <div class="footer-stat"><span class="footer-stat-label">✅ 完成</span><span class="footer-stat-value done-c">${item.doneCount} ${escH(item.unit)}</span></div>
-      <div class="footer-stat"><span class="footer-stat-label">🔴 不良</span><span class="footer-stat-value red">${item.defectiveCount} ${escH(item.unit)}</span></div>
-      <div class="footer-stat"><span class="footer-stat-label">🚚 出荷済</span><span class="footer-stat-value teal">${item.shippedCount} ${escH(item.unit)}</span></div>
-    </div>
   </div>
 </div>`;
 }
@@ -1147,6 +1191,7 @@ function renderPBlock(item,p,pi,allActives){
   let blockCls='process-block', labelHtml='';
   if(isDeburr){ blockCls+=' deburr-block'; labelHtml='<span class="deburr-label">バリ取り工程</span>'; }
   else if(isDone){ blockCls+=' done-block'; labelHtml='<span class="done-label">完成置き場</span>'; }
+  else { labelHtml='<span class="deburr-label" style="visibility:hidden">　</span>'; }
 
   let actions='';
   if(isDone){
@@ -1314,9 +1359,9 @@ function renderAdminTable(){
   gid('admin-tbody').innerHTML=items.map(item=>{
     const total=getTotalStock(item);
     const cols=item.processConfig.map((c,i)=>{
-      if(!c.active) return `<td><span class="process-cell num-zero">—</span></td>`;
+      if(!c.active) return `<td style="text-align:center"><span class="process-cell num-zero">—</span></td>`;
       const cls=c.type==='deburr'?' deburr':c.type==='done'?' done-cell':'';
-      return `<td class="num"><span class="process-cell${cls}">${item.processCounts[i]}</span></td>`;
+      return `<td style="text-align:center"><span class="process-cell${cls}">${item.processCounts[i]}</span></td>`;
     }).join('');
     return `<tr>
       <td class="mono">${escH(item.code)}</td><td>${escH(item.name)}</td>
@@ -1349,6 +1394,7 @@ function showHistory(){
         <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
         <span class="history-desc">${escH(desc)}</span>
         <span class="history-qty">${tx.quantity}</span>
+        <span class="history-user" style="color:var(--text3);font-size:9px;flex-shrink:0;white-space:nowrap">${escH(tx.userId||'')}</span>
         <span class="history-time">${tx.timestamp}</span>
       </div>`;
     }).join('')||'<div style="padding:14px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
@@ -1463,6 +1509,10 @@ function toast(msg,type='success'){
 }
 
 renderField();
+
+// 初期化：ユーザー名セット＆未設定なら選択モーダルを開く
+gid('current-user').textContent = currentUser || '名前未設定';
+if(!currentUser) openUserModal();
 </script>
 </body>
 </html>
