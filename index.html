@@ -3,31 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>STOCKS — 在庫管理システム</title>
+<title>STOCKS — 在庫管理システム v9</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f0f2f5;--surface:#ffffff;--surface2:#f8f9fb;--surface3:#eef0f4;
+  --bg:#f0f2f5;--surface:#fff;--surface2:#f8f9fb;--surface3:#eef0f4;
   --border:#e2e5ec;--border2:#d0d4de;
   --text:#1a1d27;--text-muted:#6b7280;--text-dim:#9ca3af;
   --accent:#2563eb;--accent-dim:rgba(37,99,235,.1);--accent-glow:rgba(37,99,235,.15);
   --red:#ef4444;--red-dim:rgba(239,68,68,.08);--red-mid:rgba(239,68,68,.15);
   --amber:#f59e0b;--amber-dim:rgba(245,158,11,.1);
   --green:#10b981;--green-dim:rgba(16,185,129,.1);
-  --wip:#6366f1;--bari:#0ea5e9;--done:#059669;
+  --wip:#2563eb;--wip-dim:rgba(37,99,235,.08);--wip-border:rgba(37,99,235,.2);
+  --bari:#f59e0b;--bari-dim:rgba(245,158,11,.08);--bari-border:rgba(245,158,11,.25);
+  --done:#10b981;--done-dim:rgba(16,185,129,.08);--done-border:rgba(16,185,129,.25);
   --fn:'JetBrains Mono',monospace;--fj:'Noto Sans JP',sans-serif;
   --r:6px;--r2:10px;--sh:0 2px 12px rgba(0,0,0,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
+html,body{height:100%;overflow:hidden;overflow-x:hidden}
 body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:600;transition:all .15s;white-space:nowrap;user-select:none}
-.btn:active{transform:scale(.97)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:600;transition:background .1s;white-space:nowrap;user-select:none;min-height:40px}
+.btn:active{opacity:.85}
 .btn-primary{background:var(--accent);color:#fff}
 .btn-primary:hover{background:#1d4ed8}
 .btn-danger{background:var(--red);color:#fff}
@@ -35,16 +37,14 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border2)}
 .btn-ghost:hover{background:var(--surface2);color:var(--text)}
 .btn-green{background:var(--green);color:#fff}
-.btn-green:hover{background:#059669}
-.btn-sm{padding:5px 10px;font-size:11px}
-.btn-full{width:100%;padding:12px}
+.btn-sm{padding:5px 10px;font-size:11px;min-height:32px}
+.btn-full{width:100%;padding:14px;font-size:15px;min-height:50px}
 
 /* ── FORMS ── */
 .form-row{margin-bottom:14px}
 .form-row label{display:block;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
-.form-row input,.form-row select,.form-row textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:9px 12px;font-size:14px;font-family:var(--fj);outline:none;transition:border-color .15s}
+.form-row input,.form-row select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:10px 12px;font-size:14px;font-family:var(--fj);outline:none;transition:border-color .1s;min-height:44px}
 .form-row input:focus,.form-row select:focus{border-color:var(--accent);background:#fff}
-.form-row select option{background:#fff}
 .form-row input::placeholder{color:var(--text-dim)}
 .form-row.error input,.form-row.error select{border-color:var(--red)}
 .form-hint{font-size:11px;color:var(--text-dim);margin-top:3px}
@@ -62,7 +62,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .pw-bar{height:100%;border-radius:2px;width:0;transition:width .3s,background .3s}
 
 /* ── APP SHELL ── */
-#app{display:none;flex-direction:column;height:100vh}
+#app{display:none;flex-direction:column;height:100vh;overflow:hidden}
 #app.active{display:flex}
 
 /* ── HEADER ── */
@@ -71,7 +71,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .header-brand span{color:var(--accent)}
 .header-sep{width:1px;height:20px;background:var(--border2)}
 .header-nav{display:flex;gap:2px}
-.nav-tab{background:transparent;border:none;color:var(--text-muted);padding:6px 12px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap}
+.nav-tab{background:transparent;border:none;color:var(--text-muted);padding:6px 12px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:500;transition:all .1s;white-space:nowrap}
 .nav-tab:hover{background:var(--surface2);color:var(--text)}
 .nav-tab.active{background:var(--accent-dim);color:var(--accent);font-weight:700}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
@@ -81,6 +81,14 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .role-chip{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;text-transform:uppercase}
 .role-chip.admin{background:var(--amber-dim);color:var(--amber)}
 .role-chip.user{background:var(--surface3);color:var(--text-muted)}
+
+/* ── CURRENT GROUP BAR ── */
+.current-group-bar{display:none;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--r);margin-bottom:12px;font-size:13px;font-weight:600;border:1px solid var(--border2);background:var(--surface)}
+.current-group-bar .cgb-label{color:var(--text-muted);font-weight:400;font-size:12px}
+.cgb-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:20px;font-size:13px;font-weight:700}
+.cgb-wip{background:var(--wip-dim);color:var(--wip);border:1px solid var(--wip-border)}
+.cgb-bari{background:var(--bari-dim);color:var(--bari);border:1px solid var(--bari-border)}
+.cgb-done{background:var(--done-dim);color:var(--done);border:1px solid var(--done-border)}
 
 /* ── MAIN ── */
 .main{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 20px}
@@ -105,7 +113,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;flex:1;min-width:160px;max-width:280px}
 .search-wrap svg{flex-shrink:0;color:var(--text-dim)}
 .search-wrap input{background:none;border:none;outline:none;color:var(--text);font-family:var(--fj);font-size:13px;width:100%}
-.filter-sel{background:#fff;border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:7px 10px;font-family:var(--fj);font-size:13px;outline:none;cursor:pointer}
+.filter-sel{background:#fff;border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:7px 10px;font-family:var(--fj);font-size:13px;outline:none;cursor:pointer;min-height:36px}
 
 /* ── TABLE ── */
 .table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
@@ -132,14 +140,13 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .th-bari{color:var(--bari)!important}
 .th-done{color:var(--done)!important}
 .act-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
-.btn-proc{padding:5px 9px;border-radius:var(--r);border:none;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--fj);transition:all .15s;white-space:nowrap}
-.btn-proc:active{transform:scale(.95)}
-.bp-wip{background:rgba(99,102,241,.1);color:var(--wip);border:1px solid rgba(99,102,241,.25)}
-.bp-wip:hover{background:rgba(99,102,241,.2)}
-.bp-w2b{background:rgba(14,165,233,.1);color:var(--bari);border:1px solid rgba(14,165,233,.25)}
-.bp-w2b:hover{background:rgba(14,165,233,.2)}
-.bp-b2d{background:rgba(5,150,105,.1);color:var(--done);border:1px solid rgba(5,150,105,.25)}
-.bp-b2d:hover{background:rgba(5,150,105,.2)}
+.btn-proc{padding:7px 10px;border-radius:var(--r);border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--fj);transition:background .1s;white-space:nowrap;min-height:36px}
+.bp-wip{background:var(--wip-dim);color:var(--wip);border:1px solid var(--wip-border)}
+.bp-wip:hover{background:rgba(37,99,235,.18)}
+.bp-w2b{background:var(--bari-dim);color:var(--bari);border:1px solid var(--bari-border)}
+.bp-w2b:hover{background:rgba(245,158,11,.18)}
+.bp-b2d{background:var(--done-dim);color:var(--done);border:1px solid var(--done-border)}
+.bp-b2d:hover{background:rgba(16,185,129,.18)}
 .bp-d2s{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
 .bp-d2s:hover{background:var(--red-mid)}
 .bp-edit{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(37,99,235,.2)}
@@ -153,12 +160,13 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .hist-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
 .hist-table tr:last-child td{border-bottom:none}
 .hist-table tr:hover td{background:var(--surface2)}
-.act-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap}
-.ac-wip{background:rgba(99,102,241,.1);color:var(--wip)}
-.ac-w2b{background:rgba(14,165,233,.1);color:var(--bari)}
-.ac-b2d{background:rgba(5,150,105,.1);color:var(--done)}
+.act-chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap}
+.ac-wip{background:var(--wip-dim);color:var(--wip)}
+.ac-w2b{background:var(--bari-dim);color:var(--bari)}
+.ac-b2d{background:var(--done-dim);color:var(--done)}
 .ac-d2s{background:var(--red-dim);color:var(--red)}
 .ac-sys{background:var(--accent-dim);color:var(--accent)}
+.ac-correction{background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5}
 
 /* ── USER TABLE ── */
 .user-table{width:100%;border-collapse:collapse}
@@ -170,153 +178,150 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 /* ── MODAL ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:16px}
 .overlay.show{display:flex}
-.modal{background:#fff;border:1px solid var(--border);border-radius:14px;width:100%;max-width:480px;box-shadow:0 16px 48px rgba(0,0,0,.15);display:flex;flex-direction:column;max-height:calc(100vh - 32px)}
-.modal-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal{background:#fff;border:1px solid var(--border);border-radius:14px;width:100%;max-width:500px;box-shadow:0 16px 48px rgba(0,0,0,.15);display:flex;flex-direction:column;max-height:calc(100vh - 32px)}
+.modal-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .modal-title{font-size:15px;font-weight:700}
-.modal-x{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;padding:4px;border-radius:4px}
+.modal-x{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;padding:4px;border-radius:4px;min-width:32px;min-height:32px}
 .modal-x:hover{color:var(--text);background:var(--surface2)}
-.modal-body{padding:18px 22px;overflow-y:auto;flex:1}
-.modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
 
-/* ── TRANSFER MODAL ── */
-.transfer-block{background:var(--surface2);border-radius:var(--r);padding:14px;margin-bottom:14px;border:1px solid var(--border)}
-.transfer-flow{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:14px;font-weight:700}
+/* ── GROUP SELECTOR ── */
+.group-selector{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.group-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;border-radius:10px;border:2px solid transparent;cursor:pointer;font-family:var(--fj);transition:all .1s;min-height:64px;user-select:none;position:relative}
+.group-btn:active{opacity:.85}
+.gb-icon{font-size:18px;margin-bottom:3px;line-height:1}
+.gb-label{font-size:13px;font-weight:800;line-height:1.2}
+.gb-sub{font-size:10px;opacity:.8;margin-top:2px;font-weight:500;text-align:center}
+.group-btn-wip{background:var(--wip-dim);color:var(--wip);border-color:var(--wip-border)}
+.group-btn-wip.grp-active{background:var(--wip);color:#fff;border-color:var(--wip);box-shadow:0 4px 12px rgba(37,99,235,.35)}
+.group-btn-bari{background:var(--bari-dim);color:var(--bari);border-color:var(--bari-border)}
+.group-btn-bari.grp-active{background:var(--bari);color:#fff;border-color:var(--bari);box-shadow:0 4px 12px rgba(245,158,11,.35)}
+.group-btn-done{background:var(--done-dim);color:var(--done);border-color:var(--done-border)}
+.group-btn-done.grp-active{background:var(--done);color:#fff;border-color:var(--done);box-shadow:0 4px 12px rgba(16,185,129,.35)}
+
+/* 完成品サブ操作 */
+.done-sub-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;display:none}
+.done-sub-row.show{display:grid}
+.done-sub-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;border:2px solid transparent;cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:700;min-height:44px;transition:all .1s}
+.dsb-complete{background:var(--done-dim);color:var(--done);border-color:var(--done-border)}
+.dsb-complete.dsb-active{background:var(--done);color:#fff;border-color:var(--done)}
+.dsb-ship{background:var(--red-dim);color:var(--red);border-color:rgba(239,68,68,.2)}
+.dsb-ship.dsb-active{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* ── TRANSFER BLOCK ── */
+.transfer-block{background:var(--surface2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;border:1px solid var(--border)}
+.transfer-flow{display:flex;align-items:center;gap:10px;margin-bottom:5px;font-size:14px;font-weight:700}
 .tf-arrow{color:var(--text-dim);font-size:16px}
 .transfer-stock{font-size:12px;color:var(--text-muted);font-family:var(--fn)}
-.qty-big-wrap{position:relative;margin:8px 0 6px}
-.qty-big-wrap input{width:100%;background:var(--surface2);border:2px solid var(--border2);border-radius:var(--r);color:var(--text);padding:12px 44px 12px 16px;font-size:28px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;transition:border-color .15s}
-.qty-big-wrap input:focus{border-color:var(--accent);background:#fff}
-.qty-unit-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;pointer-events:none}
-.qty-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.qty-pre{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:4px 12px;color:var(--text-muted);font-family:var(--fn);font-size:12px;cursor:pointer;transition:all .15s}
-.qty-pre:hover{background:var(--accent-dim);color:var(--accent);border-color:var(--accent)}
-
-/* ── QTY ADJUSTER (新プリセットUI) ── */
-.qty-adjuster{display:flex;align-items:center;gap:4px;margin:8px 0 14px}
-.qty-adj-center{flex:1;position:relative;min-width:0}
-.qty-adj-input{width:100%;background:var(--surface2);border:2px solid var(--border2);border-radius:var(--r);color:var(--text);padding:10px 44px 10px 8px;font-size:26px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;transition:border-color .15s;appearance:textfield;-moz-appearance:textfield}
-.qty-adj-input::-webkit-inner-spin-button,.qty-adj-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.qty-adj-input:focus{border-color:var(--accent);background:#fff}
-.qty-adj-unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;pointer-events:none}
-.qty-adj-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:var(--r);cursor:pointer;font-family:var(--fn);font-weight:700;line-height:1;transition:transform .1s,filter .1s,background .1s;user-select:none;-webkit-user-select:none;touch-action:manipulation;flex-shrink:0;outline:none}
-.qty-adj-btn:active{transform:scale(.88)!important}
-.adj-minus{background:#e5e7eb;color:#4b5563}
-.adj-minus:hover{background:#d1d5db;color:#1f2937}
-.adj-minus.pressing{transform:scale(.86)!important;background:#c9cdd4!important}
-.adj-plus{background:var(--accent);color:#fff}
-.adj-plus:hover{background:#1d4ed8}
-.adj-plus.pressing{transform:scale(.86)!important;background:#1e40af!important}
-.adj-sz-s{width:46px;height:46px;font-size:14px;border-radius:8px}
-.adj-sz-m{width:40px;height:46px;font-size:12px;border-radius:7px}
-.adj-sz-l{width:36px;height:46px;font-size:11px;border-radius:6px}
-.adj-repeating{box-shadow:0 0 0 2px var(--accent)}
-.adj-minus.adj-repeating{box-shadow:0 0 0 2px #9ca3af}
-@keyframes adjTick{0%{transform:scale(.84)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
-.adj-tick{animation:adjTick .12s ease}
-@media(max-width:700px){
-  .qty-adjuster{gap:3px}
-  .adj-sz-s{width:48px;height:50px;font-size:15px}
-  .adj-sz-m{width:40px;height:50px;font-size:12px}
-  .adj-sz-l{width:36px;height:50px;font-size:11px}
-  .qty-adj-input{font-size:22px;padding:10px 36px 10px 6px}
-}
 .transfer-warn{background:var(--amber-dim);border:1px solid var(--amber);color:#92400e;border-radius:var(--r);padding:8px 12px;font-size:12px;margin-top:8px;display:none}
 .transfer-warn.show{display:block}
-.op-info-bar{background:var(--accent-dim);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--accent);margin-bottom:12px;display:flex;gap:12px}
+
+/* ── QTY ADJUSTER ── */
+.qty-adjuster{display:flex;align-items:stretch;gap:0;margin:6px 0 12px;border-radius:10px;overflow:hidden;border:1px solid var(--border2)}
+.adj-minus-row,.adj-plus-row{display:flex;flex:1}
+.qty-adj-center{flex:0 0 auto;min-width:80px;position:relative;border-left:1px solid var(--border2);border-right:1px solid var(--border2)}
+.qty-adj-input{width:100%;height:100%;background:var(--surface2);border:none;color:var(--text);padding:8px 36px 8px 8px;font-size:26px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;appearance:textfield;-moz-appearance:textfield;min-height:60px}
+.qty-adj-input::-webkit-inner-spin-button,.qty-adj-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.qty-adj-input:focus{background:#fff}
+.qty-adj-unit{position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:11px;pointer-events:none}
+.qty-adj-btn{display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--fn);font-weight:700;line-height:1;user-select:none;-webkit-user-select:none;touch-action:manipulation;outline:none;flex:1;font-size:12px;transition:background .08s}
+.qty-adj-btn:active{opacity:.75}
+.adj-minus-row .qty-adj-btn{background:#f3f4f6;color:#4b5563;border-right:1px solid var(--border2)}
+.adj-minus-row .qty-adj-btn:hover{background:#e5e7eb}
+.adj-minus-row .qty-adj-btn.pressing{background:#d1d5db}
+.adj-minus-row .qty-adj-btn:last-child{border-right:none}
+.adj-plus-row .qty-adj-btn{background:#eff6ff;color:var(--wip);border-left:1px solid var(--border2)}
+.adj-plus-row .qty-adj-btn:hover{background:#dbeafe}
+.adj-plus-row .qty-adj-btn.pressing{background:#bfdbfe}
+.adj-plus-row .qty-adj-btn:first-child{border-left:none}
+.adj-repeating{outline:2px solid var(--accent);outline-offset:-2px}
+.adj-minus-row .qty-adj-btn.adj-repeating{outline-color:#9ca3af}
+@keyframes adjTick{0%{transform:scale(.88)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+.adj-tick{animation:adjTick .1s ease}
+
+/* ── LINE SEARCH ── */
+.line-selected-bar{display:flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid var(--wip-border);border-radius:var(--r);padding:10px 14px;font-weight:700;color:var(--wip);font-size:14px;margin-bottom:6px}
+.line-selected-bar .lsb-name{flex:1}
+.line-selected-bar .lsb-change{background:none;border:1px solid var(--wip-border);color:var(--wip);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;font-family:var(--fj);font-weight:600;white-space:nowrap;min-height:28px}
+.line-selected-bar .lsb-change:hover{background:var(--wip);color:#fff}
+.line-search-area{display:block}
+.line-recent-area{margin-top:8px}
+.line-recent-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.line-recent-btns{display:flex;flex-wrap:wrap;gap:6px}
+.line-recent-btn{background:var(--surface2);border:1.5px solid var(--border2);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;font-family:var(--fj);cursor:pointer;transition:all .1s;color:var(--text-muted);min-height:36px}
+.line-recent-btn:hover,.line-recent-btn:active{background:var(--accent-dim);border-color:var(--wip);color:var(--wip)}
+.line-recent-btn.recent-star::after{content:'★';font-size:9px;margin-left:4px;color:var(--amber)}
+
+/* ── SUGGEST ── */
+.suggest-wrap{position:relative}
+.suggest-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:500;max-height:200px;overflow-y:auto;display:none;margin-top:2px}
+.suggest-list.open{display:block}
+.suggest-item{padding:11px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;min-height:44px}
+.suggest-item:last-child{border-bottom:none}
+.suggest-item:hover,.suggest-item.active{background:var(--accent-dim);color:var(--accent)}
+.suggest-item .sug-icon{font-size:12px;color:var(--text-dim);flex-shrink:0}
+
+/* ── OPERATOR ── */
+.op-name-bar{display:flex;align-items:center;gap:10px;background:var(--accent-dim);border:1px solid var(--wip-border);border-radius:var(--r);padding:10px 14px;font-size:14px;font-weight:600;color:var(--wip)}
+.op-name-bar .op-name-lbl{flex:1}
+.op-name-bar .op-change-btn{font-size:11px;font-weight:600;background:none;border:1px solid var(--wip-border);color:var(--wip);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap;min-height:28px}
+.op-name-bar .op-change-btn:hover{background:var(--wip);color:#fff}
+.op-name-set{display:none}
+.op-name-set.visible{display:flex;flex-direction:column;gap:6px}
+.op-setup-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:13px;color:#92400e;margin-bottom:0}
+.op-setup-banner .osb-label{flex:1}
+.op-setup-banner input{flex:1;background:#fff;border:1px solid #fcd34d;border-radius:var(--r);padding:7px 10px;font-size:14px;font-family:var(--fj);outline:none;min-height:40px}
+.op-setup-banner button{background:var(--amber);color:#fff;font-weight:700;font-size:12px;border:none;border-radius:4px;padding:7px 14px;cursor:pointer;white-space:nowrap;min-height:36px}
+.editable-operator{display:flex;align-items:center;gap:6px}
+.editable-operator input{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-size:13px;font-family:var(--fj);color:var(--text);outline:none;width:100px;min-height:36px}
+.editable-operator input:focus{border-color:var(--accent)}
+.editable-operator button{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text-muted);min-height:28px}
+.editable-operator button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.op-info-bar{background:var(--accent-dim);border:1px solid var(--wip-border);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--wip);margin-bottom:12px;display:flex;gap:12px}
 .op-info-bar span{font-weight:600}
+
+/* ── CORRECTION ── */
+.hist-row-correction td{background:#fff1f1;color:#991b1b}
+.hist-row-correction:hover td{background:#ffe4e4!important}
+.correction-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:5px}
+.corrected-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#f3f4f6;color:#6b7280;border:1px solid #d1d5db;border-radius:4px;padding:1px 6px;margin-left:4px}
+.correction-count-badge{font-size:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:4px}
+.correction-count-badge.warn-cnt{color:#92400e;background:#fef3c7;border-color:#fcd34d}
+.correction-orig-desc{display:block;font-size:11px;color:#b91c1c;margin-top:2px;font-weight:500}
+.recent-correction-bar{display:flex;align-items:center;gap:10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--r);padding:10px 14px;margin-bottom:10px;font-size:13px;flex-wrap:wrap}
+.rcb-info{flex:1;color:#92400e;min-width:0}
+.rcb-info strong{color:#c2410c}
+.btn-recent-correct{background:#fff;border:1.5px solid var(--red);color:var(--red);font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);white-space:nowrap;min-height:36px}
+.btn-recent-correct:hover{background:var(--red);color:#fff}
+.btn-correct-row{background:none;border:1px solid #fca5a5;color:#b91c1c;font-size:10px;font-weight:700;padding:4px 10px;border-radius:4px;cursor:pointer;font-family:var(--fj);min-height:30px}
+.btn-correct-row:hover{background:#fee2e2}
+.btn-correct-row:disabled{opacity:.35;cursor:not-allowed}
 
 /* ── TOAST ── */
 #toasts{position:fixed;bottom:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;min-width:240px;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;align-items:center;gap:10px;font-size:13px;pointer-events:all;border-left:3px solid var(--accent);animation:tIn .2s ease}
+.toast{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;min-width:240px;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;align-items:center;gap:10px;font-size:13px;pointer-events:all;border-left:3px solid var(--accent);animation:tIn .15s ease}
 .toast.ok{border-left-color:var(--green)}
 .toast.err{border-left-color:var(--red)}
 .toast.warn{border-left-color:var(--amber)}
 @keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(12px)}}
 
-/* ── PW BANNER ── */
-
-/* ── EMPTY STATE ── */
-.empty{text-align:center;padding:48px 20px;color:var(--text-muted)}
-.empty .ei{font-size:36px;margin-bottom:10px}
-.empty p{font-size:13px}
-
 /* ── MISC ── */
 .divider{height:1px;background:var(--border);margin:14px 0}
-.sec-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.sec-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .mt8{margin-top:8px}
 .text-red{color:var(--red)}
 .text-amber{color:var(--amber)}
 .text-green{color:var(--green)}
+.empty{text-align:center;padding:48px 20px;color:var(--text-muted)}
+.empty .ei{font-size:36px;margin-bottom:10px}
+.empty p{font-size:13px}
+.op-hint-txt{font-size:11px;color:var(--text-dim);margin-top:3px}
 
-
-
-/* ── OPERATOR DISPLAY ── */
-
-/* correction rows */
-.hist-row-correction td{background:#fff1f1;color:#991b1b;}
-.hist-row-correction:hover td{background:#ffe4e4 !important;}
-.ac-correction{background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;}
-.correction-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:5px;}
-.corrected-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#f3f4f6;color:#6b7280;border:1px solid #d1d5db;border-radius:4px;padding:1px 6px;margin-left:4px;}
-.correction-count-badge{font-size:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:4px;}
-.recent-correction-bar{display:flex;align-items:center;gap:10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--r);padding:10px 14px;margin-bottom:10px;font-size:13px;flex-wrap:wrap;gap:8px;}
-.rcb-info{flex:1;color:#92400e;min-width:0;}
-.rcb-info strong{color:#c2410c;}
-.btn-recent-correct{background:#fff;border:1.5px solid var(--red);color:var(--red);font-size:12px;font-weight:700;padding:5px 14px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);white-space:nowrap;transition:all .15s;}
-.btn-recent-correct:hover{background:var(--red);color:#fff;}
-.btn-correct-row{background:none;border:1px solid #fca5a5;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;cursor:pointer;font-family:var(--fj);transition:all .15s;}
-.btn-correct-row:hover{background:#fee2e2;}
-.btn-correct-row:disabled{opacity:.35;cursor:not-allowed;}
-
-.op-name-bar{display:flex;align-items:center;gap:10px;background:var(--accent-dim);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);padding:9px 14px;font-size:14px;font-weight:600;color:var(--accent);}
-.op-name-bar .op-name-lbl{flex:1;}
-.op-name-bar .op-change-btn{font-size:11px;font-weight:600;background:none;border:1px solid rgba(37,99,235,.35);color:var(--accent);border-radius:4px;padding:3px 10px;cursor:pointer;white-space:nowrap;}
-.op-name-bar .op-change-btn:hover{background:var(--accent);color:#fff;}
-.op-name-set{display:none;}
-.op-name-set.visible{display:flex;flex-direction:column;gap:6px;}
-/* 初回operator_name入力バナー */
-.op-setup-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:13px;color:#92400e;margin-bottom:0;}
-.op-setup-banner .osb-label{flex:1;}
-.op-setup-banner input{flex:1;background:#fff;border:1px solid #fcd34d;border-radius:var(--r);padding:7px 10px;font-size:14px;font-family:var(--fj);outline:none;}
-.op-setup-banner button{background:var(--amber);color:#fff;font-weight:700;font-size:12px;border:none;border-radius:4px;padding:7px 14px;cursor:pointer;white-space:nowrap;}
-/* ユーザー管理テーブルの作業者名欄 */
-.editable-operator{display:flex;align-items:center;gap:6px;}
-.editable-operator input{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-size:13px;font-family:var(--fj);color:var(--text);outline:none;width:100px;}
-.editable-operator input:focus{border-color:var(--accent);}
-.editable-operator button{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text-muted);}
-.editable-operator button:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
-
-/* ── SUGGEST ── */
-.suggest-wrap{position:relative;}
-.suggest-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:500;max-height:180px;overflow-y:auto;display:none;margin-top:2px;}
-.suggest-list.open{display:block;}
-.suggest-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-.suggest-item:last-child{border-bottom:none;}
-.suggest-item:hover,.suggest-item.active{background:var(--accent-dim);color:var(--accent);}
-.suggest-item .sug-icon{font-size:11px;color:var(--text-dim);}
-.line-btn-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
-.line-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:6px 14px;font-size:12px;font-weight:600;font-family:var(--fj);cursor:pointer;transition:all .15s;color:var(--text-muted);}
-.line-btn:hover,.line-btn.selected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
-.line-btn.recent::after{content:'★';font-size:9px;margin-left:4px;color:var(--amber);}
-
-/* ── HAMBURGER ── */
-.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;flex-shrink:0;margin-left:auto}
-.hamburger span{display:block;width:20px;height:2px;background:var(--text-muted);border-radius:2px;transition:all .2s}
-.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.hamburger.open span:nth-child(2){opacity:0}
-.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.mob-menu{display:none;position:fixed;top:54px;left:0;right:0;background:#fff;border-bottom:1px solid var(--border);z-index:200;padding:8px 0 12px;flex-direction:column;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-.mob-menu.open{display:flex}
-.mob-menu-tab{background:none;border:none;color:var(--text-muted);padding:12px 20px;font-size:14px;font-weight:500;font-family:var(--fj);text-align:left;cursor:pointer;width:100%}
-.mob-menu-tab:hover,.mob-menu-tab.active{background:var(--surface2);color:var(--accent)}
-.mob-div{height:1px;background:var(--border);margin:6px 0}
-.mob-user{display:flex;align-items:center;gap:10px;padding:10px 20px}
-.mob-acts{display:flex;gap:8px;padding:6px 20px 0}
-
-/* ── CARD VIEW (mobile) ── */
+/* ── MOBILE CARDS ── */
 .inv-cards{display:none;flex-direction:column;gap:10px}
 .icard{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:14px;box-shadow:var(--sh)}
 .icard.row-warn{border-left:3px solid var(--amber)}
@@ -329,32 +334,47 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .icard-slabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
 .icard-sval{font-family:var(--fn);font-weight:700;font-size:16px;line-height:1}
 .icard-sunit{font-size:9px;color:var(--text-muted);margin-top:2px}
-.icard-btns{display:flex;flex-wrap:wrap;gap:5px}
-.icard-btns .btn-proc{flex:1;min-width:68px;text-align:center;padding:7px 4px;font-size:10px}
+.icard-btns{display:flex;flex-wrap:wrap;gap:6px}
+.icard-btns .btn-proc{flex:1;min-width:72px;text-align:center;padding:8px 4px;font-size:11px;min-height:40px}
 
-/* ── MOBILE ── */
-@media(max-width:700px){
+/* ── HAMBURGER ── */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;flex-shrink:0;margin-left:auto;min-height:44px;min-width:44px}
+.hamburger span{display:block;width:20px;height:2px;background:var(--text-muted);border-radius:2px;transition:all .2s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mob-menu{display:none;position:fixed;top:54px;left:0;right:0;background:#fff;border-bottom:1px solid var(--border);z-index:200;padding:8px 0 12px;flex-direction:column;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.mob-menu.open{display:flex}
+.mob-menu-tab{background:none;border:none;color:var(--text-muted);padding:14px 20px;font-size:14px;font-weight:500;font-family:var(--fj);text-align:left;cursor:pointer;width:100%;min-height:50px}
+.mob-menu-tab:hover,.mob-menu-tab.active{background:var(--surface2);color:var(--accent)}
+.mob-div{height:1px;background:var(--border);margin:6px 0}
+.mob-user{display:flex;align-items:center;gap:10px;padding:10px 20px}
+.mob-acts{display:flex;gap:8px;padding:6px 20px 0}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:768px){
+  html,body{overflow-x:hidden}
   .header{padding:0 12px;gap:8px;height:52px}
   .header-brand{font-size:14px}
   .header-sep,.header-nav,.header-right .btn-ghost{display:none}
   .hamburger{display:flex}
   .user-pill{padding:3px 8px 3px 4px}
   .role-chip{display:none}
-  .main{padding:10px 12px}
+  .main{padding:10px 12px;overflow-x:hidden}
   .stats-row{grid-template-columns:1fr 1fr;gap:8px}
   .stat-card{height:70px;padding:10px 12px}
   .stat-val{font-size:20px}
   .table-wrap .inv-table{display:none}
   .inv-cards{display:flex}
-  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .hist-table{min-width:600px}
-  .user-table{min-width:440px}
+  .table-wrap{overflow-x:hidden}
+  .hist-table{min-width:600px;overflow-x:auto}
+  .user-table{min-width:440px;overflow-x:auto}
   .toolbar{flex-wrap:wrap;gap:6px}
   .search-wrap{flex:1;min-width:0;max-width:none}
   .page-header{flex-wrap:wrap;gap:6px}
   .page-actions{width:100%;margin-left:0}
   .page-actions .btn{flex:1}
-  .modal{max-width:100%;border-radius:14px 14px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:92vh}
+  .modal{max-width:100%;border-radius:14px 14px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:94vh}
   .overlay{align-items:flex-end;padding:0}
   .two-col{grid-template-columns:1fr 1fr}
   .three-col{grid-template-columns:1fr 1fr 1fr}
@@ -362,6 +382,25 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   #toasts{bottom:8px;right:8px;left:8px}
   .toast{min-width:0;max-width:100%}
   .mob-menu{top:52px}
+  .modal-foot{padding:12px 16px;flex-direction:column-reverse}
+  .modal-foot .btn-primary{width:100%;min-height:52px;font-size:15px;order:-1}
+  .modal-foot .btn-ghost{width:100%}
+  /* Qty adjuster mobile: 3-row layout */
+  .qty-adjuster{flex-direction:column;border-radius:10px;min-height:140px}
+  .adj-minus-row{border-bottom:1px solid var(--border2);flex:1}
+  .adj-minus-row .qty-adj-btn{border-right:1px solid var(--border2);font-size:14px;min-height:44px;flex:1}
+  .adj-minus-row .qty-adj-btn:last-child{border-right:none}
+  .qty-adj-center{border-left:none;border-right:none;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
+  .qty-adj-input{font-size:28px;min-height:56px;width:100%}
+  .adj-plus-row{border-top:none;flex:1}
+  .adj-plus-row .qty-adj-btn{border-left:1px solid var(--border2);font-size:14px;min-height:44px;flex:1}
+  .adj-plus-row .qty-adj-btn:first-child{border-left:none}
+  /* Group buttons mobile */
+  .group-selector{gap:6px}
+  .group-btn{min-height:58px;padding:8px 4px}
+  .gb-label{font-size:12px}
+  .gb-icon{font-size:16px}
+  .current-group-bar{padding:8px 12px}
 }
 </style>
 </head>
@@ -372,7 +411,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   <div class="login-card">
     <div class="login-logo">
       <div class="brand">STOCK<span>S</span></div>
-      <div class="sub">現場在庫管理システム</div>
+      <div class="sub">現場在庫管理システム v9</div>
     </div>
     <div id="login-err" class="error-box"></div>
     <div class="form-row">
@@ -384,9 +423,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
       <input id="li-pw" type="password" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn btn-primary btn-full mt8" onclick="doLogin()">ログイン</button>
-    <p style="text-align:center;margin-top:14px;font-size:11px;color:var(--text-muted)">
-      初期: admin / admin123 &nbsp;|&nbsp; user1 / user123
-    </p>
+    <p style="text-align:center;margin-top:14px;font-size:11px;color:var(--text-muted)">初期: admin / admin123 &nbsp;|&nbsp; user1 / user123</p>
   </div>
 </div>
 
@@ -403,7 +440,8 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
     <div class="header-right">
       <div class="user-pill">
         <div class="user-av" id="hd-av">A</div>
-        <span id="hd-name">admin</span><span id="hd-operator-name" style="font-size:11px;color:var(--text-muted);margin-left:2px"></span>
+        <span id="hd-name">admin</span>
+        <span id="hd-operator-name" style="font-size:11px;color:var(--text-muted);margin-left:2px"></span>
         <span class="role-chip admin" id="hd-role">管理者</span>
       </div>
       <button class="btn btn-ghost btn-sm admin-only" id="hd-pw-btn" onclick="showPwModal()">PW変更</button>
@@ -414,7 +452,6 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
     </button>
   </header>
 
-  <!-- Mobile menu -->
   <div class="mob-menu" id="mob-menu">
     <button class="mob-menu-tab" onclick="navTo('inventory')">📦 在庫一覧</button>
     <button class="mob-menu-tab" onclick="navTo('history')">📋 操作履歴</button>
@@ -437,11 +474,16 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 
     <!-- ── 在庫一覧 ── -->
     <div id="page-inventory" class="page active">
-      <!-- operator_name未設定時バナー -->
-      <div id="op-setup-banner" class="op-setup-banner" style="display:none;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <!-- 作業者名未設定バナー -->
+      <div id="op-setup-banner" class="op-setup-banner" style="display:none;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <span class="osb-label">👋 あなたの<strong>作業者名</strong>を設定してください（操作ログに記録されます）</span>
         <input id="op-setup-input" type="text" placeholder="例: 田中 太郎">
         <button onclick="saveMyOperatorName()">設定して始める</button>
+      </div>
+      <!-- ② 現在のグループ表示バー -->
+      <div class="current-group-bar" id="current-group-bar">
+        <span class="cgb-label">現在のグループ：</span>
+        <span class="cgb-badge cgb-wip" id="cgb-badge">仕掛品</span>
       </div>
       <div class="stats-row" id="stats-row"></div>
       <div class="toolbar">
@@ -468,7 +510,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
             <th class="th-wip" style="min-width:90px">仕掛品</th>
             <th class="th-bari" style="min-width:90px">バリ前</th>
             <th class="th-done" style="min-width:90px">完成品</th>
-            <th style="min-width:260px">操作</th>
+            <th style="min-width:280px">操作</th>
           </tr></thead>
           <tbody id="inv-body"></tbody>
         </table>
@@ -501,10 +543,10 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
         <div class="rcb-info">直近の操作: <strong id="rcb-desc">—</strong></div>
         <button class="btn-recent-correct" id="btn-recent-correct" onclick="quickCorrect()">⎌ 直近訂正</button>
       </div>
-      <div class="table-wrap">
-        <table class="hist-table">
+      <div class="table-wrap" style="overflow-x:auto">
+        <table class="hist-table" style="min-width:640px">
           <thead><tr>
-            <th>日時</th><th>操作</th><th>品目</th><th>数量</th><th>ライン</th><th>作業者</th><th style="width:70px">訂正</th>
+            <th>日時</th><th>操作</th><th>グループ</th><th>品目</th><th>数量</th><th>ライン</th><th>作業者</th><th style="width:70px">訂正</th>
           </tr></thead>
           <tbody id="hist-body"></tbody>
         </table>
@@ -534,7 +576,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 
 <!-- ═══ MODALS ═══ -->
 
-<!-- Operation Modal (加工/バリ前移動/完成/出荷) -->
+<!-- ⑯ 操作モーダル（グループ選択優先設計） -->
 <div class="overlay" id="modal-op">
   <div class="modal">
     <div class="modal-head">
@@ -543,6 +585,33 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
     </div>
     <div class="modal-body">
       <div id="op-err" class="error-box"></div>
+
+      <!-- ① グループ選択ボタン -->
+      <div class="group-selector" id="op-group-selector">
+        <button type="button" class="group-btn group-btn-wip" id="gbtn-wip" onclick="switchOpGroup('wip_add')">
+          <span class="gb-icon">⚙️</span>
+          <span class="gb-label">仕掛品</span>
+          <span class="gb-sub">加工入庫</span>
+        </button>
+        <button type="button" class="group-btn group-btn-bari" id="gbtn-bari" onclick="switchOpGroup('wip_to_bari')">
+          <span class="gb-icon">🔧</span>
+          <span class="gb-label">バリ取り前</span>
+          <span class="gb-sub">バリ前移動</span>
+        </button>
+        <button type="button" class="group-btn group-btn-done" id="gbtn-done" onclick="switchOpGroup('bari_to_done')">
+          <span class="gb-icon">✅</span>
+          <span class="gb-label">完成品</span>
+          <span class="gb-sub">完成 / 出荷</span>
+        </button>
+      </div>
+
+      <!-- 完成品サブ操作 -->
+      <div class="done-sub-row" id="done-sub-row">
+        <button type="button" class="done-sub-btn dsb-complete" id="dsb-complete" onclick="switchOpType('bari_to_done')">✅ 完成</button>
+        <button type="button" class="done-sub-btn dsb-ship" id="dsb-ship" onclick="switchOpType('done_to_ship')">🚚 出荷</button>
+      </div>
+
+      <!-- 品目・在庫情報 -->
       <div class="transfer-block">
         <div class="transfer-flow">
           <span id="op-from-lbl" style="font-weight:700"></span>
@@ -554,32 +623,53 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
           <span id="op-stock-info" style="margin-left:12px"></span>
         </div>
       </div>
+
+      <!-- ⑦ 数量操作 -->
       <div class="sec-label">移動数量</div>
       <div class="qty-adjuster" id="op-adj-row"></div>
       <div class="transfer-warn" id="op-warn">⚠ 移動元在庫の80%以上を移動しようとしています。</div>
+
+      <!-- ③ ライン入力（仕掛品のみ表示） -->
       <div class="form-row" id="op-line-row">
         <label>ライン <span class="text-red">*</span></label>
-        <div class="line-btn-group" id="op-line-btns"></div>
+        <!-- 選択済み表示 -->
+        <div class="line-selected-bar" id="op-line-selected-bar" style="display:none">
+          <span class="lsb-name" id="op-line-selected-txt">—</span>
+          <button class="lsb-change" onclick="clearLineSelection()">変更</button>
+        </div>
+        <!-- ⑤ 検索+サジェスト -->
+        <div class="line-search-area" id="op-line-search-area">
+          <div class="suggest-wrap">
+            <input id="op-line-search" type="text" placeholder="ライン名を入力・検索..."
+              autocomplete="off" oninput="onLineSearch()" onfocus="onLineSearchFocus()">
+            <div class="suggest-list" id="op-line-suggest"></div>
+          </div>
+          <!-- ⑤ よく使うライン（最大5件） -->
+          <div class="line-recent-area" id="op-line-recent-area">
+            <div class="line-recent-label" style="margin-top:8px">よく使うライン（★=最近使用）</div>
+            <div class="line-recent-btns" id="op-line-recent-btns"></div>
+          </div>
+        </div>
         <input type="hidden" id="op-line">
       </div>
-      <div class="form-row" style="margin-top:4px" id="op-operator-row">
+
+      <!-- 作業者 -->
+      <div class="form-row" id="op-operator-row">
         <label>作業者名 <span class="text-red">*</span></label>
-        <!-- ログインユーザーのoperator_nameが設定済みの場合: バー表示 -->
         <div class="op-name-bar" id="op-name-bar" style="display:none">
           <span class="op-name-lbl" id="op-name-bar-txt"></span>
           <button class="op-change-btn" onclick="toggleOperatorInput(true)">変更</button>
         </div>
-        <!-- 手入力欄（管理者は常時表示、一般は「変更」クリック時のみ） -->
         <div class="op-name-set" id="op-name-set">
           <div class="suggest-wrap">
             <input id="op-operator" type="text" placeholder="例: 田中" autocomplete="off"
               oninput="onOperatorInput()" onkeydown="onOperatorKeydown(event)" onfocus="onOperatorInput()">
             <div class="suggest-list" id="op-suggest"></div>
           </div>
-          <button type="button" style="font-size:11px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-align:left;padding:0;" onclick="toggleOperatorInput(false)" id="op-cancel-change">← 自分の名前に戻す</button>
+          <button type="button" style="font-size:11px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-align:left;padding:0" onclick="toggleOperatorInput(false)" id="op-cancel-change">← 自分の名前に戻す</button>
         </div>
       </div>
-      <div class="form-hint" id="op-hint">※ ライン（★=最近使用）・作業者は必須入力です</div>
+      <div class="op-hint-txt" id="op-hint"></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('modal-op')">キャンセル</button>
@@ -588,7 +678,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   </div>
 </div>
 
-<!-- Add/Edit Item -->
+<!-- 品目 追加/編集 -->
 <div class="overlay" id="modal-item">
   <div class="modal">
     <div class="modal-head">
@@ -625,18 +715,9 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
       <div class="divider"></div>
       <div class="sec-label">初期在庫</div>
       <div class="three-col" id="init-stock-row">
-        <div class="form-row">
-          <label style="color:var(--wip)">仕掛品</label>
-          <input id="item-wip" type="number" min="0" placeholder="0">
-        </div>
-        <div class="form-row">
-          <label style="color:var(--bari)">バリ前</label>
-          <input id="item-bari" type="number" min="0" placeholder="0">
-        </div>
-        <div class="form-row">
-          <label style="color:var(--done)">完成品</label>
-          <input id="item-done" type="number" min="0" placeholder="0">
-        </div>
+        <div class="form-row"><label style="color:var(--wip)">仕掛品</label><input id="item-wip" type="number" min="0" placeholder="0"></div>
+        <div class="form-row"><label style="color:var(--bari)">バリ前</label><input id="item-bari" type="number" min="0" placeholder="0"></div>
+        <div class="form-row"><label style="color:var(--done)">完成品</label><input id="item-done" type="number" min="0" placeholder="0"></div>
       </div>
     </div>
     <div class="modal-foot">
@@ -646,7 +727,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   </div>
 </div>
 
-<!-- Line Settings -->
+<!-- ライン設定 -->
 <div class="overlay" id="modal-lines">
   <div class="modal" style="max-width:400px">
     <div class="modal-head">
@@ -657,7 +738,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">操作時に選択できるラインを管理します。</p>
       <div id="lines-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
       <div style="display:flex;gap:8px">
-        <input id="new-line-input" type="text" placeholder="例: 1号機" style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:8px 12px;font-size:14px;font-family:var(--fj);outline:none">
+        <input id="new-line-input" type="text" placeholder="例: 1号機" style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:8px 12px;font-size:14px;font-family:var(--fj);outline:none;min-height:44px">
         <button class="btn btn-primary btn-sm" onclick="addLine()">追加</button>
       </div>
     </div>
@@ -667,37 +748,31 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   </div>
 </div>
 
-<!-- Password change -->
+<!-- パスワード変更 -->
 <div class="overlay" id="modal-pw">
   <div class="modal" style="max-width:400px">
     <div class="modal-head">
       <span class="modal-title">パスワード変更</span>
-      <button class="modal-x" id="pw-modal-x" onclick="closeModal('modal-pw')">✕</button>
+      <button class="modal-x" onclick="closeModal('modal-pw')">✕</button>
     </div>
     <div class="modal-body">
       <div id="pw-err" class="error-box"></div>
-      <div class="form-row">
-        <label>現在のパスワード</label>
-        <input id="pw-current" type="password" placeholder="現在のパスワード">
-      </div>
+      <div class="form-row"><label>現在のパスワード</label><input id="pw-current" type="password" placeholder="現在のパスワード"></div>
       <div class="form-row">
         <label>新しいパスワード（6文字以上）</label>
         <input id="pw-new" type="password" placeholder="新しいパスワード" oninput="updatePwStrength()">
         <div class="pw-strength"><div class="pw-bar" id="pw-bar"></div></div>
       </div>
-      <div class="form-row">
-        <label>確認</label>
-        <input id="pw-confirm" type="password" placeholder="もう一度入力">
-      </div>
+      <div class="form-row"><label>確認</label><input id="pw-confirm" type="password" placeholder="もう一度入力"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" id="pw-cancel-btn" onclick="closeModal('modal-pw')">キャンセル</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-pw')">キャンセル</button>
       <button class="btn btn-primary" onclick="changePassword()">変更する</button>
     </div>
   </div>
 </div>
 
-<!-- Add User -->
+<!-- ユーザー追加 -->
 <div class="overlay" id="modal-adduser">
   <div class="modal" style="max-width:400px">
     <div class="modal-head">
@@ -706,20 +781,11 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
     </div>
     <div class="modal-body">
       <div id="adduser-err" class="error-box"></div>
-      <div class="form-row">
-        <label>ユーザー名 *</label>
-        <input id="au-name" type="text" placeholder="英数字・アンダースコア">
-      </div>
-      <div class="form-row">
-        <label>初期パスワード（6文字以上）*</label>
-        <input id="au-pw" type="password" placeholder="初期パスワード">
-      </div>
+      <div class="form-row"><label>ユーザー名 *</label><input id="au-name" type="text" placeholder="英数字・アンダースコア"></div>
+      <div class="form-row"><label>初期パスワード（6文字以上）*</label><input id="au-pw" type="password" placeholder="初期パスワード"></div>
       <div class="form-row">
         <label>権限</label>
-        <select id="au-role">
-          <option value="user">一般ユーザー</option>
-          <option value="admin">管理者</option>
-        </select>
+        <select id="au-role"><option value="user">一般ユーザー</option><option value="admin">管理者</option></select>
       </div>
       <div class="form-row">
         <label>作業者名（表示名）</label>
@@ -734,7 +800,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   </div>
 </div>
 
-<!-- Delete Confirm -->
+<!-- 削除確認 -->
 <div class="overlay" id="modal-delete">
   <div class="modal" style="max-width:380px">
     <div class="modal-head">
@@ -752,15 +818,15 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   </div>
 </div>
 
-<!-- Generic confirm -->
+<!-- 汎用確認ダイアログ -->
 <div class="overlay" id="modal-confirm">
-  <div class="modal" style="max-width:360px">
+  <div class="modal" style="max-width:380px">
     <div class="modal-head">
       <span class="modal-title" id="conf-title">確認</span>
       <button class="modal-x" onclick="closeModal('modal-confirm')">✕</button>
     </div>
     <div class="modal-body">
-      <p id="conf-msg" style="font-size:14px"></p>
+      <p id="conf-msg" style="font-size:14px;white-space:pre-line;line-height:1.7"></p>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">キャンセル</button>
@@ -788,17 +854,36 @@ function hashPw(s){var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h)+s.charCod
 var DB = {users:[], items:[], history:[], lines:[]};
 var currentUser = null;
 var pendingDeleteId = null;
-var pendingOp = null; // {itemId, type:'wip_add'|'wip_to_bari'|'bari_to_done'|'done_to_ship'}
+var pendingOp = null; // {itemId, opType}
 
-var DB_KEY = 'stocks_v2';
-var SESS_KEY = 'stocks_sess_v2';
+var DB_KEY = 'stocks_v9';
+var SESS_KEY = 'stocks_sess_v9';
+var HIST_MAX = 5000;
+var CORRECTION_LIMIT = 3;
 
+// ─── グループとオペレーション設定 ───
+// ⑫ データ構造・グループマッピング
+var OP_GROUP = {
+  wip_add:     '仕掛品',
+  wip_to_bari: 'バリ取り前',
+  bari_to_done: '完成品',
+  done_to_ship: '完成品'
+};
+
+var OP_CONFIG = {
+  wip_add:     {label:'加工',      group:'仕掛品',  from:null,    to:'仕掛品',  fromKey:null,   toKey:'wip',  color:'var(--wip)',  requireLine:true},
+  wip_to_bari: {label:'バリ前移動', group:'バリ取り前', from:'仕掛品', to:'バリ取り前', fromKey:'wip', toKey:'bari', color:'var(--bari)', requireLine:false},
+  bari_to_done:{label:'完成',      group:'完成品',  from:'バリ取り前', to:'完成品', fromKey:'bari',toKey:'done', color:'var(--done)', requireLine:false},
+  done_to_ship:{label:'出荷',      group:'完成品',  from:'完成品', to:'出荷',   fromKey:'done', toKey:null,   color:'var(--red)',  requireLine:false}
+};
+
+// ─── DB ───
 function loadDB(){
   try{
-    var raw = localStorage.getItem(DB_KEY);
-    if(raw){DB = JSON.parse(raw); return;}
+    var raw=localStorage.getItem(DB_KEY);
+    if(raw){DB=JSON.parse(raw);return;}
   }catch(e){}
-  DB = {
+  DB={
     users:[
       {id:'u1',username:'admin',passwordHash:hashPw('admin123'),role:'admin',operator_name:'管理者',createdAt:now()},
       {id:'u2',username:'user1',passwordHash:hashPw('user123'),role:'user',operator_name:'田中',createdAt:now()}
@@ -817,82 +902,82 @@ function loadDB(){
   saveDB();
 }
 
+// [API] saveDB → GAS/DB連携時はここをfetch(GAS_URL, POST)に置換
 function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(DB))}
 function saveSession(){if(currentUser)localStorage.setItem(SESS_KEY,currentUser.id)}
 function clearSession(){localStorage.removeItem(SESS_KEY)}
 
-function addHistory(type, item, qty, line, operator){
-  DB.history.unshift({
-    id:uuid(), timestamp:now(),
-    type:type, itemId:item.id, itemName:item.name,
-    qty:qty, line:line,
-    operator:operator,
-    userId:currentUser.id, username:currentUser.username, role:currentUser.role
-  });
-  if(DB.history.length>5000) DB.history=DB.history.slice(0,5000);
+// ⑫ データ構造：group, user フィールドを追加
+function addHistory(type, item, qty, line, operator, group){
+  var entry = {
+    id: uuid(), timestamp: now(),
+    type: type,
+    group: group || OP_GROUP[pendingOp&&pendingOp.opType] || '',
+    itemId: item.id, itemName: item.name,
+    qty: qty,
+    line: line || null,
+    operator: operator,
+    user: currentUser ? currentUser.username : '',
+    userId: currentUser ? currentUser.id : '',
+    username: currentUser ? currentUser.username : '',
+    role: currentUser ? currentUser.role : ''
+  };
+  DB.history.unshift(entry);
+  // ⑬ 履歴上限5000件
+  if(DB.history.length > HIST_MAX) DB.history = DB.history.slice(0, HIST_MAX);
 }
 
-
-// ═══════════════════════════════════════════════
-//  INPUT HISTORY UTILS（将来サーバー移行対応）
-// ═══════════════════════════════════════════════
+// ─── 入力履歴ユーティリティ ───
 var HIST_OPERATOR_KEY = 'stocks_operator_hist';
-var HIST_LINE_KEY     = 'stocks_line_hist';
-var HIST_MAX = 20;
+var HIST_LINE_KEY = 'stocks_line_hist';
 
-function loadHist(key){
-  try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){return [];}
-}
-function saveHist(key, list){ localStorage.setItem(key, JSON.stringify(list)); }
-
-function pushHist(key, value){
+function loadHist(key){try{return JSON.parse(localStorage.getItem(key)||'[]');}catch(e){return [];}}
+function saveHist(key,list){localStorage.setItem(key,JSON.stringify(list));}
+function pushHist(key,value){
   if(!value)return;
-  var list = loadHist(key);
-  list = list.filter(function(v){return v!==value;});
+  var list=loadHist(key);
+  list=list.filter(function(v){return v!==value;});
   list.unshift(value);
-  if(list.length>HIST_MAX) list=list.slice(0,HIST_MAX);
-  saveHist(key, list);
-}
-
-function getOperatorSuggests(q){
-  // 履歴から収集
-  var hist = loadHist(HIST_OPERATOR_KEY);
-  // DBの履歴からも補完
-  var fromDb = DB.history.map(function(h){return h.operator||'';}).filter(Boolean);
-  var all = hist.slice();
-  fromDb.forEach(function(v){if(all.indexOf(v)<0)all.push(v);});
-  // 重複排除・上限
-  var seen={};
-  all = all.filter(function(v){if(seen[v])return false;seen[v]=true;return true;});
-  // 前方一致フィルター
-  if(q){
-    q=q.toLowerCase();
-    all=all.filter(function(v){return v.toLowerCase().indexOf(q)===0;});
-  }
-  return all.slice(0,8);
+  if(list.length>20)list=list.slice(0,20);
+  saveHist(key,list);
 }
 
 function getLineSorted(){
-  // 使用頻度順でソート（localStorage に使用回数を保存）
-  var counts = {};
-  try{ counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}'); }catch(e){}
-  var lines = DB.lines.slice();
+  var counts={};
+  try{counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}');}catch(e){}
+  var lines=DB.lines.slice();
   lines.sort(function(a,b){return (counts[b]||0)-(counts[a]||0);});
   return lines;
 }
 
 function recordLineUse(line){
   var counts={};
-  try{ counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}'); }catch(e){}
+  try{counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}');}catch(e){}
   counts[line]=(counts[line]||0)+1;
-  localStorage.setItem('stocks_line_counts', JSON.stringify(counts));
-  localStorage.setItem('last_line', line);
-  pushHist(HIST_LINE_KEY, line);
+  localStorage.setItem('stocks_line_counts',JSON.stringify(counts));
+  localStorage.setItem('last_line',line);
+  pushHist(HIST_LINE_KEY,line);
 }
 
 function recordOperatorUse(op){
-  localStorage.setItem('last_operator', op);
-  pushHist(HIST_OPERATOR_KEY, op);
+  localStorage.setItem('last_operator',op);
+  pushHist(HIST_OPERATOR_KEY,op);
+}
+
+// ⑥ グループ記録
+function recordGroupUse(group){
+  localStorage.setItem('last_group',group);
+}
+
+function getOperatorSuggests(q){
+  var hist=loadHist(HIST_OPERATOR_KEY);
+  var fromDb=DB.history.map(function(h){return h.operator||'';}).filter(Boolean);
+  var all=hist.slice();
+  fromDb.forEach(function(v){if(all.indexOf(v)<0)all.push(v);});
+  var seen={};
+  all=all.filter(function(v){if(seen[v])return false;seen[v]=true;return true;});
+  if(q){q=q.toLowerCase();all=all.filter(function(v){return v.toLowerCase().indexOf(q)>=0;});}
+  return all.slice(0,8);
 }
 
 // ═══════════════════════════════════════════════
@@ -905,21 +990,14 @@ function doLogin(){
   errEl.classList.remove('show');
   if(!username||!pw){errEl.textContent='ユーザー名とパスワードを入力してください';errEl.classList.add('show');return;}
   var user=DB.users.find(function(u){return u.username===username;});
-  if(!user||user.passwordHash!==hashPw(pw)){
-    errEl.textContent='ユーザー名またはパスワードが違います';
-    errEl.classList.add('show');
-    return;
-  }
-  currentUser=user;
-  saveSession();
-  bootApp();
+  if(!user||user.passwordHash!==hashPw(pw)){errEl.textContent='ユーザー名またはパスワードが違います';errEl.classList.add('show');return;}
+  currentUser=user;saveSession();bootApp();
 }
 document.getElementById('li-pw').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 document.getElementById('li-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('li-pw').focus();});
 
 function doLogout(){
-  currentUser=null;
-  clearSession();
+  currentUser=null;clearSession();
   document.getElementById('app').classList.remove('active');
   document.getElementById('login-screen').style.display='';
   document.getElementById('li-pw').value='';
@@ -929,7 +1007,6 @@ function bootApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('active');
   var admin=currentUser.role==='admin';
-  // Header
   var av=document.getElementById('hd-av');
   av.textContent=currentUser.username.charAt(0).toUpperCase();
   av.className='user-av'+(admin?' admin-av':'');
@@ -937,41 +1014,29 @@ function bootApp(){
   var roleEl=document.getElementById('hd-role');
   roleEl.textContent=admin?'管理者':'一般';
   roleEl.className='role-chip '+(admin?'admin':'user');
-  // Admin-only elements
   document.querySelectorAll('.admin-only').forEach(function(el){el.style.display=admin?'':'none';});
   document.getElementById('tab-users').style.display=admin?'':'none';
   document.getElementById('mob-tab-users').style.display=admin?'':'none';
   document.getElementById('hd-pw-btn').style.display=admin?'':'none';
   document.getElementById('mob-pw-btn').style.display=admin?'':'none';
-  // Mobile menu info
   var mav=document.getElementById('mob-av');
   mav.textContent=currentUser.username.charAt(0).toUpperCase();
   mav.className='user-av'+(admin?' admin-av':'');
   document.getElementById('mob-name').textContent=currentUser.username;
   document.getElementById('mob-role').textContent=admin?'管理者':'一般ユーザー';
-  // 作業者名をヘッダーのuser-pillに追加表示
-  var opName = currentUser.operator_name||'';
-  var opDisp = document.getElementById('hd-operator-name');
-  if(opDisp) opDisp.textContent = opName ? '('+opName+')' : '';
-
-  // operator_name未設定バナー
-  var setupBanner = document.getElementById('op-setup-banner');
-  if(setupBanner){
-    setupBanner.style.display = (!opName) ? '' : 'none';
-    document.getElementById('op-setup-input').value = '';
-  }
-
+  var opName=currentUser.operator_name||'';
+  var opDisp=document.getElementById('hd-operator-name');
+  if(opDisp) opDisp.textContent=opName?'('+opName+')':'';
+  var setupBanner=document.getElementById('op-setup-banner');
+  if(setupBanner){setupBanner.style.display=(!opName)?'':'none';document.getElementById('op-setup-input').value='';}
+  updateCurrentGroupBar();
   showPage('inventory');
 }
 
-// Restore session
 loadDB();
 (function(){
   var sid=localStorage.getItem(SESS_KEY);
-  if(sid){
-    var u=DB.users.find(function(u){return u.id===sid;});
-    if(u){currentUser=u;bootApp();}
-  }
+  if(sid){var u=DB.users.find(function(u){return u.id===sid;});if(u){currentUser=u;bootApp();}}
 }());
 
 // ═══════════════════════════════════════════════
@@ -994,22 +1059,31 @@ function navTo(name){showPage(name);closeMobMenu();}
 //  MOBILE MENU
 // ═══════════════════════════════════════════════
 function toggleMobMenu(){
-  var m=document.getElementById('mob-menu');
-  var b=document.getElementById('hbg');
-  var open=m.classList.toggle('open');
-  b.classList.toggle('open',open);
+  var m=document.getElementById('mob-menu');var b=document.getElementById('hbg');
+  var open=m.classList.toggle('open');b.classList.toggle('open',open);
 }
 function closeMobMenu(){
   document.getElementById('mob-menu').classList.remove('open');
   document.getElementById('hbg').classList.remove('open');
 }
 document.addEventListener('click',function(e){
-  var menu=document.getElementById('mob-menu');
-  var hbg=document.getElementById('hbg');
-  if(menu&&menu.classList.contains('open')&&!menu.contains(e.target)&&hbg&&!hbg.contains(e.target)){
-    closeMobMenu();
-  }
+  var menu=document.getElementById('mob-menu');var hbg=document.getElementById('hbg');
+  if(menu&&menu.classList.contains('open')&&!menu.contains(e.target)&&hbg&&!hbg.contains(e.target)){closeMobMenu();}
 });
+
+// ═══════════════════════════════════════════════
+//  ② 現在グループバー
+// ═══════════════════════════════════════════════
+function updateCurrentGroupBar(){
+  var grp=localStorage.getItem('last_group');
+  var bar=document.getElementById('current-group-bar');
+  if(!bar)return;
+  if(!grp){bar.style.display='none';return;}
+  bar.style.display='flex';
+  var badge=document.getElementById('cgb-badge');
+  badge.textContent=grp;
+  badge.className='cgb-badge '+(grp==='仕掛品'?'cgb-wip':grp==='バリ取り前'?'cgb-bari':'cgb-done');
+}
 
 // ═══════════════════════════════════════════════
 //  STATS
@@ -1017,14 +1091,13 @@ document.addEventListener('click',function(e){
 function renderStats(){
   var items=DB.items;
   var warnItems=items.filter(function(i){return i.process.done<=i.threshold&&i.process.done>0;});
-  var zeroItems=items.filter(function(i){return i.process.done===0;});
   var todayHist=DB.history.filter(function(h){return h.timestamp.slice(0,10)===now().slice(0,10);});
   var todayShip=todayHist.filter(function(h){return h.type==='出荷';});
   var zeroItems=items.filter(function(i){return i.process.done===0;});
   document.getElementById('stats-row').innerHTML=
     '<div class="stat-card"><div class="stat-label">品目数</div><div class="stat-val">'+items.length+'</div><div class="stat-sub">登録品目</div></div>'+
-    '<div class="stat-card"><div class="stat-label">在庫ゼロ</div><div class="stat-val '+(zeroItems.length>0?'red':'')+'">'+zeroItems.length+'</div><div class="stat-sub">完成品ゼロ品目</div></div>'+
-    '<div class="stat-card"><div class="stat-label">要注意</div><div class="stat-val '+(warnItems.length>0?'amber':'')+'">'+warnItems.length+'</div><div class="stat-sub">閾値以下の品目</div></div>'+
+    '<div class="stat-card"><div class="stat-label">在庫ゼロ</div><div class="stat-val '+(zeroItems.length>0?'red':'')+'">'+zeroItems.length+'</div><div class="stat-sub">完成品ゼロ</div></div>'+
+    '<div class="stat-card"><div class="stat-label">要注意</div><div class="stat-val '+(warnItems.length>0?'amber':'')+'">'+warnItems.length+'</div><div class="stat-sub">閾値以下</div></div>'+
     '<div class="stat-card"><div class="stat-label">本日の出荷</div><div class="stat-val">'+todayShip.length+'</div><div class="stat-sub">操作 '+todayHist.length+' 件</div></div>';
 }
 
@@ -1035,22 +1108,18 @@ function renderInventory(){
   var q=(document.getElementById('search-input').value||'').toLowerCase();
   var filter=document.getElementById('filter-status').value;
   var admin=currentUser&&currentUser.role==='admin';
-
   var items=DB.items.filter(function(it){
     if(q&&!it.name.toLowerCase().includes(q)&&!it.code.toLowerCase().includes(q))return false;
     if(filter==='warn'&&!(it.process.done<=it.threshold&&it.process.done>0))return false;
     if(filter==='zero'&&it.process.done!==0)return false;
     return true;
   });
-
   var body=document.getElementById('inv-body');
   if(!items.length){
-    body.innerHTML='<tr><td colspan="5"><div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div></td></tr>';
+    body.innerHTML='<tr><td colspan="6"><div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div></td></tr>';
     document.getElementById('inv-cards').innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';
-    renderStats();
-    return;
+    renderStats();return;
   }
-
   body.innerHTML=items.map(function(it){
     var dw=it.process.done>0&&it.process.done<=it.threshold;
     var dz=it.process.done===0;
@@ -1058,10 +1127,7 @@ function renderInventory(){
     var wi=(dw||dz)?'<span class="w-icon">&#9888;</span>':'';
     var doneClass='num-done'+(dz?' num-zero':dw?' num-warn':'');
     var warnBari=it.process.bari===0?'<span class="w-icon">&#9888;</span>':'';
-    var adminBtns=admin
-      ?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+it.id+'\')">編集</button>'
-       +'<button class="btn-proc bp-del" onclick="showDeleteModal(\''+it.id+'\')">削除</button>'
-      :'';
+    var adminBtns=admin?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+it.id+'\')">編集</button><button class="btn-proc bp-del" onclick="showDeleteModal(\''+it.id+'\')">削除</button>':'';
     return '<tr class="'+rowCls+'">'
       +'<td class="td-name"><div class="item-name-txt">'+esc(it.name)+'</div><div class="item-code-txt">'+esc(it.code)+'</div></td>'
       +'<td style="font-size:12px;color:var(--text-muted)">'+esc(it.maker||'—')+'</td>'
@@ -1077,14 +1143,12 @@ function renderInventory(){
       +'</div></td>'
     +'</tr>';
   }).join('');
-
-  renderInvCards(items, admin);
+  renderInvCards(items,admin);
   renderStats();
 }
 
-function renderInvCards(items, admin){
-  var el=document.getElementById('inv-cards');
-  if(!el)return;
+function renderInvCards(items,admin){
+  var el=document.getElementById('inv-cards');if(!el)return;
   el.innerHTML=items.map(function(it){
     var dw=it.process.done>0&&it.process.done<=it.threshold;
     var dz=it.process.done===0;
@@ -1092,31 +1156,13 @@ function renderInvCards(items, admin){
     var dc=dz?'var(--red)':dw?'var(--amber)':'var(--done)';
     var wi=(dw||dz)?'&#9888;':'';
     var id=it.id;
-    var adminBtns=admin
-      ?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+id+'\')">編集</button>'
-       +'<button class="btn-proc bp-del" onclick="showDeleteModal(\''+id+'\')">削除</button>'
-      :'';
+    var adminBtns=admin?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+id+'\')">編集</button><button class="btn-proc bp-del" onclick="showDeleteModal(\''+id+'\')">削除</button>':'';
     return '<div class="'+cls+'">'
-      +'<div class="icard-top">'
-        +'<div class="icard-name">'+esc(it.name)+(wi?' <span style="color:var(--red)">'+wi+'</span>':'')+'</div>'
-        +'<div class="icard-code">'+esc(it.code)+(it.maker?' · <span style="color:var(--text-muted)">'+esc(it.maker)+'</span>':'')+'</div>'
-      +'</div>'
+      +'<div class="icard-top"><div class="icard-name">'+esc(it.name)+(wi?' <span style="color:var(--red)">'+wi+'</span>':'')+'</div><div class="icard-code">'+esc(it.code)+(it.maker?' · '+esc(it.maker):'')+'</div></div>'
       +'<div class="icard-stocks">'
-        +'<div class="icard-stock" style="background:rgba(99,102,241,.05)">'
-          +'<div class="icard-slabel" style="color:var(--wip)">仕掛品</div>'
-          +'<div class="icard-sval" style="color:var(--wip)">'+fmtNum(it.process.wip)+'</div>'
-          +'<div class="icard-sunit">'+esc(it.unit)+'</div>'
-        +'</div>'
-        +'<div class="icard-stock" style="background:rgba(14,165,233,.05)">'
-          +'<div class="icard-slabel" style="color:var(--bari)">バリ前</div>'
-          +'<div class="icard-sval" style="color:var(--bari)">'+fmtNum(it.process.bari)+'</div>'
-          +'<div class="icard-sunit">'+esc(it.unit)+'</div>'
-        +'</div>'
-        +'<div class="icard-stock" style="background:rgba(5,150,105,.05)">'
-          +'<div class="icard-slabel" style="color:'+dc+'">完成品</div>'
-          +'<div class="icard-sval" style="color:'+dc+'">'+fmtNum(it.process.done)+'</div>'
-          +'<div class="icard-sunit">'+esc(it.unit)+'</div>'
-        +'</div>'
+        +'<div class="icard-stock" style="background:var(--wip-dim)"><div class="icard-slabel" style="color:var(--wip)">仕掛品</div><div class="icard-sval" style="color:var(--wip)">'+fmtNum(it.process.wip)+'</div><div class="icard-sunit">'+esc(it.unit)+'</div></div>'
+        +'<div class="icard-stock" style="background:var(--bari-dim)"><div class="icard-slabel" style="color:var(--bari)">バリ前</div><div class="icard-sval" style="color:var(--bari)">'+fmtNum(it.process.bari)+'</div><div class="icard-sunit">'+esc(it.unit)+'</div></div>'
+        +'<div class="icard-stock" style="background:rgba(16,185,129,.05)"><div class="icard-slabel" style="color:'+dc+'">完成品</div><div class="icard-sval" style="color:'+dc+'">'+fmtNum(it.process.done)+'</div><div class="icard-sunit">'+esc(it.unit)+'</div></div>'
       +'</div>'
       +'<div class="icard-btns">'
         +'<button class="btn-proc bp-wip" onclick="showOpModal(\''+id+'\',\'wip_add\')">＋加工</button>'
@@ -1129,185 +1175,46 @@ function renderInvCards(items, admin){
   }).join('');
 }
 
-
-
 // ═══════════════════════════════════════════════
-//  OPERATOR NAME MANAGEMENT
+//  ⑦ QTY ADJUSTER — [-50][-10][-1][qty][+1][+10][+50]
 // ═══════════════════════════════════════════════
-function toggleOperatorInput(show){
-  var barEl=document.getElementById('op-name-bar');
-  var setEl=document.getElementById('op-name-set');
-  if(show){
-    barEl.style.display='none';
-    setEl.classList.add('visible');
-    var opInput=document.getElementById('op-operator');
-    var suggests=getOperatorSuggests('');
-    opInput.value='';
-    setTimeout(function(){opInput.focus();onOperatorInput();},50);
-  }else{
-    // 自分の名前に戻す
-    var myOpName=currentUser&&currentUser.operator_name?currentUser.operator_name:'';
-    barEl.style.display=myOpName?'flex':'none';
-    if(myOpName) document.getElementById('op-name-bar-txt').textContent=myOpName;
-    setEl.classList.remove('visible');
-    document.getElementById('op-operator').value=myOpName;
-    closeSuggest();
-  }
-}
-
-function saveMyOperatorName(){
-  var val=document.getElementById('op-setup-input').value.trim();
-  if(!val){toast('作業者名を入力してください','err');return;}
-  var user=DB.users.find(function(u){return u.id===currentUser.id;});
-  if(!user)return;
-  user.operator_name=val;
-  currentUser=user;
-  saveDB();
-  document.getElementById('op-setup-banner').style.display='none';
-  var opDisp=document.getElementById('hd-operator-name');
-  if(opDisp) opDisp.textContent='('+val+')';
-  toast('作業者名「'+val+'」を設定しました','ok');
-}
-
-function updateOperatorName(userId, val){
-  if(!isAdmin())return;
-  var user=DB.users.find(function(u){return u.id===userId;});
-  if(!user)return;
-  user.operator_name=val;
-  if(userId===currentUser.id){
-    currentUser=user;
-    var opDisp=document.getElementById('hd-operator-name');
-    if(opDisp) opDisp.textContent=val?'('+val+')':'';
-  }
-  saveDB();
-  toast(user.username+'の作業者名を「'+val+'」に更新しました','ok');
-}
-
-// ═══════════════════════════════════════════════
-//  LINE & OPERATOR INPUT HELPERS
-// ═══════════════════════════════════════════════
-function selectLine(btn, line){
-  document.getElementById('op-line').value=line;
-  document.querySelectorAll('.line-btn').forEach(function(b){b.classList.remove('selected');});
-  btn.classList.add('selected');
-}
-
-var _suggestIdx = -1;
-function onOperatorInput(){
-  var q=document.getElementById('op-operator').value;
-  var candidates=getOperatorSuggests(q);
-  var el=document.getElementById('op-suggest');
-  _suggestIdx=-1;
-  if(!candidates.length){el.classList.remove('open');return;}
-  el.innerHTML=candidates.map(function(c,i){
-    return '<div class="suggest-item" data-val="'+esc(c)+'" onmousedown="pickOperator(this.dataset.val)">'
-      +'<span class="sug-icon">👤</span>'+esc(c)+'</div>';
-  }).join('');
-  el.classList.add('open');
-}
-
-function onOperatorKeydown(e){
-  var el=document.getElementById('op-suggest');
-  var items=el.querySelectorAll('.suggest-item');
-  if(!el.classList.contains('open')){
-    if(e.key==='Enter'){e.preventDefault();execOp();}
-    return;
-  }
-  if(e.key==='ArrowDown'){
-    e.preventDefault();
-    _suggestIdx=Math.min(_suggestIdx+1,items.length-1);
-    items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});
-  }else if(e.key==='ArrowUp'){
-    e.preventDefault();
-    _suggestIdx=Math.max(_suggestIdx-1,-1);
-    items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});
-  }else if(e.key==='Enter'){
-    e.preventDefault();
-    if(_suggestIdx>=0&&items[_suggestIdx]){
-      pickOperator(items[_suggestIdx].dataset.val);
-    }else{
-      closeSuggest();
-      execOp();
-    }
-  }else if(e.key==='Escape'){
-    closeSuggest();
-  }
-}
-
-function pickOperator(val){
-  document.getElementById('op-operator').value=val;
-  closeSuggest();
-  // フォーカスを実行ボタンへ移動（Enterしやすく）
-  document.getElementById('op-submit-btn').focus();
-}
-
-function closeSuggest(){
-  var el=document.getElementById('op-suggest');
-  if(el) el.classList.remove('open');
-  _suggestIdx=-1;
-}
-
-// サジェスト外クリックで閉じる
-document.addEventListener('click',function(e){
-  var wrap=document.getElementById('op-operator');
-  var sug=document.getElementById('op-suggest');
-  if(wrap&&sug&&!wrap.contains(e.target)&&!sug.contains(e.target)){
-    closeSuggest();
-  }
-});
-
-// ═══════════════════════════════════════════════
-//  QTY ADJUSTER — プリセットボタン (+/- UI)
-// ═══════════════════════════════════════════════
-var presetValues = [1, 10, 50]; // ← ここを変えるだけでボタン値を変更できる
+var presetValues = [1, 10, 50];
 var _adjHoldTimer = null;
 var _adjHoldInterval = null;
 
 function renderQtyAdjuster(unit){
-  var row = document.getElementById('op-adj-row');
-  if(!row) return;
+  var row=document.getElementById('op-adj-row');
+  if(!row)return;
 
-  var html = '';
-  // マイナスボタン（大→小の順で左から）
-  presetValues.slice().reverse().forEach(function(v, i){
-    var sz = i===0 ? 'adj-sz-l' : i===1 ? 'adj-sz-m' : 'adj-sz-s';
-    html += '<button type="button" class="qty-adj-btn adj-minus '+sz+'" data-delta="-'+v+'">−'+v+'</button>';
+  var minusHtml='';
+  presetValues.slice().reverse().forEach(function(v){
+    minusHtml+='<button type="button" class="qty-adj-btn" data-delta="-'+v+'">−'+v+'</button>';
   });
 
-  // 中央の数量入力欄
-  html += '<div class="qty-adj-center">'
-    + '<input type="number" id="op-qty" min="0" placeholder="0" class="qty-adj-input"'
-    + ' oninput="checkOpWarn()"'
-    + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();execOp();}">'
-    + '<span class="qty-adj-unit" id="op-unit">'+(unit||'')+'</span>'
-    + '</div>';
-
-  // プラスボタン（小→大の順で右へ）
-  presetValues.forEach(function(v, i){
-    var sz = i===0 ? 'adj-sz-s' : i===1 ? 'adj-sz-m' : 'adj-sz-l';
-    html += '<button type="button" class="qty-adj-btn adj-plus '+sz+'" data-delta="+'+v+'">＋'+v+'</button>';
+  var plusHtml='';
+  presetValues.forEach(function(v){
+    plusHtml+='<button type="button" class="qty-adj-btn" data-delta="+'+v+'">＋'+v+'</button>';
   });
 
-  row.innerHTML = html;
+  var centerHtml='<div class="qty-adj-center">'
+    +'<input type="number" id="op-qty" min="0" placeholder="0" class="qty-adj-input"'
+    +' oninput="checkOpWarn()"'
+    +' onkeydown="if(event.key===\'Enter\'){event.preventDefault();execOp();}">'
+    +'<span class="qty-adj-unit" id="op-unit">'+(unit||'')+'</span>'
+    +'</div>';
 
-  // イベント付与
+  row.innerHTML='<div class="adj-minus-row">'+minusHtml+'</div>'+centerHtml+'<div class="adj-plus-row">'+plusHtml+'</div>';
+
   row.querySelectorAll('.qty-adj-btn').forEach(function(btn){
-    var delta = parseInt(btn.dataset.delta, 10);
-    var isUnit = Math.abs(delta) === 1; // ±1 のみ長押し対応
+    var delta=parseInt(btn.dataset.delta,10);
+    var isUnit=Math.abs(delta)===1;
 
     function applyDelta(isRepeat){
-      var inp = document.getElementById('op-qty');
-      var val = parseInt(inp.value) || 0;
-      val = Math.max(0, val + delta);
-      inp.value = val;
-      checkOpWarn();
-      // tick アニメーション
-      if(isRepeat){
-        btn.classList.remove('adj-tick');
-        // force reflow
-        void btn.offsetWidth;
-        btn.classList.add('adj-tick');
-      }
+      var inp=document.getElementById('op-qty');
+      var val=parseInt(inp.value)||0;
+      val=Math.max(0,val+delta);
+      inp.value=val;checkOpWarn();
+      if(isRepeat){btn.classList.remove('adj-tick');void btn.offsetWidth;btn.classList.add('adj-tick');}
     }
 
     function stopHold(){
@@ -1317,50 +1224,61 @@ function renderQtyAdjuster(unit){
     }
 
     function startHold(){
-      btn.classList.add('pressing');
-      applyDelta(false);
+      btn.classList.add('pressing');applyDelta(false);
       if(isUnit){
-        _adjHoldTimer = setTimeout(function(){
+        _adjHoldTimer=setTimeout(function(){
           btn.classList.add('adj-repeating');
-          _adjHoldInterval = setInterval(function(){applyDelta(true);}, 120);
-        }, 350);
+          // ⑦ 長押し: 0.1秒間隔
+          _adjHoldInterval=setInterval(function(){applyDelta(true);},100);
+        },350);
       }
     }
 
-    // マウスイベント
-    btn.addEventListener('mousedown', function(e){
-      e.preventDefault();
-      startHold();
-    });
-    btn.addEventListener('mouseup', stopHold);
-    btn.addEventListener('mouseleave', stopHold);
-
-    // タッチイベント（スマホ対応）
-    btn.addEventListener('touchstart', function(e){
-      e.preventDefault();
-      startHold();
-    }, {passive:false});
-    btn.addEventListener('touchend', stopHold);
-    btn.addEventListener('touchcancel', stopHold);
+    btn.addEventListener('mousedown',function(e){e.preventDefault();startHold();});
+    btn.addEventListener('mouseup',stopHold);
+    btn.addEventListener('mouseleave',stopHold);
+    btn.addEventListener('touchstart',function(e){e.preventDefault();startHold();},{passive:false});
+    btn.addEventListener('touchend',stopHold);
+    btn.addEventListener('touchcancel',stopHold);
   });
 }
 
+// ═══════════════════════════════════════════════
+//  ① グループ切替
+// ═══════════════════════════════════════════════
+function switchOpGroup(opType){
+  // 完成品グループはサブ選択を表示
+  var group=OP_GROUP[opType]||'仕掛品';
+  if(group==='完成品'){
+    // bari_to_done をデフォルトに
+    switchOpType(opType==='done_to_ship'?'done_to_ship':'bari_to_done');
+  } else {
+    switchOpType(opType);
+  }
+}
 
-// requireLine: true → ライン選択UIを表示・必須チェックあり
-// requireLine: false → ライン入力欄を完全非表示・チェックなし（将来、他項目も同様に拡張可能）
-var OP_CONFIG = {
-  wip_add:     {label:'＋加工',      from:null,   to:'仕掛品', fromKey:null,   toKey:'wip',  color:'var(--wip)',  btnClass:'bp-wip',  requireLine:true},
-  wip_to_bari: {label:'バリ前移動', from:'仕掛品', to:'バリ前', fromKey:'wip',  toKey:'bari', color:'var(--bari)', btnClass:'bp-w2b', requireLine:false},
-  bari_to_done:{label:'完成',       from:'バリ前', to:'完成品', fromKey:'bari', toKey:'done', color:'var(--done)', btnClass:'bp-b2d', requireLine:false},
-  done_to_ship:{label:'出荷',       from:'完成品', to:'出荷',   fromKey:'done', toKey:null,   color:'var(--red)',  btnClass:'bp-d2s', requireLine:false}
-};
-
-function showOpModal(itemId, opType){
-  var item=DB.items.find(function(i){return i.id===itemId;});
-  if(!item)return;
+function switchOpType(opType){
+  if(!pendingOp)return;
+  pendingOp.opType=opType;
   var cfg=OP_CONFIG[opType];
-  pendingOp={itemId:itemId, opType:opType};
+  var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
+  if(!item)return;
 
+  // グループボタンのアクティブ状態更新
+  document.getElementById('gbtn-wip').classList.toggle('grp-active',opType==='wip_add');
+  document.getElementById('gbtn-bari').classList.toggle('grp-active',opType==='wip_to_bari');
+  document.getElementById('gbtn-done').classList.toggle('grp-active',opType==='bari_to_done'||opType==='done_to_ship');
+
+  // 完成品サブ操作
+  var doneSubRow=document.getElementById('done-sub-row');
+  var isComplete=(opType==='bari_to_done'||opType==='done_to_ship');
+  doneSubRow.classList.toggle('show',isComplete);
+  if(isComplete){
+    document.getElementById('dsb-complete').classList.toggle('dsb-active',opType==='bari_to_done');
+    document.getElementById('dsb-ship').classList.toggle('dsb-active',opType==='done_to_ship');
+  }
+
+  // 転記情報更新
   document.getElementById('op-title').textContent=cfg.label+' — '+item.name;
   document.getElementById('op-from-lbl').textContent=cfg.from||'新規';
   document.getElementById('op-from-lbl').style.color=cfg.color;
@@ -1370,74 +1288,240 @@ function showOpModal(itemId, opType){
   document.getElementById('op-item-name').textContent=item.name;
 
   var stockInfo='';
-  if(cfg.fromKey){
-    stockInfo='移動元在庫: '+fmtNum(item.process[cfg.fromKey])+item.unit;
-  }
+  if(cfg.fromKey) stockInfo='移動元在庫: '+fmtNum(item.process[cfg.fromKey])+item.unit;
   document.getElementById('op-stock-info').textContent=stockInfo;
-  document.getElementById('op-err').classList.remove('show');
   document.getElementById('op-warn').classList.remove('show');
 
-  // 新プリセット調整UIをレンダリング（unitと入力欄もここで生成）
-  renderQtyAdjuster(item.unit);
-
-  // Line buttons（使用頻度順） — requireLine の場合のみ表示
-  var lineRow = document.getElementById('op-line-row');
-  var hintEl  = document.getElementById('op-hint');
+  // ③ ライン表示制御
+  var lineRow=document.getElementById('op-line-row');
+  var hintEl=document.getElementById('op-hint');
   if(cfg.requireLine){
-    lineRow.style.display = '';
-    var lastLine=localStorage.getItem('last_line')||'';
-    var sortedLines=getLineSorted();
-    var recentLines=loadHist(HIST_LINE_KEY).slice(0,3);
-    var lineBtnsEl=document.getElementById('op-line-btns');
-    document.getElementById('op-line').value=lastLine;
-    lineBtnsEl.innerHTML=sortedLines.map(function(ln){
-      var isRecent=recentLines.indexOf(ln)>=0;
-      var isSel=ln===lastLine;
-      return '<button type="button" class="line-btn'+(isRecent?' recent':'')+(isSel?' selected':'')+'" data-line="'+esc(ln)+'" onclick="selectLine(this,this.dataset.line)">'
-        +esc(ln)+'</button>';
-    }).join('');
+    lineRow.style.display='';
     if(hintEl) hintEl.textContent='※ ライン（★=最近使用）・作業者は必須入力です';
-  } else {
-    // ライン不要グループ：完全に非表示・値をクリア
-    lineRow.style.display = 'none';
-    document.getElementById('op-line').value = '';
+  }else{
+    lineRow.style.display='none';
+    document.getElementById('op-line').value='';
     if(hintEl) hintEl.textContent='※ 作業者は必須入力です';
   }
 
-  // 作業者欄の表示ロジック
-  var myOpName = currentUser&&currentUser.operator_name ? currentUser.operator_name : '';
-  var isAdm = isAdmin();
-  var barEl = document.getElementById('op-name-bar');
-  var setEl = document.getElementById('op-name-set');
-  var cancelBtn = document.getElementById('op-cancel-change');
-  var opInput = document.getElementById('op-operator');
-  if(myOpName && !isAdm){
-    // 一般ユーザー＋operator_name設定済み → バー表示、入力欄非表示
+  // 実行ボタン色
+  var submitBtn=document.getElementById('op-submit-btn');
+  if(opType==='done_to_ship'){
+    submitBtn.style.background='var(--red)';
+    submitBtn.textContent='🚚 出荷実行';
+  }else{
+    submitBtn.style.background='';
+    submitBtn.style.background=cfg.color==='var(--red)'?'var(--red)':'var(--accent)';
+    submitBtn.textContent='実行';
+  }
+
+  checkOpWarn();
+}
+
+// ═══════════════════════════════════════════════
+//  操作モーダル表示
+// ═══════════════════════════════════════════════
+function showOpModal(itemId, opType){
+  var item=DB.items.find(function(i){return i.id===itemId;});
+  if(!item)return;
+  pendingOp={itemId:itemId,opType:opType};
+
+  document.getElementById('op-err').classList.remove('show');
+  renderQtyAdjuster(item.unit);
+
+  // ⑥ 前回グループから自動補完（last_groupがある場合は上書き可能）
+  switchOpType(opType);
+
+  // ⑤⑥ ライン選択UI初期化
+  initLineUI(opType);
+
+  // 作業者欄
+  var myOpName=currentUser&&currentUser.operator_name?currentUser.operator_name:'';
+  var isAdm=isAdmin();
+  var barEl=document.getElementById('op-name-bar');
+  var setEl=document.getElementById('op-name-set');
+  var cancelBtn=document.getElementById('op-cancel-change');
+  var opInput=document.getElementById('op-operator');
+  if(myOpName&&!isAdm){
     barEl.style.display='flex';
-    document.getElementById('op-name-bar-txt').textContent = myOpName;
+    document.getElementById('op-name-bar-txt').textContent=myOpName;
     setEl.classList.remove('visible');
-    opInput.value = myOpName;
+    opInput.value=myOpName;
     if(cancelBtn) cancelBtn.style.display='block';
-  } else {
-    // 管理者 or operator_name未設定 → 入力欄を常時表示
+  }else{
     barEl.style.display='none';
     setEl.classList.add('visible');
-    var lastOp = myOpName || localStorage.getItem('last_operator')||'';
-    opInput.value = lastOp;
-    if(cancelBtn) cancelBtn.style.display = myOpName ? 'block':'none';
+    // ⑥ last_operator から自動反映
+    var lastOp=myOpName||localStorage.getItem('last_operator')||'';
+    opInput.value=lastOp;
+    if(cancelBtn) cancelBtn.style.display=myOpName?'block':'none';
   }
   document.getElementById('op-suggest').classList.remove('open');
 
-  document.getElementById('op-submit-btn').style.background=cfg.fromKey==='done'?'var(--red)':'var(--accent)';
-
   openModal('modal-op');
-  setTimeout(function(){document.getElementById('op-qty').focus();},120);
+  setTimeout(function(){
+    var qtyInp=document.getElementById('op-qty');
+    if(qtyInp){qtyInp.value='';qtyInp.focus();}
+  },120);
 }
 
+// ═══════════════════════════════════════════════
+//  ⑤ ライン選択UI
+// ═══════════════════════════════════════════════
+function initLineUI(opType){
+  var cfg=OP_CONFIG[opType];
+  if(!cfg||!cfg.requireLine)return;
+
+  // ⑥ last_line から自動反映
+  var lastLine=localStorage.getItem('last_line')||'';
+
+  // 選択済みバー
+  var selBar=document.getElementById('op-line-selected-bar');
+  var searchArea=document.getElementById('op-line-search-area');
+  var lineInput=document.getElementById('op-line');
+
+  if(lastLine&&DB.lines.indexOf(lastLine)>=0){
+    // 前回のラインを自動選択
+    lineInput.value=lastLine;
+    selBar.style.display='flex';
+    document.getElementById('op-line-selected-txt').textContent=lastLine;
+    searchArea.style.display='none';
+  }else{
+    selBar.style.display='none';
+    searchArea.style.display='block';
+    lineInput.value='';
+    document.getElementById('op-line-search').value='';
+    document.getElementById('op-line-suggest').classList.remove('open');
+  }
+
+  // よく使うライン（最大5件）
+  renderRecentLines();
+}
+
+function renderRecentLines(){
+  var recentLines=loadHist(HIST_LINE_KEY).slice(0,5);
+  var sortedLines=getLineSorted();
+  var btnsEl=document.getElementById('op-line-recent-btns');
+  if(!btnsEl)return;
+  if(sortedLines.length===0){btnsEl.innerHTML='<span style="font-size:12px;color:var(--text-dim)">ラインが登録されていません</span>';return;}
+
+  btnsEl.innerHTML=sortedLines.map(function(ln){
+    var isRecent=recentLines.indexOf(ln)>=0;
+    return '<button type="button" class="line-recent-btn'+(isRecent?' recent-star':'')+'" onclick="selectLineOption(\''+esc(ln)+'\')">'+esc(ln)+'</button>';
+  }).join('');
+}
+
+function onLineSearch(){
+  var q=(document.getElementById('op-line-search').value||'').toLowerCase();
+  var all=DB.lines;
+  var matches=q?all.filter(function(ln){return ln.toLowerCase().indexOf(q)>=0;}):all;
+  var el=document.getElementById('op-line-suggest');
+  if(!matches.length){el.classList.remove('open');return;}
+  var recentLines=loadHist(HIST_LINE_KEY);
+  el.innerHTML=matches.map(function(ln){
+    var isRecent=recentLines.indexOf(ln)>=0;
+    return '<div class="suggest-item" onmousedown="selectLineOption(\''+esc(ln)+'\')"><span class="sug-icon">'+(isRecent?'★':'○')+'</span>'+esc(ln)+'</div>';
+  }).join('');
+  el.classList.add('open');
+}
+
+function onLineSearchFocus(){
+  onLineSearch();
+}
+
+function selectLineOption(line){
+  document.getElementById('op-line').value=line;
+  // バー表示
+  var selBar=document.getElementById('op-line-selected-bar');
+  var searchArea=document.getElementById('op-line-search-area');
+  selBar.style.display='flex';
+  document.getElementById('op-line-selected-txt').textContent=line;
+  searchArea.style.display='none';
+  document.getElementById('op-line-suggest').classList.remove('open');
+  document.getElementById('op-err').classList.remove('show');
+}
+
+function clearLineSelection(){
+  document.getElementById('op-line').value='';
+  var selBar=document.getElementById('op-line-selected-bar');
+  var searchArea=document.getElementById('op-line-search-area');
+  selBar.style.display='none';
+  searchArea.style.display='block';
+  document.getElementById('op-line-search').value='';
+  setTimeout(function(){document.getElementById('op-line-search').focus();onLineSearch();},50);
+}
+
+// サジェスト外クリックで閉じる
+document.addEventListener('click',function(e){
+  var srchInp=document.getElementById('op-line-search');
+  var sug=document.getElementById('op-line-suggest');
+  if(srchInp&&sug&&!srchInp.contains(e.target)&&!sug.contains(e.target)){
+    sug.classList.remove('open');
+  }
+});
+
+// ═══════════════════════════════════════════════
+//  作業者サジェスト
+// ═══════════════════════════════════════════════
+var _suggestIdx=-1;
+function onOperatorInput(){
+  var q=document.getElementById('op-operator').value;
+  var candidates=getOperatorSuggests(q);
+  var el=document.getElementById('op-suggest');
+  _suggestIdx=-1;
+  if(!candidates.length){el.classList.remove('open');return;}
+  el.innerHTML=candidates.map(function(c){
+    return '<div class="suggest-item" data-val="'+esc(c)+'" onmousedown="pickOperator(this.dataset.val)"><span class="sug-icon">👤</span>'+esc(c)+'</div>';
+  }).join('');
+  el.classList.add('open');
+}
+
+function onOperatorKeydown(e){
+  var el=document.getElementById('op-suggest');
+  var items=el.querySelectorAll('.suggest-item');
+  if(!el.classList.contains('open')){if(e.key==='Enter'){e.preventDefault();execOp();}return;}
+  if(e.key==='ArrowDown'){e.preventDefault();_suggestIdx=Math.min(_suggestIdx+1,items.length-1);items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});}
+  else if(e.key==='ArrowUp'){e.preventDefault();_suggestIdx=Math.max(_suggestIdx-1,-1);items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});}
+  else if(e.key==='Enter'){e.preventDefault();if(_suggestIdx>=0&&items[_suggestIdx]){pickOperator(items[_suggestIdx].dataset.val);}else{closeSuggest();execOp();}}
+  else if(e.key==='Escape'){closeSuggest();}
+}
+
+function pickOperator(val){
+  document.getElementById('op-operator').value=val;closeSuggest();
+  document.getElementById('op-submit-btn').focus();
+}
+
+function closeSuggest(){
+  var el=document.getElementById('op-suggest');if(el)el.classList.remove('open');_suggestIdx=-1;
+}
+
+document.addEventListener('click',function(e){
+  var wrap=document.getElementById('op-operator');
+  var sug=document.getElementById('op-suggest');
+  if(wrap&&sug&&!wrap.contains(e.target)&&!sug.contains(e.target)){closeSuggest();}
+});
+
+function toggleOperatorInput(show){
+  var barEl=document.getElementById('op-name-bar');
+  var setEl=document.getElementById('op-name-set');
+  if(show){
+    barEl.style.display='none';setEl.classList.add('visible');
+    var opInput=document.getElementById('op-operator');opInput.value='';
+    setTimeout(function(){opInput.focus();onOperatorInput();},50);
+  }else{
+    var myOpName=currentUser&&currentUser.operator_name?currentUser.operator_name:'';
+    barEl.style.display=myOpName?'flex':'none';
+    if(myOpName)document.getElementById('op-name-bar-txt').textContent=myOpName;
+    setEl.classList.remove('visible');
+    document.getElementById('op-operator').value=myOpName;closeSuggest();
+  }
+}
+
+// ─── 警告チェック ───
 function checkOpWarn(){
   if(!pendingOp)return;
   var cfg=OP_CONFIG[pendingOp.opType];
-  if(!cfg.fromKey)return;
+  if(!cfg||!cfg.fromKey)return;
   var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
   if(!item)return;
   var qty=parseInt(document.getElementById('op-qty').value)||0;
@@ -1446,7 +1530,13 @@ function checkOpWarn(){
   w.classList.toggle('show',qty>0&&src>0&&qty/src>=0.8&&qty<=src);
 }
 
+// ═══════════════════════════════════════════════
+//  ⑪ 実行（出荷は確認ダイアログ）
+// ═══════════════════════════════════════════════
+var _opSubmitting=false;
+
 function execOp(){
+  if(_opSubmitting)return;
   if(!pendingOp)return;
   var cfg=OP_CONFIG[pendingOp.opType];
   var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
@@ -1454,7 +1544,6 @@ function execOp(){
 
   var qty=parseInt(document.getElementById('op-qty').value);
   var line=document.getElementById('op-line').value.trim();
-  // operator: バー表示中は currentUser.operator_name を使用
   var barEl=document.getElementById('op-name-bar');
   var operator='';
   if(barEl&&barEl.style.display!=='none'&&currentUser&&currentUser.operator_name){
@@ -1462,43 +1551,52 @@ function execOp(){
   }else{
     operator=document.getElementById('op-operator').value.trim();
   }
-  var errEl=document.getElementById('op-err');
-  errEl.classList.remove('show');
 
-  // Validation
+  var errEl=document.getElementById('op-err');errEl.classList.remove('show');
+
   if(!qty||qty<=0){errEl.textContent='数量を入力してください（1以上）';errEl.classList.add('show');return;}
   if(qty>99999){errEl.textContent='異常値：99,999を超える数量は入力できません';errEl.classList.add('show');return;}
-  // ライン必須チェック：requireLine が true のグループのみ
-  if(cfg.requireLine && !line){errEl.textContent='ラインを選択してください';errEl.classList.add('show');return;}
+  // ④ ライン必須チェック
+  if(cfg.requireLine&&!line){errEl.textContent='ラインを選択してください';errEl.classList.add('show');return;}
   if(!operator){errEl.textContent='作業者名を入力してください';errEl.classList.add('show');return;}
-
-  // Stock check
   if(cfg.fromKey){
     var src=item.process[cfg.fromKey];
-    if(src<qty){
-      errEl.textContent='在庫不足：'+cfg.from+'の在庫は '+fmtNum(src)+item.unit+' です';
-      errEl.classList.add('show');
-      return;
-    }
+    if(src<qty){errEl.textContent='在庫不足：'+cfg.from+'の在庫は '+fmtNum(src)+item.unit+' です';errEl.classList.add('show');return;}
   }
 
-  // Execute
+  // ⑪ 出荷は確認ダイアログ
+  if(pendingOp.opType==='done_to_ship'){
+    openConfirm('出荷確認',
+      '以下の出荷を実行しますか？\n\n品目: '+item.name+'\n数量: '+fmtNum(qty)+item.unit+'\n作業者: '+operator,
+      function(){doExecOp(item,cfg,qty,line,operator);});
+    return;
+  }
+
+  doExecOp(item,cfg,qty,line,operator);
+}
+
+// [API] doExecOp → GAS/DB連携時はここでfetch POSTに置換可能
+function doExecOp(item,cfg,qty,line,operator){
+  _opSubmitting=true;
+  var group=OP_GROUP[pendingOp.opType]||'';
+
   if(cfg.fromKey) item.process[cfg.fromKey]-=qty;
   if(cfg.toKey)   item.process[cfg.toKey]+=qty;
   item.updatedAt=now();
 
-  addHistory(cfg.label, item, qty, line, operator);
+  addHistory(cfg.label,item,qty,cfg.requireLine?line:null,operator,group);
   saveDB();
 
-  // 履歴記録（ライン必須グループのみライン記録）
-  if(cfg.requireLine && line) recordLineUse(line);
+  if(cfg.requireLine&&line) recordLineUse(line);
   recordOperatorUse(operator);
+  recordGroupUse(group);
+  updateCurrentGroupBar();
 
   closeModal('modal-op');
   renderInventory();
-  // トースト：ライン不要グループはライン表示を省略
-  var lineDisp = (cfg.requireLine && line) ? ' / '+line : '';
+  var lineDisp=(cfg.requireLine&&line)?' / '+line:'';
   toast(cfg.label+': '+item.name+' '+fmtNum(qty)+item.unit+' ('+operator+lineDisp+')','ok');
+  setTimeout(function(){_opSubmitting=false;},500);
 }
 
 // ═══════════════════════════════════════════════
@@ -1517,8 +1615,7 @@ function showAddModal(){
 
 function showEditModal(id){
   if(!isAdmin())return;
-  var item=DB.items.find(function(i){return i.id===id;});
-  if(!item)return;
+  var item=DB.items.find(function(i){return i.id===id;});if(!item)return;
   document.getElementById('item-modal-title').textContent='品目編集';
   document.getElementById('item-id').value=item.id;
   document.getElementById('item-name').value=item.name;
@@ -1544,8 +1641,7 @@ function saveItem(){
   if(!name||!code||!unit){errEl.textContent='品目名・コード・単位は必須です';errEl.classList.add('show');return;}
   if(!id&&DB.items.find(function(i){return i.code===code;})){errEl.textContent='品目コードが重複しています';errEl.classList.add('show');return;}
   if(id){
-    var item=DB.items.find(function(i){return i.id===id;});
-    if(!item)return;
+    var item=DB.items.find(function(i){return i.id===id;});if(!item)return;
     item.name=name;item.code=code;item.unit=unit;item.threshold=threshold;item.maker=maker;item.updatedAt=now();
     toast(name+' を更新しました','ok');
   }else{
@@ -1560,8 +1656,7 @@ function saveItem(){
 
 function showDeleteModal(id){
   if(!isAdmin())return;
-  var item=DB.items.find(function(i){return i.id===id;});
-  if(!item)return;
+  var item=DB.items.find(function(i){return i.id===id;});if(!item)return;
   pendingDeleteId=id;
   document.getElementById('del-item-name').textContent=item.code+' — '+item.name;
   openModal('modal-delete');
@@ -1570,10 +1665,7 @@ function showDeleteModal(id){
 function execDelete(){
   if(!isAdmin()||!pendingDeleteId)return;
   var item=DB.items.find(function(i){return i.id===pendingDeleteId;});
-  if(item){
-    DB.items=DB.items.filter(function(i){return i.id!==pendingDeleteId;});
-    saveDB();renderInventory();toast(item.name+' を削除しました','warn');
-  }
+  if(item){DB.items=DB.items.filter(function(i){return i.id!==pendingDeleteId;});saveDB();renderInventory();toast(item.name+' を削除しました','warn');}
   pendingDeleteId=null;closeModal('modal-delete');
 }
 
@@ -1581,17 +1673,13 @@ function execDelete(){
 //  LINE SETTINGS
 // ═══════════════════════════════════════════════
 function showLineModal(){
-  if(!isAdmin())return;
-  renderLinesList();
-  document.getElementById('new-line-input').value='';
-  openModal('modal-lines');
+  if(!isAdmin())return;renderLinesList();document.getElementById('new-line-input').value='';openModal('modal-lines');
 }
 
 function renderLinesList(){
-  var el=document.getElementById('lines-list');
-  if(!DB.lines.length){el.innerHTML='<p style="font-size:13px;color:var(--text-muted)">ラインが登録されていません</p>';return;}
+  var el=document.getElementById('lines-list');if(!DB.lines.length){el.innerHTML='<p style="font-size:13px;color:var(--text-muted)">ラインが登録されていません</p>';return;}
   el.innerHTML=DB.lines.map(function(ln,idx){
-    return '<div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px">'
+    return '<div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px">'
       +'<span style="flex:1;font-size:13px;font-weight:500">'+esc(ln)+'</span>'
       +'<button class="btn btn-ghost btn-sm" onclick="deleteLine('+idx+')" style="padding:3px 8px;font-size:11px;color:var(--red);border-color:rgba(239,68,68,.3)">削除</button>'
     +'</div>';
@@ -1602,58 +1690,44 @@ function addLine(){
   var val=document.getElementById('new-line-input').value.trim();
   if(!val){toast('ライン名を入力してください','err');return;}
   if(DB.lines.includes(val)){toast('このライン名は既に存在します','err');return;}
-  DB.lines.push(val);
-  saveDB();
-  renderLinesList();
-  document.getElementById('new-line-input').value='';
+  DB.lines.push(val);saveDB();renderLinesList();document.getElementById('new-line-input').value='';
   toast(val+' を追加しました','ok');
 }
 
 function deleteLine(idx){
-  var name=DB.lines[idx];
-  DB.lines.splice(idx,1);
-  saveDB();
-  renderLinesList();
-  toast(name+' を削除しました','warn');
+  var name=DB.lines[idx];DB.lines.splice(idx,1);saveDB();renderLinesList();toast(name+' を削除しました','warn');
 }
 
 // ═══════════════════════════════════════════════
 //  HISTORY
 // ═══════════════════════════════════════════════
 var ACT_CLASS={
-  '加工':'ac-wip',
-  'バリ前移動':'ac-w2b',
-  '完成':'ac-b2d',
-  '出荷':'ac-d2s',
-  '訂正':'ac-correction'
+  '加工':'ac-wip','バリ前移動':'ac-w2b','完成':'ac-b2d','出荷':'ac-d2s','訂正':'ac-correction'
 };
-var CORRECTION_LIMIT=3;
 
 function renderHistory(){
   var filterLine=document.getElementById('hist-filter-line').value;
   var filterOp=document.getElementById('hist-filter-op').value;
 
-  // Populate line filter
   var lineFilter=document.getElementById('hist-filter-line');
   var currentVal=lineFilter.value;
   lineFilter.innerHTML='<option value="">全ライン</option>';
-  DB.lines.forEach(function(ln){
-    lineFilter.innerHTML+='<option value="'+esc(ln)+'"'+(currentVal===ln?' selected':'')+'>'+esc(ln)+'</option>';
-  });
+  DB.lines.forEach(function(ln){lineFilter.innerHTML+='<option value="'+esc(ln)+'"'+(currentVal===ln?' selected':'')+'>'+esc(ln)+'</option>';});
 
   var logs=DB.history.filter(function(h){
     if(filterLine&&h.line!==filterLine)return false;
-    if(filterOp&&h.type!==filterOp)return false;
+    if(filterOp==='訂正'&&h.type!=='訂正')return false;
+    else if(filterOp&&filterOp!=='訂正'&&h.type!==filterOp)return false;
     return true;
   });
 
   document.getElementById('hist-count').textContent=logs.length+'件';
   var body=document.getElementById('hist-body');
   if(!logs.length){
-    body.innerHTML='<tr><td colspan="7"><div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div></td></tr>';
-    updateRecentCorrectionBar();
-    return;
+    body.innerHTML='<tr><td colspan="8"><div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div></td></tr>';
+    updateRecentCorrectionBar();return;
   }
+
   body.innerHTML=logs.slice(0,1000).map(function(entry){
     var isCorr=entry.type==='訂正';
     var isCorrected=!!entry.corrected;
@@ -1661,19 +1735,36 @@ function renderHistory(){
     var cls=ACT_CLASS[entry.type]||'ac-sys';
     var chip='<span class="act-chip '+cls+'">'+esc(entry.type)+'</span>';
     if(isCorrected) chip+='<span class="corrected-badge">訂正済</span>';
-    if(isCorr) chip+='<span class="correction-badge">&#x23CE; 訂正</span>';
-    var cntBadge=(entry.correction_count&&entry.correction_count>0)
-      ?'<span class="correction-count-badge">訂正'+entry.correction_count+'回</span>':'';
+    if(isCorr) chip+='<span class="correction-badge">⎌ 訂正</span>';
+
+    // ⑨ 訂正の元操作内容表示
+    var corrOrigDesc='';
+    if(isCorr&&entry.corrected_desc){
+      corrOrigDesc='<span class="correction-orig-desc">'+esc(entry.corrected_desc)+'</span>';
+    }
+
+    // ⑩ correction_count バッジ（警告表示）
+    var cnt=entry.correction_count||0;
+    var cntBadge=cnt>0?'<span class="correction-count-badge'+(cnt>=CORRECTION_LIMIT-1?' warn-cnt':'')+'">訂正'+cnt+'回</span>':'';
+
+    // グループバッジ
+    var grpName=entry.group||'';
+    var grpStyle=grpName==='仕掛品'?'background:var(--wip-dim);color:var(--wip)':grpName==='バリ取り前'?'background:var(--bari-dim);color:var(--bari)':grpName==='完成品'?'background:var(--done-dim);color:var(--done)':'background:var(--surface3);color:var(--text-muted)';
+    var grpBadge=grpName?'<span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;'+grpStyle+'">'+esc(grpName)+'</span>':'—';
+
+    // ⑧ 訂正ボタン：未訂正データのみ対象
     var correctBtn='';
     if(!isCorr&&!isCorrected&&isAdmin()){
       var overLimit=(entry.correction_count||0)>=CORRECTION_LIMIT;
       correctBtn=overLimit
-        ?'<button class="btn-correct-row" disabled>不可(上限)</button>'
+        ?'<button class="btn-correct-row" disabled title="訂正上限に達しています">不可</button>'
         :'<button class="btn-correct-row" data-hid="'+entry.id+'" onclick="confirmCorrect(this.dataset.hid)">訂正</button>';
     }
+
     return '<tr class="'+rowCls+'">'
-      +'<td style="white-space:nowrap;color:var(--text-muted);font-size:12px;font-family:var(--fn)">'+fmtDate(entry.timestamp)+'</td>'
-      +'<td>'+chip+'</td>'
+      +'<td style="white-space:nowrap;color:var(--text-muted);font-size:11px;font-family:var(--fn)">'+fmtDate(entry.timestamp)+'</td>'
+      +'<td>'+chip+corrOrigDesc+'</td>'
+      +'<td>'+grpBadge+'</td>'
       +'<td style="font-size:13px">'+esc(entry.itemName||'—')+cntBadge+'</td>'
       +'<td style="font-family:var(--fn);text-align:right;font-weight:600">'+fmtNum(entry.qty)+'</td>'
       +'<td><span style="font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px">'+esc(entry.line||'—')+'</span></td>'
@@ -1684,18 +1775,18 @@ function renderHistory(){
   updateRecentCorrectionBar();
 }
 
-
-// correction functions
+// ─── 訂正バー（直近未訂正） ───
 function updateRecentCorrectionBar(){
   var bar=document.getElementById('recent-correction-bar');
   var desc=document.getElementById('rcb-desc');
   if(!bar)return;
   if(!isAdmin()){bar.style.display='none';return;}
-  var target=DB.history.find(function(e){return e.type!=='correction'&&e.type!=='訂正'&&!e.corrected;});
+  // ⑧ 未訂正データのみ
+  var target=DB.history.find(function(e){return e.type!=='訂正'&&!e.corrected;});
   if(!target){bar.style.display='none';return;}
   if((target.correction_count||0)>=CORRECTION_LIMIT){bar.style.display='none';return;}
   bar.style.display='flex';
-  desc.textContent=fmtDate(target.timestamp)+' / '+target.type+' / '+esc(target.itemName)+' '+fmtNum(target.qty)+' / '+(target.operator||'—');
+  desc.innerHTML=fmtDate(target.timestamp)+' / <strong>'+esc(target.type)+'</strong> / '+esc(target.itemName)+' '+fmtNum(target.qty)+(target.operator?' / '+esc(target.operator):'');
   document.getElementById('btn-recent-correct').dataset.hid=target.id;
 }
 
@@ -1705,6 +1796,7 @@ function quickCorrect(){
   confirmCorrect(btn.dataset.hid);
 }
 
+// ⑪ 訂正確認ダイアログ
 function confirmCorrect(histId){
   if(!isAdmin()){toast('訂正は管理者のみ実行できます','err');return;}
   var entry=DB.history.find(function(e){return e.id===histId;});
@@ -1712,45 +1804,58 @@ function confirmCorrect(histId){
   if(entry.type==='訂正'){toast('訂正レコードは訂正できません','err');return;}
   if(entry.corrected){toast('このデータはすでに訂正済みです','err');return;}
   if((entry.correction_count||0)>=CORRECTION_LIMIT){toast('訂正回数の上限('+CORRECTION_LIMIT+'回)に達しています','err');return;}
+
+  var cnt=entry.correction_count||0;
   var msg='以下の操作を訂正（取り消し）しますか？\n\n操作: '+entry.type+'\n品目: '+entry.itemName+'\n数量: '+fmtNum(entry.qty)+'\n作業者: '+(entry.operator||'—')+'\n日時: '+fmtDate(entry.timestamp);
-  openConfirm('訂正確認', msg, function(){execCorrect(histId);});
+  // ⑩ 3回目近づいたら警告
+  if(cnt>=CORRECTION_LIMIT-1){
+    msg+='\n\n⚠ 警告: この操作の訂正は上限に達しています（'+(cnt+1)+'/'+CORRECTION_LIMIT+'回目）';
+  }else if(cnt>=1){
+    msg+='\n\n注意: 訂正回数 '+(cnt+1)+'/'+CORRECTION_LIMIT+'回目';
+  }
+
+  openConfirm('訂正確認',msg,function(){execCorrect(histId);});
 }
 
+// ⑨ 訂正実行（元操作内容を保存）
 function execCorrect(histId){
   var entry=DB.history.find(function(e){return e.id===histId;});
   if(!entry||entry.type==='訂正'||entry.corrected){toast('訂正できないデータです','err');return;}
   if((entry.correction_count||0)>=CORRECTION_LIMIT){toast('訂正上限に達しています','err');return;}
-  var cfgMap={
-    '加工':      {fromKey:null,  toKey:'wip'},
-    'バリ前移動': {fromKey:'wip', toKey:'bari'},
-    '完成':      {fromKey:'bari',toKey:'done'},
-    '出荷':      {fromKey:'done',toKey:null}
-  };
+  var cfgMap={'加工':{fromKey:null,toKey:'wip'},'バリ前移動':{fromKey:'wip',toKey:'bari'},'完成':{fromKey:'bari',toKey:'done'},'出荷':{fromKey:'done',toKey:null}};
   var cfg=cfgMap[entry.type];
   if(!cfg){toast('この操作種別は訂正できません','err');return;}
   var item=DB.items.find(function(i){return i.id===entry.itemId;});
   if(!item){toast('品目が見つかりません（削除済みの可能性があります）','err');return;}
   var qty=entry.qty;
-  if(cfg.toKey&&item.process[cfg.toKey]-qty<0){
-    toast('訂正できません：'+cfg.toKey+'の在庫が不足します（現在 '+fmtNum(item.process[cfg.toKey])+'）','err');return;
-  }
+  if(cfg.toKey&&item.process[cfg.toKey]-qty<0){toast('訂正できません：在庫が不足します（現在 '+fmtNum(item.process[cfg.toKey])+'）','err');return;}
   if(cfg.toKey)   item.process[cfg.toKey]-=qty;
   if(cfg.fromKey) item.process[cfg.fromKey]+=qty;
   item.updatedAt=now();
   entry.corrected=true;
   entry.correction_count=(entry.correction_count||0)+1;
+
+  // ⑨ 元操作内容を訂正レコードに記録
+  var correctedDesc=entry.type+' '+fmtNum(qty)+(entry.itemName?'' : '')+(entry.operator?' ('+entry.operator+')':'')+' を訂正';
+
   DB.history.unshift({
     id:uuid(),timestamp:now(),type:'訂正',
+    group: entry.group||'',
     itemId:item.id,itemName:item.name,
-    qty:qty,line:entry.line||'',
+    qty:qty,line:entry.line||null,
     operator:currentUser.operator_name||currentUser.username,
+    user:currentUser.username,
     userId:currentUser.id,username:currentUser.username,role:currentUser.role,
-    original_id:histId,correction_count:0
+    original_id:histId,
+    corrected_desc:correctedDesc,
+    correction_count:0
   });
+  if(DB.history.length>HIST_MAX)DB.history=DB.history.slice(0,HIST_MAX);
   saveDB();
-  renderInventory();
-  renderHistory();
+  renderInventory();renderHistory();
   toast('訂正完了: '+esc(item.name)+' '+fmtNum(qty)+' を戻しました','ok');
+  // ⑩ 上限到達警告
+  if(entry.correction_count>=CORRECTION_LIMIT){toast('⚠ この操作の訂正上限('+CORRECTION_LIMIT+'回)に達しました','warn');}
 }
 
 function confirmClearHistory(){
@@ -1760,35 +1865,43 @@ function confirmClearHistory(){
 }
 
 // ═══════════════════════════════════════════════
+//  作業者名管理
+// ═══════════════════════════════════════════════
+function saveMyOperatorName(){
+  var val=document.getElementById('op-setup-input').value.trim();
+  if(!val){toast('作業者名を入力してください','err');return;}
+  var user=DB.users.find(function(u){return u.id===currentUser.id;});if(!user)return;
+  user.operator_name=val;currentUser=user;saveDB();
+  document.getElementById('op-setup-banner').style.display='none';
+  var opDisp=document.getElementById('hd-operator-name');if(opDisp)opDisp.textContent='('+val+')';
+  toast('作業者名「'+val+'」を設定しました','ok');
+}
+
+function updateOperatorName(userId,val){
+  if(!isAdmin())return;
+  var user=DB.users.find(function(u){return u.id===userId;});if(!user)return;
+  user.operator_name=val;
+  if(userId===currentUser.id){currentUser=user;var opDisp=document.getElementById('hd-operator-name');if(opDisp)opDisp.textContent=val?'('+val+')':'';}
+  saveDB();toast(user.username+'の作業者名を「'+val+'」に更新しました','ok');
+}
+
+// ═══════════════════════════════════════════════
 //  USERS
 // ═══════════════════════════════════════════════
 function renderUsers(){
   var body=document.getElementById('user-body');
   body.innerHTML=DB.users.map(function(u){
-    var del=u.id!==currentUser.id
-      ?'<button class="btn-proc bp-del" onclick="deleteUser(\''+u.id+'\')">削除</button>'
-      :'<span style="font-size:11px;color:var(--text-dim)">（自分）</span>';
-    var opCell = isAdmin()
-      ? '<div class="editable-operator">'
-          +'<input type="text" value="'+esc(u.operator_name||'')+'" id="opn-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpName(this.dataset.uid)">'
-          +'<button data-uid="'+u.id+'" onclick="saveOpName(this.dataset.uid)">保存</button>'
-        +'</div>'
-      : (u.operator_name ? esc(u.operator_name) : '<span style="color:var(--text-dim)">未設定</span>');
-    return '<tr>'
-      +'<td><strong>'+esc(u.username)+'</strong></td>'
-      +'<td><span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span></td>'
-      +'<td>'+opCell+'</td>'
-      +'<td style="font-size:12px;color:var(--text-muted)">'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</td>'
-      +'<td>'+del+'</td>'
-    +'</tr>';
+    var del=u.id!==currentUser.id?'<button class="btn-proc bp-del" onclick="deleteUser(\''+u.id+'\')">削除</button>':'<span style="font-size:11px;color:var(--text-dim)">（自分）</span>';
+    var opCell=isAdmin()
+      ?'<div class="editable-operator"><input type="text" value="'+esc(u.operator_name||'')+'" id="opn-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpName(this.dataset.uid)"><button data-uid="'+u.id+'" onclick="saveOpName(this.dataset.uid)">保存</button></div>'
+      :(u.operator_name?esc(u.operator_name):'<span style="color:var(--text-dim)">未設定</span>');
+    return '<tr><td><strong>'+esc(u.username)+'</strong></td><td><span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span></td><td>'+opCell+'</td><td style="font-size:12px;color:var(--text-muted)">'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</td><td>'+del+'</td></tr>';
   }).join('');
 }
 
 function saveOpName(userId){
-  var inp=document.getElementById('opn-'+userId);
-  if(!inp)return;
-  updateOperatorName(userId, inp.value.trim());
-  renderUsers();
+  var inp=document.getElementById('opn-'+userId);if(!inp)return;
+  updateOperatorName(userId,inp.value.trim());renderUsers();
 }
 
 function showAddUserModal(){
@@ -1802,8 +1915,7 @@ function addUser(){
   var username=document.getElementById('au-name').value.trim();
   var pw=document.getElementById('au-pw').value;
   var role=document.getElementById('au-role').value;
-  var errEl=document.getElementById('adduser-err');
-  errEl.classList.remove('show');
+  var errEl=document.getElementById('adduser-err');errEl.classList.remove('show');
   if(!username){errEl.textContent='ユーザー名を入力してください';errEl.classList.add('show');return;}
   if(!/^[a-zA-Z0-9_]+$/.test(username)){errEl.textContent='ユーザー名は英数字とアンダースコアのみ';errEl.classList.add('show');return;}
   if(DB.users.find(function(u){return u.username===username;})){errEl.textContent='このユーザー名は既に使用されています';errEl.classList.add('show');return;}
@@ -1815,11 +1927,9 @@ function addUser(){
 
 function deleteUser(id){
   if(id===currentUser.id){toast('自分自身は削除できません','err');return;}
-  var u=DB.users.find(function(u){return u.id===id;});
-  if(!u)return;
+  var u=DB.users.find(function(u){return u.id===id;});if(!u)return;
   openConfirm('ユーザー削除','「'+u.username+'」を削除しますか？',function(){
-    DB.users=DB.users.filter(function(u){return u.id!==id;});
-    saveDB();renderUsers();toast(u.username+' を削除しました','warn');
+    DB.users=DB.users.filter(function(u){return u.id!==id;});saveDB();renderUsers();toast(u.username+' を削除しました','warn');
   });
 }
 
@@ -1836,33 +1946,24 @@ function showPwModal(){
 
 function updatePwStrength(){
   var pw=document.getElementById('pw-new').value;
-  var bar=document.getElementById('pw-bar');
-  var score=0;
-  if(pw.length>=6)score++;
-  if(pw.length>=8)score++;
-  if(/[0-9]/.test(pw))score++;
-  if(/[^a-zA-Z0-9]/.test(pw))score++;
+  var bar=document.getElementById('pw-bar');var score=0;
+  if(pw.length>=6)score++;if(pw.length>=8)score++;if(/[0-9]/.test(pw))score++;if(/[^a-zA-Z0-9]/.test(pw))score++;
   var colors=['','#ef4444','#f59e0b','#10b981','#2563eb'];
-  bar.style.width=(score*25)+'%';
-  bar.style.background=colors[score]||'#ef4444';
+  bar.style.width=(score*25)+'%';bar.style.background=colors[score]||'#ef4444';
 }
 
 function changePassword(){
   var cur=document.getElementById('pw-current').value;
   var nw=document.getElementById('pw-new').value;
   var cf=document.getElementById('pw-confirm').value;
-  var errEl=document.getElementById('pw-err');
-  errEl.classList.remove('show');
+  var errEl=document.getElementById('pw-err');errEl.classList.remove('show');
   if(!currentUser)return;
   if(currentUser.passwordHash!==hashPw(cur)){errEl.textContent='現在のパスワードが違います';errEl.classList.add('show');return;}
   if(nw.length<6){errEl.textContent='新しいパスワードは6文字以上にしてください';errEl.classList.add('show');return;}
   if(nw!==cf){errEl.textContent='確認パスワードが一致しません';errEl.classList.add('show');return;}
   var user=DB.users.find(function(u){return u.id===currentUser.id;});
-  user.passwordHash=hashPw(nw);
-  currentUser=user;
-  saveDB();saveSession();
-  closeModal('modal-pw');
-  toast('パスワードを変更しました','ok');
+  user.passwordHash=hashPw(nw);currentUser=user;saveDB();saveSession();
+  closeModal('modal-pw');toast('パスワードを変更しました','ok');
 }
 
 // ═══════════════════════════════════════════════
@@ -1876,8 +1977,8 @@ function exportCSV(type){
     csv+=DB.items.map(function(i){return [i.id,qt(i.name),qt(i.code),qt(i.unit),qt(i.maker||''),i.process.wip,i.process.bari,i.process.done,i.threshold,i.updatedAt].join(',');}).join('\n');
     filename='在庫一覧_'+dateStr()+'.csv';
   }else{
-    csv='ID,日時,操作,品目名,数量,ライン,作業者,ユーザー,権限\n';
-    csv+=DB.history.map(function(h){return [h.id,h.timestamp,qt(h.type),qt(h.itemName),h.qty,qt(h.line||''),qt(h.operator||''),qt(h.username),qt(h.role)].join(',');}).join('\n');
+    csv='ID,日時,操作,グループ,品目名,数量,ライン,作業者,ユーザー,権限\n';
+    csv+=DB.history.map(function(h){return [h.id,h.timestamp,qt(h.type),qt(h.group||''),qt(h.itemName),h.qty,qt(h.line||''),qt(h.operator||''),qt(h.username),qt(h.role)].join(',');}).join('\n');
     filename='操作履歴_'+dateStr()+'.csv';
   }
   var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
@@ -1902,11 +2003,7 @@ function openConfirm(title,msg,onOk){
 }
 
 document.querySelectorAll('.overlay').forEach(function(ov){
-  ov.addEventListener('mousedown',function(e){
-    if(e.target===ov){
-      closeModal(ov.id);
-    }
-  });
+  ov.addEventListener('mousedown',function(e){if(e.target===ov){closeModal(ov.id);}});
 });
 
 function toast(msg,type){
@@ -1915,9 +2012,8 @@ function toast(msg,type){
   el.className='toast'+(type?' '+type:'');
   var icon={ok:'✓',err:'✕',warn:'⚠'}[type]||'ℹ';
   el.innerHTML='<span style="font-size:14px">'+icon+'</span><span>'+msg+'</span>';
-  var cont=document.getElementById('toasts');
-  cont.appendChild(el);
-  setTimeout(function(){el.style.animation='tOut .25s ease forwards';setTimeout(function(){el.remove();},250);},3000);
+  var cont=document.getElementById('toasts');cont.appendChild(el);
+  setTimeout(function(){el.style.animation='tOut .2s ease forwards';setTimeout(function(){el.remove();},200);},3000);
 }
 
 // ═══════════════════════════════════════════════
