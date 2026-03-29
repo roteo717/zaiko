@@ -915,7 +915,8 @@ body {
   /* Header */
   .header { padding: 0 10px; gap: 7px; }
   .logo-text { display: none; }
-  .user-name { display: none; }
+  .user-badge { padding: 4px 8px; font-size: 11px; }
+  .user-name { font-size: 11px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mode-tab { padding: 5px 9px; font-size: 11px; }
 
   /* Field */
@@ -966,10 +967,6 @@ body {
 <div class="app" id="app">
 
 <header class="header">
-  <div class="logo">
-    <div class="logo-icon">⚙</div>
-    <span class="logo-text">工程管理</span>
-  </div>
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('field')">📱 現場</button>
     <button class="mode-tab" onclick="switchMode('admin')">🖥 管理</button>
