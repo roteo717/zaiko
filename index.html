@@ -2,34 +2,41 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>工程管理システム</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 :root {
-  --bg: #0f1117;
-  --bg2: #1a1d27;
-  --bg3: #222636;
-  --bg4: #2a2f42;
-  --border: #2e3349;
-  --border2: #3d4460;
-  --text: #e8eaf2;
-  --text2: #9198b5;
-  --text3: #5d6485;
-  --accent: #4f7eff;
-  --accent2: #3d65d4;
-  --teal: #00c9a7;
-  --amber: #ffb340;
-  --red: #ff4d6d;
-  --green: #36d399;
-  --purple: #a78bfa;
-  --process: #4f7eff;
-  --deburr: #ffb340;
-  --font: 'Noto Sans JP', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
-  --r: 10px;
-  --r-sm: 6px;
+  --bg:       #f5f6fa;
+  --bg2:      #ffffff;
+  --bg3:      #f0f1f6;
+  --bg4:      #e8eaf2;
+  --border:   #dde0ee;
+  --border2:  #c5c9df;
+  --text:     #1a1d2e;
+  --text2:    #5a5f7a;
+  --text3:    #9198b5;
+  --accent:   #4f7eff;
+  --accent2:  #3d65d4;
+  --teal:     #00a589;
+  --amber:    #c8790a;
+  --amber-bg: #fff8ec;
+  --amber-bd: #f5c46a;
+  --red:      #d9293f;
+  --red-bg:   #fff0f2;
+  --red-bd:   #f5a0ac;
+  --green:    #1a9e62;
+  --green-bg: #edfaf3;
+  --green-bd: #7dd9aa;
+  --done:     #1a9e62;
+  --done-bg:  #edfaf3;
+  --done-bd:  #7dd9aa;
+  --purple:   #7c5cbf;
+  --font:     'Noto Sans JP', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+  --r:        10px;
+  --r-sm:     6px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,40 +48,42 @@ body {
   min-height: 100vh;
   font-size: 14px;
   line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
 }
 
-/* ===== LAYOUT ===== */
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 
+/* ===== HEADER ===== */
 .header {
   background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  padding: 0 20px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
-  height: 56px;
-  gap: 16px;
+  height: 52px;
+  gap: 10px;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
-
 .logo {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+  flex-shrink: 0;
 }
 .logo-icon {
-  width: 28px; height: 28px;
+  width: 26px; height: 26px;
   background: var(--accent);
   border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
+  font-size: 13px; color: #fff;
 }
-
+.logo-text { white-space: nowrap; }
 .mode-tabs {
   display: flex;
   background: var(--bg3);
@@ -83,53 +92,39 @@ body {
   gap: 2px;
 }
 .mode-tab {
-  padding: 5px 14px;
+  padding: 5px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text2);
   border: none;
   background: transparent;
   transition: all 0.15s;
+  white-space: nowrap;
+  font-family: var(--font);
 }
-.mode-tab.active {
-  background: var(--accent);
-  color: #fff;
-}
-
-.header-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.mode-tab.active { background: var(--accent); color: #fff; }
+.header-right { margin-left: auto; flex-shrink: 0; }
 .user-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 4px 10px;
   background: var(--bg3);
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text2);
+  border: 1px solid var(--border);
 }
-.user-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-}
+.user-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.user-name { white-space: nowrap; }
 
 /* ===== FIELD MODE ===== */
-.field-mode { padding: 16px; max-width: 1200px; margin: 0 auto; width: 100%; }
-
-.field-search {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-}
+.field-mode { padding: 12px; max-width: 1200px; margin: 0 auto; width: 100%; }
+.field-search { margin-bottom: 10px; }
 .search-input {
-  flex: 1;
+  width: 100%;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--r);
@@ -142,26 +137,16 @@ body {
 }
 .search-input:focus { border-color: var(--accent); }
 .search-input::placeholder { color: var(--text3); }
+.section-title { font-size: 11px; color: var(--text3); font-weight: 500; margin-bottom: 8px; }
 
-.field-header-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.section-title {
-  font-size: 13px;
-  color: var(--text2);
-  font-weight: 500;
-}
-
-/* Item Cards */
+/* ===== ITEM CARD ===== */
 .item-card {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  margin-bottom: 12px;
-  overflow: hidden;
+  margin-bottom: 10px;
+  overflow: visible;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   transition: border-color 0.15s;
 }
 .item-card:hover { border-color: var(--border2); }
@@ -169,279 +154,355 @@ body {
 .item-card-header {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
-  gap: 12px;
+  padding: 10px 14px;
+  gap: 8px;
   cursor: pointer;
   user-select: none;
 }
 .item-code {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text3);
   background: var(--bg3);
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: 4px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .item-name {
   font-size: 15px;
   font-weight: 700;
   color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.item-unit {
-  font-size: 11px;
-  color: var(--text3);
-  margin-left: 2px;
-}
+.item-unit { font-size: 11px; color: var(--text3); font-weight: 400; }
 .item-summary {
-  margin-left: auto;
   display: flex;
-  gap: 16px;
+  gap: 10px;
   align-items: center;
+  flex-shrink: 0;
 }
-.summary-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.summary-label { font-size: 10px; color: var(--text3); }
-.summary-value { font-size: 14px; font-weight: 700; font-family: var(--mono); }
-.summary-value.danger { color: var(--red); }
+.summary-badge { display: flex; flex-direction: column; align-items: flex-end; }
+.summary-label { font-size: 9px; color: var(--text3); white-space: nowrap; }
+.summary-value { font-size: 13px; font-weight: 700; font-family: var(--mono); white-space: nowrap; }
+.summary-value.danger  { color: var(--red); }
 .summary-value.shipped { color: var(--teal); }
-.summary-value.total { color: var(--accent); }
-
-.expand-icon {
-  color: var(--text3);
-  font-size: 12px;
-  transition: transform 0.2s;
-}
+.summary-value.total   { color: var(--accent); }
+.expand-icon { color: var(--text3); font-size: 11px; transition: transform 0.2s; flex-shrink: 0; margin-left: 2px; }
 .item-card.expanded .expand-icon { transform: rotate(180deg); }
 
-.item-card-body {
-  display: none;
-  padding: 0 16px 16px;
-}
+.item-card-body { display: none; padding: 0 14px 14px; }
 .item-card.expanded .item-card-body { display: block; }
 
-/* Process Grid */
+/* Receive row */
+.receive-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: var(--bg3);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.receive-label { font-size: 11px; color: var(--text3); font-weight: 500; flex-shrink: 0; }
+.receive-btns { display: flex; gap: 4px; align-items: center; }
+.qty-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 5px 9px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-weight: 600;
+  transition: all 0.1s;
+  flex-shrink: 0;
+}
+.qty-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.qty-display {
+  width: 56px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 4px 6px;
+  outline: none;
+}
+.qty-display:focus { border-color: var(--accent); }
+.btn-receive {
+  padding: 6px 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-receive:hover { background: #6b94ff; }
+.btn-receive:active { transform: scale(0.96); }
+
+/* ===== PROCESS GRID ===== */
 .process-grid {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 8px;
   margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+  /* スクロールバーを薄く */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
 }
 
 .process-block {
-  flex: 0 0 auto;
-  min-width: 160px;
+  flex: 0 0 152px;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 12px;
+  padding: 10px;
   position: relative;
+  /* overflow: visible はデフォルト */
 }
 
+/* ===== バリ取り：ブロック上部の帯 ===== */
 .process-block.deburr-block {
-  border-color: var(--deburr);
-  background: rgba(255,179,64,0.06);
+  border-color: var(--amber-bd);
+  background: var(--amber-bg);
+  padding-top: 8px;
 }
 .deburr-label {
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--deburr);
-  color: #1a0f00;
+  display: block;
+  background: var(--amber);
+  color: #fff;
   font-size: 9px;
   font-weight: 700;
-  padding: 1px 8px;
-  border-radius: 4px;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: 3px;
   letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== 完成置き場 ===== */
+.process-block.done-block {
+  border-color: var(--done-bd);
+  background: var(--done-bg);
+  padding-top: 8px;
+}
+.done-label {
+  display: block;
+  background: var(--done);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .process-name {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text3);
-  margin-bottom: 6px;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .process-count {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   font-family: var(--mono);
   color: var(--text);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   line-height: 1;
 }
 .process-count.zero { color: var(--text3); }
 
-.process-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.process-actions-row {
-  display: flex;
-  gap: 4px;
-}
+.process-actions { display: flex; flex-direction: column; gap: 4px; }
+.process-actions-row { display: flex; gap: 4px; }
 
-/* Buttons */
+/* ===== BUTTONS ===== */
 .btn {
   border: none;
   border-radius: var(--r-sm);
   cursor: pointer;
   font-family: var(--font);
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.1s;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  white-space: nowrap;
+  line-height: 1;
 }
-.btn:active { transform: scale(0.96); }
-.btn:disabled { opacity: 0.35; cursor: default; }
+.btn:active:not(:disabled) { transform: scale(0.95); }
+.btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
 
 .btn-move {
   flex: 1;
-  padding: 7px 6px;
-  font-size: 12px;
-  background: var(--bg4);
-  color: var(--text);
+  padding: 7px 4px;
+  font-size: 11px;
+  background: var(--bg2);
+  color: var(--text2);
   border: 1px solid var(--border);
+  min-width: 0;
 }
 .btn-move:hover:not(:disabled) { background: var(--accent2); border-color: var(--accent); color: #fff; }
-
 .btn-next { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
 .btn-next:hover:not(:disabled) { background: #6b94ff !important; }
 
 .btn-defect {
   flex: 1;
-  padding: 7px 6px;
-  font-size: 12px;
-  background: rgba(255,77,109,0.1);
+  padding: 7px 4px;
+  font-size: 11px;
+  background: var(--red-bg);
   color: var(--red);
-  border: 1px solid rgba(255,77,109,0.25);
+  border: 1px solid var(--red-bd);
+  min-width: 0;
 }
-.btn-defect:hover:not(:disabled) { background: rgba(255,77,109,0.2); }
+.btn-defect:hover:not(:disabled) { background: var(--red); color: #fff; }
 
 .btn-ship {
-  width: 100%;
-  padding: 7px 6px;
-  font-size: 12px;
-  background: rgba(0,201,167,0.1);
-  color: var(--teal);
-  border: 1px solid rgba(0,201,167,0.25);
-}
-.btn-ship:hover:not(:disabled) { background: rgba(0,201,167,0.2); }
-
-/* Qty selector */
-.qty-selector {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-.qty-btn {
-  background: var(--bg4);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  padding: 4px 8px;
+  padding: 7px 4px;
   font-size: 11px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: var(--mono);
-  transition: background 0.1s;
+  background: #e8f6f4;
+  color: var(--teal);
+  border: 1px solid #a0ddd4;
+  min-width: 0;
 }
-.qty-btn:hover { background: var(--bg3); color: var(--text); }
-.qty-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-.qty-display {
-  flex: 1;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: var(--mono);
-  color: var(--accent);
-  background: var(--bg4);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 3px 6px;
-  outline: none;
-}
+.btn-ship:hover:not(:disabled) { background: var(--teal); color: #fff; }
+.btn-ship-full { width: 100%; flex: none; }
 
-/* Defective / Shipped summary */
+/* ===== ITEM FOOTER ===== */
 .item-footer {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   padding-top: 8px;
   border-top: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 .footer-stat {
   flex: 1;
+  min-width: 100px;
   background: var(--bg3);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 8px 10px;
+  padding: 7px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 6px;
 }
-.footer-stat-label { font-size: 11px; color: var(--text3); }
-.footer-stat-value { font-size: 16px; font-weight: 700; font-family: var(--mono); }
-.footer-stat-value.red { color: var(--red); }
-.footer-stat-value.teal { color: var(--teal); }
+.footer-stat-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+.footer-stat-value { font-size: 14px; font-weight: 700; font-family: var(--mono); white-space: nowrap; }
+.footer-stat-value.red   { color: var(--red); }
+.footer-stat-value.teal  { color: var(--teal); }
+.footer-stat-value.done-c { color: var(--done); }
 
 /* ===== ADMIN MODE ===== */
-.admin-mode { padding: 16px; max-width: 1400px; margin: 0 auto; width: 100%; }
-
+.admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; }
 .admin-toolbar {
   display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
   align-items: center;
 }
-.admin-toolbar .search-input { max-width: 280px; }
-
+.admin-search { flex: 1; min-width: 160px; max-width: 260px; }
 .btn-primary {
-  padding: 9px 16px;
+  padding: 8px 14px;
   background: var(--accent);
   color: #fff;
+  border: none;
   border-radius: var(--r);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+  transition: background 0.1s;
 }
 .btn-primary:hover { background: #6b94ff; }
-
 .btn-secondary {
-  padding: 9px 16px;
-  background: var(--bg3);
+  padding: 8px 14px;
+  background: var(--bg2);
   color: var(--text2);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+  transition: all 0.1s;
 }
 .btn-secondary:hover { color: var(--text); border-color: var(--border2); }
+
+/* Stats */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 13px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.stat-card-label { font-size: 10px; color: var(--text3); margin-bottom: 2px; font-weight: 500; }
+.stat-card-value { font-size: 21px; font-weight: 700; font-family: var(--mono); }
+.stat-card-value.blue   { color: var(--accent); }
+.stat-card-value.teal   { color: var(--teal); }
+.stat-card-value.red    { color: var(--red); }
+.stat-card-value.amber  { color: var(--amber); }
+.stat-card-value.done-c { color: var(--done); }
 
 /* Table */
 .table-wrapper {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  overflow: hidden;
+  overflow: auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  -webkit-overflow-scrolling: touch;
 }
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 720px; }
 .data-table th {
   background: var(--bg3);
-  padding: 10px 12px;
+  padding: 9px 10px;
   text-align: left;
   color: var(--text3);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
   border-bottom: 1px solid var(--border);
   cursor: pointer;
   user-select: none;
@@ -449,167 +510,159 @@ body {
 }
 .data-table th:hover { color: var(--text2); }
 .data-table td {
-  padding: 10px 12px;
+  padding: 9px 10px;
   border-bottom: 1px solid var(--border);
   color: var(--text);
   white-space: nowrap;
 }
 .data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+.data-table tr:hover td { background: #f8f9fe; }
 .data-table .mono { font-family: var(--mono); }
-.data-table .num { text-align: right; font-family: var(--mono); }
-.data-table .num-zero { color: var(--text3); }
-.data-table .num-red { color: var(--red); font-weight: 600; }
-.data-table .num-teal { color: var(--teal); font-weight: 600; }
-.data-table .num-blue { color: var(--accent); font-weight: 600; }
+.data-table .num  { text-align: right; font-family: var(--mono); }
+.num-zero { color: var(--text3); }
+.num-red  { color: var(--red);  font-weight: 600; }
+.num-teal { color: var(--teal); font-weight: 600; }
+.num-blue { color: var(--accent); font-weight: 600; }
+.num-done { color: var(--done); font-weight: 600; }
 
 .process-cell {
   display: inline-block;
-  min-width: 36px;
+  min-width: 32px;
   text-align: center;
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 4px;
   background: var(--bg3);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
+  border: 1px solid var(--border);
 }
-.process-cell.deburr { background: rgba(255,179,64,0.12); color: var(--amber); }
+.process-cell.deburr    { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
+.process-cell.done-cell { background: var(--done-bg);  color: var(--done);  border-color: var(--done-bd); }
 
 .action-btn {
-  padding: 4px 10px;
+  padding: 4px 9px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  background: var(--bg4);
+  background: var(--bg3);
   color: var(--text2);
   border: 1px solid var(--border);
   transition: all 0.1s;
+  font-family: var(--font);
 }
-.action-btn:hover { color: var(--text); border-color: var(--border2); }
-
-/* Stats Row */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.stat-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 14px 16px;
-}
-.stat-card-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
-.stat-card-value { font-size: 24px; font-weight: 700; font-family: var(--mono); }
-.stat-card-value.blue { color: var(--accent); }
-.stat-card-value.teal { color: var(--teal); }
-.stat-card-value.red { color: var(--red); }
-.stat-card-value.amber { color: var(--amber); }
+.action-btn:hover { color: var(--accent); border-color: var(--accent); }
 
 /* ===== MODAL ===== */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(30,34,60,0.4);
   z-index: 200;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
+  padding: 0;
+}
+@media (min-width: 480px) {
+  .modal-overlay { align-items: center; padding: 16px; }
 }
 .modal-overlay.open { display: flex; }
 .modal {
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
-  width: 420px;
-  max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 60px);
+  border-radius: 14px 14px 0 0;
+  padding: 20px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 92vh;
   overflow-y: auto;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+}
+@media (min-width: 480px) {
+  .modal { border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.14); }
 }
 .modal-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 .modal-icon {
-  width: 32px; height: 32px;
+  width: 30px; height: 30px;
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
+  font-size: 15px;
+  flex-shrink: 0;
 }
-.modal-icon.move { background: rgba(79,126,255,0.15); }
-.modal-icon.defect { background: rgba(255,77,109,0.15); }
-.modal-icon.ship { background: rgba(0,201,167,0.15); }
-.modal-icon.receive { background: rgba(54,211,153,0.15); }
+.modal-icon.move   { background: #e8effe; }
+.modal-icon.defect { background: var(--red-bg); }
+.modal-icon.ship   { background: #e8f6f4; }
 
 .modal-info {
   background: var(--bg3);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 10px 12px;
-  margin-bottom: 16px;
+  padding: 9px 11px;
+  margin-bottom: 14px;
   font-size: 12px;
   color: var(--text2);
+  line-height: 1.6;
 }
 .modal-info strong { color: var(--text); }
 
 .form-label {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text3);
-  margin-bottom: 6px;
-  font-weight: 500;
+  margin-bottom: 5px;
+  font-weight: 600;
   letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
-.form-group { margin-bottom: 14px; }
-
+.form-group { margin-bottom: 12px; }
 .form-input {
   width: 100%;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 9px 12px;
+  padding: 9px 11px;
   color: var(--text);
   font-size: 14px;
   font-family: var(--font);
   outline: none;
   transition: border-color 0.15s;
 }
-.form-input:focus { border-color: var(--accent); }
+.form-input:focus { border-color: var(--accent); background: var(--bg2); }
 .form-select {
   width: 100%;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 9px 12px;
+  padding: 9px 11px;
   color: var(--text);
   font-size: 14px;
   font-family: var(--font);
   outline: none;
   cursor: pointer;
 }
-.form-select option { background: var(--bg2); }
+.form-select:focus { border-color: var(--accent); }
 
-.qty-input-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
+.qty-input-row { display: flex; gap: 5px; align-items: center; }
 .qty-preset-btn {
-  padding: 7px 12px;
-  background: var(--bg4);
+  padding: 9px 12px;
+  background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text2);
   cursor: pointer;
   font-size: 12px;
   font-family: var(--mono);
+  font-weight: 600;
   transition: all 0.1s;
+  flex-shrink: 0;
 }
 .qty-preset-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 .qty-main-input {
@@ -617,24 +670,21 @@ body {
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 7px 12px;
+  padding: 8px 10px;
   color: var(--text);
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   font-family: var(--mono);
   text-align: center;
   outline: none;
+  min-width: 0;
 }
-.qty-main-input:focus { border-color: var(--accent); }
+.qty-main-input:focus { border-color: var(--accent); background: var(--bg2); }
 
-.modal-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 20px;
-}
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
 .btn-confirm {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border-radius: var(--r-sm);
   font-size: 14px;
   font-weight: 700;
@@ -643,122 +693,85 @@ body {
   color: #fff;
   border: none;
   transition: background 0.1s;
+  font-family: var(--font);
 }
 .btn-confirm:hover { background: #6b94ff; }
-.btn-confirm.danger { background: var(--red); }
-.btn-confirm.danger:hover { background: #ff6b86; }
-.btn-confirm.teal { background: var(--teal); color: #003a30; }
+.btn-confirm.danger   { background: var(--red); }
+.btn-confirm.danger:hover { background: #f04060; }
+.btn-confirm.teal     { background: var(--teal); color: #fff; }
+.btn-confirm.teal:hover { background: #00c0a0; }
 .btn-cancel {
-  padding: 10px 16px;
+  padding: 12px 16px;
   border-radius: var(--r-sm);
   font-size: 14px;
   cursor: pointer;
   background: var(--bg3);
   color: var(--text2);
   border: 1px solid var(--border);
+  font-family: var(--font);
+  transition: all 0.1s;
 }
-.btn-cancel:hover { color: var(--text); }
+.btn-cancel:hover { color: var(--text); border-color: var(--border2); }
 
-/* ===== HISTORY PANEL ===== */
+/* History */
 .history-panel {
-  margin-top: 16px;
+  margin-top: 12px;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
 }
 .history-header {
-  padding: 12px 16px;
+  padding: 9px 14px;
   border-bottom: 1px solid var(--border);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text3);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-weight: 600;
+  background: var(--bg3);
+  display: flex; align-items: center; gap: 6px;
 }
-.history-list { max-height: 300px; overflow-y: auto; }
+.history-list { max-height: 260px; overflow-y: auto; }
 .history-item {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  gap: 10px;
+  padding: 7px 14px;
+  gap: 8px;
   border-bottom: 1px solid var(--border);
-  font-size: 12px;
+  font-size: 11px;
+  min-width: 0;
 }
 .history-item:last-child { border-bottom: none; }
 .history-type {
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  min-width: 44px;
+  min-width: 38px;
   text-align: center;
+  flex-shrink: 0;
 }
-.type-move { background: rgba(79,126,255,0.15); color: var(--accent); }
-.type-receive { background: rgba(54,211,153,0.15); color: var(--green); }
-.type-ship { background: rgba(0,201,167,0.15); color: var(--teal); }
-.type-defect { background: rgba(255,77,109,0.15); color: var(--red); }
-.type-adjust { background: rgba(167,139,250,0.15); color: var(--purple); }
+.type-move    { background: #e8effe; color: var(--accent); }
+.type-receive { background: var(--green-bg); color: var(--green); }
+.type-ship    { background: #e8f6f4; color: var(--teal); }
+.type-defect  { background: var(--red-bg); color: var(--red); }
+.type-adjust  { background: #f0ecff; color: var(--purple); }
+.history-desc { flex: 1; color: var(--text2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-qty  { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text); flex-shrink: 0; }
+.history-time { color: var(--text3); font-size: 9px; flex-shrink: 0; }
 
-.history-desc { flex: 1; color: var(--text2); }
-.history-qty {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-}
-.history-time { color: var(--text3); font-size: 10px; }
-
-/* ===== TOAST ===== */
-#toast-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.toast {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 10px 16px;
-  font-size: 13px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  animation: slideIn 0.2s ease;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-.toast.success { border-color: var(--green); }
-.toast.error { border-color: var(--red); }
-.toast-dot { width: 6px; height: 6px; border-radius: 50%; }
-.toast.success .toast-dot { background: var(--green); }
-.toast.error .toast-dot { background: var(--red); }
-
-@keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
-
-/* ===== ITEM FORM ===== */
-.process-config-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
+/* Item form */
+.process-config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 .process-config-item {
   background: var(--bg3);
   border-radius: var(--r-sm);
   padding: 8px;
   border: 1px solid var(--border);
 }
-.process-config-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
-.process-toggle { display: flex; gap: 4px; }
+.process-config-label { font-size: 10px; color: var(--text3); margin-bottom: 5px; font-weight: 500; }
+.process-toggle { display: flex; gap: 3px; }
 .type-btn {
   flex: 1;
-  padding: 4px 8px;
+  padding: 4px 3px;
   border-radius: 3px;
   border: 1px solid var(--border);
   background: transparent;
@@ -767,33 +780,106 @@ body {
   cursor: pointer;
   transition: all 0.1s;
   font-family: var(--font);
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 0;
+  text-align: center;
 }
-.type-btn.active-process { background: rgba(79,126,255,0.2); color: var(--accent); border-color: var(--accent); }
-.type-btn.active-deburr { background: rgba(255,179,64,0.2); color: var(--amber); border-color: var(--amber); }
-.type-btn.active-off { background: rgba(255,77,109,0.1); color: var(--text3); }
+.type-btn.active-process { background: #e8effe; color: var(--accent); border-color: var(--accent); }
+.type-btn.active-deburr  { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
+.type-btn.active-done    { background: var(--done-bg); color: var(--done); border-color: var(--done-bd); }
+.type-btn.active-off     { background: var(--red-bg); color: var(--text3); border-color: var(--red-bd); }
+
+/* Toast */
+#toast-container {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: calc(100vw - 32px);
+}
+.toast {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--green);
+  border-radius: var(--r);
+  padding: 9px 14px;
+  font-size: 12px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.toast.error { border-left-color: var(--red); }
+.toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.toast.error .toast-dot { background: var(--red); }
+@keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-@media (max-width: 600px) {
-  .header { padding: 0 12px; }
-  .field-mode, .admin-mode { padding: 12px; }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  /* Header */
+  .header { padding: 0 10px; gap: 7px; }
+  .logo-text { display: none; }
+  .user-name { display: none; }
+  .mode-tab { padding: 5px 9px; font-size: 11px; }
+
+  /* Field */
+  .field-mode, .admin-mode { padding: 10px; }
+
+  /* Card header: summary を 2 列に */
+  .item-card-header { padding: 10px 12px; gap: 6px; }
+  .item-summary { gap: 8px; }
+
+  /* Receive row: wrap */
+  .receive-row { gap: 6px; }
+  .receive-btns { flex-wrap: wrap; }
+  .qty-btn { padding: 6px 10px; }
+  .qty-display { width: 52px; }
+  .btn-receive { width: 100%; padding: 8px; font-size: 12px; }
+
+  /* Process block */
+  .process-block { flex: 0 0 138px; }
+  .process-count { font-size: 22px; }
+  .btn-move, .btn-defect, .btn-ship { font-size: 10px; padding: 6px 3px; }
+
+  /* Footer */
+  .footer-stat { min-width: 80px; }
+  .footer-stat-value { font-size: 13px; }
+  .footer-stat-label { font-size: 10px; }
+
+  /* Admin */
+  .admin-toolbar { gap: 6px; }
+  .btn-primary, .btn-secondary { padding: 7px 10px; font-size: 11px; }
+  .admin-search { max-width: 100%; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .process-config-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 360px) {
+  .process-block { flex: 0 0 126px; }
+  .process-count { font-size: 20px; }
+  .btn-move, .btn-defect, .btn-ship { font-size: 9px; }
+  .deburr-label, .done-label { font-size: 8px; }
 }
 </style>
 </head>
 <body>
 <div class="app" id="app">
 
-<!-- HEADER -->
 <header class="header">
   <div class="logo">
     <div class="logo-icon">⚙</div>
-    工程管理
+    <span class="logo-text">工程管理</span>
   </div>
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('field')">📱 現場</button>
@@ -802,42 +888,39 @@ body {
   <div class="header-right">
     <div class="user-badge">
       <div class="user-dot"></div>
-      <span id="current-user">田中 一郎</span>
+      <span class="user-name" id="current-user">田中 一郎</span>
     </div>
   </div>
 </header>
 
-<!-- FIELD MODE -->
 <div id="field-mode" class="field-mode">
   <div class="field-search">
     <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterItems(this.value)">
   </div>
-  <div class="field-header-row">
-    <span class="section-title" id="item-count-label">品目一覧</span>
-  </div>
+  <div class="section-title" id="item-count-label">品目一覧</div>
   <div id="field-items"></div>
 </div>
 
-<!-- ADMIN MODE -->
 <div id="admin-mode" class="admin-mode" style="display:none">
   <div class="stats-row" id="admin-stats"></div>
   <div class="admin-toolbar">
-    <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
-    <button class="btn btn-secondary" onclick="exportCSV()">⬇ CSV出力</button>
-    <button class="btn btn-primary" onclick="openItemForm()">＋ 品目登録</button>
-    <button class="btn btn-secondary" onclick="openAdjustModal()">📝 在庫調整</button>
-    <button class="btn btn-secondary" onclick="showHistory()">📋 操作履歴</button>
+    <input class="search-input admin-search" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
+    <button class="btn-secondary" onclick="exportCSV()">⬇ CSV</button>
+    <button class="btn-primary" onclick="openItemForm()">＋ 品目登録</button>
+    <button class="btn-secondary" onclick="openAdjustModal()">📝 調整</button>
+    <button class="btn-secondary" onclick="showHistory()">📋 履歴</button>
   </div>
   <div class="table-wrapper">
-    <table class="data-table" id="admin-table">
+    <table class="data-table">
       <thead>
         <tr>
-          <th onclick="sortAdmin('code')">品番 ↕</th>
-          <th onclick="sortAdmin('name')">品名 ↕</th>
+          <th onclick="sortAdmin('code')">品番↕</th>
+          <th onclick="sortAdmin('name')">品名↕</th>
           <th>工程1</th><th>工程2</th><th>工程3</th><th>工程4</th><th>工程5</th><th>工程6</th>
-          <th onclick="sortAdmin('defective')">不良 ↕</th>
-          <th onclick="sortAdmin('shipped')">出荷 ↕</th>
-          <th>合計在庫</th>
+          <th onclick="sortAdmin('done')">完成↕</th>
+          <th onclick="sortAdmin('defective')">不良↕</th>
+          <th onclick="sortAdmin('shipped')">出荷↕</th>
+          <th>在庫合計</th>
           <th>操作</th>
         </tr>
       </thead>
@@ -845,18 +928,16 @@ body {
     </table>
   </div>
   <div id="history-panel-admin" class="history-panel" style="display:none">
-    <div class="history-header">
-      <span>📋</span> 操作履歴（最新50件）
-    </div>
+    <div class="history-header">📋 操作履歴（最新50件）</div>
     <div class="history-list" id="history-list-admin"></div>
   </div>
 </div>
 
-<!-- OPERATION MODAL -->
+<!-- OP MODAL -->
 <div class="modal-overlay" id="op-modal">
   <div class="modal">
     <div class="modal-title">
-      <div class="modal-icon" id="op-icon">→</div>
+      <div class="modal-icon" id="op-icon"></div>
       <span id="op-title">操作</span>
     </div>
     <div class="modal-info" id="op-info"></div>
@@ -866,7 +947,7 @@ body {
         <button class="qty-preset-btn" onclick="addQty(1)">+1</button>
         <button class="qty-preset-btn" onclick="addQty(10)">+10</button>
         <button class="qty-preset-btn" onclick="addQty(50)">+50</button>
-        <input class="qty-main-input" id="op-qty" type="number" min="1" value="1">
+        <input class="qty-main-input" id="op-qty" type="number" min="1" value="1" inputmode="numeric">
       </div>
     </div>
     <div class="form-group" id="op-to-process-group" style="display:none">
@@ -884,7 +965,7 @@ body {
 <div class="modal-overlay" id="item-form-modal">
   <div class="modal">
     <div class="modal-title">
-      <div class="modal-icon receive" style="font-size:18px">📦</div>
+      <div class="modal-icon" style="background:#e8effe;font-size:16px">📦</div>
       <span id="form-modal-title">品目登録</span>
     </div>
     <div class="form-group">
@@ -897,10 +978,10 @@ body {
     </div>
     <div class="form-group">
       <label class="form-label">単位</label>
-      <input class="form-input" id="form-unit" placeholder="例: 個" type="text" value="個">
+      <input class="form-input" id="form-unit" value="個" type="text">
     </div>
     <div class="form-group">
-      <label class="form-label">工程設定（使用する工程を設定）</label>
+      <label class="form-label">工程設定</label>
       <div class="process-config-grid" id="process-config-grid"></div>
     </div>
     <div class="modal-actions">
@@ -914,7 +995,7 @@ body {
 <div class="modal-overlay" id="adjust-modal">
   <div class="modal">
     <div class="modal-title">
-      <div class="modal-icon" style="background:rgba(167,139,250,0.15);font-size:18px">📝</div>
+      <div class="modal-icon" style="background:#f0ecff;font-size:16px">📝</div>
       在庫調整（管理者）
     </div>
     <div class="form-group">
@@ -926,12 +1007,12 @@ body {
       <select class="form-select" id="adj-process"></select>
     </div>
     <div class="form-group">
-      <label class="form-label">調整後数量（現在値を上書き）</label>
-      <input class="form-input" id="adj-qty" type="number" min="0" value="0">
+      <label class="form-label">調整後数量</label>
+      <input class="form-input" id="adj-qty" type="number" min="0" value="0" inputmode="numeric">
     </div>
     <div class="form-group">
       <label class="form-label">理由</label>
-      <input class="form-input" id="adj-reason" placeholder="棚卸し差異、計測ミスなど" type="text">
+      <input class="form-input" id="adj-reason" placeholder="棚卸し差異など" type="text">
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('adjust-modal')">キャンセル</button>
@@ -940,367 +1021,307 @@ body {
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
 <div id="toast-container"></div>
 
 <script>
-// ===== DATA STORE =====
-const PROCESS_NAMES = ['工程1','工程2','工程3','工程4','工程5','工程6'];
+const PNAMES = ['工程1','工程2','工程3','工程4','工程5','工程6'];
 
 let db = {
   items: [
     {
-      id: 'i1', code: 'A-001', name: 'フランジ部品', unit: '個',
-      processCounts: [45, 28, 12, 8, 0, 0],
-      defectiveCount: 3, shippedCount: 120,
-      processConfig: [
+      id:'i1', code:'A-001', name:'フランジ部品', unit:'個',
+      processCounts:[45,28,12,8,0,0], doneCount:6,
+      defectiveCount:3, shippedCount:120,
+      processConfig:[
         {type:'process',active:true},{type:'process',active:true},
         {type:'deburr',active:true},{type:'process',active:true},
-        {type:'process',active:false},{type:'process',active:false}
+        {type:'done',active:true},{type:'process',active:false}
       ]
     },
     {
-      id: 'i2', code: 'B-042', name: 'シャフトカラー', unit: '個',
-      processCounts: [80, 0, 35, 0, 0, 0],
-      defectiveCount: 1, shippedCount: 340,
-      processConfig: [
+      id:'i2', code:'B-042', name:'シャフトカラー', unit:'個',
+      processCounts:[80,0,35,0,0,0], doneCount:12,
+      defectiveCount:1, shippedCount:340,
+      processConfig:[
         {type:'process',active:true},{type:'deburr',active:true},
-        {type:'process',active:true},{type:'process',active:false},
+        {type:'process',active:true},{type:'done',active:true},
         {type:'process',active:false},{type:'process',active:false}
       ]
     },
     {
-      id: 'i3', code: 'C-017', name: 'ブラケット', unit: '個',
-      processCounts: [120, 60, 20, 15, 5, 0],
-      defectiveCount: 8, shippedCount: 88,
-      processConfig: [
+      id:'i3', code:'C-017', name:'ブラケット', unit:'個',
+      processCounts:[120,60,20,15,5,0], doneCount:3,
+      defectiveCount:8, shippedCount:88,
+      processConfig:[
         {type:'process',active:true},{type:'process',active:true},
         {type:'process',active:true},{type:'deburr',active:true},
-        {type:'process',active:true},{type:'process',active:false}
+        {type:'process',active:true},{type:'done',active:true}
       ]
     },
     {
-      id: 'i4', code: 'D-003', name: 'スペーサー', unit: '個',
-      processCounts: [200, 0, 0, 0, 0, 0],
-      defectiveCount: 0, shippedCount: 500,
-      processConfig: [
+      id:'i4', code:'D-003', name:'スペーサー', unit:'個',
+      processCounts:[200,0,0,0,0,0], doneCount:0,
+      defectiveCount:0, shippedCount:500,
+      processConfig:[
         {type:'process',active:true},{type:'deburr',active:true},
-        {type:'process',active:false},{type:'process',active:false},
+        {type:'done',active:true},{type:'process',active:false},
         {type:'process',active:false},{type:'process',active:false}
       ]
     }
   ],
-  transactions: [],
-  editingItemId: null
+  transactions:[]
 };
 
-// ===== STATE =====
-let currentMode = 'field';
-let pendingOp = null;
-let fieldFilter = '';
-let adminFilter = '';
-let adminSortKey = null;
-let adminSortDir = 1;
-let editingItem = null;
-const formProcessConfig = Array.from({length:6}, () => ({type:'process', active:false}));
+let currentMode='field', pendingOp=null, fieldFilter='', adminFilter='';
+let adminSortKey=null, adminSortDir=1, editingItem=null;
+const formPC = Array.from({length:6},()=>({type:'process',active:false}));
 
-// ===== UTILS =====
-function generateId() { return '_' + Math.random().toString(36).slice(2,9); }
-function now() { return new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
-function getUser() { return '田中 一郎'; }
-
-function getActiveProcesses(item) {
-  return item.processConfig.map((c,i)=>({...c,idx:i})).filter(c=>c.active);
-}
-function getTotalStock(item) {
-  return item.processCounts.reduce((s,n)=>s+n,0);
+function gid(id){ return document.getElementById(id); }
+function genId(){ return '_'+Math.random().toString(36).slice(2,9); }
+function nowStr(){ return new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function getActives(item){ return item.processConfig.map((c,i)=>({...c,idx:i})).filter(c=>c.active); }
+function getTotalStock(item){ return item.processCounts.reduce((s,n)=>s+n,0); }
+function addTx(itemId,type,qty,from,to,note=''){
+  db.transactions.unshift({id:genId(),itemId,type,quantity:qty,fromProcess:from,toProcess:to,userId:'田中 一郎',timestamp:nowStr(),note});
+  if(db.transactions.length>500) db.transactions=db.transactions.slice(0,500);
 }
 
-function addTransaction(itemId, type, qty, fromProcess, toProcess, note='') {
-  db.transactions.unshift({
-    id: generateId(), itemId, type, quantity: qty,
-    fromProcess, toProcess, userId: getUser(),
-    timestamp: now(), note
-  });
-  if (db.transactions.length > 500) db.transactions = db.transactions.slice(0,500);
+// MODE
+function switchMode(mode){
+  currentMode=mode;
+  gid('field-mode').style.display=mode==='field'?'':'none';
+  gid('admin-mode').style.display=mode==='admin'?'':'none';
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&mode==='field')||(i===1&&mode==='admin')));
+  mode==='field'?renderField():renderAdmin();
 }
 
-// ===== MODE SWITCH =====
-function switchMode(mode) {
-  currentMode = mode;
-  document.getElementById('field-mode').style.display = mode==='field' ? '' : 'none';
-  document.getElementById('admin-mode').style.display = mode==='admin' ? '' : 'none';
-  document.querySelectorAll('.mode-tab').forEach((t,i)=>{
-    t.classList.toggle('active', (i===0&&mode==='field')||(i===1&&mode==='admin'));
-  });
-  if (mode==='field') renderField();
-  else renderAdmin();
+// FIELD
+function renderField(){
+  const list=db.items.filter(it=>!fieldFilter||it.name.includes(fieldFilter)||it.code.toLowerCase().includes(fieldFilter.toLowerCase()));
+  gid('item-count-label').textContent=`品目一覧（${list.length}件）`;
+  gid('field-items').innerHTML=list.map(renderItemCard).join('');
 }
+function filterItems(v){ fieldFilter=v; renderField(); }
 
-// ===== FIELD RENDER =====
-function renderField() {
-  const container = document.getElementById('field-items');
-  const items = db.items.filter(it =>
-    !fieldFilter ||
-    it.name.includes(fieldFilter) ||
-    it.code.toLowerCase().includes(fieldFilter.toLowerCase())
-  );
-  document.getElementById('item-count-label').textContent = `品目一覧（${items.length}件）`;
-  container.innerHTML = items.map(item => renderItemCard(item)).join('');
-}
-
-function filterItems(val) {
-  fieldFilter = val;
-  renderField();
-}
-
-function renderItemCard(item) {
-  const actives = getActiveProcesses(item);
-  const total = getTotalStock(item);
+function renderItemCard(item){
+  const actives=getActives(item);
+  const total=getTotalStock(item);
   return `
-  <div class="item-card expanded" id="card-${item.id}">
-    <div class="item-card-header" onclick="toggleCard('${item.id}')">
-      <span class="item-code">${escHtml(item.code)}</span>
-      <span class="item-name">${escHtml(item.name)}<span class="item-unit">（${escHtml(item.unit)}）</span></span>
-      <div class="item-summary">
-        <div class="summary-badge">
-          <span class="summary-label">在庫合計</span>
-          <span class="summary-value total">${total}</span>
-        </div>
-        <div class="summary-badge">
-          <span class="summary-label">不良</span>
-          <span class="summary-value danger">${item.defectiveCount}</span>
-        </div>
-        <div class="summary-badge">
-          <span class="summary-label">出荷済</span>
-          <span class="summary-value shipped">${item.shippedCount}</span>
-        </div>
-      </div>
-      <span class="expand-icon">▼</span>
+<div class="item-card expanded" id="card-${item.id}">
+  <div class="item-card-header" onclick="toggleCard('${item.id}')">
+    <span class="item-code">${escH(item.code)}</span>
+    <span class="item-name">${escH(item.name)}<span class="item-unit">（${escH(item.unit)}）</span></span>
+    <div class="item-summary">
+      <div class="summary-badge"><span class="summary-label">在庫合計</span><span class="summary-value total">${total}</span></div>
+      <div class="summary-badge"><span class="summary-label">不良</span><span class="summary-value danger">${item.defectiveCount}</span></div>
+      <div class="summary-badge"><span class="summary-label">出荷済</span><span class="summary-value shipped">${item.shippedCount}</span></div>
     </div>
-    <div class="item-card-body">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="font-size:11px;color:var(--text3)">入庫数：</span>
-        <div class="qty-selector">
-          <button class="qty-btn" onclick="setReceiveQty('${item.id}',1)">+1</button>
-          <button class="qty-btn" onclick="setReceiveQty('${item.id}',10)">+10</button>
-          <button class="qty-btn" onclick="setReceiveQty('${item.id}',50)">+50</button>
-          <input class="qty-display" id="rq-${item.id}" type="number" min="1" value="1" style="max-width:70px">
-        </div>
-        <button class="btn btn-primary" onclick="receiveItem('${item.id}')" style="padding:7px 14px;font-size:13px;border-radius:6px">入庫</button>
+    <span class="expand-icon">▼</span>
+  </div>
+  <div class="item-card-body">
+    <div class="receive-row">
+      <span class="receive-label">入庫数：</span>
+      <div class="receive-btns">
+        <button class="qty-btn" onclick="addRQ('${item.id}',1)">+1</button>
+        <button class="qty-btn" onclick="addRQ('${item.id}',10)">+10</button>
+        <button class="qty-btn" onclick="addRQ('${item.id}',50)">+50</button>
+        <input class="qty-display" id="rq-${item.id}" type="number" min="1" value="1" inputmode="numeric">
       </div>
-      <div class="process-grid">
-        ${actives.map((p,pi) => renderProcessBlock(item, p, pi, actives)).join('')}
-      </div>
-      <div class="item-footer">
-        <div class="footer-stat">
-          <span class="footer-stat-label">🔴 不良</span>
-          <span class="footer-stat-value red">${item.defectiveCount} ${escHtml(item.unit)}</span>
-        </div>
-        <div class="footer-stat">
-          <span class="footer-stat-label">🚚 出荷済</span>
-          <span class="footer-stat-value teal">${item.shippedCount} ${escHtml(item.unit)}</span>
-        </div>
-      </div>
+      <button class="btn-receive" onclick="receiveItem('${item.id}')">入庫</button>
     </div>
-  </div>`;
+    <div class="process-grid">${actives.map((p,pi)=>renderPBlock(item,p,pi,actives)).join('')}</div>
+    <div class="item-footer">
+      <div class="footer-stat"><span class="footer-stat-label">✅ 完成</span><span class="footer-stat-value done-c">${item.doneCount} ${escH(item.unit)}</span></div>
+      <div class="footer-stat"><span class="footer-stat-label">🔴 不良</span><span class="footer-stat-value red">${item.defectiveCount} ${escH(item.unit)}</span></div>
+      <div class="footer-stat"><span class="footer-stat-label">🚚 出荷済</span><span class="footer-stat-value teal">${item.shippedCount} ${escH(item.unit)}</span></div>
+    </div>
+  </div>
+</div>`;
 }
 
-function renderProcessBlock(item, p, pi, allActives) {
-  const count = item.processCounts[p.idx];
-  const isDeburr = p.type === 'deburr';
-  const isFirst = pi === 0;
-  const isLast = pi === allActives.length - 1;
-  const hasNext = !isLast;
-  const hasPrev = !isFirst;
-  return `
-  <div class="process-block ${isDeburr?'deburr-block':''}">
-    ${isDeburr ? '<span class="deburr-label">バリ取り</span>' : ''}
-    <div class="process-name">${PROCESS_NAMES[p.idx]}</div>
-    <div class="process-count ${count===0?'zero':''}">${count}</div>
-    <div class="process-actions">
+function renderPBlock(item,p,pi,allActives){
+  const count=item.processCounts[p.idx];
+  const isDeburr=p.type==='deburr', isDone=p.type==='done';
+  const hasPrev=pi>0, hasNext=pi<allActives.length-1;
+  let blockCls='process-block', labelHtml='';
+  if(isDeburr){ blockCls+=' deburr-block'; labelHtml='<span class="deburr-label">バリ取り工程</span>'; }
+  else if(isDone){ blockCls+=' done-block'; labelHtml='<span class="done-label">完成置き場</span>'; }
+
+  let actions='';
+  if(isDone){
+    actions=`<div class="process-actions">
       <div class="process-actions-row">
-        <button class="btn btn-move" ${hasPrev && count>0 ? '' : 'disabled'}
-          onclick="openOp('${item.id}',${p.idx},'move-back')">← 戻す</button>
-        <button class="btn btn-move btn-next" ${hasNext && count>0 ? '' : 'disabled'}
-          onclick="openOp('${item.id}',${p.idx},'move-next')">次へ →</button>
+        <button class="btn btn-move" ${hasPrev&&count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'move-back')">← 戻す</button>
       </div>
       <div class="process-actions-row">
-        <button class="btn btn-defect" ${count>0 ? '' : 'disabled'}
-          onclick="openOp('${item.id}',${p.idx},'defect')">不良</button>
-        <button class="btn btn-ship" ${count>0 ? '' : 'disabled'}
-          onclick="openOp('${item.id}',${p.idx},'ship')">出荷</button>
+        <button class="btn btn-ship btn-ship-full" ${count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'ship')">🚚 出荷</button>
       </div>
-    </div>
-  </div>`;
-}
-
-function toggleCard(itemId) {
-  const card = document.getElementById('card-'+itemId);
-  card.classList.toggle('expanded');
-}
-
-// ===== RECEIVE =====
-function setReceiveQty(itemId, delta) {
-  const input = document.getElementById('rq-'+itemId);
-  input.value = Math.max(1, parseInt(input.value||0) + delta);
-}
-
-function receiveItem(itemId) {
-  const item = db.items.find(i=>i.id===itemId);
-  if (!item) return;
-  const actives = getActiveProcesses(item);
-  if (!actives.length) { toast('工程が設定されていません','error'); return; }
-  const qty = parseInt(document.getElementById('rq-'+itemId).value);
-  if (!qty || qty < 1) { toast('数量を入力してください','error'); return; }
-  const firstIdx = actives[0].idx;
-  item.processCounts[firstIdx] += qty;
-  addTransaction(itemId, '入庫', qty, null, firstIdx);
-  toast(`${item.name} を ${qty}${item.unit} 入庫しました`, 'success');
-  renderField();
-}
-
-// ===== OPERATION MODAL =====
-function openOp(itemId, processIdx, opType) {
-  const item = db.items.find(i=>i.id===itemId);
-  if (!item) return;
-  const actives = getActiveProcesses(item);
-  const pi = actives.findIndex(p=>p.idx===processIdx);
-  pendingOp = { itemId, processIdx, opType, actives, pi };
-
-  const count = item.processCounts[processIdx];
-  const opTitle = document.getElementById('op-title');
-  const opIcon = document.getElementById('op-icon');
-  const opInfo = document.getElementById('op-info');
-  const opQty = document.getElementById('op-qty');
-  const toGroup = document.getElementById('op-to-process-group');
-  const confirmBtn = document.getElementById('op-confirm-btn');
-  opQty.value = 1; opQty.max = count;
-
-  if (opType==='move-next') {
-    const nextActives = actives.slice(pi+1);
-    opTitle.textContent = '次工程へ移動';
-    opIcon.textContent = '→'; opIcon.className = 'modal-icon move';
-    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）`;
-    toGroup.style.display = '';
-    const toSelect = document.getElementById('op-to-process');
-    toSelect.innerHTML = nextActives.map(p=>`<option value="${p.idx}">${PROCESS_NAMES[p.idx]}${p.type==='deburr'?' ★バリ取り':''}</option>`).join('');
-    confirmBtn.className = 'btn-confirm';
-    confirmBtn.textContent = '移動';
-  } else if (opType==='move-back') {
-    const prevActives = actives.slice(0,pi).reverse();
-    opTitle.textContent = '前工程へ戻す';
-    opIcon.textContent = '←'; opIcon.className = 'modal-icon move';
-    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）`;
-    toGroup.style.display = '';
-    const toSelect = document.getElementById('op-to-process');
-    toSelect.innerHTML = prevActives.map(p=>`<option value="${p.idx}">${PROCESS_NAMES[p.idx]}</option>`).join('');
-    confirmBtn.className = 'btn-confirm';
-    confirmBtn.textContent = '戻す';
-  } else if (opType==='defect') {
-    opTitle.textContent = '不良処理';
-    opIcon.textContent = '⚠'; opIcon.className = 'modal-icon defect';
-    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）<br>不良に移動します。戻し不可です。`;
-    toGroup.style.display = 'none';
-    confirmBtn.className = 'btn-confirm danger';
-    confirmBtn.textContent = '不良確定';
-  } else if (opType==='ship') {
-    opTitle.textContent = '出荷処理';
-    opIcon.textContent = '🚚'; opIcon.className = 'modal-icon ship';
-    opInfo.innerHTML = `<strong>${item.name}</strong>（${PROCESS_NAMES[processIdx]}：在庫 <strong>${count}</strong>${item.unit}）<br>在庫から減算し出荷済に加算します。`;
-    toGroup.style.display = 'none';
-    confirmBtn.className = 'btn-confirm teal';
-    confirmBtn.textContent = '出荷確定';
+    </div>`;
+  } else {
+    actions=`<div class="process-actions">
+      <div class="process-actions-row">
+        <button class="btn btn-move" ${hasPrev&&count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'move-back')">← 戻す</button>
+        <button class="btn btn-move btn-next" ${hasNext&&count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'move-next')">次へ →</button>
+      </div>
+      <div class="process-actions-row">
+        <button class="btn btn-defect" ${count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'defect')">不良</button>
+        <button class="btn btn-ship" ${count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'ship')">出荷</button>
+      </div>
+    </div>`;
   }
-  document.getElementById('op-modal').classList.add('open');
+  return `<div class="${blockCls}">${labelHtml}<div class="process-name">${PNAMES[p.idx]}</div><div class="process-count${count===0?' zero':''}">${count}</div>${actions}</div>`;
 }
 
-function addQty(n) {
-  const input = document.getElementById('op-qty');
-  const max = parseInt(input.max||9999);
-  input.value = Math.min(max, parseInt(input.value||0)+n);
+function toggleCard(id){ gid('card-'+id).classList.toggle('expanded'); }
+
+// RECEIVE
+function addRQ(id,d){ const inp=gid('rq-'+id); inp.value=Math.max(1,parseInt(inp.value||0)+d); }
+function receiveItem(itemId){
+  const item=db.items.find(i=>i.id===itemId);
+  if(!item) return;
+  const actives=getActives(item);
+  if(!actives.length){ toast('工程が設定されていません','error'); return; }
+  const qty=parseInt(gid('rq-'+itemId).value);
+  if(!qty||qty<1){ toast('数量を入力してください','error'); return; }
+  const firstIdx=actives[0].idx;
+  item.processCounts[firstIdx]+=qty;
+  addTx(itemId,'入庫',qty,null,firstIdx);
+  toast(`${item.name} を ${qty}${item.unit} 入庫`,'success');
+  renderField();
 }
 
-function confirmOp() {
-  if (!pendingOp) return;
-  const { itemId, processIdx, opType, actives, pi } = pendingOp;
-  const item = db.items.find(i=>i.id===itemId);
-  if (!item) return;
-  const qty = parseInt(document.getElementById('op-qty').value);
-  if (!qty || qty < 1) { toast('数量を入力してください','error'); return; }
-  const current = item.processCounts[processIdx];
-  if (qty > current) { toast('在庫数を超えています','error'); return; }
+// OP MODAL
+function openOp(itemId,processIdx,opType){
+  const item=db.items.find(i=>i.id===itemId);
+  if(!item) return;
+  const actives=getActives(item);
+  const pi=actives.findIndex(p=>p.idx===processIdx);
+  pendingOp={itemId,processIdx,opType,actives,pi};
+  const count=item.processCounts[processIdx];
+  const opQty=gid('op-qty'); opQty.value=1; opQty.max=count;
 
-  if (opType==='move-next' || opType==='move-back') {
-    const toIdx = parseInt(document.getElementById('op-to-process').value);
-    item.processCounts[processIdx] -= qty;
-    item.processCounts[toIdx] += qty;
-    addTransaction(itemId, '移動', qty, processIdx, toIdx);
-    toast(`${qty}${item.unit} を ${PROCESS_NAMES[toIdx]}へ移動しました`, 'success');
-  } else if (opType==='defect') {
-    item.processCounts[processIdx] -= qty;
-    item.defectiveCount += qty;
-    addTransaction(itemId, '不良', qty, processIdx, null);
-    toast(`${qty}${item.unit} を不良処理しました`, 'success');
-  } else if (opType==='ship') {
-    item.processCounts[processIdx] -= qty;
-    item.shippedCount += qty;
-    addTransaction(itemId, '出荷', qty, processIdx, null);
-    toast(`${qty}${item.unit} を出荷しました`, 'success');
+  const cfg=item.processConfig[processIdx];
+  const pname=PNAMES[processIdx]+(cfg?.type==='deburr'?' (バリ取り)':cfg?.type==='done'?' (完成置き場)':'');
+
+  if(opType==='move-next'){
+    const nexts=actives.slice(pi+1);
+    gid('op-title').textContent='次工程へ移動';
+    gid('op-icon').textContent='→'; gid('op-icon').className='modal-icon move';
+    gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）`;
+    gid('op-to-process-group').style.display='';
+    gid('op-to-process').innerHTML=nexts.map(p=>{
+      const tag=p.type==='deburr'?' ★バリ取り':p.type==='done'?' ✅完成置き場':'';
+      return `<option value="${p.idx}">${PNAMES[p.idx]}${tag}</option>`;
+    }).join('');
+    gid('op-confirm-btn').className='btn-confirm'; gid('op-confirm-btn').textContent='移動する';
+  } else if(opType==='move-back'){
+    const prevs=actives.slice(0,pi).reverse();
+    gid('op-title').textContent='前工程へ戻す';
+    gid('op-icon').textContent='←'; gid('op-icon').className='modal-icon move';
+    gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）`;
+    gid('op-to-process-group').style.display='';
+    gid('op-to-process').innerHTML=prevs.map(p=>{
+      const tag=p.type==='deburr'?' ★バリ取り':p.type==='done'?' ✅完成置き場':'';
+      return `<option value="${p.idx}">${PNAMES[p.idx]}${tag}</option>`;
+    }).join('');
+    gid('op-confirm-btn').className='btn-confirm'; gid('op-confirm-btn').textContent='戻す';
+  } else if(opType==='defect'){
+    gid('op-title').textContent='不良処理';
+    gid('op-icon').textContent='⚠'; gid('op-icon').className='modal-icon defect';
+    gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）<br>不良置き場へ移動します。戻し不可です。`;
+    gid('op-to-process-group').style.display='none';
+    gid('op-confirm-btn').className='btn-confirm danger'; gid('op-confirm-btn').textContent='不良確定';
+  } else if(opType==='ship'){
+    gid('op-title').textContent='出荷処理';
+    gid('op-icon').textContent='🚚'; gid('op-icon').className='modal-icon ship';
+    gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）<br>在庫から減算し出荷済に加算します。`;
+    gid('op-to-process-group').style.display='none';
+    gid('op-confirm-btn').className='btn-confirm teal'; gid('op-confirm-btn').textContent='出荷確定';
+  }
+  gid('op-modal').classList.add('open');
+}
+
+function addQty(n){
+  const inp=gid('op-qty');
+  inp.value=Math.min(parseInt(inp.max||9999),parseInt(inp.value||0)+n);
+}
+
+function confirmOp(){
+  if(!pendingOp) return;
+  const {itemId,processIdx,opType,actives,pi}=pendingOp;
+  const item=db.items.find(i=>i.id===itemId);
+  if(!item) return;
+  const qty=parseInt(gid('op-qty').value);
+  if(!qty||qty<1){ toast('数量を入力してください','error'); return; }
+  if(qty>item.processCounts[processIdx]){ toast('在庫数を超えています','error'); return; }
+
+  const srcCfg=item.processConfig[processIdx];
+
+  if(opType==='move-next'||opType==='move-back'){
+    const toIdx=parseInt(gid('op-to-process').value);
+    const dstCfg=item.processConfig[toIdx];
+    item.processCounts[processIdx]-=qty;
+    item.processCounts[toIdx]+=qty;
+    if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-qty);
+    if(dstCfg?.type==='done') item.doneCount+=qty;
+    addTx(itemId,'移動',qty,processIdx,toIdx);
+    toast(`${qty}${item.unit} → ${PNAMES[toIdx]}へ移動`,'success');
+  } else if(opType==='defect'){
+    item.processCounts[processIdx]-=qty;
+    if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-qty);
+    item.defectiveCount+=qty;
+    addTx(itemId,'不良',qty,processIdx,null);
+    toast(`${qty}${item.unit} を不良処理しました`,'success');
+  } else if(opType==='ship'){
+    item.processCounts[processIdx]-=qty;
+    if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-qty);
+    item.shippedCount+=qty;
+    addTx(itemId,'出荷',qty,processIdx,null);
+    toast(`${qty}${item.unit} を出荷しました`,'success');
   }
   closeModal('op-modal');
-  pendingOp = null;
+  pendingOp=null;
   renderField();
-  if (currentMode==='admin') renderAdmin();
+  if(currentMode==='admin') renderAdmin();
 }
 
-// ===== ADMIN RENDER =====
-function renderAdmin() {
-  renderAdminStats();
-  renderAdminTable();
-}
-
-function renderAdminStats() {
-  const totalStock = db.items.reduce((s,i)=>s+getTotalStock(i),0);
-  const totalShipped = db.items.reduce((s,i)=>s+i.shippedCount,0);
-  const totalDefective = db.items.reduce((s,i)=>s+i.defectiveCount,0);
-  const totalItems = db.items.length;
-  document.getElementById('admin-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-card-label">品目数</div><div class="stat-card-value blue">${totalItems}</div></div>
-    <div class="stat-card"><div class="stat-card-label">在庫合計</div><div class="stat-card-value blue">${totalStock}</div></div>
-    <div class="stat-card"><div class="stat-card-label">出荷済</div><div class="stat-card-value teal">${totalShipped}</div></div>
-    <div class="stat-card"><div class="stat-card-label">不良</div><div class="stat-card-value red">${totalDefective}</div></div>
-    <div class="stat-card"><div class="stat-card-label">直行率</div><div class="stat-card-value amber">${totalShipped>0?((totalShipped/(totalShipped+totalDefective))*100).toFixed(1):100}%</div></div>
+// ADMIN
+function renderAdmin(){ renderAdminStats(); renderAdminTable(); }
+function renderAdminStats(){
+  const tS=db.items.reduce((s,i)=>s+getTotalStock(i),0);
+  const tD=db.items.reduce((s,i)=>s+i.doneCount,0);
+  const tSh=db.items.reduce((s,i)=>s+i.shippedCount,0);
+  const tDf=db.items.reduce((s,i)=>s+i.defectiveCount,0);
+  gid('admin-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-card-label">品目数</div><div class="stat-card-value blue">${db.items.length}</div></div>
+    <div class="stat-card"><div class="stat-card-label">仕掛在庫</div><div class="stat-card-value blue">${tS}</div></div>
+    <div class="stat-card"><div class="stat-card-label">完成</div><div class="stat-card-value done-c">${tD}</div></div>
+    <div class="stat-card"><div class="stat-card-label">出荷済</div><div class="stat-card-value teal">${tSh}</div></div>
+    <div class="stat-card"><div class="stat-card-label">不良</div><div class="stat-card-value red">${tDf}</div></div>
+    <div class="stat-card"><div class="stat-card-label">直行率</div><div class="stat-card-value amber">${tSh>0?((tSh/(tSh+tDf))*100).toFixed(1):100}%</div></div>
   `;
 }
-
-function renderAdminTable() {
-  let items = db.items.filter(it =>
-    !adminFilter ||
-    it.name.includes(adminFilter) ||
-    it.code.toLowerCase().includes(adminFilter.toLowerCase())
-  );
-  if (adminSortKey) {
-    items = [...items].sort((a,b) => {
-      let va = adminSortKey==='code'?a.code : adminSortKey==='name'?a.name :
-               adminSortKey==='defective'?a.defectiveCount : a.shippedCount;
-      let vb = adminSortKey==='code'?b.code : adminSortKey==='name'?b.name :
-               adminSortKey==='defective'?b.defectiveCount : b.shippedCount;
-      return typeof va==='string' ? va.localeCompare(vb)*adminSortDir : (va-vb)*adminSortDir;
+function renderAdminTable(){
+  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase()));
+  if(adminSortKey){
+    items=[...items].sort((a,b)=>{
+      const va=adminSortKey==='code'?a.code:adminSortKey==='name'?a.name:adminSortKey==='defective'?a.defectiveCount:adminSortKey==='done'?a.doneCount:a.shippedCount;
+      const vb=adminSortKey==='code'?b.code:adminSortKey==='name'?b.name:adminSortKey==='defective'?b.defectiveCount:adminSortKey==='done'?b.doneCount:b.shippedCount;
+      return typeof va==='string'?va.localeCompare(vb)*adminSortDir:(va-vb)*adminSortDir;
     });
   }
-  document.getElementById('admin-tbody').innerHTML = items.map(item => {
-    const total = getTotalStock(item);
-    const cols = item.processConfig.map((c,i) => {
-      const cnt = item.processCounts[i];
-      const isDeburr = c.type==='deburr' && c.active;
-      if (!c.active) return `<td><span class="process-cell num-zero">—</span></td>`;
-      return `<td class="num"><span class="process-cell ${isDeburr?'deburr':''}">${cnt}</span></td>`;
+  gid('admin-tbody').innerHTML=items.map(item=>{
+    const total=getTotalStock(item);
+    const cols=item.processConfig.map((c,i)=>{
+      if(!c.active) return `<td><span class="process-cell num-zero">—</span></td>`;
+      const cls=c.type==='deburr'?' deburr':c.type==='done'?' done-cell':'';
+      return `<td class="num"><span class="process-cell${cls}">${item.processCounts[i]}</span></td>`;
     }).join('');
     return `<tr>
-      <td class="mono">${escHtml(item.code)}</td>
-      <td>${escHtml(item.name)}</td>
+      <td class="mono">${escH(item.code)}</td><td>${escH(item.name)}</td>
       ${cols}
+      <td class="num num-done">${item.doneCount}</td>
       <td class="num ${item.defectiveCount>0?'num-red':''}">${item.defectiveCount}</td>
       <td class="num num-teal">${item.shippedCount}</td>
       <td class="num num-blue">${total}</td>
@@ -1308,207 +1329,139 @@ function renderAdminTable() {
     </tr>`;
   }).join('');
 }
+function filterAdmin(v){ adminFilter=v; renderAdminTable(); }
+function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminTable(); }
 
-function filterAdmin(val) {
-  adminFilter = val;
-  renderAdminTable();
-}
-function sortAdmin(key) {
-  if (adminSortKey===key) adminSortDir *= -1;
-  else { adminSortKey=key; adminSortDir=1; }
-  renderAdminTable();
-}
-
-function showHistory() {
-  const panel = document.getElementById('history-panel-admin');
-  panel.style.display = panel.style.display==='none' ? '' : 'none';
-  if (panel.style.display !== 'none') renderHistoryList();
-}
-
-function renderHistoryList() {
-  const list = document.getElementById('history-list-admin');
-  const typeMap = {入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
-  list.innerHTML = db.transactions.slice(0,50).map(tx => {
-    const item = db.items.find(i=>i.id===tx.itemId);
-    const itemName = item ? item.name : '不明';
-    let desc = `${itemName}：`;
-    if (tx.type==='移動') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'} → ${PROCESS_NAMES[tx.toProcess]||'?'}`;
-    else if (tx.type==='入庫') desc += `${PROCESS_NAMES[tx.toProcess]||'工程1'}へ入庫`;
-    else if (tx.type==='出荷') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'}から出荷`;
-    else if (tx.type==='不良') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'}から不良処理`;
-    else if (tx.type==='修正') desc += `${PROCESS_NAMES[tx.fromProcess]||'?'} 在庫調整${tx.note?'（'+tx.note+'）':''}`;
-    return `<div class="history-item">
-      <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
-      <span class="history-desc">${escHtml(desc)}</span>
-      <span class="history-qty">${tx.quantity}</span>
-      <span class="history-time">${tx.timestamp} ${tx.userId}</span>
-    </div>`;
-  }).join('') || '<div style="padding:16px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
+function showHistory(){
+  const panel=gid('history-panel-admin');
+  panel.style.display=panel.style.display==='none'?'':'none';
+  if(panel.style.display!=='none'){
+    const typeMap={入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
+    gid('history-list-admin').innerHTML=db.transactions.slice(0,50).map(tx=>{
+      const item=db.items.find(i=>i.id===tx.itemId);
+      let desc=(item?item.name:'不明')+'：';
+      if(tx.type==='移動') desc+=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
+      else if(tx.type==='入庫') desc+=`${PNAMES[tx.toProcess]||'工程1'}へ入庫`;
+      else if(tx.type==='出荷') desc+=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
+      else if(tx.type==='不良') desc+=`${PNAMES[tx.fromProcess]||'?'}から不良`;
+      else if(tx.type==='修正') desc+=`${PNAMES[tx.fromProcess]||'?'} 調整${tx.note?'('+tx.note+')':''}`;
+      return `<div class="history-item">
+        <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
+        <span class="history-desc">${escH(desc)}</span>
+        <span class="history-qty">${tx.quantity}</span>
+        <span class="history-time">${tx.timestamp}</span>
+      </div>`;
+    }).join('')||'<div style="padding:14px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
+  }
 }
 
-// ===== ITEM FORM =====
-function initFormProcessConfig() {
-  const grid = document.getElementById('process-config-grid');
-  grid.innerHTML = Array.from({length:6},(_,i) => `
+// ITEM FORM
+function initFormPC(){
+  gid('process-config-grid').innerHTML=Array.from({length:6},(_,i)=>`
     <div class="process-config-item">
-      <div class="process-config-label">${PROCESS_NAMES[i]}</div>
+      <div class="process-config-label">${PNAMES[i]}</div>
       <div class="process-toggle">
-        <button class="type-btn" id="pc-off-${i}" onclick="setPCType(${i},'off')">なし</button>
-        <button class="type-btn" id="pc-process-${i}" onclick="setPCType(${i},'process')">通常</button>
-        <button class="type-btn" id="pc-deburr-${i}" onclick="setPCType(${i},'deburr')">バリ取</button>
+        <button class="type-btn" id="pc-off-${i}" onclick="setPC(${i},'off')">なし</button>
+        <button class="type-btn" id="pc-process-${i}" onclick="setPC(${i},'process')">通常</button>
+        <button class="type-btn" id="pc-deburr-${i}" onclick="setPC(${i},'deburr')">バリ取</button>
+        <button class="type-btn" id="pc-done-${i}" onclick="setPC(${i},'done')">完成</button>
       </div>
-    </div>
-  `).join('');
-  formProcessConfig.forEach((c,i) => {
-    c.active = false; c.type = 'process';
-    updatePCUI(i);
+    </div>`).join('');
+  formPC.forEach((c,i)=>{ c.active=false; c.type='process'; updatePCUI(i); });
+}
+function setPC(i,type){ formPC[i].type=type==='off'?'process':type; formPC[i].active=type!=='off'; updatePCUI(i); }
+function updatePCUI(i){
+  const c=formPC[i];
+  ['off','process','deburr','done'].forEach(t=>{
+    const btn=gid(`pc-${t}-${i}`); if(!btn) return;
+    btn.className='type-btn';
+    if(!c.active&&t==='off') btn.classList.add('active-off');
+    else if(c.active&&c.type===t) btn.classList.add(`active-${t}`);
   });
 }
-
-function setPCType(i, type) {
-  formProcessConfig[i].type = type === 'off' ? 'process' : type;
-  formProcessConfig[i].active = type !== 'off';
-  updatePCUI(i);
+function openItemForm(){
+  editingItem=null;
+  gid('form-modal-title').textContent='品目登録';
+  gid('item-form-confirm').textContent='登録';
+  gid('form-code').value=''; gid('form-name').value=''; gid('form-unit').value='個';
+  initFormPC();
+  gid('item-form-modal').classList.add('open');
 }
-function updatePCUI(i) {
-  const c = formProcessConfig[i];
-  ['off','process','deburr'].forEach(t => {
-    const btn = document.getElementById(`pc-${t}-${i}`);
-    if (!btn) return;
-    btn.className = 'type-btn';
-    if (!c.active && t==='off') btn.classList.add('active-off');
-    else if (c.active && c.type===t) btn.classList.add(`active-${t}`);
-  });
+function openItemFormEdit(itemId){
+  const item=db.items.find(i=>i.id===itemId); if(!item) return;
+  editingItem=item;
+  gid('form-modal-title').textContent='品目編集';
+  gid('item-form-confirm').textContent='保存';
+  gid('form-code').value=item.code; gid('form-name').value=item.name; gid('form-unit').value=item.unit;
+  initFormPC();
+  item.processConfig.forEach((c,i)=>{ formPC[i].active=c.active; formPC[i].type=c.type; updatePCUI(i); });
+  gid('item-form-modal').classList.add('open');
 }
-
-function openItemForm() {
-  editingItem = null;
-  document.getElementById('form-modal-title').textContent = '品目登録';
-  document.getElementById('item-form-confirm').textContent = '登録';
-  document.getElementById('form-code').value = '';
-  document.getElementById('form-name').value = '';
-  document.getElementById('form-unit').value = '個';
-  initFormProcessConfig();
-  document.getElementById('item-form-modal').classList.add('open');
-}
-
-function openItemFormEdit(itemId) {
-  const item = db.items.find(i=>i.id===itemId);
-  if (!item) return;
-  editingItem = item;
-  document.getElementById('form-modal-title').textContent = '品目編集';
-  document.getElementById('item-form-confirm').textContent = '保存';
-  document.getElementById('form-code').value = item.code;
-  document.getElementById('form-name').value = item.name;
-  document.getElementById('form-unit').value = item.unit;
-  initFormProcessConfig();
-  item.processConfig.forEach((c,i) => {
-    formProcessConfig[i].active = c.active;
-    formProcessConfig[i].type = c.type;
-    updatePCUI(i);
-  });
-  document.getElementById('item-form-modal').classList.add('open');
-}
-
-function saveItem() {
-  const code = document.getElementById('form-code').value.trim();
-  const name = document.getElementById('form-name').value.trim();
-  const unit = document.getElementById('form-unit').value.trim();
-  if (!code || !name) { toast('品番と品名は必須です','error'); return; }
-  if (!formProcessConfig.some(c=>c.active)) { toast('1つ以上の工程を設定してください','error'); return; }
-  const config = formProcessConfig.map(c=>({type:c.type, active:c.active}));
-  if (editingItem) {
-    editingItem.code = code; editingItem.name = name; editingItem.unit = unit;
-    editingItem.processConfig = config;
+function saveItem(){
+  const code=gid('form-code').value.trim(), name=gid('form-name').value.trim(), unit=gid('form-unit').value.trim();
+  if(!code||!name){ toast('品番と品名は必須です','error'); return; }
+  if(!formPC.some(c=>c.active)){ toast('1つ以上の工程を設定してください','error'); return; }
+  const config=formPC.map(c=>({type:c.type,active:c.active}));
+  if(editingItem){
+    editingItem.code=code; editingItem.name=name; editingItem.unit=unit; editingItem.processConfig=config;
     toast(`${name} を更新しました`,'success');
   } else {
-    db.items.push({
-      id: generateId(), code, name, unit,
-      processCounts: [0,0,0,0,0,0],
-      defectiveCount: 0, shippedCount: 0,
-      processConfig: config
-    });
+    db.items.push({id:genId(),code,name,unit,processCounts:[0,0,0,0,0,0],doneCount:0,defectiveCount:0,shippedCount:0,processConfig:config});
     toast(`${name} を登録しました`,'success');
   }
   closeModal('item-form-modal');
-  if (currentMode==='admin') renderAdmin();
-  else renderField();
+  if(currentMode==='admin') renderAdmin(); else renderField();
 }
 
-// ===== ADJUST =====
-function openAdjustModal() {
-  const select = document.getElementById('adj-item');
-  select.innerHTML = db.items.map(i=>`<option value="${i.id}">${escHtml(i.code)} ${escHtml(i.name)}</option>`).join('');
+// ADJUST
+function openAdjustModal(){
+  gid('adj-item').innerHTML=db.items.map(i=>`<option value="${i.id}">${escH(i.code)} ${escH(i.name)}</option>`).join('');
   updateAdjProcess();
-  document.getElementById('adj-reason').value = '';
-  document.getElementById('adj-qty').value = 0;
-  document.getElementById('adjust-modal').classList.add('open');
+  gid('adj-reason').value='';
+  gid('adjust-modal').classList.add('open');
 }
-function updateAdjProcess() {
-  const itemId = document.getElementById('adj-item').value;
-  const item = db.items.find(i=>i.id===itemId);
-  if (!item) return;
-  const actives = getActiveProcesses(item);
-  const sel = document.getElementById('adj-process');
-  sel.innerHTML = actives.map(p=>`<option value="${p.idx}">${PROCESS_NAMES[p.idx]}（現在：${item.processCounts[p.idx]}）</option>`).join('');
-  const currentIdx = parseInt(sel.value||0);
-  document.getElementById('adj-qty').value = item.processCounts[actives[0]?.idx||0] || 0;
+function updateAdjProcess(){
+  const item=db.items.find(i=>i.id===gid('adj-item').value); if(!item) return;
+  const actives=getActives(item);
+  gid('adj-process').innerHTML=actives.map(p=>`<option value="${p.idx}">${PNAMES[p.idx]}${p.type==='deburr'?' [バリ取]':p.type==='done'?' [完成]':''}（現在：${item.processCounts[p.idx]}）</option>`).join('');
+  gid('adj-qty').value=item.processCounts[actives[0]?.idx||0]||0;
 }
-function confirmAdjust() {
-  const itemId = document.getElementById('adj-item').value;
-  const item = db.items.find(i=>i.id===itemId);
-  const procIdx = parseInt(document.getElementById('adj-process').value);
-  const qty = parseInt(document.getElementById('adj-qty').value);
-  const reason = document.getElementById('adj-reason').value.trim();
-  if (isNaN(qty) || qty < 0) { toast('0以上の数値を入力してください','error'); return; }
-  const oldQty = item.processCounts[procIdx];
-  item.processCounts[procIdx] = qty;
-  addTransaction(itemId, '修正', Math.abs(qty-oldQty), procIdx, procIdx, reason);
-  toast(`在庫調整：${item.name} ${PROCESS_NAMES[procIdx]} ${oldQty}→${qty}`,'success');
-  closeModal('adjust-modal');
-  renderAdmin();
+function confirmAdjust(){
+  const item=db.items.find(i=>i.id===gid('adj-item').value);
+  const procIdx=parseInt(gid('adj-process').value);
+  const qty=parseInt(gid('adj-qty').value);
+  const reason=gid('adj-reason').value.trim();
+  if(isNaN(qty)||qty<0){ toast('0以上の数値を入力してください','error'); return; }
+  const old=item.processCounts[procIdx];
+  item.processCounts[procIdx]=qty;
+  if(item.processConfig[procIdx]?.type==='done') item.doneCount=qty;
+  addTx(item.id,'修正',Math.abs(qty-old),procIdx,procIdx,reason);
+  toast(`在庫調整：${item.name} ${PNAMES[procIdx]} ${old}→${qty}`,'success');
+  closeModal('adjust-modal'); renderAdmin();
 }
 
-// ===== CSV EXPORT =====
-function exportCSV() {
-  const headers = ['品番','品名','単位','工程1','工程2','工程3','工程4','工程5','工程6','不良','出荷','在庫合計'];
-  const rows = db.items.map(item => [
-    item.code, item.name, item.unit,
-    ...item.processCounts,
-    item.defectiveCount, item.shippedCount, getTotalStock(item)
-  ]);
-  const csv = [headers, ...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href=url; a.download='inventory_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click(); URL.revokeObjectURL(url);
+// CSV
+function exportCSV(){
+  const headers=['品番','品名','単位','工程1','工程2','工程3','工程4','工程5','工程6','完成','不良','出荷','在庫合計'];
+  const rows=db.items.map(item=>[item.code,item.name,item.unit,...item.processCounts,item.doneCount,item.defectiveCount,item.shippedCount,getTotalStock(item)]);
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download='inventory_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
   toast('CSVをエクスポートしました','success');
 }
 
-// ===== MODAL =====
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target===overlay) overlay.classList.remove('open'); });
-});
+// MODAL
+function closeModal(id){ gid(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); }));
 
-// ===== TOAST =====
-function toast(msg, type='success') {
-  const container = document.getElementById('toast-container');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span class="toast-dot"></span>${escHtml(msg)}`;
-  container.appendChild(el);
-  setTimeout(()=>el.remove(), 3000);
+// TOAST
+function toast(msg,type='success'){
+  const el=document.createElement('div'); el.className=`toast ${type}`;
+  el.innerHTML=`<span class="toast-dot"></span>${escH(msg)}`;
+  gid('toast-container').appendChild(el); setTimeout(()=>el.remove(),3000);
 }
 
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ===== INIT =====
 renderField();
 </script>
 </body>
