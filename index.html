@@ -307,6 +307,81 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 @keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(12px)}}
 
+
+/* ─── ACCORDION ─── */
+.acc-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:#fff;box-shadow:var(--sh)}
+.acc-item{border-bottom:1px solid var(--border)}
+.acc-item:last-child{border-bottom:none}
+.acc-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;-webkit-user-select:none;min-height:54px;background:#fff;transition:background .1s;position:relative;overflow:hidden}
+.acc-header:active{background:var(--surface2)}
+.acc-chevron{font-size:11px;color:var(--text-dim);transition:transform .2s;flex-shrink:0;margin-left:auto}
+.acc-item.open .acc-chevron{transform:rotate(180deg)}
+.acc-body{display:none;border-top:1px solid var(--border);background:var(--surface2);padding:12px 16px}
+.acc-item.open .acc-body{display:block}
+/* swipe indicator */
+.acc-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .15s}
+.acc-item.swipe-left .acc-header::before{background:var(--red)}
+.acc-item.swipe-right .acc-header::before{background:var(--accent)}
+.swipe-bg{position:absolute;top:0;bottom:0;right:0;left:0;pointer-events:none;opacity:0;transition:opacity .15s}
+.swipe-bg-left{background:linear-gradient(to right,#fee2e2,transparent)}
+.swipe-bg-right{background:linear-gradient(to left,#dbeafe,transparent)}
+
+/* ─── ACCORDION INVENTORY ITEMS ─── */
+.acc-inv-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.acc-inv-name{font-weight:700;font-size:14px;line-height:1.3;color:var(--text)}
+.acc-inv-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.acc-inv-stocks{display:flex;gap:6px;align-items:center}
+.acc-stock-pill{font-family:var(--fn);font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px}
+.acc-stock-pill.sp-wip{background:var(--wip-dim);color:var(--wip)}
+.acc-stock-pill.sp-bari{background:var(--bari-dim);color:var(--bari)}
+.acc-stock-pill.sp-done{background:var(--done-dim);color:var(--done)}
+.acc-stock-pill.sp-warn{background:var(--red-dim);color:var(--red)}
+.acc-warn-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
+.acc-inv-body{display:grid;gap:10px}
+.acc-op-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.acc-op-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:var(--r);font-family:var(--fj);font-size:13px;font-weight:700;min-height:48px;cursor:pointer;transition:background .1s;gap:6px}
+.acc-op-btn:active{opacity:.8}
+
+/* ─── ACCORDION HISTORY ─── */
+.acc-hist-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.acc-hist-row1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.acc-hist-time{font-size:11px;color:var(--text-muted);font-family:var(--fn);white-space:nowrap}
+.acc-hist-name{font-size:13px;font-weight:600;color:var(--text);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc-hist-qty{font-family:var(--fn);font-size:13px;font-weight:700}
+.acc-hist-body{display:grid;gap:6px;font-size:13px}
+.acc-hist-detail{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.acc-hist-detail:last-child{border-bottom:none}
+.acc-hist-dlabel{font-size:11px;color:var(--text-muted);min-width:50px}
+
+/* ─── ACCORDION USERS ─── */
+.acc-user-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.acc-user-name{font-weight:700;font-size:14px}
+.acc-user-sub{font-size:11px;color:var(--text-muted);display:flex;gap:8px;align-items:center}
+
+/* ─── FIXED BOTTOM ACTION (スマホ操作ボタン下固定) ─── */
+.fixed-bottom-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 12px;gap:8px;z-index:50;box-shadow:0 -2px 12px rgba(0,0,0,.1)}
+.fbb-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--fj);font-weight:700;font-size:11px;gap:2px;transition:background .1s}
+.fbb-btn:active{opacity:.8}
+.fbb-btn .fbb-icon{font-size:18px;line-height:1}
+.fbb-wip{background:var(--wip-dim);color:var(--wip)}
+.fbb-bari{background:var(--bari-dim);color:var(--bari)}
+.fbb-done{background:var(--done-dim);color:var(--done)}
+.fbb-ship{background:var(--red-dim);color:var(--red)}
+
+/* ─── HISTORY CARD (スマホ用 table代替) ─── */
+.hist-cards{display:none;flex-direction:column;gap:0;}
+
+/* ─── SWIPE HINT ─── */
+.swipe-hint{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;font-size:11px;color:var(--text-dim);background:var(--surface2);border-bottom:1px solid var(--border)}
+.swipe-hint span{display:flex;align-items:center;gap:4px}
+@media(min-width:769px){.swipe-hint{display:none}}
+
+/* ─── OVERRIDES FOR MOBILE ACCORDION ─── */
+@media(max-width:768px){
+  .table-wrap .inv-table{display:none}
+}
+.inv-acc-list{display:none;flex-direction:column}
+
 /* ── MISC ── */
 .divider{height:1px;background:var(--border);margin:14px 0}
 .sec-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
@@ -321,6 +396,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .empty p{font-size:13px}
 .op-hint-txt{font-size:11px;color:var(--text-dim);margin-top:3px}
 
+/* ── ACCORDION LISTS (PC default: hidden, mobile: flex) ── */
 /* ── MOBILE CARDS ── */
 .inv-cards{display:none;flex-direction:column;gap:10px}
 .icard{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:14px;box-shadow:var(--sh)}
@@ -364,8 +440,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   .stats-row{grid-template-columns:1fr 1fr;gap:8px}
   .stat-card{height:70px;padding:10px 12px}
   .stat-val{font-size:20px}
-  .table-wrap .inv-table{display:none}
-  .inv-cards{display:flex}
+  .inv-cards{display:none}
   .table-wrap{overflow-x:hidden}
   .hist-table{min-width:600px;overflow-x:auto}
   .user-table{min-width:440px;overflow-x:auto}
@@ -401,6 +476,14 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
   .gb-label{font-size:12px}
   .gb-icon{font-size:16px}
   .current-group-bar{padding:8px 12px}
+  .table-wrap .inv-table{display:none}
+  .inv-cards{display:none}
+  .inv-acc-list{display:flex!important;flex-direction:column}
+  .hist-acc-list{display:flex!important;flex-direction:column}
+  .table-wrap.hist-wrap{display:none}
+  .swipe-hint{display:flex}
+  .fixed-bottom-bar{display:flex}
+  .main.has-bottom-bar{padding-bottom:76px}
 }
 </style>
 </head>
@@ -516,6 +599,8 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
         </table>
       </div>
       <div class="inv-cards" id="inv-cards"></div>
+      <!-- ⑭ アコーディオン in-list -->
+      <div class="acc-list inv-acc-list" id="inv-acc-list"></div>
     </div>
 
     <!-- ── 操作履歴 ── -->
@@ -543,7 +628,9 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
         <div class="rcb-info">直近の操作: <strong id="rcb-desc">—</strong></div>
         <button class="btn-recent-correct" id="btn-recent-correct" onclick="quickCorrect()">⎌ 直近訂正</button>
       </div>
-      <div class="table-wrap" style="overflow-x:auto">
+      <div class="swipe-hint"><span>← スワイプで訂正</span><span>タップで展開 →</span></div>
+      <div class="hist-cards acc-list" id="hist-acc-list"></div>
+      <div class="table-wrap hist-wrap" style="overflow-x:auto">
         <table class="hist-table" style="min-width:640px">
           <thead><tr>
             <th>日時</th><th>操作</th><th>グループ</th><th>品目</th><th>数量</th><th>ライン</th><th>作業者</th><th style="width:70px">訂正</th>
@@ -561,6 +648,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
           <button class="btn btn-ghost btn-sm" onclick="showAddUserModal()">＋ ユーザー追加</button>
         </div>
       </div>
+      <div class="acc-list" id="user-acc-list" style="display:none"></div>
       <div class="table-wrap">
         <table class="user-table">
           <thead><tr>
@@ -572,6 +660,10 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
     </div>
 
   </main>
+  <!-- ⑬ 固定下部バー（スマホのみ表示） -->
+  <div class="fixed-bottom-bar" id="fixed-bottom-bar">
+    <div id="fbb-item-name" style="position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:11px;color:var(--text-muted);display:none"></div>
+  </div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
@@ -1031,6 +1123,7 @@ function bootApp(){
   if(setupBanner){setupBanner.style.display=(!opName)?'':'none';document.getElementById('op-setup-input').value='';}
   updateCurrentGroupBar();
   showPage('inventory');
+  if(window.innerWidth<=768){var fbb=document.getElementById('fixed-bottom-bar');if(fbb)fbb.style.display='flex';}
 }
 
 loadDB();
@@ -1049,9 +1142,10 @@ function showPage(name){
   var tabIdx={inventory:0,history:1,users:2}[name];
   var tabs=document.querySelectorAll('.header-nav .nav-tab');
   if(tabs[tabIdx]) tabs[tabIdx].classList.add('active');
-  if(name==='inventory'){renderInventory();renderStats();}
+  if(name==='inventory'){renderInventory();renderStats();if(window.innerWidth<=768){document.querySelector('.main').classList.add('has-bottom-bar');document.getElementById('fixed-bottom-bar').style.display='flex';}else{document.querySelector('.main').classList.remove('has-bottom-bar');document.getElementById('fixed-bottom-bar').style.display='none';}}
+  document.getElementById('fixed-bottom-bar').style.display='none';document.querySelector('.main').classList.remove('has-bottom-bar');
   if(name==='history'){renderHistory();}
-  if(name==='users'){renderUsers();}
+  if(name==='users'){renderUsers();var uAcc=document.getElementById('user-acc-list');var uTbl=document.querySelector('.user-table');if(window.innerWidth<=768){if(uAcc)uAcc.style.display='flex';if(uTbl&&uTbl.closest('.table-wrap'))uTbl.closest('.table-wrap').style.display='none';}else{if(uAcc)uAcc.style.display='none';if(uTbl&&uTbl.closest('.table-wrap'))uTbl.closest('.table-wrap').style.display='';} }
 }
 function navTo(name){showPage(name);closeMobMenu();}
 
@@ -1118,6 +1212,7 @@ function renderInventory(){
   if(!items.length){
     body.innerHTML='<tr><td colspan="6"><div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div></td></tr>';
     document.getElementById('inv-cards').innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';
+    var accEl=document.getElementById('inv-acc-list');if(accEl)accEl.innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';
     renderStats();return;
   }
   body.innerHTML=items.map(function(it){
@@ -1144,6 +1239,7 @@ function renderInventory(){
     +'</tr>';
   }).join('');
   renderInvCards(items,admin);
+  renderInvAccordion(items,admin);
   renderStats();
 }
 
@@ -1461,6 +1557,233 @@ document.addEventListener('click',function(e){
 });
 
 // ═══════════════════════════════════════════════
+//  ⑭ アコーディオン & ⑮ スワイプ
+// ═══════════════════════════════════════════════
+function stopProp(e){if(e)e.stopPropagation();}
+
+var _openAccInvId=null;
+function toggleAccInv(id){
+  var item=document.getElementById('acc-inv-'+id);if(!item)return;
+  var wasOpen=item.classList.contains('open');
+  document.querySelectorAll('#inv-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
+  if(!wasOpen){item.classList.add('open');_openAccInvId=id;}else{_openAccInvId=null;}
+}
+
+function toggleAccHist(id){
+  var item=document.getElementById('acc-hist-'+id);if(!item)return;
+  var wasOpen=item.classList.contains('open');
+  document.querySelectorAll('#hist-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
+  if(!wasOpen)item.classList.add('open');
+}
+
+function toggleAccUser(id){
+  var item=document.getElementById('acc-user-'+id);if(!item)return;
+  var wasOpen=item.classList.contains('open');
+  document.querySelectorAll('#user-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
+  if(!wasOpen)item.classList.add('open');
+}
+
+function renderInvAccordion(items,admin){
+  var el=document.getElementById('inv-acc-list');if(!el)return;
+  if(!items||!items.length){
+    el.innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';return;
+  }
+  el.innerHTML=items.map(function(it){
+    var dw=it.process.done>0&&it.process.done<=it.threshold;
+    var dz=it.process.done===0;
+    var warnDot=(dz||dw)?'<span class="acc-warn-dot"></span>':'';
+    var doneCls=dz||dw?'sp-warn':'sp-done';
+    var adminBtns=admin
+      ?'<div style="display:flex;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'
+        +'<button class="btn btn-ghost btn-sm" style="flex:1" data-id="'+it.id+'" onclick="showEditModal(this.dataset.id);stopProp(event)">編集</button>'
+        +'<button class="btn btn-danger btn-sm" style="flex:1" data-id="'+it.id+'" onclick="showDeleteModal(this.dataset.id);stopProp(event)">削除</button>'
+      +'</div>':'' ;
+    return '<div class="acc-item" id="acc-inv-'+it.id+'" data-id="'+it.id+'">'
+      +'<div class="acc-header" data-id="'+it.id+'" onclick="toggleAccInv(this.dataset.id)">'
+        +'<div class="swipe-bg swipe-bg-left" id="swbg-l-'+it.id+'"></div>'
+        +'<div class="swipe-bg swipe-bg-right" id="swbg-r-'+it.id+'"></div>'
+        +'<div class="acc-inv-summary">'
+          +'<div style="display:flex;align-items:center;gap:6px"><span class="acc-inv-name">'+esc(it.name)+'</span>'+warnDot+'</div>'
+          +'<div class="acc-inv-meta">'
+            +'<div class="acc-inv-stocks">'
+              +'<span class="acc-stock-pill sp-wip">仕掛 '+fmtNum(it.process.wip)+'</span>'
+              +'<span class="acc-stock-pill sp-bari">前 '+fmtNum(it.process.bari)+'</span>'
+              +'<span class="acc-stock-pill '+doneCls+'">完 '+fmtNum(it.process.done)+'</span>'
+            +'</div>'
+            +(it.maker?'<span style="font-size:10px;color:var(--text-dim)">'+esc(it.maker)+'</span>':'')
+          +'</div>'
+        +'</div>'
+        +'<span class="acc-chevron">▼</span>'
+      +'</div>'
+      +'<div class="acc-body">'
+        +'<div class="acc-op-grid">'
+          +'<button class="acc-op-btn bp-wip" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_add\');stopProp(event)"><span>⚙</span>加工</button>'
+          +'<button class="acc-op-btn bp-w2b" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_to_bari\');stopProp(event)"><span>→</span>バリ前移動</button>'
+          +'<button class="acc-op-btn bp-b2d" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'bari_to_done\');stopProp(event)"><span>✓</span>完成</button>'
+          +'<button class="acc-op-btn bp-d2s" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'done_to_ship\');stopProp(event)"><span>🚚</span>出荷</button>'
+        +'</div>'
+        +adminBtns
+      +'</div>'
+    +'</div>';
+  }).join('');
+  attachSwipe(el,items);
+}
+
+function renderHistAccordion(logs){
+  var el=document.getElementById('hist-acc-list');if(!el)return;
+  if(!logs||!logs.length){
+    el.innerHTML='<div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div>';return;
+  }
+  el.innerHTML=logs.slice(0,200).map(function(entry){
+    var isCorr=entry.type==='訂正';
+    var isCorrected=!!entry.corrected;
+    var rowStyle=isCorr?'background:#fff1f1':'';
+    var cls=ACT_CLASS[entry.type]||'ac-sys';
+    var chip='<span class="act-chip '+cls+'">'+esc(entry.type)+'</span>';
+    if(isCorrected)chip+='<span class="corrected-badge">訂正済</span>';
+    var cnt=entry.correction_count||0;
+    var cntBadge=cnt>0?'<span class="correction-count-badge'+(cnt>=CORRECTION_LIMIT-1?' warn-cnt':'')+'">訂正'+cnt+'回</span>':'';
+    var correctBtn='';
+    if(!isCorr&&!isCorrected&&isAdmin()){
+      correctBtn=(cnt>=CORRECTION_LIMIT)
+        ?'<button class="btn-correct-row" disabled>不可</button>'
+        :'<button class="btn-correct-row" data-hid="'+entry.id+'" onclick="confirmCorrect(this.dataset.hid);stopProp(event)">訂正</button>';
+    }
+    return '<div class="acc-item" id="acc-hist-'+entry.id+'" style="'+rowStyle+'">'
+      +'<div class="acc-header" data-id="'+entry.id+'" onclick="toggleAccHist(this.dataset.id)">'
+        +'<div class="swipe-bg swipe-bg-left" id="hswbg-l-'+entry.id+'"></div>'
+        +'<div class="acc-hist-summary">'
+          +'<div class="acc-hist-row1"><span class="acc-hist-time">'+fmtDate(entry.timestamp)+'</span>'+chip+cntBadge+'</div>'
+          +'<div class="acc-hist-name">'+esc(entry.itemName||'—')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right;flex-shrink:0;margin-left:8px">'
+          +'<div class="acc-hist-qty">'+fmtNum(entry.qty)+'</div>'
+        +'</div>'
+        +'<span class="acc-chevron">▼</span>'
+      +'</div>'
+      +'<div class="acc-body">'
+        +'<div class="acc-hist-body">'
+          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">作業者</span><strong>'+esc(entry.operator||'—')+'</strong></div>'
+          +(entry.line?'<div class="acc-hist-detail"><span class="acc-hist-dlabel">ライン</span><span>'+esc(entry.line)+'</span></div>':'')
+          +(entry.group?'<div class="acc-hist-detail"><span class="acc-hist-dlabel">グループ</span><span>'+esc(entry.group)+'</span></div>':'')
+          +(entry.corrected_desc?'<div class="acc-hist-detail"><span class="acc-hist-dlabel">訂正内容</span><span style="color:#b91c1c">'+esc(entry.corrected_desc)+'</span></div>':'')
+          +(correctBtn?'<div style="margin-top:8px">'+correctBtn+'</div>':'')
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+  attachHistSwipe(el,logs);
+}
+
+function renderUserAccordion(){
+  var el=document.getElementById('user-acc-list');if(!el)return;
+  el.innerHTML=DB.users.map(function(u){
+    var opCell=isAdmin()
+      ?'<div class="editable-operator"><input type="text" value="'+esc(u.operator_name||'')+'" id="opna-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpNameAcc(this.dataset.uid)"><button data-uid="'+u.id+'" onclick="saveOpNameAcc(this.dataset.uid)">保存</button></div>'
+      :(u.operator_name?esc(u.operator_name):'<span style="color:var(--text-dim)">未設定</span>');
+    var delBtn=u.id!==currentUser.id
+      ?'<button class="btn btn-danger btn-sm" style="width:100%;margin-top:8px" data-uid="'+u.id+'" onclick="deleteUser(this.dataset.uid);stopProp(event)">削除</button>':'';
+    return '<div class="acc-item" id="acc-user-'+u.id+'">'
+      +'<div class="acc-header" data-uid="'+u.id+'" onclick="toggleAccUser(this.dataset.uid)">'
+        +'<div class="acc-user-summary">'
+          +'<div class="acc-user-name">'+esc(u.username)+'</div>'
+          +'<div class="acc-user-sub">'
+            +'<span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span>'
+            +(u.operator_name?'<span>'+esc(u.operator_name)+'</span>':'<span style="color:var(--text-dim)">作業者名未設定</span>')
+          +'</div>'
+        +'</div>'
+        +'<span class="acc-chevron">▼</span>'
+      +'</div>'
+      +'<div class="acc-body">'
+        +'<div class="acc-hist-body">'
+          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">作業者名</span>'+opCell+'</div>'
+          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">登録日</span><span>'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</span></div>'
+        +'</div>'
+        +delBtn
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function saveOpNameAcc(userId){
+  var inp=document.getElementById('opna-'+userId);if(!inp)return;
+  updateOperatorName(userId,inp.value.trim());renderUsers();
+}
+
+// ⑮ スワイプ：在庫リスト（左=訂正, 右=加工モーダル）
+function attachSwipe(container,items){
+  container.querySelectorAll('.acc-item').forEach(function(row){
+    var id=row.dataset.id;if(!id)return;
+    var startX=0,startY=0,isDrag=false,moved=false,THRESH=60;
+    var header=row.querySelector('.acc-header');if(!header)return;
+    header.addEventListener('touchstart',function(e){
+      startX=e.touches[0].clientX;startY=e.touches[0].clientY;isDrag=true;moved=false;
+    },{passive:true});
+    header.addEventListener('touchmove',function(e){
+      if(!isDrag)return;
+      var dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;
+      if(!moved&&Math.abs(dy)>Math.abs(dx)*1.5){isDrag=false;return;}
+      moved=true;
+      var ratio=Math.min(Math.abs(dx)/THRESH,1);
+      var bgL=document.getElementById('swbg-l-'+id),bgR=document.getElementById('swbg-r-'+id);
+      if(bgL)bgL.style.opacity=dx<0?ratio:0;
+      if(bgR)bgR.style.opacity=dx>0?ratio:0;
+    },{passive:true});
+    header.addEventListener('touchend',function(e){
+      if(!isDrag){return;}isDrag=false;
+      var dx=e.changedTouches[0].clientX-startX;
+      var bgL=document.getElementById('swbg-l-'+id),bgR=document.getElementById('swbg-r-'+id);
+      if(bgL)bgL.style.opacity=0;if(bgR)bgR.style.opacity=0;
+      if(!moved)return;
+      if(dx<-THRESH){
+        var last=DB.history.find(function(h){return h.itemId===id&&h.type!=='訂正'&&!h.corrected;});
+        if(last&&isAdmin())confirmCorrect(last.id);
+        else if(!isAdmin())toast('訂正は管理者のみです','err');
+        else toast('訂正可能な履歴がありません','warn');
+      }else if(dx>THRESH){showOpModal(id,'wip_add');}
+    });
+  });
+}
+
+// ⑮ スワイプ：履歴リスト（左=訂正）
+function attachHistSwipe(container,logs){
+  container.querySelectorAll('.acc-item').forEach(function(row){
+    var histId=row.id.replace('acc-hist-','');
+    var entry=logs.find(function(h){return h.id===histId;});
+    if(!entry||entry.type==='訂正'||entry.corrected)return;
+    var startX=0,isDrag=false,moved=false,THRESH=60;
+    var header=row.querySelector('.acc-header');if(!header)return;
+    header.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;isDrag=true;moved=false;},{passive:true});
+    header.addEventListener('touchmove',function(e){
+      if(!isDrag)return;moved=true;
+      var dx=e.touches[0].clientX-startX;
+      var bgL=document.getElementById('hswbg-l-'+histId);
+      if(bgL)bgL.style.opacity=dx<0?Math.min(Math.abs(dx)/THRESH,1):0;
+    },{passive:true});
+    header.addEventListener('touchend',function(e){
+      isDrag=false;
+      var dx=e.changedTouches[0].clientX-startX;
+      var bgL=document.getElementById('hswbg-l-'+histId);if(bgL)bgL.style.opacity=0;
+      if(!moved)return;
+      if(dx<-THRESH&&isAdmin())confirmCorrect(histId);
+    });
+  });
+}
+
+// ─── 固定フッターバー ───
+function setFbbItem(itemId){
+  var bar=document.getElementById('fixed-bottom-bar');if(!bar)return;
+  if(!itemId){bar.innerHTML='';return;}
+  var it=DB.items.find(function(i){return i.id===itemId;});if(!it)return;
+  bar.innerHTML=
+    '<div style="position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--text-muted);pointer-events:none">'+esc(it.name)+'</div>'
+    +'<button class="fbb-btn fbb-wip" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_add\')"><span class="fbb-icon">⚙</span>加工</button>'
+    +'<button class="fbb-btn fbb-bari" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_to_bari\')"><span class="fbb-icon">→</span>バリ前</button>'
+    +'<button class="fbb-btn fbb-done" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'bari_to_done\')"><span class="fbb-icon">✓</span>完成</button>'
+    +'<button class="fbb-btn fbb-ship" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'done_to_ship\')"><span class="fbb-icon">🚚</span>出荷</button>';
+}
+
+// ═══════════════════════════════════════════════
 //  作業者サジェスト
 // ═══════════════════════════════════════════════
 var _suggestIdx=-1;
@@ -1725,6 +2048,7 @@ function renderHistory(){
   var body=document.getElementById('hist-body');
   if(!logs.length){
     body.innerHTML='<tr><td colspan="8"><div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div></td></tr>';
+    var hAcc=document.getElementById('hist-acc-list');if(hAcc)hAcc.innerHTML='<div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div>';
     updateRecentCorrectionBar();return;
   }
 
@@ -1773,6 +2097,7 @@ function renderHistory(){
     +'</tr>';
   }).join('');
   updateRecentCorrectionBar();
+  renderHistAccordion(logs);
 }
 
 // ─── 訂正バー（直近未訂正） ───
@@ -1897,8 +2222,51 @@ function renderUsers(){
       :(u.operator_name?esc(u.operator_name):'<span style="color:var(--text-dim)">未設定</span>');
     return '<tr><td><strong>'+esc(u.username)+'</strong></td><td><span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span></td><td>'+opCell+'</td><td style="font-size:12px;color:var(--text-muted)">'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</td><td>'+del+'</td></tr>';
   }).join('');
+  renderUserAccordion();
 }
 
+
+// ─── ⑭ アコーディオン ユーザー管理（スマホ） ───
+function renderUserAccordion(){
+  var el=document.getElementById('user-acc-list');if(!el)return;
+  el.innerHTML=DB.users.map(function(u){
+    var opCell=isAdmin()
+      ?'<div class="editable-operator"><input type="text" value="'+esc(u.operator_name||'')+'" id="opna-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpNameAcc(this.dataset.uid)"><button data-uid="'+u.id+'" onclick="saveOpNameAcc(this.dataset.uid)">保存</button></div>'
+      :(u.operator_name?esc(u.operator_name):'<span style="color:var(--text-dim)">未設定</span>');
+    var delBtn=u.id!==currentUser.id
+      ?'<button class="btn btn-danger btn-sm" style="width:100%;margin-top:8px" data-uid="'+u.id+'" onclick="deleteUser(this.dataset.uid);stopProp(event)">削除</button>'
+      :'';
+    return '<div class="acc-item" id="acc-user-'+u.id+'">'
+      +'<div class="acc-header" data-uid="'+u.id+'" onclick="toggleAccUser(this.dataset.uid)">'
+        +'<div class="acc-user-summary">'
+          +'<div class="acc-user-name">'+esc(u.username)+'</div>'
+          +'<div class="acc-user-sub">'
+            +'<span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span>'
+            +(u.operator_name?'<span>'+esc(u.operator_name)+'</span>':'<span style="color:var(--text-dim)">作業者名未設定</span>')
+          +'</div>'
+        +'</div>'
+        +'<span class="acc-chevron">▼</span>'
+      +'</div>'
+      +'<div class="acc-body">'
+        +'<div class="acc-hist-body">'
+          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">作業者名</span>'+opCell+'</div>'
+          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">登録日</span><span>'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</span></div>'
+        +'</div>'
+        +delBtn
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+function toggleAccUser(id){
+  var item=document.getElementById('acc-user-'+id);if(!item)return;
+  var wasOpen=item.classList.contains('open');
+  document.querySelectorAll('#user-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
+  if(!wasOpen) item.classList.add('open');
+}
+function saveOpNameAcc(userId){
+  var inp=document.getElementById('opna-'+userId);if(!inp)return;
+  updateOperatorName(userId,inp.value.trim());renderUsers();renderUserAccordion();
+}
 function saveOpName(userId){
   var inp=document.getElementById('opn-'+userId);if(!inp)return;
   updateOperatorName(userId,inp.value.trim());renderUsers();
