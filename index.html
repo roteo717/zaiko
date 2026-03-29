@@ -458,15 +458,18 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 5px 8px;
-  min-width: 52px;
+  padding: 5px 4px;
+  width: 58px;
+  height: 52px;
+  flex-shrink: 0;
 }
 .acard-proc.deburr { background: var(--amber-bg); border-color: var(--amber-bd); }
 .acard-proc.done-p { background: var(--done-bg); border-color: var(--done-bd); }
-.acard-proc-label { font-size: 9px; color: var(--text3); margin-bottom: 2px; white-space: nowrap; }
+.acard-proc-label { font-size: 9px; color: var(--text3); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 54px; text-align: center; }
 .acard-proc-val { font-size: 16px; font-weight: 700; font-family: var(--mono); color: var(--text); }
 .acard-proc.deburr .acard-proc-val { color: var(--amber); }
 .acard-proc.done-p .acard-proc-val { color: var(--done); }
