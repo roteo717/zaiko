@@ -3,594 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>STOCKS — 在庫管理システム v11</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<title>STOCKS — 現場在庫管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f0f2f5;--surface:#fff;--surface2:#f8f9fb;--surface3:#eef0f4;
-  --border:#e2e5ec;--border2:#d0d4de;
-  --text:#1a1d27;--text-muted:#6b7280;--text-dim:#9ca3af;
-  --accent:#2563eb;--accent-dim:rgba(37,99,235,.1);--accent-glow:rgba(37,99,235,.15);
-  --red:#ef4444;--red-dim:rgba(239,68,68,.08);--red-mid:rgba(239,68,68,.15);
-  --amber:#f59e0b;--amber-dim:rgba(245,158,11,.1);
-  --green:#10b981;--green-dim:rgba(16,185,129,.1);
-  --wip:#2563eb;--wip-dim:rgba(37,99,235,.08);--wip-border:rgba(37,99,235,.2);
-  --bari:#f59e0b;--bari-dim:rgba(245,158,11,.08);--bari-border:rgba(245,158,11,.25);
-  --done:#10b981;--done-dim:rgba(16,185,129,.08);--done-border:rgba(16,185,129,.25);
-  --fn:'JetBrains Mono',monospace;--fj:'Noto Sans JP',sans-serif;
-  --r:6px;--r2:10px;--sh:0 2px 12px rgba(0,0,0,.08);
+:root {
+  --bg: #f4f6f9; --surface: #ffffff; --surface2: #f8f9fb;
+  --border: #e2e5ec; --border2: #d0d4de;
+  --text: #1a1d27; --text-muted: #6b7280; --text-dim: #9ca3af;
+  --accent: #2563eb; --accent-dim: rgba(37,99,235,0.1);
+  --red: #ef4444; --red-dim: rgba(239,68,68,0.1);
+  --amber: #f59e0b; --amber-dim: rgba(245,158,11,0.1);
+  --green: #10b981; --green-dim: rgba(16,185,129,0.1);
+  --wip: #8b5cf6; --wip-dim: rgba(139,92,246,0.1); --wip-border: rgba(139,92,246,0.25);
+  --done: #10b981; --done-dim: rgba(16,185,129,0.1); --done-border: rgba(16,185,129,0.25);
+  --fn: 'JetBrains Mono', monospace; --fj: 'Noto Sans JP', sans-serif;
+  --r: 8px; --r2: 12px; --sh: 0 4px 16px rgba(0,0,0,0.06);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;overflow-x:hidden}
-body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: var(--fj); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:600;transition:background .1s;white-space:nowrap;user-select:none;min-height:40px}
-.btn:active{opacity:.85}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#1d4ed8}
-.btn-danger{background:var(--red);color:#fff}
-.btn-danger:hover{background:#dc2626}
-.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border2)}
-.btn-ghost:hover{background:var(--surface2);color:var(--text)}
-.btn-green{background:var(--green);color:#fff}
-.btn-sm{padding:5px 10px;font-size:11px;min-height:32px}
-.btn-full{width:100%;padding:14px;font-size:15px;min-height:50px}
+/* ── BUTTONS & FORMS ── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: var(--r); border: none; cursor: pointer; font-family: var(--fj); font-size: 14px; font-weight: 700; transition: background 0.1s; white-space: nowrap; user-select: none; min-height: 44px; }
+.btn:active { opacity: 0.8; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border2); }
+.btn-ghost:active { background: var(--surface2); color: var(--text); }
+.btn-sm { padding: 6px 12px; font-size: 12px; min-height: 36px; }
+.btn-full { width: 100%; padding: 14px; font-size: 16px; min-height: 52px; }
+.form-row { margin-bottom: 16px; }
+.form-row label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+.form-row input, .form-row select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--r); color: var(--text); padding: 12px; font-size: 15px; font-family: var(--fj); outline: none; min-height: 48px; }
+.form-row input:focus, .form-row select:focus { border-color: var(--accent); background: #fff; }
+.error-box { background: var(--red-dim); border: 1px solid var(--red); color: var(--red); border-radius: var(--r); padding: 10px 14px; font-size: 13px; font-weight: 700; margin-bottom: 12px; display: none; }
+.error-box.show { display: block; }
 
-/* ── FORMS ── */
-.form-row{margin-bottom:14px}
-.form-row label{display:block;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
-.form-row input,.form-row select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:10px 12px;font-size:14px;font-family:var(--fj);outline:none;transition:border-color .1s;min-height:44px}
-.form-row input:focus,.form-row select:focus{border-color:var(--accent);background:#fff}
-.form-row input::placeholder{color:var(--text-dim)}
-.form-row.error input,.form-row.error select{border-color:var(--red)}
-.form-hint{font-size:11px;color:var(--text-dim);margin-top:3px}
-.error-box{background:var(--red-dim);border:1px solid var(--red);color:var(--red);border-radius:var(--r);padding:8px 12px;font-size:13px;margin-bottom:12px;display:none}
-.error-box.show{display:block}
+/* ── LAYOUT ── */
+#app { display: none; flex-direction: column; height: 100vh; }
+#app.active { display: flex; }
+.header { background: #fff; border-bottom: 1px solid var(--border); padding: 0 16px; height: 56px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 10; }
+.header-brand { font-size: 18px; font-weight: 900; letter-spacing: 0.05em; color: var(--text); }
+.header-brand span { color: var(--accent); }
+.header-nav { display: flex; gap: 4px; }
+.nav-tab { background: none; border: none; color: var(--text-muted); padding: 8px 12px; border-radius: var(--r); cursor: pointer; font-family: var(--fj); font-size: 14px; font-weight: 700; }
+.nav-tab.active { background: var(--accent-dim); color: var(--accent); }
+.user-pill { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px 4px 6px; font-size: 12px; font-weight: 700; }
+.user-av { width: 24px; height: 24px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; }
+
+.main { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── PAGE: INVENTORY (在庫一覧) ── */
+.toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.search-wrap { flex: 1; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--border2); border-radius: var(--r); padding: 0 12px; min-width: 200px; height: 44px; }
+.search-wrap input { background: none; border: none; outline: none; width: 100%; font-size: 15px; font-family: var(--fj); }
+
+.inv-list { display: flex; flex-direction: column; gap: 12px; }
+.inv-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r2); padding: 16px; box-shadow: var(--sh); cursor: pointer; transition: transform 0.1s; }
+.inv-card:active { transform: scale(0.98); }
+.inv-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.inv-card-title { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.inv-card-code { font-size: 12px; color: var(--text-muted); font-family: var(--fn); margin-top: 4px; }
+.inv-card-stocks { display: flex; gap: 8px; }
+.stock-box { flex: 1; padding: 12px 8px; border-radius: var(--r); text-align: center; border: 1px solid transparent; }
+.stock-box.done { background: var(--done-dim); border-color: var(--done-border); color: var(--done); }
+.stock-box.wip { background: var(--wip-dim); border-color: var(--wip-border); color: var(--wip); }
+.stock-box.warn { background: var(--red-dim); border-color: rgba(239,68,68,0.2); color: var(--red); }
+.stock-label { font-size: 11px; font-weight: 700; opacity: 0.8; margin-bottom: 4px; }
+.stock-val { font-size: 24px; font-weight: 800; font-family: var(--fn); line-height: 1; }
+.inv-details-btn { margin-top: 12px; font-size: 12px; font-weight: 700; color: var(--text-muted); text-align: center; padding: 10px; background: var(--surface2); border-radius: var(--r); }
+.inv-details-content { display: none; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+.inv-details-content.open { display: block; }
+.detail-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+.detail-row:last-child { border-bottom: none; }
+
+/* ── PAGE: PROCESS (工程管理/操作専用) ── */
+.proc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.proc-target-name { font-size: 18px; font-weight: 900; }
+.proc-tabs-wrap { overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.proc-tabs { display: flex; gap: 8px; }
+.step-tab { padding: 10px 16px; border-radius: 20px; border: 1px solid var(--border2); background: var(--surface2); color: var(--text-muted); font-weight: 700; font-size: 14px; white-space: nowrap; cursor: pointer; transition: all 0.1s; }
+.step-tab.active { background: var(--text); color: #fff; border-color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.proc-action-card { background: #fff; border: 1px solid var(--border); border-radius: var(--r2); padding: 20px 16px; box-shadow: var(--sh); }
+.proc-stock-display { text-align: center; margin-bottom: 24px; }
+.proc-stock-label { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+.proc-stock-value { font-size: 48px; font-weight: 900; font-family: var(--fn); line-height: 1; color: var(--accent); }
+
+.proc-qty-section { margin-bottom: 24px; }
+.qty-quick-btns { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 12px; }
+.btn-quick { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; font-size: 15px; font-weight: 800; font-family: var(--fn); color: var(--text); height: 48px; cursor: pointer; }
+.btn-quick:active { background: var(--border); }
+#proc-input-qty { width: 100%; height: 64px; font-size: 32px; font-weight: 900; font-family: var(--fn); text-align: center; border: 2px solid var(--border2); border-radius: 12px; background: var(--surface2); color: var(--text); outline: none; transition: border-color 0.1s; }
+#proc-input-qty:focus { border-color: var(--accent); background: #fff; }
+
+.proc-action-grid { display: flex; flex-direction: column; gap: 16px; }
+.proc-destinations { display: flex; flex-direction: column; gap: 8px; }
+.btn-dest { width: 100%; min-height: 60px; border-radius: 12px; font-size: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border: none; cursor: pointer; transition: opacity 0.1s; }
+.btn-dest:active { opacity: 0.8; }
+.proc-ng-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-top: 1px solid var(--border); padding-top: 16px; }
+.btn-ng { height: 52px; border-radius: 10px; font-size: 14px; font-weight: 700; border: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; }
+.nt-setup { background: var(--amber-dim); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+.nt-defect { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.2); }
+.nt-setup:active, .nt-defect:active { opacity: 0.8; }
+
+/* ── HISTORY / USERS (既存テーブルの簡易レスポンシブ化) ── */
+.table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--r2); overflow-x: auto; box-shadow: var(--sh); }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; }
+th { background: var(--surface2); font-size: 11px; font-weight: 700; color: var(--text-muted); }
+.act-chip { display: inline-flex; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--surface2); color: var(--text); }
+.ac-corr { background: #fee2e2; color: #b91c1c; }
+
+/* ── MODALS & TOAST ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end; justify-content: center; }
+.overlay.show { display: flex; }
+.modal { background: #fff; border-radius: 16px 16px 0 0; width: 100%; max-height: 90vh; display: flex; flex-direction: column; }
+.modal-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-x { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 4px; }
+.modal-body { padding: 20px; overflow-y: auto; }
+.modal-foot { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+
+#toasts { position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--r); padding: 14px 16px; box-shadow: var(--sh); font-size: 14px; font-weight: 700; animation: tIn 0.2s ease; }
+.toast.ok { border-left-color: var(--green); }
+.toast.err { border-left-color: var(--red); }
+@keyframes tIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 /* ── LOGIN ── */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e0e7ff 0%,#f0f9ff 50%,#ecfdf5 100%)}
-.login-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:44px 40px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.12)}
-.login-logo{text-align:center;margin-bottom:32px}
-.login-logo .brand{font-size:28px;font-weight:900;letter-spacing:.06em;color:var(--text)}
-.login-logo .brand span{color:var(--accent)}
-.login-logo .sub{font-size:12px;color:var(--text-muted);margin-top:4px}
-.pw-strength{height:3px;border-radius:2px;background:var(--border);margin-top:5px;overflow:hidden}
-.pw-bar{height:100%;border-radius:2px;width:0;transition:width .3s,background .3s}
-
-/* ── APP SHELL ── */
-#app{display:none;flex-direction:column;height:100vh;overflow:hidden}
-#app.active{display:flex}
-
-/* ── HEADER ── */
-.header{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.header-brand{font-size:15px;font-weight:900;letter-spacing:.06em;white-space:nowrap;color:var(--text)}
-.header-brand span{color:var(--accent)}
-.header-sep{width:1px;height:20px;background:var(--border2)}
-.header-nav{display:flex;gap:2px}
-.nav-tab{background:transparent;border:none;color:var(--text-muted);padding:6px 12px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:500;transition:all .1s;white-space:nowrap}
-.nav-tab:hover{background:var(--surface2);color:var(--text)}
-.nav-tab.active{background:var(--accent-dim);color:var(--accent);font-weight:700}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.user-pill{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 5px;font-size:13px}
-.user-av{width:26px;height:26px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
-.user-av.admin-av{background:var(--amber)}
-.role-chip{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;text-transform:uppercase}
-.role-chip.admin{background:var(--amber-dim);color:var(--amber)}
-.role-chip.user{background:var(--surface3);color:var(--text-muted)}
-
-/* ── CURRENT GROUP BAR ── */
-.current-group-bar{display:none;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--r);margin-bottom:12px;font-size:13px;font-weight:600;border:1px solid var(--border2);background:var(--surface)}
-.current-group-bar .cgb-label{color:var(--text-muted);font-weight:400;font-size:12px}
-.cgb-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:20px;font-size:13px;font-weight:700}
-.cgb-wip{background:var(--wip-dim);color:var(--wip);border:1px solid var(--wip-border)}
-.cgb-bari{background:var(--bari-dim);color:var(--bari);border:1px solid var(--bari-border)}
-.cgb-done{background:var(--done-dim);color:var(--done);border:1px solid var(--done-border)}
-
-/* ── MAIN ── */
-.main{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 20px}
-.page{display:none}
-.page.active{display:block}
-.page-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-.page-title{font-size:18px;font-weight:700}
-.badge-count{background:var(--surface2);border:1px solid var(--border2);color:var(--text-muted);font-size:11px;padding:2px 8px;border-radius:10px;font-family:var(--fn)}
-.page-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-
-/* ── STATS ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;height:80px;display:flex;flex-direction:column;justify-content:space-between}
-.stat-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
-.stat-val{font-size:24px;font-weight:700;font-family:var(--fn);line-height:1}
-.stat-val.red{color:var(--red)}
-.stat-val.amber{color:var(--amber)}
-.stat-sub{font-size:10px;color:var(--text-dim)}
-
-/* ── TOOLBAR ── */
-.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.search-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;flex:1;min-width:160px;max-width:280px}
-.search-wrap svg{flex-shrink:0;color:var(--text-dim)}
-.search-wrap input{background:none;border:none;outline:none;color:var(--text);font-family:var(--fj);font-size:13px;width:100%}
-.filter-sel{background:#fff;border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:7px 10px;font-family:var(--fj);font-size:13px;outline:none;cursor:pointer;min-height:36px}
-
-/* ── TABLE ── */
-.table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
-.inv-table{width:100%;border-collapse:collapse}
-.inv-table thead th{background:var(--surface2);padding:9px 14px;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);white-space:nowrap;text-align:center}
-.inv-table thead th.th-name{text-align:left}
-.inv-table tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;text-align:center}
-.inv-table tbody tr:last-child td{border-bottom:none}
-.inv-table tbody tr:hover td{background:var(--surface2)}
-.inv-table tbody tr.row-warn td{background:#fffbeb}
-.inv-table tbody tr.row-zero td{background:#fef2f2}
-.num-cell{font-family:var(--fn);white-space:nowrap}
-.num-wip{font-size:13px;color:var(--wip);font-weight:600}
-.num-bari{font-size:14px;color:var(--bari);font-weight:600}
-.num-done{font-size:16px;color:var(--done);font-weight:700;line-height:1.2}
-.num-warn{color:var(--red)!important}
-.num-zero{color:var(--red)!important;font-weight:900!important}
-.w-icon{font-size:11px;margin-left:2px;vertical-align:middle;color:var(--red)}
-.unit-tag{font-size:10px;color:var(--text-muted);margin-left:2px}
-.td-name{text-align:left}
-.item-name-txt{font-weight:600;font-size:14px;line-height:1.3;color:var(--text)}
-.item-code-txt{font-size:11px;color:var(--text-muted);font-family:var(--fn);margin-top:1px}
-.th-wip{color:var(--wip)!important}
-.th-bari{color:var(--bari)!important}
-.th-done{color:var(--done)!important}
-.act-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
-.btn-proc{padding:7px 10px;border-radius:var(--r);border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:var(--fj);transition:background .1s;white-space:nowrap;min-height:36px}
-.bp-wip{background:var(--wip-dim);color:var(--wip);border:1px solid var(--wip-border)}
-.bp-wip:hover{background:rgba(37,99,235,.18)}
-.bp-w2b{background:var(--bari-dim);color:var(--bari);border:1px solid var(--bari-border)}
-.bp-w2b:hover{background:rgba(245,158,11,.18)}
-.bp-b2d{background:var(--done-dim);color:var(--done);border:1px solid var(--done-border)}
-.bp-b2d:hover{background:rgba(16,185,129,.18)}
-.bp-d2s{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-.bp-d2s:hover{background:var(--red-mid)}
-.bp-edit{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(37,99,235,.2)}
-.bp-edit:hover{background:var(--accent-glow)}
-.bp-del{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-.bp-del:hover{background:var(--red-mid)}
-
-/* ── HISTORY TABLE ── */
-.hist-table{width:100%;border-collapse:collapse;font-size:13px}
-.hist-table th{background:var(--surface2);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);white-space:nowrap}
-.hist-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.hist-table tr:last-child td{border-bottom:none}
-.hist-table tr:hover td{background:var(--surface2)}
-.act-chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap}
-.ac-wip{background:var(--wip-dim);color:var(--wip)}
-.ac-w2b{background:var(--bari-dim);color:var(--bari)}
-.ac-b2d{background:var(--done-dim);color:var(--done)}
-.ac-d2s{background:var(--red-dim);color:var(--red)}
-.ac-sys{background:var(--accent-dim);color:var(--accent)}
-.ac-correction{background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5}
-
-/* ── USER TABLE ── */
-.user-table{width:100%;border-collapse:collapse}
-.user-table th,.user-table td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}
-.user-table th{background:var(--surface2);font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
-.user-table tr:last-child td{border-bottom:none}
-.user-table tr:hover td{background:var(--surface2)}
-
-/* ── MODAL ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:16px}
-.overlay.show{display:flex}
-.modal{background:#fff;border:1px solid var(--border);border-radius:14px;width:100%;max-width:500px;box-shadow:0 16px 48px rgba(0,0,0,.15);display:flex;flex-direction:column;max-height:calc(100vh - 32px)}
-.modal-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.modal-title{font-size:15px;font-weight:700}
-.modal-x{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;line-height:1;padding:4px;border-radius:4px;min-width:32px;min-height:32px}
-.modal-x:hover{color:var(--text);background:var(--surface2)}
-.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
-.modal-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
-
-/* ── GROUP SELECTOR ── */
-.group-selector{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
-.group-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;border-radius:10px;border:2px solid transparent;cursor:pointer;font-family:var(--fj);transition:all .1s;min-height:64px;user-select:none;position:relative}
-.group-btn:active{opacity:.85}
-.gb-icon{font-size:18px;margin-bottom:3px;line-height:1}
-.gb-label{font-size:13px;font-weight:800;line-height:1.2}
-.gb-sub{font-size:10px;opacity:.8;margin-top:2px;font-weight:500;text-align:center}
-.group-btn-wip{background:var(--wip-dim);color:var(--wip);border-color:var(--wip-border)}
-.group-btn-wip.grp-active{background:var(--wip);color:#fff;border-color:var(--wip);box-shadow:0 4px 12px rgba(37,99,235,.35)}
-.group-btn-bari{background:var(--bari-dim);color:var(--bari);border-color:var(--bari-border)}
-.group-btn-bari.grp-active{background:var(--bari);color:#fff;border-color:var(--bari);box-shadow:0 4px 12px rgba(245,158,11,.35)}
-.group-btn-done{background:var(--done-dim);color:var(--done);border-color:var(--done-border)}
-.group-btn-done.grp-active{background:var(--done);color:#fff;border-color:var(--done);box-shadow:0 4px 12px rgba(16,185,129,.35)}
-
-/* 完成品サブ操作 */
-.done-sub-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;display:none}
-.done-sub-row.show{display:grid}
-.done-sub-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;border:2px solid transparent;cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:700;min-height:44px;transition:all .1s}
-.dsb-complete{background:var(--done-dim);color:var(--done);border-color:var(--done-border)}
-.dsb-complete.dsb-active{background:var(--done);color:#fff;border-color:var(--done)}
-.dsb-ship{background:var(--red-dim);color:var(--red);border-color:rgba(239,68,68,.2)}
-.dsb-ship.dsb-active{background:var(--red);color:#fff;border-color:var(--red)}
-
-/* ── TRANSFER BLOCK ── */
-.transfer-block{background:var(--surface2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;border:1px solid var(--border)}
-.transfer-flow{display:flex;align-items:center;gap:10px;margin-bottom:5px;font-size:14px;font-weight:700}
-.tf-arrow{color:var(--text-dim);font-size:16px}
-.transfer-stock{font-size:12px;color:var(--text-muted);font-family:var(--fn)}
-.transfer-warn{background:var(--amber-dim);border:1px solid var(--amber);color:#92400e;border-radius:var(--r);padding:8px 12px;font-size:12px;margin-top:8px;display:none}
-.transfer-warn.show{display:block}
-
-/* ── QTY ADJUSTER ── */
-.qty-adjuster{display:flex;align-items:stretch;gap:0;margin:6px 0 12px;border-radius:10px;overflow:hidden;border:1px solid var(--border2);min-height:60px}
-.adj-minus-row,.adj-plus-row{display:flex;flex:1;min-width:0}
-.qty-adj-center{flex:0 0 120px;width:120px;position:relative;border-left:1px solid var(--border2);border-right:1px solid var(--border2);display:flex;align-items:stretch}
-.qty-adj-input{width:100%;min-height:60px;background:var(--surface2);border:none;color:var(--text);padding:8px 32px 8px 8px;font-size:26px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;appearance:textfield;-moz-appearance:textfield;display:block;box-sizing:border-box}
-.qty-adj-input::-webkit-inner-spin-button,.qty-adj-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.qty-adj-input:focus{background:#fff}
-.qty-adj-unit{position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:11px;pointer-events:none;white-space:nowrap}
-.qty-adj-btn{display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--fn);font-weight:700;line-height:1;user-select:none;-webkit-user-select:none;touch-action:manipulation;outline:none;flex:1;font-size:12px;transition:background .08s;min-width:0;padding:0 4px;white-space:nowrap}
-.qty-adj-btn:active{opacity:.75}
-.adj-minus-row .qty-adj-btn{background:#f3f4f6;color:#4b5563;border-right:1px solid var(--border2)}
-.adj-minus-row .qty-adj-btn:hover{background:#e5e7eb}
-.adj-minus-row .qty-adj-btn.pressing{background:#d1d5db}
-.adj-minus-row .qty-adj-btn:last-child{border-right:none}
-.adj-plus-row .qty-adj-btn{background:#eff6ff;color:var(--wip);border-left:1px solid var(--border2)}
-.adj-plus-row .qty-adj-btn:hover{background:#dbeafe}
-.adj-plus-row .qty-adj-btn.pressing{background:#bfdbfe}
-.adj-plus-row .qty-adj-btn:first-child{border-left:none}
-.adj-repeating{outline:2px solid var(--accent);outline-offset:-2px}
-.adj-minus-row .qty-adj-btn.adj-repeating{outline-color:#9ca3af}
-@keyframes adjTick{0%{transform:scale(.88)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
-.adj-tick{animation:adjTick .1s ease}
-
-/* ── LINE SEARCH ── */
-.line-selected-bar{display:flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid var(--wip-border);border-radius:var(--r);padding:10px 14px;font-weight:700;color:var(--wip);font-size:14px;margin-bottom:6px}
-.line-selected-bar .lsb-name{flex:1}
-.line-selected-bar .lsb-change{background:none;border:1px solid var(--wip-border);color:var(--wip);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;font-family:var(--fj);font-weight:600;white-space:nowrap;min-height:28px}
-.line-selected-bar .lsb-change:hover{background:var(--wip);color:#fff}
-.line-search-area{display:block}
-.line-recent-area{margin-top:8px}
-.line-recent-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
-.line-recent-btns{display:flex;flex-wrap:wrap;gap:6px}
-.line-recent-btn{background:var(--surface2);border:1.5px solid var(--border2);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;font-family:var(--fj);cursor:pointer;transition:all .1s;color:var(--text-muted);min-height:36px}
-.line-recent-btn:hover,.line-recent-btn:active{background:var(--accent-dim);border-color:var(--wip);color:var(--wip)}
-.line-recent-btn.recent-star::after{content:'★';font-size:9px;margin-left:4px;color:var(--amber)}
-
-/* ── SUGGEST ── */
-.suggest-wrap{position:relative}
-.suggest-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:500;max-height:200px;overflow-y:auto;display:none;margin-top:2px}
-.suggest-list.open{display:block}
-.suggest-item{padding:11px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;min-height:44px}
-.suggest-item:last-child{border-bottom:none}
-.suggest-item:hover,.suggest-item.active{background:var(--accent-dim);color:var(--accent)}
-.suggest-item .sug-icon{font-size:12px;color:var(--text-dim);flex-shrink:0}
-
-/* ── OPERATOR ── */
-.op-name-bar{display:flex;align-items:center;gap:10px;background:var(--accent-dim);border:1px solid var(--wip-border);border-radius:var(--r);padding:10px 14px;font-size:14px;font-weight:600;color:var(--wip)}
-.op-name-bar .op-name-lbl{flex:1}
-.op-name-bar .op-change-btn{font-size:11px;font-weight:600;background:none;border:1px solid var(--wip-border);color:var(--wip);border-radius:4px;padding:4px 10px;cursor:pointer;white-space:nowrap;min-height:28px}
-.op-name-bar .op-change-btn:hover{background:var(--wip);color:#fff}
-.op-name-set{display:none}
-.op-name-set.visible{display:flex;flex-direction:column;gap:6px}
-.op-setup-banner{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:13px;color:#92400e;margin-bottom:0}
-.op-setup-banner .osb-label{flex:1}
-.op-setup-banner input{flex:1;background:#fff;border:1px solid #fcd34d;border-radius:var(--r);padding:7px 10px;font-size:14px;font-family:var(--fj);outline:none;min-height:40px}
-.op-setup-banner button{background:var(--amber);color:#fff;font-weight:700;font-size:12px;border:none;border-radius:4px;padding:7px 14px;cursor:pointer;white-space:nowrap;min-height:36px}
-.editable-operator{display:flex;align-items:center;gap:6px}
-.editable-operator input{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-size:13px;font-family:var(--fj);color:var(--text);outline:none;width:100px;min-height:36px}
-.editable-operator input:focus{border-color:var(--accent)}
-.editable-operator button{font-size:11px;padding:3px 8px;border-radius:4px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;color:var(--text-muted);min-height:28px}
-.editable-operator button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
-.op-info-bar{background:var(--accent-dim);border:1px solid var(--wip-border);border-radius:var(--r);padding:8px 12px;font-size:12px;color:var(--wip);margin-bottom:12px;display:flex;gap:12px}
-.op-info-bar span{font-weight:600}
-
-/* ── CORRECTION ── */
-.hist-row-correction td{background:#fff1f1;color:#991b1b}
-.hist-row-correction:hover td{background:#ffe4e4!important}
-.correction-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:5px}
-.corrected-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;background:#f3f4f6;color:#6b7280;border:1px solid #d1d5db;border-radius:4px;padding:1px 6px;margin-left:4px}
-.correction-count-badge{font-size:10px;color:#b91c1c;background:#fee2e2;border:1px solid #fca5a5;border-radius:4px;padding:1px 6px;margin-left:4px}
-.correction-count-badge.warn-cnt{color:#92400e;background:#fef3c7;border-color:#fcd34d}
-.correction-orig-desc{display:block;font-size:11px;color:#b91c1c;margin-top:2px;font-weight:500}
-.recent-correction-bar{display:flex;align-items:center;gap:10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--r);padding:10px 14px;margin-bottom:10px;font-size:13px;flex-wrap:wrap}
-.rcb-info{flex:1;color:#92400e;min-width:0}
-.rcb-info strong{color:#c2410c}
-.btn-recent-correct{background:#fff;border:1.5px solid var(--red);color:var(--red);font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--r);cursor:pointer;font-family:var(--fj);white-space:nowrap;min-height:36px}
-.btn-recent-correct:hover{background:var(--red);color:#fff}
-.btn-correct-row{background:none;border:1px solid #fca5a5;color:#b91c1c;font-size:10px;font-weight:700;padding:4px 10px;border-radius:4px;cursor:pointer;font-family:var(--fj);min-height:30px}
-.btn-correct-row:hover{background:#fee2e2}
-.btn-correct-row:disabled{opacity:.35;cursor:not-allowed}
-
-/* ── TOAST ── */
-#toasts{position:fixed;bottom:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;min-width:240px;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.12);display:flex;align-items:center;gap:10px;font-size:13px;pointer-events:all;border-left:3px solid var(--accent);animation:tIn .15s ease}
-.toast.ok{border-left-color:var(--green)}
-.toast.err{border-left-color:var(--red)}
-.toast.warn{border-left-color:var(--amber)}
-@keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(12px)}}
-
-
-/* ─── ACCORDION ─── */
-.acc-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:#fff;box-shadow:var(--sh)}
-.acc-item{border-bottom:1px solid var(--border)}
-.acc-item:last-child{border-bottom:none}
-.acc-header{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;-webkit-user-select:none;min-height:54px;background:#fff;transition:background .1s;position:relative;overflow:hidden}
-.acc-header:active{background:var(--surface2)}
-.acc-chevron{font-size:11px;color:var(--text-dim);transition:transform .2s;flex-shrink:0;margin-left:auto}
-.acc-item.open .acc-chevron{transform:rotate(180deg)}
-.acc-body{display:none;border-top:1px solid var(--border);background:var(--surface2);padding:12px 16px}
-.acc-item.open .acc-body{display:block}
-/* swipe indicator */
-.acc-header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .15s}
-.acc-item.swipe-left .acc-header::before{background:var(--red)}
-.acc-item.swipe-right .acc-header::before{background:var(--accent)}
-.swipe-bg{position:absolute;top:0;bottom:0;right:0;left:0;pointer-events:none;opacity:0;transition:opacity .15s}
-.swipe-bg-left{background:linear-gradient(to right,#fee2e2,transparent)}
-.swipe-bg-right{background:linear-gradient(to left,#dbeafe,transparent)}
-
-/* ─── ACCORDION INVENTORY ITEMS ─── */
-.acc-inv-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.acc-inv-name{font-weight:700;font-size:14px;line-height:1.3;color:var(--text)}
-.acc-inv-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.acc-inv-stocks{display:flex;gap:6px;align-items:center}
-.acc-stock-pill{font-family:var(--fn);font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px}
-.acc-stock-pill.sp-wip{background:var(--wip-dim);color:var(--wip)}
-.acc-stock-pill.sp-bari{background:var(--bari-dim);color:var(--bari)}
-.acc-stock-pill.sp-done{background:var(--done-dim);color:var(--done)}
-.acc-stock-pill.sp-warn{background:var(--red-dim);color:var(--red)}
-.acc-warn-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
-.acc-inv-body{display:grid;gap:10px}
-.acc-op-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.acc-op-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:var(--r);font-family:var(--fj);font-size:13px;font-weight:700;min-height:48px;cursor:pointer;transition:background .1s;gap:6px}
-.acc-op-btn:active{opacity:.8}
-
-/* ─── ACCORDION HISTORY ─── */
-.acc-hist-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.acc-hist-row1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.acc-hist-time{font-size:11px;color:var(--text-muted);font-family:var(--fn);white-space:nowrap}
-.acc-hist-name{font-size:13px;font-weight:600;color:var(--text);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.acc-hist-qty{font-family:var(--fn);font-size:13px;font-weight:700}
-.acc-hist-body{display:grid;gap:6px;font-size:13px}
-.acc-hist-detail{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
-.acc-hist-detail:last-child{border-bottom:none}
-.acc-hist-dlabel{font-size:11px;color:var(--text-muted);min-width:50px}
-
-/* ─── ACCORDION USERS ─── */
-.acc-user-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.acc-user-name{font-weight:700;font-size:14px}
-.acc-user-sub{font-size:11px;color:var(--text-muted);display:flex;gap:8px;align-items:center}
-
-/* ─── FIXED BOTTOM ACTION (スマホ操作ボタン下固定) ─── */
-.fixed-bottom-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 12px;gap:8px;z-index:50;box-shadow:0 -2px 12px rgba(0,0,0,.1)}
-.fbb-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--fj);font-weight:700;font-size:11px;gap:2px;transition:background .1s}
-.fbb-btn:active{opacity:.8}
-.fbb-btn .fbb-icon{font-size:18px;line-height:1}
-.fbb-wip{background:var(--wip-dim);color:var(--wip)}
-.fbb-bari{background:var(--bari-dim);color:var(--bari)}
-.fbb-done{background:var(--done-dim);color:var(--done)}
-.fbb-ship{background:var(--red-dim);color:var(--red)}
-
-/* ─── HISTORY CARD (スマホ用 table代替) ─── */
-.hist-cards{display:none;flex-direction:column;gap:0;}
-
-/* ─── SWIPE HINT ─── */
-.swipe-hint{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;font-size:11px;color:var(--text-dim);background:var(--surface2);border-bottom:1px solid var(--border)}
-.swipe-hint span{display:flex;align-items:center;gap:4px}
-@media(min-width:769px){.swipe-hint{display:none}}
-
-/* ─── OVERRIDES FOR MOBILE ACCORDION ─── */
-@media(max-width:768px){
-  .table-wrap .inv-table{display:none}
-}
-.inv-acc-list{display:none;flex-direction:column}
-
-/* ── MISC ── */
-.divider{height:1px;background:var(--border);margin:14px 0}
-.sec-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.mt8{margin-top:8px}
-.text-red{color:var(--red)}
-.text-amber{color:var(--amber)}
-.text-green{color:var(--green)}
-.empty{text-align:center;padding:48px 20px;color:var(--text-muted)}
-.empty .ei{font-size:36px;margin-bottom:10px}
-.empty p{font-size:13px}
-.op-hint-txt{font-size:11px;color:var(--text-dim);margin-top:3px}
-
-/* ── ACCORDION LISTS (PC default: hidden, mobile: flex) ── */
-/* ── MOBILE CARDS ── */
-.inv-cards{display:none;flex-direction:column;gap:10px}
-.icard{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:14px;box-shadow:var(--sh)}
-.icard.row-warn{border-left:3px solid var(--amber)}
-.icard.row-zero{border-left:3px solid var(--red)}
-.icard-top{margin-bottom:10px}
-.icard-name{font-weight:700;font-size:14px;line-height:1.3}
-.icard-code{font-size:11px;color:var(--text-muted);font-family:var(--fn);margin-top:2px}
-.icard-stocks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
-.icard-stock{border-radius:var(--r);padding:8px 6px;text-align:center;border:1px solid var(--border)}
-.icard-slabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.icard-sval{font-family:var(--fn);font-weight:700;font-size:16px;line-height:1}
-.icard-sunit{font-size:9px;color:var(--text-muted);margin-top:2px}
-.icard-btns{display:flex;flex-wrap:wrap;gap:6px}
-.icard-btns .btn-proc{flex:1;min-width:72px;text-align:center;padding:8px 4px;font-size:11px;min-height:40px}
-
-/* ── HAMBURGER ── */
-.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;flex-shrink:0;margin-left:auto;min-height:44px;min-width:44px}
-.hamburger span{display:block;width:20px;height:2px;background:var(--text-muted);border-radius:2px;transition:all .2s}
-.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-.hamburger.open span:nth-child(2){opacity:0}
-.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.mob-menu{display:none;position:fixed;top:54px;left:0;right:0;background:#fff;border-bottom:1px solid var(--border);z-index:200;padding:8px 0 12px;flex-direction:column;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-.mob-menu.open{display:flex}
-.mob-menu-tab{background:none;border:none;color:var(--text-muted);padding:14px 20px;font-size:14px;font-weight:500;font-family:var(--fj);text-align:left;cursor:pointer;width:100%;min-height:50px}
-.mob-menu-tab:hover,.mob-menu-tab.active{background:var(--surface2);color:var(--accent)}
-.mob-div{height:1px;background:var(--border);margin:6px 0}
-.mob-user{display:flex;align-items:center;gap:10px;padding:10px 20px}
-.mob-acts{display:flex;gap:8px;padding:6px 20px 0}
-
-/* ── MOBILE RESPONSIVE ── */
-@media(max-width:768px){
-  html,body{overflow-x:hidden}
-  .header{padding:0 12px;gap:8px;height:52px}
-  .header-brand{font-size:14px}
-  .header-sep,.header-nav,.header-right .btn-ghost{display:none}
-  .hamburger{display:flex}
-  .user-pill{padding:3px 8px 3px 4px}
-  .role-chip{display:none}
-  .main{padding:10px 12px;overflow-x:hidden}
-  .stats-row{grid-template-columns:1fr 1fr;gap:8px}
-  .stat-card{height:70px;padding:10px 12px}
-  .stat-val{font-size:20px}
-  .inv-cards{display:none}
-  .table-wrap{overflow-x:hidden}
-  .hist-table{min-width:600px;overflow-x:auto}
-  .user-table{min-width:440px;overflow-x:auto}
-  .toolbar{flex-wrap:wrap;gap:6px}
-  .search-wrap{flex:1;min-width:0;max-width:none}
-  .page-header{flex-wrap:wrap;gap:6px}
-  .page-actions{width:100%;margin-left:0}
-  .page-actions .btn{flex:1}
-  .modal{max-width:100%;border-radius:14px 14px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:94vh}
-  .overlay{align-items:flex-end;padding:0}
-  .two-col{grid-template-columns:1fr 1fr}
-  .three-col{grid-template-columns:1fr 1fr 1fr}
-  .login-card{padding:32px 20px;margin:16px}
-  #toasts{bottom:8px;right:8px;left:8px}
-  .toast{min-width:0;max-width:100%}
-  .mob-menu{top:52px}
-  .modal-foot{padding:12px 16px;flex-direction:column-reverse}
-  .modal-foot .btn-primary{width:100%;min-height:52px;font-size:15px;order:-1}
-  .modal-foot .btn-ghost{width:100%}
-  /* Qty adjuster mobile: 3-row layout */
-  .qty-adjuster{flex-direction:column;border-radius:10px;min-height:140px}
-  .adj-minus-row{border-bottom:1px solid var(--border2);flex:0 0 auto;min-width:100%}
-  .adj-minus-row .qty-adj-btn{border-right:1px solid var(--border2);font-size:14px;min-height:44px;flex:1}
-  .adj-minus-row .qty-adj-btn:last-child{border-right:none}
-  .qty-adj-center{width:100%!important;flex:1 1 auto!important;border-left:none;border-right:none;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);display:block!important;min-height:70px}
-  .qty-adj-input{font-size:36px;min-height:70px;width:100%;padding:10px 48px;text-align:center}
-  .qty-adj-unit{font-size:14px;right:12px}
-  .adj-plus-row{border-top:none;flex:0 0 auto;min-width:100%}
-  .adj-plus-row .qty-adj-btn{border-left:1px solid var(--border2);font-size:14px;min-height:44px;flex:1}
-  .adj-plus-row .qty-adj-btn:first-child{border-left:none}
-  /* Group buttons mobile */
-  .group-selector{gap:6px}
-  .group-btn{min-height:58px;padding:8px 4px}
-  .gb-label{font-size:12px}
-  .gb-icon{font-size:16px}
-  .current-group-bar{padding:8px 12px}
-  .table-wrap .inv-table{display:none}
-  .inv-cards{display:none}
-  .inv-acc-list{display:flex!important;flex-direction:column}
-  #hist-acc-list{display:flex!important;flex-direction:column}
-  .table-wrap.hist-wrap{display:none}
-  .swipe-hint{display:flex}
-  .fixed-bottom-bar{display:flex}
-  .main.has-bottom-bar{padding-bottom:76px}
-}
-
-/* ══════════════════════════════════════
-   PROCESS MANAGEMENT (工程別在庫管理)
-══════════════════════════════════════ */
-
-/* Process flow header */
-.proc-flow-header{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.proc-page-title{font-size:18px;font-weight:700}
-
-/* Process grid */
-.proc-grid{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:600px){.proc-grid{grid-template-columns:1fr 1fr}}
-@media(min-width:960px){.proc-grid{grid-template-columns:1fr 1fr 1fr}}
-
-/* Process card */
-.proc-card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);transition:box-shadow .15s}
-.proc-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.12)}
-.proc-card-head{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;position:relative}
-.proc-card-head::after{content:'';position:absolute;bottom:0;left:16px;right:16px;height:1px;background:var(--border)}
-.proc-color-bar{width:4px;height:36px;border-radius:2px;flex-shrink:0}
-.proc-card-info{flex:1;min-width:0}
-.proc-card-label{font-size:15px;font-weight:800;line-height:1.2}
-.proc-card-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
-.proc-card-totals{text-align:right;flex-shrink:0}
-.proc-total-good{font-size:20px;font-weight:700;font-family:var(--fn);line-height:1}
-.proc-total-ng{font-size:11px;color:var(--red);font-family:var(--fn);margin-top:2px}
-.proc-chevron{color:var(--text-dim);font-size:13px;flex-shrink:0;transition:transform .2s;margin-left:4px}
-.proc-card.open .proc-chevron{transform:rotate(180deg)}
-.proc-next-chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
-.proc-next-chip{font-size:10px;padding:2px 7px;border-radius:8px;background:var(--surface3);color:var(--text-muted);border:1px solid var(--border2);white-space:nowrap}
-
-/* Process card body */
-.proc-card-body{display:none;padding:0}
-.proc-card.open .proc-card-body{display:block}
-.proc-item-list{padding:8px 12px}
-.proc-item-row{display:flex;align-items:center;gap:8px;padding:10px 4px;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.proc-item-row:last-child{border-bottom:none}
-.proc-item-name{flex:1;min-width:120px}
-.proc-item-name-txt{font-size:13px;font-weight:600;line-height:1.3}
-.proc-item-code{font-size:10px;color:var(--text-muted);font-family:var(--fn)}
-.proc-item-stocks{display:flex;align-items:baseline;gap:10px;flex-shrink:0}
-.proc-good-qty{font-size:22px;font-weight:800;font-family:var(--fn);color:var(--text);line-height:1}
-.proc-good-unit{font-size:11px;color:var(--text-muted);margin-left:2px}
-.proc-ng-badge{background:var(--red-dim);border:1px solid rgba(239,68,68,.2);color:var(--red);font-size:11px;font-family:var(--fn);font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap}
-.proc-item-btns{display:flex;gap:6px;width:100%;margin-top:6px}
-.proc-btn-move{flex:1;padding:8px 4px;border-radius:8px;border:none;cursor:pointer;font-family:var(--fj);font-size:12px;font-weight:700;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(37,99,235,.2);min-height:40px;transition:background .1s}
-.proc-btn-move:hover{background:var(--accent-glow)}
-.proc-btn-move:active{opacity:.8}
-.proc-btn-ng{flex:0 0 auto;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-family:var(--fj);font-size:12px;font-weight:700;background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2);min-height:40px;white-space:nowrap;transition:background .1s}
-.proc-btn-ng:hover{background:var(--red-mid)}
-.proc-empty{text-align:center;color:var(--text-dim);padding:20px;font-size:13px}
-.proc-item-row.proc-zero .proc-good-qty{color:var(--text-dim)}
-.proc-item-all-zero{padding:16px;text-align:center;color:var(--text-dim);font-size:13px}
-
-/* Proc filter/search toolbar */
-.proc-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-
-/* Move modal destination buttons */
-.proc-dest-group{margin-top:10px}
-.proc-dest-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.proc-dest-btns{display:flex;flex-direction:column;gap:8px}
-.proc-dest-btn{width:100%;padding:14px 16px;border-radius:10px;border:2px solid transparent;cursor:pointer;font-family:var(--fj);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;min-height:52px;transition:all .12s;text-align:left}
-.proc-dest-btn:active{opacity:.85}
-.proc-dest-btn-stock{font-size:11px;font-family:var(--fn);opacity:.8}
-.proc-move-info{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:12px}
-.proc-move-info-row{display:flex;justify-content:space-between;align-items:center;font-size:13px}
-.proc-move-info-row+.proc-move-info-row{margin-top:4px;padding-top:4px;border-top:1px solid var(--border)}
-.proc-move-stock-val{font-family:var(--fn);font-weight:700;font-size:16px}
-
-/* NG modal */
-.ng-type-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.ng-type-btn{padding:10px;border-radius:8px;border:2px solid transparent;cursor:pointer;font-family:var(--fj);font-size:13px;font-weight:700;text-align:center;min-height:48px;transition:all .12s}
-.ng-type-btn.nt-setup{background:var(--amber-dim);color:var(--amber);border-color:var(--amber-border,rgba(245,158,11,.3))}
-.ng-type-btn.nt-setup.nt-active{background:var(--amber);color:#fff;border-color:var(--amber)}
-.ng-type-btn.nt-defect{background:var(--red-dim);color:var(--red);border-color:rgba(239,68,68,.2)}
-.ng-type-btn.nt-defect.nt-active{background:var(--red);color:#fff;border-color:var(--red)}
-.ng-current-badge{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;font-size:13px}
-.ng-current-val{font-family:var(--fn);font-weight:700;font-size:16px;color:var(--red)}
-
-/* Proc config modal */
-.proc-config-list{display:flex;flex-direction:column;gap:8px}
-.proc-config-row{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:10px 12px}
-.proc-config-row-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.proc-config-color-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
-.proc-config-name-inp{flex:1;background:#fff;border:1px solid var(--border2);border-radius:var(--r);padding:6px 10px;font-size:13px;font-family:var(--fj);font-weight:600;color:var(--text);outline:none;min-height:36px}
-.proc-config-name-inp:focus{border-color:var(--accent)}
-.proc-del-btn{background:var(--red-dim);color:var(--red);border:none;border-radius:var(--r);padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;min-height:30px;white-space:nowrap}
-.proc-next-editor{padding-left:22px}
-.proc-next-editor-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
-.proc-next-checks{display:flex;flex-wrap:wrap;gap:6px}
-.proc-next-check-btn{padding:4px 10px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface3);color:var(--text-muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .1s;font-family:var(--fj);min-height:30px}
-.proc-next-check-btn.pnc-active{background:var(--accent-dim);color:var(--accent);border-color:rgba(37,99,235,.3)}
-.proc-add-btn-row{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-
-/* Intro banner for proc page */
-.proc-intro{background:linear-gradient(135deg,var(--accent-dim),rgba(124,58,237,.05));border:1px solid var(--wip-border);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--text-muted)}
-.proc-intro strong{color:var(--text)}
-
-/* 完成品カード special styling */
-.proc-card.proc-done-card .proc-card-head{background:rgba(16,185,129,.04)}
-.proc-card.proc-done-card .proc-total-good{color:var(--done)}
-
-/* Done section label */
-.proc-done-sep{display:flex;align-items:center;gap:10px;margin:16px 0 12px;color:var(--text-muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
-.proc-done-sep::before,.proc-done-sep::after{content:'';flex:1;height:1px;background:var(--border)}
+#login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f0f4f8; padding: 20px; }
+.login-card { background: #fff; border-radius: 16px; padding: 32px 24px; width: 100%; max-width: 360px; box-shadow: var(--sh); text-align: center; }
+.login-brand { font-size: 24px; font-weight: 900; margin-bottom: 24px; }
+.login-brand span { color: var(--accent); }
+.empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -598,21 +145,11 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 <!-- ═══ LOGIN ═══ -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-logo">
-      <div class="brand">STOCK<span>S</span></div>
-      <div class="sub">現場在庫管理システム v11</div>
-    </div>
+    <div class="login-brand">STOCK<span>S</span></div>
     <div id="login-err" class="error-box"></div>
-    <div class="form-row">
-      <label>ユーザー名</label>
-      <input id="li-user" type="text" placeholder="username" autocomplete="username">
-    </div>
-    <div class="form-row">
-      <label>パスワード</label>
-      <input id="li-pw" type="password" placeholder="••••••••" autocomplete="current-password">
-    </div>
+    <div class="form-row"><input id="li-user" type="text" placeholder="ユーザー名 (admin)"></div>
+    <div class="form-row"><input id="li-pw" type="password" placeholder="パスワード (admin123)"></div>
     <button class="btn btn-primary btn-full mt8" onclick="doLogin()">ログイン</button>
-    <p style="text-align:center;margin-top:14px;font-size:11px;color:var(--text-muted)">初期: admin / admin123 &nbsp;|&nbsp; user1 / user123</p>
   </div>
 </div>
 
@@ -620,525 +157,151 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 <div id="app">
   <header class="header">
     <div class="header-brand">STOCK<span>S</span></div>
-    <div class="header-sep"></div>
     <nav class="header-nav">
       <button class="nav-tab active" onclick="showPage('inventory')">在庫一覧</button>
-      <button class="nav-tab" onclick="showPage('history')">操作履歴</button>
-      <button class="nav-tab" onclick="showPage('process')">工程管理</button>
-      <button class="nav-tab admin-only" id="tab-users" style="display:none" onclick="showPage('users')">ユーザー管理</button>
+      <button class="nav-tab" onclick="showPage('history')">履歴</button>
+      <button class="nav-tab admin-only" onclick="showPage('users')" style="display:none">設定</button>
     </nav>
-    <div class="header-right">
-      <div class="user-pill">
-        <div class="user-av" id="hd-av">A</div>
-        <span id="hd-name">admin</span>
-        <span id="hd-operator-name" style="font-size:11px;color:var(--text-muted);margin-left:2px"></span>
-        <span class="role-chip admin" id="hd-role">管理者</span>
-      </div>
-      <button class="btn btn-ghost btn-sm admin-only" id="hd-pw-btn" onclick="showPwModal()">PW変更</button>
-      <button class="btn btn-ghost btn-sm" onclick="doLogout()">ログアウト</button>
+    <div class="user-pill" onclick="doLogout()">
+      <div class="user-av" id="hd-av">A</div>ログアウト
     </div>
-    <button class="hamburger" id="hbg" onclick="toggleMobMenu()">
-      <span></span><span></span><span></span>
-    </button>
   </header>
 
-  <div class="mob-menu" id="mob-menu">
-    <button class="mob-menu-tab" onclick="navTo('inventory')">📦 在庫一覧</button>
-    <button class="mob-menu-tab" onclick="navTo('history')">📋 操作履歴</button>
-    <button class="mob-menu-tab" onclick="navTo('process')">⚙ 工程管理</button>
-    <button class="mob-menu-tab admin-only" id="mob-tab-users" style="display:none" onclick="navTo('users')">👥 ユーザー管理</button>
-    <div class="mob-div"></div>
-    <div class="mob-user">
-      <div class="user-av" id="mob-av">A</div>
-      <div>
-        <div style="font-size:13px;font-weight:600" id="mob-name">—</div>
-        <div style="font-size:11px;color:var(--text-muted)" id="mob-role">—</div>
-      </div>
-    </div>
-    <div class="mob-acts">
-      <button class="btn btn-ghost btn-sm admin-only" id="mob-pw-btn" style="display:none" onclick="showPwModal();closeMobMenu()">🔑 PW変更</button>
-      <button class="btn btn-ghost btn-sm" onclick="doLogout()">ログアウト</button>
-    </div>
-  </div>
-
   <main class="main">
-
-    <!-- ── 在庫一覧 ── -->
+    
+    <!-- ── 1. 在庫一覧 ── -->
     <div id="page-inventory" class="page active">
-      <!-- 作業者名未設定バナー -->
-      <div id="op-setup-banner" class="op-setup-banner" style="display:none;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-        <span class="osb-label">👋 あなたの<strong>作業者名</strong>を設定してください（操作ログに記録されます）</span>
-        <input id="op-setup-input" type="text" placeholder="例: 田中 太郎">
-        <button onclick="saveMyOperatorName()">設定して始める</button>
-      </div>
-      <!-- ② 現在のグループ表示バー -->
-      <div class="current-group-bar" id="current-group-bar">
-        <span class="cgb-label">現在のグループ：</span>
-        <span class="cgb-badge cgb-wip" id="cgb-badge">仕掛品</span>
-      </div>
-      <div class="stats-row" id="stats-row"></div>
       <div class="toolbar">
         <div class="search-wrap">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="search-input" type="text" placeholder="品目検索..." oninput="renderInventory()">
+          <input id="search-input" type="text" placeholder="製品名で検索..." oninput="renderInventory()">
         </div>
-        <select class="filter-sel" id="filter-status" onchange="renderInventory()">
-          <option value="">全て表示</option>
-          <option value="warn">要注意のみ</option>
-          <option value="zero">在庫0のみ</option>
-        </select>
-        <div style="margin-left:auto;display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm admin-only" onclick="showAddModal()">＋ 品目登録</button>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="showLineModal()">⚙ ライン設定</button>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="exportCSV('items')">CSV出力</button>
-        </div>
+        <button class="btn btn-primary btn-sm admin-only" onclick="showAddModal()">＋ 製品登録</button>
+        <button class="btn btn-ghost btn-sm admin-only" onclick="showProcConfigModal()">⚙ 工程設定</button>
       </div>
-      <div class="table-wrap">
-        <table class="inv-table">
-          <thead><tr>
-            <th class="th-name" style="text-align:left;min-width:160px">品目</th>
-            <th style="min-width:100px;text-align:left">メーカー</th>
-            <th class="th-wip" style="min-width:90px">仕掛品</th>
-            <th class="th-bari" style="min-width:90px">バリ前</th>
-            <th class="th-done" style="min-width:90px">完成品</th>
-            <th style="min-width:280px">操作</th>
-          </tr></thead>
-          <tbody id="inv-body"></tbody>
-        </table>
-      </div>
-      <div class="inv-cards" id="inv-cards"></div>
-      <!-- ⑭ アコーディオン in-list -->
-      <div class="acc-list inv-acc-list" id="inv-acc-list"></div>
+      <div class="inv-list" id="new-inv-list"></div>
     </div>
 
-    <!-- ── 操作履歴 ── -->
-    <div id="page-history" class="page">
-      <div class="page-header">
-        <div class="page-title">操作履歴</div>
-        <span class="badge-count" id="hist-count">0件</span>
-        <div class="page-actions">
-          <select class="filter-sel" id="hist-filter-line" onchange="renderHistory()" style="font-size:12px">
-            <option value="">全ライン</option>
-          </select>
-          <select class="filter-sel" id="hist-filter-op" onchange="renderHistory()" style="font-size:12px">
-            <option value="">全操作</option>
-            <option value="加工">加工</option>
-            <option value="バリ前移動">バリ前移動</option>
-            <option value="完成">完成</option>
-            <option value="出荷">出荷</option>
-            <option value="訂正">訂正のみ</option>
-          </select>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="exportCSV('history')">CSV出力</button>
-          <button class="btn btn-ghost btn-sm admin-only" onclick="confirmClearHistory()">クリア</button>
+    <!-- ── 2. 工程管理 (操作画面) ── -->
+    <div id="page-process" class="page">
+      <div class="proc-header">
+        <button class="btn btn-ghost btn-sm" onclick="showPage('inventory')">← 戻る</button>
+        <div class="proc-target-name" id="proc-target-name">製品名</div>
+      </div>
+
+      <div class="proc-tabs-wrap">
+        <div class="proc-tabs" id="proc-tabs"></div>
+      </div>
+
+      <div class="proc-action-card">
+        <div class="proc-stock-display">
+          <div class="proc-stock-label" id="proc-stock-label">現在在庫（良品）</div>
+          <div class="proc-stock-value" id="proc-current-stock">0</div>
+          <div class="proc-stock-unit" id="proc-current-unit">個</div>
+        </div>
+        
+        <div class="proc-qty-section">
+          <div class="qty-quick-btns">
+            <button class="btn-quick" onclick="addProcQty(-10)">-10</button>
+            <button class="btn-quick" onclick="addProcQty(-5)">-5</button>
+            <button class="btn-quick" onclick="addProcQty(-1)">-1</button>
+            <button class="btn-quick" onclick="addProcQty(1)">+1</button>
+            <button class="btn-quick" onclick="addProcQty(5)">+5</button>
+            <button class="btn-quick" onclick="addProcQty(10)">+10</button>
+          </div>
+          <input type="number" id="proc-input-qty" placeholder="数量を入力" />
+        </div>
+
+        <div class="proc-action-grid">
+          <div id="proc-destinations" class="proc-destinations"></div>
+          <div class="proc-ng-actions" id="proc-ng-actions">
+            <button class="btn-ng nt-setup" onclick="execNg('setup')">段取り品NG<br><small style="font-size:11px; opacity:0.8">タップで確定</small></button>
+            <button class="btn-ng nt-defect" onclick="execNg('defect')">不良品NG<br><small style="font-size:11px; opacity:0.8">タップで確定</small></button>
+          </div>
         </div>
       </div>
-      <div class="recent-correction-bar" id="recent-correction-bar" style="display:none">
-        <div class="rcb-info">直近の操作: <strong id="rcb-desc">—</strong></div>
-        <button class="btn-recent-correct" id="btn-recent-correct" onclick="quickCorrect()">⎌ 直近訂正</button>
+    </div>
+
+    <!-- ── 3. 操作履歴 ── -->
+    <div id="page-history" class="page">
+      <div class="toolbar" style="justify-content:space-between">
+        <div style="font-size:16px; font-weight:700;">操作履歴 <span id="hist-count" style="font-size:12px; color:var(--text-muted)"></span></div>
+        <button class="btn btn-ghost btn-sm admin-only" onclick="exportCSV()">CSV出力</button>
       </div>
-      <div class="swipe-hint"><span>← スワイプで訂正</span><span>タップで展開 →</span></div>
-      <div class="hist-cards acc-list" id="hist-acc-list"></div>
-      <div class="table-wrap hist-wrap" style="overflow-x:auto">
-        <table class="hist-table" style="min-width:640px">
-          <thead><tr>
-            <th>日時</th><th>操作</th><th>グループ</th><th>品目</th><th>数量</th><th>ライン</th><th>作業者</th><th style="width:70px">訂正</th>
-          </tr></thead>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>日時</th><th>操作</th><th>工程</th><th>製品</th><th>数量</th><th>作業者</th><th>取消</th></tr></thead>
           <tbody id="hist-body"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ── ユーザー管理 ── -->
+    <!-- ── 4. ユーザー管理 ── -->
     <div id="page-users" class="page">
-      <div class="page-header">
-        <div class="page-title">ユーザー管理</div>
-        <div class="page-actions">
-          <button class="btn btn-ghost btn-sm" onclick="showAddUserModal()">＋ ユーザー追加</button>
-        </div>
+      <div class="toolbar" style="justify-content:space-between">
+        <div style="font-size:16px; font-weight:700;">ユーザー設定</div>
+        <button class="btn btn-primary btn-sm" onclick="showAddUserModal()">＋ 追加</button>
       </div>
-      <div class="acc-list" id="user-acc-list" style="display:none"></div>
       <div class="table-wrap">
-        <table class="user-table">
-          <thead><tr>
-            <th>ユーザー名</th><th>権限</th><th>作業者名</th><th>登録日</th><th>操作</th>
-          </tr></thead>
+        <table>
+          <thead><tr><th>ユーザー名</th><th>権限</th><th>削除</th></tr></thead>
           <tbody id="user-body"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ── 工程別在庫管理 ── -->
-    <div id="page-process" class="page">
-      <div class="proc-flow-header">
-        <div class="proc-page-title">工程別在庫管理</div>
-        <span class="badge-count" id="proc-item-count">0品目</span>
-        <div style="margin-left:auto;display:flex;gap:8px">
-          <button class="btn btn-ghost btn-sm admin-only" id="proc-config-btn" onclick="showProcConfigModal()">⚙ 工程設定</button>
-        </div>
-      </div>
-      <div class="proc-toolbar">
-        <div class="search-wrap" style="max-width:260px">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="proc-search" type="text" placeholder="品目検索..." oninput="renderProcessPage()">
-        </div>
-      </div>
-      <div id="proc-page-content">
-        <!-- rendered by JS -->
-      </div>
-    </div>
-
   </main>
-  <!-- ⑬ 固定下部バー（スマホのみ表示） -->
-  <div class="fixed-bottom-bar" id="fixed-bottom-bar">
-    <div id="fbb-item-name" style="position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:11px;color:var(--text-muted);display:none"></div>
-  </div>
 </div>
 
 <!-- ═══ MODALS ═══ -->
 
-<!-- ⑯ 操作モーダル（グループ選択優先設計） -->
-<div class="overlay" id="modal-op">
-  <div class="modal">
-    <div class="modal-head">
-      <span class="modal-title" id="op-title">操作</span>
-      <button class="modal-x" onclick="closeModal('modal-op')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="op-err" class="error-box"></div>
-
-      <!-- ① グループ選択ボタン -->
-      <div class="group-selector" id="op-group-selector">
-        <button type="button" class="group-btn group-btn-wip" id="gbtn-wip" onclick="switchOpGroup('wip_add')">
-          <span class="gb-icon">⚙️</span>
-          <span class="gb-label">仕掛品</span>
-          <span class="gb-sub">加工入庫</span>
-        </button>
-        <button type="button" class="group-btn group-btn-bari" id="gbtn-bari" onclick="switchOpGroup('wip_to_bari')">
-          <span class="gb-icon">🔧</span>
-          <span class="gb-label">バリ取り前</span>
-          <span class="gb-sub">バリ前移動</span>
-        </button>
-        <button type="button" class="group-btn group-btn-done" id="gbtn-done" onclick="switchOpGroup('bari_to_done')">
-          <span class="gb-icon">✅</span>
-          <span class="gb-label">完成品</span>
-          <span class="gb-sub">完成 / 出荷</span>
-        </button>
-      </div>
-
-      <!-- 完成品サブ操作 -->
-      <div class="done-sub-row" id="done-sub-row">
-        <button type="button" class="done-sub-btn dsb-complete" id="dsb-complete" onclick="switchOpType('bari_to_done')">✅ 完成</button>
-        <button type="button" class="done-sub-btn dsb-ship" id="dsb-ship" onclick="switchOpType('done_to_ship')">🚚 出荷</button>
-      </div>
-
-      <!-- 品目・在庫情報 -->
-      <div class="transfer-block">
-        <div class="transfer-flow">
-          <span id="op-from-lbl" style="font-weight:700"></span>
-          <span class="tf-arrow" id="op-arrow">→</span>
-          <span id="op-to-lbl" style="font-weight:700"></span>
-        </div>
-        <div class="transfer-stock">
-          <span id="op-item-name">—</span>
-          <span id="op-stock-info" style="margin-left:12px"></span>
-        </div>
-      </div>
-
-      <!-- ⑦ 数量操作 -->
-      <div class="sec-label">移動数量</div>
-      <div class="qty-adjuster" id="op-adj-row"></div>
-      <div class="transfer-warn" id="op-warn">⚠ 移動元在庫の80%以上を移動しようとしています。</div>
-
-      <!-- ③ ライン入力（仕掛品のみ表示） -->
-      <div class="form-row" id="op-line-row">
-        <label>ライン <span class="text-red">*</span></label>
-        <!-- 選択済み表示 -->
-        <div class="line-selected-bar" id="op-line-selected-bar" style="display:none">
-          <span class="lsb-name" id="op-line-selected-txt">—</span>
-          <button class="lsb-change" onclick="clearLineSelection()">変更</button>
-        </div>
-        <!-- ⑤ 検索+サジェスト -->
-        <div class="line-search-area" id="op-line-search-area">
-          <div class="suggest-wrap">
-            <input id="op-line-search" type="text" placeholder="ライン名を入力・検索..."
-              autocomplete="off" oninput="onLineSearch()" onfocus="onLineSearchFocus()">
-            <div class="suggest-list" id="op-line-suggest"></div>
-          </div>
-          <!-- ⑤ よく使うライン（最大5件） -->
-          <div class="line-recent-area" id="op-line-recent-area">
-            <div class="line-recent-label" style="margin-top:8px">よく使うライン（★=最近使用）</div>
-            <div class="line-recent-btns" id="op-line-recent-btns"></div>
-          </div>
-        </div>
-        <input type="hidden" id="op-line">
-      </div>
-
-      <!-- 作業者 -->
-      <div class="form-row" id="op-operator-row">
-        <label>作業者名 <span class="text-red">*</span></label>
-        <div class="op-name-bar" id="op-name-bar" style="display:none">
-          <span class="op-name-lbl" id="op-name-bar-txt"></span>
-          <button class="op-change-btn" onclick="toggleOperatorInput(true)">変更</button>
-        </div>
-        <div class="op-name-set" id="op-name-set">
-          <div class="suggest-wrap">
-            <input id="op-operator" type="text" placeholder="例: 田中" autocomplete="off"
-              oninput="onOperatorInput()" onkeydown="onOperatorKeydown(event)" onfocus="onOperatorInput()">
-            <div class="suggest-list" id="op-suggest"></div>
-          </div>
-          <button type="button" style="font-size:11px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-align:left;padding:0" onclick="toggleOperatorInput(false)" id="op-cancel-change">← 自分の名前に戻す</button>
-        </div>
-      </div>
-      <div class="op-hint-txt" id="op-hint"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-op')">キャンセル</button>
-      <button class="btn btn-primary" id="op-submit-btn" onclick="execOp()">実行</button>
-    </div>
-  </div>
-</div>
-
-<!-- 品目 追加/編集 -->
+<!-- 製品登録 -->
 <div class="overlay" id="modal-item">
   <div class="modal">
-    <div class="modal-head">
-      <span class="modal-title" id="item-modal-title">品目登録</span>
-      <button class="modal-x" onclick="closeModal('modal-item')">✕</button>
-    </div>
+    <div class="modal-head"><span class="modal-title" id="item-modal-title">製品登録</span><button class="modal-x" onclick="closeModal('modal-item')">✕</button></div>
     <div class="modal-body">
       <div id="item-err" class="error-box"></div>
       <input type="hidden" id="item-id">
-      <div class="two-col">
-        <div class="form-row">
-          <label>品目名 *</label>
-          <input id="item-name" type="text" placeholder="例: M5タッピングビス">
-        </div>
-        <div class="form-row">
-          <label>品目コード *</label>
-          <input id="item-code" type="text" placeholder="例: ITEM-001">
-        </div>
-      </div>
-      <div class="two-col">
-        <div class="form-row">
-          <label>単位 *</label>
-          <input id="item-unit" type="text" placeholder="例: 個">
-        </div>
-        <div class="form-row">
-          <label>メーカー</label>
-          <input id="item-maker" type="text" placeholder="例: 山田製作所">
-        </div>
-      </div>
-      <div class="form-row">
-        <label>警告閾値（完成品）</label>
-        <input id="item-threshold" type="number" min="0" placeholder="例: 50">
-      </div>
-      <div class="divider"></div>
-      <div class="sec-label">初期在庫</div>
-      <div class="three-col" id="init-stock-row">
-        <div class="form-row"><label style="color:var(--wip)">仕掛品</label><input id="item-wip" type="number" min="0" placeholder="0"></div>
-        <div class="form-row"><label style="color:var(--bari)">バリ前</label><input id="item-bari" type="number" min="0" placeholder="0"></div>
-        <div class="form-row"><label style="color:var(--done)">完成品</label><input id="item-done" type="number" min="0" placeholder="0"></div>
-      </div>
+      <div class="form-row"><label>製品名 *</label><input id="item-name" type="text" placeholder="例: 製品A"></div>
+      <div class="form-row"><label>製品コード *</label><input id="item-code" type="text" placeholder="例: ITEM-001"></div>
+      <div class="form-row"><label>単位 *</label><input id="item-unit" type="text" placeholder="例: 個"></div>
+      <div class="form-row" id="init-stock-row"><label>初期在庫（成形素材）</label><input id="item-init-stock" type="number" min="0" placeholder="0"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-item')">キャンセル</button>
-      <button class="btn btn-primary" onclick="saveItem()">保存</button>
+      <button class="btn btn-primary btn-full" onclick="saveItem()">保存する</button>
+      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-item')">キャンセル</button>
     </div>
   </div>
 </div>
 
-<!-- ライン設定 -->
-<div class="overlay" id="modal-lines">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-head">
-      <span class="modal-title">ライン設定</span>
-      <button class="modal-x" onclick="closeModal('modal-lines')">✕</button>
-    </div>
+<!-- 工程設定 -->
+<div class="overlay" id="modal-proc-config">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">工程設定</span><button class="modal-x" onclick="closeModal('modal-proc-config')">✕</button></div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">操作時に選択できるラインを管理します。</p>
-      <div id="lines-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px"></div>
-      <div style="display:flex;gap:8px">
-        <input id="new-line-input" type="text" placeholder="例: 1号機" style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:8px 12px;font-size:14px;font-family:var(--fj);outline:none;min-height:44px">
-        <button class="btn btn-primary btn-sm" onclick="addLine()">追加</button>
-      </div>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">加工工程は最大6つ。完成品は自動で末尾に追加されます。</p>
+      <div id="proc-config-list" style="display:flex; flex-direction:column; gap:12px;"></div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:12px; width:100%" onclick="addProcStep()" id="proc-add-step-btn">＋ 工程を追加</button>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-lines')">閉じる</button>
-    </div>
-  </div>
-</div>
-
-<!-- パスワード変更 -->
-<div class="overlay" id="modal-pw">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-head">
-      <span class="modal-title">パスワード変更</span>
-      <button class="modal-x" onclick="closeModal('modal-pw')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="pw-err" class="error-box"></div>
-      <div class="form-row"><label>現在のパスワード</label><input id="pw-current" type="password" placeholder="現在のパスワード"></div>
-      <div class="form-row">
-        <label>新しいパスワード（6文字以上）</label>
-        <input id="pw-new" type="password" placeholder="新しいパスワード" oninput="updatePwStrength()">
-        <div class="pw-strength"><div class="pw-bar" id="pw-bar"></div></div>
-      </div>
-      <div class="form-row"><label>確認</label><input id="pw-confirm" type="password" placeholder="もう一度入力"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-pw')">キャンセル</button>
-      <button class="btn btn-primary" onclick="changePassword()">変更する</button>
+      <button class="btn btn-primary btn-full" onclick="saveProcConfig()">保存する</button>
+      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-proc-config')">キャンセル</button>
     </div>
   </div>
 </div>
 
 <!-- ユーザー追加 -->
 <div class="overlay" id="modal-adduser">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-head">
-      <span class="modal-title">ユーザー追加</span>
-      <button class="modal-x" onclick="closeModal('modal-adduser')">✕</button>
-    </div>
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">ユーザー追加</span><button class="modal-x" onclick="closeModal('modal-adduser')">✕</button></div>
     <div class="modal-body">
       <div id="adduser-err" class="error-box"></div>
-      <div class="form-row"><label>ユーザー名 *</label><input id="au-name" type="text" placeholder="英数字・アンダースコア"></div>
-      <div class="form-row"><label>初期パスワード（6文字以上）*</label><input id="au-pw" type="password" placeholder="初期パスワード"></div>
-      <div class="form-row">
-        <label>権限</label>
-        <select id="au-role"><option value="user">一般ユーザー</option><option value="admin">管理者</option></select>
-      </div>
-      <div class="form-row">
-        <label>作業者名（表示名）</label>
-        <input id="au-operator" type="text" placeholder="例: 田中 太郎">
-        <div class="form-hint">操作ログに記録される名前です。後から変更可能。</div>
-      </div>
+      <div class="form-row"><label>ユーザー名 *</label><input id="au-name" type="text"></div>
+      <div class="form-row"><label>初期パスワード *</label><input id="au-pw" type="password"></div>
+      <div class="form-row"><label>権限</label><select id="au-role"><option value="user">一般</option><option value="admin">管理者</option></select></div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-adduser')">キャンセル</button>
-      <button class="btn btn-primary" onclick="addUser()">追加</button>
-    </div>
-  </div>
-</div>
-
-<!-- 削除確認 -->
-<div class="overlay" id="modal-delete">
-  <div class="modal" style="max-width:380px">
-    <div class="modal-head">
-      <span class="modal-title text-red">削除確認</span>
-      <button class="modal-x" onclick="closeModal('modal-delete')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:14px">以下の品目を削除しますか？この操作は取り消せません。</p>
-      <p style="margin-top:10px;font-weight:700" id="del-item-name">—</p>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-delete')">キャンセル</button>
-      <button class="btn btn-danger" onclick="execDelete()">削除する</button>
-    </div>
-  </div>
-</div>
-
-<!-- 汎用確認ダイアログ -->
-<div class="overlay" id="modal-confirm">
-  <div class="modal" style="max-width:380px">
-    <div class="modal-head">
-      <span class="modal-title" id="conf-title">確認</span>
-      <button class="modal-x" onclick="closeModal('modal-confirm')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p id="conf-msg" style="font-size:14px;white-space:pre-line;line-height:1.7"></p>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">キャンセル</button>
-      <button class="btn btn-danger" id="conf-ok-btn">実行</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ 良品移動モーダル ═══ -->
-<div class="overlay" id="modal-proc-move">
-  <div class="modal" style="max-width:460px">
-    <div class="modal-head">
-      <span class="modal-title" id="pmove-title">良品移動</span>
-      <button class="modal-x" onclick="closeModal('modal-proc-move')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="pmove-err" class="error-box"></div>
-      <div class="proc-move-info" id="pmove-info">
-        <div class="proc-move-info-row">
-          <span style="color:var(--text-muted);font-size:12px">移動元</span>
-          <span id="pmove-from-label" style="font-weight:700"></span>
-        </div>
-        <div class="proc-move-info-row">
-          <span style="color:var(--text-muted);font-size:12px">良品在庫</span>
-          <span class="proc-move-stock-val" id="pmove-stock">—</span>
-        </div>
-      </div>
-      <div class="form-row">
-        <label>移動数量</label>
-        <div class="qty-adjuster" id="pmove-adj-row"></div>
-      </div>
-      <div class="proc-dest-group">
-        <div class="proc-dest-label">移動先を選択</div>
-        <div class="proc-dest-btns" id="pmove-dest-btns">
-          <!-- rendered by JS -->
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ NG登録モーダル ═══ -->
-<div class="overlay" id="modal-proc-ng">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-head">
-      <span class="modal-title" id="png-title">NG登録</span>
-      <button class="modal-x" onclick="closeModal('modal-proc-ng')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="png-err" class="error-box"></div>
-      <div class="ng-current-badge">
-        <span style="color:var(--text-muted);font-size:12px">現在のNG在庫</span>
-        <span class="ng-current-val" id="png-current">0</span>
-      </div>
-      <div class="form-row">
-        <label>NGタイプ</label>
-        <div class="ng-type-btns">
-          <button type="button" class="ng-type-btn nt-setup nt-active" id="ng-type-setup" onclick="selectNgType('setup')">⚙ 段取り品</button>
-          <button type="button" class="ng-type-btn nt-defect" id="ng-type-defect" onclick="selectNgType('defect')">✕ 不良品</button>
-        </div>
-      </div>
-      <div class="form-row">
-        <label>NG数量</label>
-        <div class="qty-adjuster" id="png-adj-row"></div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-proc-ng')">キャンセル</button>
-      <button class="btn btn-danger" onclick="execNgAdd()">NG登録</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ 工程設定モーダル（管理者） ═══ -->
-<div class="overlay" id="modal-proc-config">
-  <div class="modal" style="max-width:520px">
-    <div class="modal-head">
-      <span class="modal-title">工程設定</span>
-      <button class="modal-x" onclick="closeModal('modal-proc-config')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">工程を最大6つまで定義できます。「次工程」を選択すると工程間の移動経路が確立されます。完成品は自動で末尾に追加されます。</p>
-      <div class="proc-config-list" id="proc-config-list">
-        <!-- rendered by JS -->
-      </div>
-      <div class="proc-add-btn-row">
-        <button class="btn btn-ghost btn-sm" onclick="addProcStep()" id="proc-add-step-btn">＋ 工程を追加</button>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('modal-proc-config')">キャンセル</button>
-      <button class="btn btn-primary" onclick="saveProcConfig()">保存</button>
+      <button class="btn btn-primary btn-full" onclick="addUser()">追加する</button>
+      <button class="btn btn-ghost btn-full" onclick="closeModal('modal-adduser')">キャンセル</button>
     </div>
   </div>
 </div>
@@ -1147,7 +310,7 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 
 <script>
 // ═══════════════════════════════════════════════
-//  UTILS
+//  UTILS & CONSTANTS
 // ═══════════════════════════════════════════════
 function uuid(){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)})}
 function now(){return new Date().toISOString()}
@@ -1155,1951 +318,435 @@ function fmtDate(iso){var d=new Date(iso);return d.toLocaleDateString('ja-JP',{m
 function fmtNum(n){return n==null?'0':Number(n).toLocaleString('ja-JP')}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function hashPw(s){var h=5381;for(var i=0;i<s.length;i++){h=((h<<5)+h)+s.charCodeAt(i);h=h&h}return Math.abs(h).toString(36)+'_'+s.length}
+function hexToRgba(hex,a){hex=hex.replace('#','');if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];return 'rgba('+parseInt(hex.substring(0,2),16)+','+parseInt(hex.substring(2,4),16)+','+parseInt(hex.substring(4,6),16)+','+a+')';}
 
-// ═══════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════
-var DB = {users:[], items:[], history:[], lines:[]};
+var PROC_COLORS =['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#06b6d4','#10b981'];
+var PROC_DONE_ID = '__done__';
+var DB_KEY = 'stocks_v11';
+var SESS_KEY = 'stocks_sess_v11';
+var DB = {users:[], items:[], history:[], procConfig:[], procStock:{}};
 var currentUser = null;
-var pendingDeleteId = null;
-var pendingOp = null; // {itemId, opType}
 
-var DB_KEY = 'stocks_v9';
-var SESS_KEY = 'stocks_sess_v9';
-var HIST_MAX = 5000;
-var CORRECTION_LIMIT = 3;
-
-// ─── グループとオペレーション設定 ───
-// ⑫ データ構造・グループマッピング
-var OP_GROUP = {
-  wip_add:     '仕掛品',
-  wip_to_bari: 'バリ取り前',
-  bari_to_done: '完成品',
-  done_to_ship: '完成品'
-};
-
-var OP_CONFIG = {
-  wip_add:     {label:'加工',      group:'仕掛品',  from:null,    to:'仕掛品',  fromKey:null,   toKey:'wip',  color:'var(--wip)',  requireLine:true},
-  wip_to_bari: {label:'バリ前移動', group:'バリ取り前', from:'仕掛品', to:'バリ取り前', fromKey:'wip', toKey:'bari', color:'var(--bari)', requireLine:false},
-  bari_to_done:{label:'完成',      group:'完成品',  from:'バリ取り前', to:'完成品', fromKey:'bari',toKey:'done', color:'var(--done)', requireLine:false},
-  done_to_ship:{label:'出荷',      group:'完成品',  from:'完成品', to:'出荷',   fromKey:'done', toKey:null,   color:'var(--red)',  requireLine:false}
-};
-
-// ─── DB ───
+// ═══════════════════════════════════════════════
+//  DB & INIT
+// ═══════════════════════════════════════════════
 function loadDB(){
-  try{
-    var raw=localStorage.getItem(DB_KEY);
-    if(raw){DB=JSON.parse(raw);return;}
-  }catch(e){}
-  DB={
-    users:[
-      {id:'u1',username:'admin',passwordHash:hashPw('admin123'),role:'admin',operator_name:'管理者',createdAt:now()},
-      {id:'u2',username:'user1',passwordHash:hashPw('user123'),role:'user',operator_name:'田中',createdAt:now()}
-    ],
-    lines:['1号機','2号機','Aライン','Bライン'],
-    items:[
-      {id:uuid(),name:'皿頭タッピングビス',code:'ITEM-001',unit:'本',maker:'山田製作所',process:{wip:500,bari:200,done:3000},threshold:500,updatedAt:now()},
-      {id:uuid(),name:'M5×50mm亜鉛メッキセルフタッピングねじ',code:'ITEM-002',unit:'本',maker:'東京ネジ工業',process:{wip:2000,bari:3000,done:10000},threshold:1000,updatedAt:now()},
-      {id:uuid(),name:'ケーブルカッター',code:'ITEM-003',unit:'個',maker:'',process:{wip:10,bari:20,done:30},threshold:10,updatedAt:now()},
-      {id:uuid(),name:'プラスチック柄プラスドライバー',code:'ITEM-004',unit:'本',maker:'',process:{wip:5,bari:15,done:50},threshold:20,updatedAt:now()},
-      {id:uuid(),name:'M1チタン六角ナット',code:'ITEM-005',unit:'個',maker:'大阪金属',process:{wip:30,bari:100,done:8},threshold:50,updatedAt:now()},
-      {id:uuid(),name:'両口スパナ 19mm×22mm',code:'ITEM-006',unit:'本',maker:'',process:{wip:0,bari:10,done:0},threshold:20,updatedAt:now()}
-    ],
-    history:[]
-  };
-  saveDB();
+  try{ var raw=localStorage.getItem(DB_KEY); if(raw) DB=JSON.parse(raw); }catch(e){}
+  if(!DB.users || !DB.users.length){
+    DB.users =[{id:'u1',username:'admin',passwordHash:hashPw('admin123'),role:'admin'}];
+  }
+  if(!DB.items) DB.items = [];
+  if(!DB.history) DB.history =[];
+  initProcConfig();
 }
-
-// [API] saveDB → GAS/DB連携時はここをfetch(GAS_URL, POST)に置換
 function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(DB))}
 function saveSession(){if(currentUser)localStorage.setItem(SESS_KEY,currentUser.id)}
 function clearSession(){localStorage.removeItem(SESS_KEY)}
 
-// ⑫ データ構造：group, user フィールドを追加
-function addHistory(type, item, qty, line, operator, group){
-  var entry = {
-    id: uuid(), timestamp: now(),
-    type: type,
-    group: group || OP_GROUP[pendingOp&&pendingOp.opType] || '',
-    itemId: item.id, itemName: item.name,
-    qty: qty,
-    line: line || null,
-    operator: operator,
-    user: currentUser ? currentUser.username : '',
-    userId: currentUser ? currentUser.id : '',
-    username: currentUser ? currentUser.username : '',
-    role: currentUser ? currentUser.role : ''
-  };
-  DB.history.unshift(entry);
-  // ⑬ 履歴上限5000件
-  if(DB.history.length > HIST_MAX) DB.history = DB.history.slice(0, HIST_MAX);
+function defaultProcConfig(){
+  return[
+    {id:'p0', label:'成形素材', color:PROC_COLORS[0], next:['p1']},
+    {id:'p1', label:'加工①', color:PROC_COLORS[1], next:['p2']},
+    {id:'p2', label:'バリ取り', color:PROC_COLORS[2], next:[PROC_DONE_ID]}
+  ];
 }
 
-// ─── 入力履歴ユーティリティ ───
-var HIST_OPERATOR_KEY = 'stocks_operator_hist';
-var HIST_LINE_KEY = 'stocks_line_hist';
-
-function loadHist(key){try{return JSON.parse(localStorage.getItem(key)||'[]');}catch(e){return [];}}
-function saveHist(key,list){localStorage.setItem(key,JSON.stringify(list));}
-function pushHist(key,value){
-  if(!value)return;
-  var list=loadHist(key);
-  list=list.filter(function(v){return v!==value;});
-  list.unshift(value);
-  if(list.length>20)list=list.slice(0,20);
-  saveHist(key,list);
+function initProcConfig(){
+  if(!DB.procConfig || !DB.procConfig.length) DB.procConfig = defaultProcConfig();
+  if(!DB.procStock) DB.procStock = {};
+  
+  // 既存アイテムのprocStock初期化とデータマイグレーション
+  DB.items.forEach(function(it){
+    if(!DB.procStock[it.id]) {
+      DB.procStock[it.id] = {};
+      DB.procConfig.forEach(function(p){ DB.procStock[it.id][p.id] = {good:0, ng:0}; });
+      DB.procStock[it.id][PROC_DONE_ID] = {good: (it.process && it.process.done)||0, ng:0};
+      
+      // 旧システムのwip, bariがあれば適当な工程に引き継ぐ
+      if(it.process && DB.procConfig[1]) {
+        if(it.process.wip) DB.procStock[it.id][DB.procConfig[1].id].good += it.process.wip;
+        var lastP = DB.procConfig[DB.procConfig.length-1];
+        if(it.process.bari) DB.procStock[it.id][lastP.id].good += it.process.bari;
+      }
+    } else {
+      // Configが増減した場合の補填
+      DB.procConfig.forEach(function(p){ if(!DB.procStock[it.id][p.id]) DB.procStock[it.id][p.id] = {good:0, ng:0}; });
+      if(!DB.procStock[it.id][PROC_DONE_ID]) DB.procStock[it.id][PROC_DONE_ID] = {good:(it.process&&it.process.done)||0, ng:0};
+    }
+  });
+  saveDB();
 }
 
-function getLineSorted(){
-  var counts={};
-  try{counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}');}catch(e){}
-  var lines=DB.lines.slice();
-  lines.sort(function(a,b){return (counts[b]||0)-(counts[a]||0);});
-  return lines;
-}
-
-function recordLineUse(line){
-  var counts={};
-  try{counts=JSON.parse(localStorage.getItem('stocks_line_counts')||'{}');}catch(e){}
-  counts[line]=(counts[line]||0)+1;
-  localStorage.setItem('stocks_line_counts',JSON.stringify(counts));
-  localStorage.setItem('last_line',line);
-  pushHist(HIST_LINE_KEY,line);
-}
-
-function recordOperatorUse(op){
-  localStorage.setItem('last_operator',op);
-  pushHist(HIST_OPERATOR_KEY,op);
-}
-
-// ⑥ グループ記録
-function recordGroupUse(group){
-  localStorage.setItem('last_group',group);
-}
-
-function getOperatorSuggests(q){
-  var hist=loadHist(HIST_OPERATOR_KEY);
-  var fromDb=DB.history.map(function(h){return h.operator||'';}).filter(Boolean);
-  var all=hist.slice();
-  fromDb.forEach(function(v){if(all.indexOf(v)<0)all.push(v);});
-  var seen={};
-  all=all.filter(function(v){if(seen[v])return false;seen[v]=true;return true;});
-  if(q){q=q.toLowerCase();all=all.filter(function(v){return v.toLowerCase().indexOf(q)>=0;});}
-  return all.slice(0,8);
+function addHistory(type, item, qty, operator, group){
+  DB.history.unshift({
+    id: uuid(), timestamp: now(), type: type, group: group,
+    itemId: item.id, itemName: item.name, qty: qty, operator: operator,
+    user: currentUser?currentUser.username:''
+  });
+  if(DB.history.length > 3000) DB.history.length = 3000;
 }
 
 // ═══════════════════════════════════════════════
 //  AUTH
 // ═══════════════════════════════════════════════
 function doLogin(){
-  var username=document.getElementById('li-user').value.trim();
-  var pw=document.getElementById('li-pw').value;
-  var errEl=document.getElementById('login-err');
-  errEl.classList.remove('show');
-  if(!username||!pw){errEl.textContent='ユーザー名とパスワードを入力してください';errEl.classList.add('show');return;}
-  var user=DB.users.find(function(u){return u.username===username;});
-  if(!user||user.passwordHash!==hashPw(pw)){errEl.textContent='ユーザー名またはパスワードが違います';errEl.classList.add('show');return;}
-  currentUser=user;saveSession();bootApp();
+  var user = document.getElementById('li-user').value.trim();
+  var pw = document.getElementById('li-pw').value;
+  var err = document.getElementById('login-err');
+  if(!user || !pw){err.textContent='入力してください'; err.classList.add('show'); return;}
+  var u = DB.users.find(function(x){return x.username===user;});
+  if(!u || u.passwordHash!==hashPw(pw)){err.textContent='エラー'; err.classList.add('show'); return;}
+  currentUser = u; saveSession(); bootApp();
 }
-document.getElementById('li-pw').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
-document.getElementById('li-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('li-pw').focus();});
-
-function doLogout(){
-  currentUser=null;clearSession();
-  document.getElementById('app').classList.remove('active');
-  document.getElementById('login-screen').style.display='';
-  document.getElementById('li-pw').value='';
-}
+function doLogout(){ currentUser=null; clearSession(); document.getElementById('app').classList.remove('active'); document.getElementById('login-screen').style.display=''; }
 
 function bootApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('active');
-  var admin=currentUser.role==='admin';
-  var av=document.getElementById('hd-av');
-  av.textContent=currentUser.username.charAt(0).toUpperCase();
-  av.className='user-av'+(admin?' admin-av':'');
-  document.getElementById('hd-name').textContent=currentUser.username;
-  var roleEl=document.getElementById('hd-role');
-  roleEl.textContent=admin?'管理者':'一般';
-  roleEl.className='role-chip '+(admin?'admin':'user');
-  document.querySelectorAll('.admin-only').forEach(function(el){el.style.display=admin?'':'none';});
-  document.getElementById('tab-users').style.display=admin?'':'none';
-  document.getElementById('mob-tab-users').style.display=admin?'':'none';
-  document.getElementById('hd-pw-btn').style.display=admin?'':'none';
-  document.getElementById('mob-pw-btn').style.display=admin?'':'none';
-  var mav=document.getElementById('mob-av');
-  mav.textContent=currentUser.username.charAt(0).toUpperCase();
-  mav.className='user-av'+(admin?' admin-av':'');
-  document.getElementById('mob-name').textContent=currentUser.username;
-  document.getElementById('mob-role').textContent=admin?'管理者':'一般ユーザー';
-  var opName=currentUser.operator_name||'';
-  var opDisp=document.getElementById('hd-operator-name');
-  if(opDisp) opDisp.textContent=opName?'('+opName+')':'';
-  var setupBanner=document.getElementById('op-setup-banner');
-  if(setupBanner){setupBanner.style.display=(!opName)?'':'none';document.getElementById('op-setup-input').value='';}
-  updateCurrentGroupBar();
+  var isAdm = currentUser.role==='admin';
+  document.getElementById('hd-av').textContent = currentUser.username.charAt(0).toUpperCase();
+  document.querySelectorAll('.admin-only').forEach(function(el){el.style.display=isAdm?'':'none';});
   showPage('inventory');
-  if(window.innerWidth<=768){var fbb=document.getElementById('fixed-bottom-bar');if(fbb)fbb.style.display='flex';}
 }
 
 loadDB();
-(function(){
-  var sid=localStorage.getItem(SESS_KEY);
-  if(sid){var u=DB.users.find(function(u){return u.id===sid;});if(u){currentUser=u;bootApp();}}
-}());
+(function(){ var sid=localStorage.getItem(SESS_KEY); if(sid){ var u=DB.users.find(function(x){return x.id===sid;}); if(u){currentUser=u;bootApp();} } })();
 
 // ═══════════════════════════════════════════════
-//  PAGES
+//  PAGES & NAVIGATION
 // ═══════════════════════════════════════════════
 function showPage(name){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.header-nav .nav-tab').forEach(function(t){t.classList.remove('active');});
-  var pg=document.getElementById('page-'+name);
-  if(pg) pg.classList.add('active');
-  var tabIdx={inventory:0,history:1,process:2,users:3}[name];
-  var tabs=document.querySelectorAll('.header-nav .nav-tab');
-  if(tabIdx!=null&&tabs[tabIdx]) tabs[tabIdx].classList.add('active');
-  document.getElementById('fixed-bottom-bar').style.display='none';
-  document.querySelector('.main').classList.remove('has-bottom-bar');
-  if(name==='inventory'){renderInventory();renderStats();if(window.innerWidth<=768){document.querySelector('.main').classList.add('has-bottom-bar');document.getElementById('fixed-bottom-bar').style.display='flex';}}
-  if(name==='history'){renderHistory();}
-  if(name==='users'){renderUsers();var uAcc=document.getElementById('user-acc-list');var uTbl=document.querySelector('.user-table');if(window.innerWidth<=768){if(uAcc)uAcc.style.display='flex';if(uTbl&&uTbl.closest('.table-wrap'))uTbl.closest('.table-wrap').style.display='none';}else{if(uAcc)uAcc.style.display='none';if(uTbl&&uTbl.closest('.table-wrap'))uTbl.closest('.table-wrap').style.display='';}}
-  if(name==='process'){renderProcessPage();}
-}
-function navTo(name){showPage(name);closeMobMenu();}
-
-// ═══════════════════════════════════════════════
-//  MOBILE MENU
-// ═══════════════════════════════════════════════
-function toggleMobMenu(){
-  var m=document.getElementById('mob-menu');var b=document.getElementById('hbg');
-  var open=m.classList.toggle('open');b.classList.toggle('open',open);
-}
-function closeMobMenu(){
-  document.getElementById('mob-menu').classList.remove('open');
-  document.getElementById('hbg').classList.remove('open');
-}
-document.addEventListener('click',function(e){
-  var menu=document.getElementById('mob-menu');var hbg=document.getElementById('hbg');
-  if(menu&&menu.classList.contains('open')&&!menu.contains(e.target)&&hbg&&!hbg.contains(e.target)){closeMobMenu();}
-});
-
-// ═══════════════════════════════════════════════
-//  ② 現在グループバー
-// ═══════════════════════════════════════════════
-function updateCurrentGroupBar(){
-  var grp=localStorage.getItem('last_group');
-  var bar=document.getElementById('current-group-bar');
-  if(!bar)return;
-  if(!grp){bar.style.display='none';return;}
-  bar.style.display='flex';
-  var badge=document.getElementById('cgb-badge');
-  badge.textContent=grp;
-  badge.className='cgb-badge '+(grp==='仕掛品'?'cgb-wip':grp==='バリ取り前'?'cgb-bari':'cgb-done');
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  var pg=document.getElementById('page-'+name); if(pg) pg.classList.add('active');
+  var tabs = document.querySelectorAll('.nav-tab');
+  if(name==='inventory') { tabs[0].classList.add('active'); renderInventory(); }
+  if(name==='history') { tabs[1].classList.add('active'); renderHistory(); }
+  if(name==='users') { tabs[2].classList.add('active'); renderUsers(); }
 }
 
 // ═══════════════════════════════════════════════
-//  STATS
-// ═══════════════════════════════════════════════
-function renderStats(){
-  var items=DB.items;
-  var warnItems=items.filter(function(i){return i.process.done<=i.threshold&&i.process.done>0;});
-  var todayHist=DB.history.filter(function(h){return h.timestamp.slice(0,10)===now().slice(0,10);});
-  var todayShip=todayHist.filter(function(h){return h.type==='出荷';});
-  var zeroItems=items.filter(function(i){return i.process.done===0;});
-  document.getElementById('stats-row').innerHTML=
-    '<div class="stat-card"><div class="stat-label">品目数</div><div class="stat-val">'+items.length+'</div><div class="stat-sub">登録品目</div></div>'+
-    '<div class="stat-card"><div class="stat-label">在庫ゼロ</div><div class="stat-val '+(zeroItems.length>0?'red':'')+'">'+zeroItems.length+'</div><div class="stat-sub">完成品ゼロ</div></div>'+
-    '<div class="stat-card"><div class="stat-label">要注意</div><div class="stat-val '+(warnItems.length>0?'amber':'')+'">'+warnItems.length+'</div><div class="stat-sub">閾値以下</div></div>'+
-    '<div class="stat-card"><div class="stat-label">本日の出荷</div><div class="stat-val">'+todayShip.length+'</div><div class="stat-sub">操作 '+todayHist.length+' 件</div></div>';
-}
-
-// ═══════════════════════════════════════════════
-//  INVENTORY RENDER
+//  1. 在庫一覧
 // ═══════════════════════════════════════════════
 function renderInventory(){
-  var q=(document.getElementById('search-input').value||'').toLowerCase();
-  var filter=document.getElementById('filter-status').value;
-  var admin=currentUser&&currentUser.role==='admin';
-  var items=DB.items.filter(function(it){
-    if(q&&!it.name.toLowerCase().includes(q)&&!it.code.toLowerCase().includes(q)&&!(it.maker||'').toLowerCase().includes(q))return false;
-    if(filter==='warn'&&!(it.process.done<=it.threshold&&it.process.done>0))return false;
-    if(filter==='zero'&&it.process.done!==0)return false;
-    return true;
-  });
-  var body=document.getElementById('inv-body');
-  if(!items.length){
-    body.innerHTML='<tr><td colspan="6"><div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div></td></tr>';
-    document.getElementById('inv-cards').innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';
-    var accEl=document.getElementById('inv-acc-list');if(accEl)accEl.innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';
-    renderStats();return;
+  initProcConfig();
+  var q = document.getElementById('search-input').value.toLowerCase();
+  var items = DB.items.filter(function(it){ return !q || it.name.toLowerCase().includes(q) || it.code.toLowerCase().includes(q); });
+  var list = document.getElementById('new-inv-list');
+  
+  if(!items.length){ list.innerHTML = '<div class="empty">該当する製品がありません</div>'; return; }
+
+  list.innerHTML = items.map(function(it){
+    var st = DB.procStock[it.id] || {};
+    var done = st[PROC_DONE_ID] ? st[PROC_DONE_ID].good : 0;
+    
+    // 仕掛品(完成品以外の良品合計)と内訳
+    var wipTotal = 0; var details = '';
+    DB.procConfig.forEach(function(p){
+      var g = st[p.id] ? st[p.id].good : 0;
+      var ng = st[p.id] ? st[p.id].ng : 0;
+      wipTotal += g;
+      if(g>0 || ng>0) details += '<div class="detail-row"><span>'+esc(p.label)+'</span><span>'+fmtNum(g)+(ng>0?' <span style="color:var(--red)">(NG:'+ng+')</span>':'')+' '+esc(it.unit)+'</span></div>';
+    });
+    if(!details) details = '<div class="detail-row"><span style="color:var(--text-dim)">仕掛中の工程はありません</span></div>';
+
+    var warn = done === 0 ? 'warn' : 'done';
+    
+    return '<div class="inv-card" onclick="goToProcess(\''+it.id+'\')">'
+      +'<div class="inv-card-header">'
+        +'<div><div class="inv-card-title">'+esc(it.name)+(done===0?' <span style="color:var(--red)">⚠</span>':'')+'</div><div class="inv-card-code">'+esc(it.code)+'</div></div>'
+      +'</div>'
+      +'<div class="inv-card-stocks">'
+        +'<div class="stock-box wip"><div class="stock-label">仕掛品</div><div class="stock-val">'+fmtNum(wipTotal)+'</div></div>'
+        +'<div class="stock-box '+warn+'"><div class="stock-label">完成品</div><div class="stock-val">'+fmtNum(done)+'</div></div>'
+      +'</div>'
+      +'<div class="inv-details-btn" onclick="event.stopPropagation(); toggleInvDetails(\''+it.id+'\')">▼ 工程別の内訳を見る</div>'
+      +'<div class="inv-details-content" id="inv-det-'+it.id+'">'+details+'</div>'
+    +'</div>';
+  }).join('');
+}
+function toggleInvDetails(id){ document.getElementById('inv-det-'+id).classList.toggle('open'); }
+
+// ═══════════════════════════════════════════════
+//  2. 工程管理 (操作専用)
+// ═══════════════════════════════════════════════
+var _curItem = null;
+var _curProcId = null;
+
+function goToProcess(itemId){
+  _curItem = DB.items.find(function(i){return i.id === itemId;});
+  if(!_curItem) return;
+  
+  // デフォルト: 在庫がある最初の工程、なければスタート工程
+  _curProcId = DB.procConfig[0].id;
+  for(var i=0; i<DB.procConfig.length; i++){
+    if(DB.procStock[itemId][DB.procConfig[i].id].good > 0) { _curProcId = DB.procConfig[i].id; break; }
   }
-  body.innerHTML=items.map(function(it){
-    var dw=it.process.done>0&&it.process.done<=it.threshold;
-    var dz=it.process.done===0;
-    var rowCls=dz?'row-zero':dw?'row-warn':'';
-    var wi=(dw||dz)?'<span class="w-icon">&#9888;</span>':'';
-    var doneClass='num-done'+(dz?' num-zero':dw?' num-warn':'');
-    var warnBari=it.process.bari===0?'<span class="w-icon">&#9888;</span>':'';
-    var adminBtns=admin?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+it.id+'\')">編集</button><button class="btn-proc bp-del" onclick="showDeleteModal(\''+it.id+'\')">削除</button>':'';
-    return '<tr class="'+rowCls+'">'
-      +'<td class="td-name"><div class="item-name-txt">'+esc(it.name)+'</div><div class="item-code-txt">'+esc(it.code)+'</div></td>'
-      +'<td style="font-size:12px;color:var(--text-muted)">'+esc(it.maker||'—')+'</td>'
-      +'<td class="num-cell"><span class="num-wip">'+fmtNum(it.process.wip)+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
-      +'<td class="num-cell"><span class="num-bari">'+fmtNum(it.process.bari)+warnBari+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
-      +'<td class="num-cell"><span class="'+doneClass+'">'+fmtNum(it.process.done)+wi+'</span><span class="unit-tag">'+esc(it.unit)+'</span></td>'
-      +'<td><div class="act-btns">'
-        +'<button class="btn-proc bp-wip" onclick="showOpModal(\''+it.id+'\',\'wip_add\')">＋加工</button>'
-        +'<button class="btn-proc bp-w2b" onclick="showOpModal(\''+it.id+'\',\'wip_to_bari\')">バリ前移動</button>'
-        +'<button class="btn-proc bp-b2d" onclick="showOpModal(\''+it.id+'\',\'bari_to_done\')">完成</button>'
-        +'<button class="btn-proc bp-d2s" onclick="showOpModal(\''+it.id+'\',\'done_to_ship\')">出荷</button>'
-        +adminBtns
-      +'</div></td>'
-    +'</tr>';
-  }).join('');
-  renderInvCards(items,admin);
-  renderInvAccordion(items,admin);
-  renderStats();
+
+  showPage('process');
+  document.getElementById('proc-target-name').textContent = _curItem.name;
+  
+  renderProcTabs();
+  selectProcTab(_curProcId);
 }
 
-function renderInvCards(items,admin){
-  var el=document.getElementById('inv-cards');if(!el)return;
-  el.innerHTML=items.map(function(it){
-    var dw=it.process.done>0&&it.process.done<=it.threshold;
-    var dz=it.process.done===0;
-    var cls='icard'+(dz?' row-zero':dw?' row-warn':'');
-    var dc=dz?'var(--red)':dw?'var(--amber)':'var(--done)';
-    var wi=(dw||dz)?'&#9888;':'';
-    var id=it.id;
-    var adminBtns=admin?'<button class="btn-proc bp-edit" onclick="showEditModal(\''+id+'\')">編集</button><button class="btn-proc bp-del" onclick="showDeleteModal(\''+id+'\')">削除</button>':'';
-    return '<div class="'+cls+'">'
-      +'<div class="icard-top"><div class="icard-name">'+esc(it.name)+(wi?' <span style="color:var(--red)">'+wi+'</span>':'')+'</div><div class="icard-code">'+esc(it.code)+(it.maker?' · '+esc(it.maker):'')+'</div></div>'
-      +'<div class="icard-stocks">'
-        +'<div class="icard-stock" style="background:var(--wip-dim)"><div class="icard-slabel" style="color:var(--wip)">仕掛品</div><div class="icard-sval" style="color:var(--wip)">'+fmtNum(it.process.wip)+'</div><div class="icard-sunit">'+esc(it.unit)+'</div></div>'
-        +'<div class="icard-stock" style="background:var(--bari-dim)"><div class="icard-slabel" style="color:var(--bari)">バリ前</div><div class="icard-sval" style="color:var(--bari)">'+fmtNum(it.process.bari)+'</div><div class="icard-sunit">'+esc(it.unit)+'</div></div>'
-        +'<div class="icard-stock" style="background:rgba(16,185,129,.05)"><div class="icard-slabel" style="color:'+dc+'">完成品</div><div class="icard-sval" style="color:'+dc+'">'+fmtNum(it.process.done)+'</div><div class="icard-sunit">'+esc(it.unit)+'</div></div>'
-      +'</div>'
-      +'<div class="icard-btns">'
-        +'<button class="btn-proc bp-wip" onclick="showOpModal(\''+id+'\',\'wip_add\')">＋加工</button>'
-        +'<button class="btn-proc bp-w2b" onclick="showOpModal(\''+id+'\',\'wip_to_bari\')">バリ前移動</button>'
-        +'<button class="btn-proc bp-b2d" onclick="showOpModal(\''+id+'\',\'bari_to_done\')">完成</button>'
-        +'<button class="btn-proc bp-d2s" onclick="showOpModal(\''+id+'\',\'done_to_ship\')">出荷</button>'
-        +adminBtns
-      +'</div>'
-    +'</div>';
-  }).join('');
+function renderProcTabs(){
+  var tabs = DB.procConfig.map(function(p){
+    return '<button class="step-tab" id="ptab-'+p.id+'" onclick="selectProcTab(\''+p.id+'\')">'+esc(p.label)+'</button>';
+  });
+  tabs.push('<button class="step-tab" id="ptab-'+PROC_DONE_ID+'" onclick="selectProcTab(\''+PROC_DONE_ID+'\')">完成品</button>');
+  document.getElementById('proc-tabs').innerHTML = tabs.join('');
+}
+
+function selectProcTab(procId){
+  _curProcId = procId;
+  document.querySelectorAll('.step-tab').forEach(function(el){ el.classList.remove('active'); });
+  var tab = document.getElementById('ptab-'+procId);
+  if(tab) { tab.classList.add('active'); tab.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'}); }
+
+  var isDone = procId === PROC_DONE_ID;
+  var st = DB.procStock[_curItem.id][procId];
+  
+  document.getElementById('proc-stock-label').textContent = isDone ? '完成品 在庫' : '現在在庫（良品）';
+  document.getElementById('proc-current-stock').textContent = fmtNum(st.good);
+  document.getElementById('proc-current-unit').textContent = _curItem.unit;
+  document.getElementById('proc-input-qty').value = '';
+
+  var destHtml = '';
+  if(isDone) {
+    destHtml = '<button class="btn-dest" style="background:var(--red-dim); color:var(--red); border: 1px solid rgba(239,68,68,0.3)" onclick="execProcMove(\'ship\')">'
+      +'<span>🚚 出荷する</span><span style="font-size:12px; opacity:0.8">タップで確定</span></button>';
+    document.getElementById('proc-ng-actions').style.display = 'none';
+  } else {
+    document.getElementById('proc-ng-actions').style.display = 'grid';
+    var proc = DB.procConfig.find(function(p){return p.id === procId;});
+    (proc.next ||[]).forEach(function(nid){
+      var nIsDone = nid === PROC_DONE_ID;
+      var dLabel = nIsDone ? '完成品' : DB.procConfig.find(function(p){return p.id === nid;}).label;
+      var dColor = nIsDone ? '#10b981' : DB.procConfig.find(function(p){return p.id === nid;}).color;
+      destHtml += '<button class="btn-dest" style="background:'+hexToRgba(dColor,0.1)+'; color:'+dColor+'; border: 1px solid '+hexToRgba(dColor,0.3)+'" onclick="execProcMove(\''+nid+'\')">'
+        +'<span>→ '+esc(dLabel)+'へ移動</span><span style="font-size:12px; opacity:0.8">タップで確定</span></button>';
+    });
+  }
+  document.getElementById('proc-destinations').innerHTML = destHtml || '<p style="text-align:center; color:var(--text-dim); padding:10px;">移動先がありません</p>';
+}
+
+function addProcQty(delta){
+  var inp = document.getElementById('proc-input-qty');
+  inp.value = Math.max(0, (parseInt(inp.value)||0) + delta);
+}
+
+function execProcMove(destId){
+  var qty = parseInt(document.getElementById('proc-input-qty').value) || 0;
+  if(qty <= 0) { toast('数量を入力してください', 'err'); return; }
+  var st = DB.procStock[_curItem.id][_curProcId];
+  if(qty > st.good) { toast('在庫が不足しています', 'err'); return; }
+
+  if(destId === 'ship'){
+    st.good -= qty;
+    _curItem.process.done = st.good; // 旧仕様との互換同期
+    addHistory('出荷', _curItem, qty, currentUser.username, '完成品 → 出荷');
+    saveDB(); toast(fmtNum(qty)+_curItem.unit+' を出荷しました', 'ok');
+    selectProcTab(_curProcId); return;
+  }
+
+  // 移動
+  st.good -= qty;
+  DB.procStock[_curItem.id][destId].good += qty;
+  
+  var procLabel = DB.procConfig.find(function(p){return p.id === _curProcId;}).label;
+  var isDone = destId === PROC_DONE_ID;
+  var destLabel = isDone ? '完成品' : DB.procConfig.find(function(p){return p.id === destId;}).label;
+  
+  if(isDone) _curItem.process.done = DB.procStock[_curItem.id][PROC_DONE_ID].good;
+
+  addHistory('工程移動', _curItem, qty, currentUser.username, procLabel + ' → ' + destLabel);
+  saveDB(); toast(fmtNum(qty)+_curItem.unit+' を '+destLabel+' へ移動しました', 'ok');
+  selectProcTab(_curProcId);
+}
+
+function execNg(type){
+  var qty = parseInt(document.getElementById('proc-input-qty').value) || 0;
+  if(qty <= 0) { toast('数量を入力してください', 'err'); return; }
+  var st = DB.procStock[_curItem.id][_curProcId];
+  if(qty > st.good) { toast('在庫が不足しています', 'err'); return; }
+
+  st.good -= qty; st.ng += qty;
+  var procLabel = DB.procConfig.find(function(p){return p.id === _curProcId;}).label;
+  var opName = type === 'setup' ? '段取り品NG' : '不良品NG';
+  
+  addHistory(opName, _curItem, qty, currentUser.username, procLabel);
+  saveDB(); toast(opName+'を '+fmtNum(qty)+_curItem.unit+' 登録しました', 'err');
+  selectProcTab(_curProcId);
 }
 
 // ═══════════════════════════════════════════════
-//  ⑦ QTY ADJUSTER — [-50][-10][-1][qty][+1][+10][+50]
+//  3. 操作履歴 / 4. ユーザー
 // ═══════════════════════════════════════════════
-var presetValues = [1, 10, 50];
-var _adjHoldTimer = null;
-var _adjHoldInterval = null;
+function renderHistory(){
+  document.getElementById('hist-count').textContent = DB.history.length+'件';
+  var html = DB.history.slice(0, 100).map(function(h){
+    var isCorr = h.type==='訂正';
+    var cls = h.type.includes('NG') ? 'ac-corr' : '';
+    var btn = (!isCorr && !h.corrected && currentUser.role==='admin') ? '<button class="btn-ghost btn-sm" onclick="execCorrect(\''+h.id+'\')">取消</button>' : (h.corrected?'<span style="font-size:11px;color:var(--text-muted)">取消済</span>':'');
+    return '<tr style="'+(isCorr?'background:#fff1f1':'')+'">'
+      +'<td style="font-family:var(--fn)">'+fmtDate(h.timestamp)+'</td>'
+      +'<td><span class="act-chip '+cls+'">'+esc(h.type)+'</span></td>'
+      +'<td>'+esc(h.group)+'</td><td>'+esc(h.itemName)+'</td><td style="font-family:var(--fn); font-weight:700">'+fmtNum(h.qty)+'</td>'
+      +'<td>'+esc(h.operator)+'</td><td>'+btn+'</td></tr>';
+  }).join('');
+  document.getElementById('hist-body').innerHTML = html || '<tr><td colspan="7" class="empty">履歴がありません</td></tr>';
+}
 
-function renderQtyAdjuster(unit){
-  var row=document.getElementById('op-adj-row');
-  if(!row)return;
+function execCorrect(histId){
+  if(currentUser.role!=='admin') return;
+  var entry = DB.history.find(function(e){return e.id===histId;});
+  if(!entry || entry.corrected) return;
+  
+  var item = DB.items.find(function(i){return i.id===entry.itemId;});
+  if(!item) { toast('品目が見つかりません','err'); return; }
+  var qty = entry.qty;
 
-  var minusHtml='';
-  presetValues.slice().reverse().forEach(function(v){
-    minusHtml+='<button type="button" class="qty-adj-btn" data-delta="-'+v+'">−'+v+'</button>';
-  });
-
-  var plusHtml='';
-  presetValues.forEach(function(v){
-    plusHtml+='<button type="button" class="qty-adj-btn" data-delta="+'+v+'">＋'+v+'</button>';
-  });
-
-  var centerHtml='<div class="qty-adj-center">'
-    +'<input type="number" id="op-qty" min="0" placeholder="0" class="qty-adj-input"'
-    +' oninput="checkOpWarn()"'
-    +' onkeydown="if(event.key===\'Enter\'){event.preventDefault();execOp();}">'
-    +'<span class="qty-adj-unit" id="op-unit">'+(unit||'')+'</span>'
-    +'</div>';
-
-  row.innerHTML='<div class="adj-minus-row">'+minusHtml+'</div>'+centerHtml+'<div class="adj-plus-row">'+plusHtml+'</div>';
-
-  row.querySelectorAll('.qty-adj-btn').forEach(function(btn){
-    var delta=parseInt(btn.dataset.delta,10);
-    var isUnit=Math.abs(delta)===1;
-
-    function applyDelta(isRepeat){
-      var inp=document.getElementById('op-qty');
-      var val=parseInt(inp.value)||0;
-      val=Math.max(0,val+delta);
-      inp.value=val;checkOpWarn();
-      if(isRepeat){btn.classList.remove('adj-tick');void btn.offsetWidth;btn.classList.add('adj-tick');}
-    }
-
-    function stopHold(){
-      if(_adjHoldTimer){clearTimeout(_adjHoldTimer);_adjHoldTimer=null;}
-      if(_adjHoldInterval){clearInterval(_adjHoldInterval);_adjHoldInterval=null;}
-      btn.classList.remove('pressing','adj-repeating');
-    }
-
-    function startHold(){
-      btn.classList.add('pressing');applyDelta(false);
-      if(isUnit){
-        _adjHoldTimer=setTimeout(function(){
-          btn.classList.add('adj-repeating');
-          // ⑦ 長押し: 0.1秒間隔
-          _adjHoldInterval=setInterval(function(){applyDelta(true);},100);
-        },350);
+  // 新仕様の取消ロジック
+  if(entry.type === '工程移動' && entry.group){
+    var parts = entry.group.split(' → ');
+    if(parts.length===2){
+      var srcP = DB.procConfig.find(function(p){return p.label===parts[0];});
+      var dstP = parts[1]==='完成品'?{id:PROC_DONE_ID}:DB.procConfig.find(function(p){return p.label===parts[1];});
+      if(srcP && dstP){
+        if(DB.procStock[item.id][dstP.id].good < qty) { toast('移動先の在庫が不足しています','err'); return; }
+        DB.procStock[item.id][dstP.id].good -= qty;
+        DB.procStock[item.id][srcP.id].good += qty;
+        if(dstP.id===PROC_DONE_ID) item.process.done -= qty;
       }
     }
-
-    btn.addEventListener('mousedown',function(e){e.preventDefault();startHold();});
-    btn.addEventListener('mouseup',stopHold);
-    btn.addEventListener('mouseleave',stopHold);
-    btn.addEventListener('touchstart',function(e){e.preventDefault();startHold();},{passive:false});
-    btn.addEventListener('touchend',stopHold);
-    btn.addEventListener('touchcancel',stopHold);
-  });
-}
-
-// ═══════════════════════════════════════════════
-//  ① グループ切替
-// ═══════════════════════════════════════════════
-function switchOpGroup(opType){
-  // 完成品グループはサブ選択を表示
-  var group=OP_GROUP[opType]||'仕掛品';
-  if(group==='完成品'){
-    // bari_to_done をデフォルトに
-    switchOpType(opType==='done_to_ship'?'done_to_ship':'bari_to_done');
-  } else {
-    switchOpType(opType);
-  }
-}
-
-function switchOpType(opType){
-  if(!pendingOp)return;
-  pendingOp.opType=opType;
-  var cfg=OP_CONFIG[opType];
-  var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
-  if(!item)return;
-
-  // グループボタンのアクティブ状態更新
-  document.getElementById('gbtn-wip').classList.toggle('grp-active',opType==='wip_add');
-  document.getElementById('gbtn-bari').classList.toggle('grp-active',opType==='wip_to_bari');
-  document.getElementById('gbtn-done').classList.toggle('grp-active',opType==='bari_to_done'||opType==='done_to_ship');
-
-  // 完成品サブ操作
-  var doneSubRow=document.getElementById('done-sub-row');
-  var isComplete=(opType==='bari_to_done'||opType==='done_to_ship');
-  doneSubRow.classList.toggle('show',isComplete);
-  if(isComplete){
-    document.getElementById('dsb-complete').classList.toggle('dsb-active',opType==='bari_to_done');
-    document.getElementById('dsb-ship').classList.toggle('dsb-active',opType==='done_to_ship');
-  }
-
-  // 転記情報更新
-  document.getElementById('op-title').textContent=cfg.label+' — '+item.name;
-  document.getElementById('op-from-lbl').textContent=cfg.from||'新規';
-  document.getElementById('op-from-lbl').style.color=cfg.color;
-  document.getElementById('op-arrow').style.display=cfg.from?'':'none';
-  document.getElementById('op-to-lbl').textContent=cfg.to;
-  document.getElementById('op-to-lbl').style.color=cfg.color;
-  document.getElementById('op-item-name').textContent=item.name;
-
-  var stockInfo='';
-  if(cfg.fromKey) stockInfo='移動元在庫: '+fmtNum(item.process[cfg.fromKey])+item.unit;
-  document.getElementById('op-stock-info').textContent=stockInfo;
-  document.getElementById('op-warn').classList.remove('show');
-
-  // ③ ライン表示制御
-  var lineRow=document.getElementById('op-line-row');
-  var hintEl=document.getElementById('op-hint');
-  if(cfg.requireLine){
-    lineRow.style.display='';
-    if(hintEl) hintEl.textContent='※ ライン（★=最近使用）・作業者は必須入力です';
-  }else{
-    lineRow.style.display='none';
-    document.getElementById('op-line').value='';
-    if(hintEl) hintEl.textContent='※ 作業者は必須入力です';
-  }
-
-  // 実行ボタン色
-  var submitBtn=document.getElementById('op-submit-btn');
-  if(opType==='done_to_ship'){
-    submitBtn.style.background='var(--red)';
-    submitBtn.textContent='🚚 出荷実行';
-  }else{
-    submitBtn.style.background='';
-    submitBtn.style.background=cfg.color==='var(--red)'?'var(--red)':'var(--accent)';
-    submitBtn.textContent='実行';
-  }
-
-  checkOpWarn();
-}
-
-// ═══════════════════════════════════════════════
-//  操作モーダル表示
-// ═══════════════════════════════════════════════
-function showOpModal(itemId, opType){
-  var item=DB.items.find(function(i){return i.id===itemId;});
-  if(!item)return;
-  pendingOp={itemId:itemId,opType:opType};
-
-  document.getElementById('op-err').classList.remove('show');
-  renderQtyAdjuster(item.unit);
-
-  // ⑥ 前回グループから自動補完（last_groupがある場合は上書き可能）
-  switchOpType(opType);
-
-  // ⑤⑥ ライン選択UI初期化
-  initLineUI(opType);
-
-  // 作業者欄
-  var myOpName=currentUser&&currentUser.operator_name?currentUser.operator_name:'';
-  var isAdm=isAdmin();
-  var barEl=document.getElementById('op-name-bar');
-  var setEl=document.getElementById('op-name-set');
-  var cancelBtn=document.getElementById('op-cancel-change');
-  var opInput=document.getElementById('op-operator');
-  if(myOpName&&!isAdm){
-    barEl.style.display='flex';
-    document.getElementById('op-name-bar-txt').textContent=myOpName;
-    setEl.classList.remove('visible');
-    opInput.value=myOpName;
-    if(cancelBtn) cancelBtn.style.display='block';
-  }else{
-    barEl.style.display='none';
-    setEl.classList.add('visible');
-    // ⑥ last_operator から自動反映
-    var lastOp=myOpName||localStorage.getItem('last_operator')||'';
-    opInput.value=lastOp;
-    if(cancelBtn) cancelBtn.style.display=myOpName?'block':'none';
-  }
-  document.getElementById('op-suggest').classList.remove('open');
-
-  openModal('modal-op');
-  setTimeout(function(){
-    var qtyInp=document.getElementById('op-qty');
-    if(qtyInp){qtyInp.value='';qtyInp.focus();}
-  },120);
-}
-
-// ═══════════════════════════════════════════════
-//  ⑤ ライン選択UI
-// ═══════════════════════════════════════════════
-function initLineUI(opType){
-  var cfg=OP_CONFIG[opType];
-  if(!cfg||!cfg.requireLine)return;
-
-  // ⑥ last_line から自動反映
-  var lastLine=localStorage.getItem('last_line')||'';
-
-  // 選択済みバー
-  var selBar=document.getElementById('op-line-selected-bar');
-  var searchArea=document.getElementById('op-line-search-area');
-  var lineInput=document.getElementById('op-line');
-
-  if(lastLine&&DB.lines.indexOf(lastLine)>=0){
-    // 前回のラインを自動選択
-    lineInput.value=lastLine;
-    selBar.style.display='flex';
-    document.getElementById('op-line-selected-txt').textContent=lastLine;
-    searchArea.style.display='none';
-  }else{
-    selBar.style.display='none';
-    searchArea.style.display='block';
-    lineInput.value='';
-    document.getElementById('op-line-search').value='';
-    document.getElementById('op-line-suggest').classList.remove('open');
-  }
-
-  // よく使うライン（最大5件）
-  renderRecentLines();
-}
-
-function renderRecentLines(){
-  var recentLines=loadHist(HIST_LINE_KEY).slice(0,5);
-  var sortedLines=getLineSorted();
-  var btnsEl=document.getElementById('op-line-recent-btns');
-  if(!btnsEl)return;
-  if(sortedLines.length===0){btnsEl.innerHTML='<span style="font-size:12px;color:var(--text-dim)">ラインが登録されていません</span>';return;}
-
-  btnsEl.innerHTML=sortedLines.map(function(ln){
-    var isRecent=recentLines.indexOf(ln)>=0;
-    return '<button type="button" class="line-recent-btn'+(isRecent?' recent-star':'')+'" onclick="selectLineOption(\''+esc(ln)+'\')">'+esc(ln)+'</button>';
-  }).join('');
-}
-
-function onLineSearch(){
-  var q=(document.getElementById('op-line-search').value||'').toLowerCase();
-  var all=DB.lines;
-  var matches=q?all.filter(function(ln){return ln.toLowerCase().indexOf(q)>=0;}):all;
-  var el=document.getElementById('op-line-suggest');
-  if(!matches.length){el.classList.remove('open');return;}
-  var recentLines=loadHist(HIST_LINE_KEY);
-  el.innerHTML=matches.map(function(ln){
-    var isRecent=recentLines.indexOf(ln)>=0;
-    return '<div class="suggest-item" onmousedown="selectLineOption(\''+esc(ln)+'\')"><span class="sug-icon">'+(isRecent?'★':'○')+'</span>'+esc(ln)+'</div>';
-  }).join('');
-  el.classList.add('open');
-}
-
-function onLineSearchFocus(){
-  onLineSearch();
-}
-
-function selectLineOption(line){
-  document.getElementById('op-line').value=line;
-  // バー表示
-  var selBar=document.getElementById('op-line-selected-bar');
-  var searchArea=document.getElementById('op-line-search-area');
-  selBar.style.display='flex';
-  document.getElementById('op-line-selected-txt').textContent=line;
-  searchArea.style.display='none';
-  document.getElementById('op-line-suggest').classList.remove('open');
-  document.getElementById('op-err').classList.remove('show');
-}
-
-function clearLineSelection(){
-  document.getElementById('op-line').value='';
-  var selBar=document.getElementById('op-line-selected-bar');
-  var searchArea=document.getElementById('op-line-search-area');
-  selBar.style.display='none';
-  searchArea.style.display='block';
-  document.getElementById('op-line-search').value='';
-  setTimeout(function(){document.getElementById('op-line-search').focus();onLineSearch();},50);
-}
-
-// サジェスト外クリックで閉じる
-document.addEventListener('click',function(e){
-  var srchInp=document.getElementById('op-line-search');
-  var sug=document.getElementById('op-line-suggest');
-  if(srchInp&&sug&&!srchInp.contains(e.target)&&!sug.contains(e.target)){
-    sug.classList.remove('open');
-  }
-});
-
-// ═══════════════════════════════════════════════
-//  ⑭ アコーディオン & ⑮ スワイプ
-// ═══════════════════════════════════════════════
-function stopProp(e){if(e)e.stopPropagation();}
-
-var _openAccInvId=null;
-function toggleAccInv(id){
-  var item=document.getElementById('acc-inv-'+id);if(!item)return;
-  var wasOpen=item.classList.contains('open');
-  document.querySelectorAll('#inv-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
-  if(!wasOpen){item.classList.add('open');_openAccInvId=id;}else{_openAccInvId=null;}
-}
-
-function toggleAccHist(id){
-  var item=document.getElementById('acc-hist-'+id);if(!item)return;
-  var wasOpen=item.classList.contains('open');
-  document.querySelectorAll('#hist-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
-  if(!wasOpen)item.classList.add('open');
-}
-
-function toggleAccUser(id){
-  var item=document.getElementById('acc-user-'+id);if(!item)return;
-  var wasOpen=item.classList.contains('open');
-  document.querySelectorAll('#user-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
-  if(!wasOpen)item.classList.add('open');
-}
-
-function renderInvAccordion(items,admin){
-  var el=document.getElementById('inv-acc-list');if(!el)return;
-  if(!items||!items.length){
-    el.innerHTML='<div class="empty"><div class="ei">📦</div><p>該当する品目がありません</p></div>';return;
-  }
-  el.innerHTML=items.map(function(it){
-    var dw=it.process.done>0&&it.process.done<=it.threshold;
-    var dz=it.process.done===0;
-    var warnDot=(dz||dw)?'<span class="acc-warn-dot"></span>':'';
-    var doneCls=dz||dw?'sp-warn':'sp-done';
-    var adminBtns=admin
-      ?'<div style="display:flex;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'
-        +'<button class="btn btn-ghost btn-sm" style="flex:1" data-id="'+it.id+'" onclick="showEditModal(this.dataset.id);stopProp(event)">編集</button>'
-        +'<button class="btn btn-danger btn-sm" style="flex:1" data-id="'+it.id+'" onclick="showDeleteModal(this.dataset.id);stopProp(event)">削除</button>'
-      +'</div>':'' ;
-    return '<div class="acc-item" id="acc-inv-'+it.id+'" data-id="'+it.id+'">'
-      +'<div class="acc-header" data-id="'+it.id+'" onclick="toggleAccInv(this.dataset.id)">'
-        +'<div class="swipe-bg swipe-bg-left" id="swbg-l-'+it.id+'"></div>'
-        +'<div class="swipe-bg swipe-bg-right" id="swbg-r-'+it.id+'"></div>'
-        +'<div class="acc-inv-summary">'
-          +'<div style="display:flex;align-items:center;gap:6px"><span class="acc-inv-name">'+esc(it.name)+'</span>'+warnDot+'</div>'
-          +'<div class="acc-inv-meta">'
-            +'<div class="acc-inv-stocks">'
-              +'<span class="acc-stock-pill sp-wip">仕掛 '+fmtNum(it.process.wip)+'</span>'
-              +'<span class="acc-stock-pill sp-bari">前 '+fmtNum(it.process.bari)+'</span>'
-              +'<span class="acc-stock-pill '+doneCls+'">完 '+fmtNum(it.process.done)+'</span>'
-            +'</div>'
-            +(it.maker?'<span style="font-size:10px;color:var(--text-dim)">'+esc(it.maker)+'</span>':'')
-          +'</div>'
-        +'</div>'
-        +'<span class="acc-chevron">▼</span>'
-      +'</div>'
-      +'<div class="acc-body">'
-        +'<div class="acc-op-grid">'
-          +'<button class="acc-op-btn bp-wip" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_add\');stopProp(event)"><span>⚙</span>加工</button>'
-          +'<button class="acc-op-btn bp-w2b" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_to_bari\');stopProp(event)"><span>→</span>バリ前移動</button>'
-          +'<button class="acc-op-btn bp-b2d" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'bari_to_done\');stopProp(event)"><span>✓</span>完成</button>'
-          +'<button class="acc-op-btn bp-d2s" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'done_to_ship\');stopProp(event)"><span>🚚</span>出荷</button>'
-        +'</div>'
-        +adminBtns
-      +'</div>'
-    +'</div>';
-  }).join('');
-  attachSwipe(el,items);
-}
-
-function renderHistAccordion(logs){
-  var el=document.getElementById('hist-acc-list');if(!el)return;
-  if(!logs||!logs.length){
-    el.innerHTML='<div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div>';return;
-  }
-  el.innerHTML=logs.slice(0,200).map(function(entry){
-    var isCorr=entry.type==='訂正';
-    var isCorrected=!!entry.corrected;
-    var rowStyle=isCorr?'background:#fff1f1':'';
-    var cls=ACT_CLASS[entry.type]||'ac-sys';
-    var chip='<span class="act-chip '+cls+'">'+esc(entry.type)+'</span>';
-    if(isCorrected)chip+='<span class="corrected-badge">訂正済</span>';
-    var cnt=entry.correction_count||0;
-    var cntBadge=cnt>0?'<span class="correction-count-badge'+(cnt>=CORRECTION_LIMIT-1?' warn-cnt':'')+'">訂正'+cnt+'回</span>':'';
-    var correctBtn='';
-    if(!isCorr&&!isCorrected&&isAdmin()){
-      correctBtn=(cnt>=CORRECTION_LIMIT)
-        ?'<button class="btn-correct-row" disabled>不可</button>'
-        :'<button class="btn-correct-row" data-hid="'+entry.id+'" onclick="confirmCorrect(this.dataset.hid);stopProp(event)">訂正</button>';
+  } else if(entry.type.includes('NG')){
+    var proc = DB.procConfig.find(function(p){return p.label===entry.group;});
+    if(proc){
+      if(DB.procStock[item.id][proc.id].ng < qty) { toast('NG在庫が不足しています','err'); return; }
+      DB.procStock[item.id][proc.id].ng -= qty;
+      DB.procStock[item.id][proc.id].good += qty;
     }
-    return '<div class="acc-item" id="acc-hist-'+entry.id+'" style="'+rowStyle+'">'
-      +'<div class="acc-header" data-id="'+entry.id+'" onclick="toggleAccHist(this.dataset.id)">'
-        +'<div class="swipe-bg swipe-bg-left" id="hswbg-l-'+entry.id+'"></div>'
-        +'<div class="acc-hist-summary">'
-          +'<div class="acc-hist-row1"><span class="acc-hist-time">'+fmtDate(entry.timestamp)+'</span>'+chip+cntBadge+'</div>'
-          +'<div class="acc-hist-name">'+esc(entry.itemName||'—')+'</div>'
-        +'</div>'
-        +'<div style="text-align:right;flex-shrink:0;margin-left:8px">'
-          +'<div class="acc-hist-qty">'+fmtNum(entry.qty)+'</div>'
-        +'</div>'
-        +'<span class="acc-chevron">▼</span>'
-      +'</div>'
-      +'<div class="acc-body">'
-        +'<div class="acc-hist-body">'
-          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">作業者</span><strong>'+esc(entry.operator||'—')+'</strong></div>'
-          +(entry.line?'<div class="acc-hist-detail"><span class="acc-hist-dlabel">ライン</span><span>'+esc(entry.line)+'</span></div>':'')
-          +(entry.group?'<div class="acc-hist-detail"><span class="acc-hist-dlabel">グループ</span><span>'+esc(entry.group)+'</span></div>':'')
-          +(entry.corrected_desc?'<div class="acc-hist-detail"><span class="acc-hist-dlabel">訂正内容</span><span style="color:#b91c1c">'+esc(entry.corrected_desc)+'</span></div>':'')
-          +(correctBtn?'<div style="margin-top:8px">'+correctBtn+'</div>':'')
-        +'</div>'
-      +'</div>'
-    +'</div>';
-  }).join('');
-  attachHistSwipe(el,logs);
+  } else if(entry.type === '出荷') {
+    DB.procStock[item.id][PROC_DONE_ID].good += qty;
+    item.process.done += qty;
+  } else {
+    toast('この操作は取消できません','err'); return;
+  }
+
+  entry.corrected = true;
+  addHistory('訂正', item, qty, currentUser.username, '取消: '+entry.type);
+  saveDB(); renderHistory(); renderInventory();
+  if(_curItem && _curItem.id===item.id) selectProcTab(_curProcId);
+  toast('操作を取り消しました','ok');
 }
 
-function renderUserAccordion(){
-  var el=document.getElementById('user-acc-list');if(!el)return;
-  el.innerHTML=DB.users.map(function(u){
-    var opCell=isAdmin()
-      ?'<div class="editable-operator"><input type="text" value="'+esc(u.operator_name||'')+'" id="opna-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpNameAcc(this.dataset.uid)"><button data-uid="'+u.id+'" onclick="saveOpNameAcc(this.dataset.uid)">保存</button></div>'
-      :(u.operator_name?esc(u.operator_name):'<span style="color:var(--text-dim)">未設定</span>');
-    var delBtn=u.id!==currentUser.id
-      ?'<button class="btn btn-danger btn-sm" style="width:100%;margin-top:8px" data-uid="'+u.id+'" onclick="deleteUser(this.dataset.uid);stopProp(event)">削除</button>':'';
-    return '<div class="acc-item" id="acc-user-'+u.id+'">'
-      +'<div class="acc-header" data-uid="'+u.id+'" onclick="toggleAccUser(this.dataset.uid)">'
-        +'<div class="acc-user-summary">'
-          +'<div class="acc-user-name">'+esc(u.username)+'</div>'
-          +'<div class="acc-user-sub">'
-            +'<span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span>'
-            +(u.operator_name?'<span>'+esc(u.operator_name)+'</span>':'<span style="color:var(--text-dim)">作業者名未設定</span>')
-          +'</div>'
-        +'</div>'
-        +'<span class="acc-chevron">▼</span>'
-      +'</div>'
-      +'<div class="acc-body">'
-        +'<div class="acc-hist-body">'
-          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">作業者名</span>'+opCell+'</div>'
-          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">登録日</span><span>'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</span></div>'
-        +'</div>'
-        +delBtn
-      +'</div>'
-    +'</div>';
+function renderUsers(){
+  document.getElementById('user-body').innerHTML = DB.users.map(function(u){
+    var del = u.id!==currentUser.id?'<button class="btn-ghost btn-sm" onclick="delUser(\''+u.id+'\')">削除</button>':'';
+    return '<tr><td>'+esc(u.username)+'</td><td>'+(u.role==='admin'?'管理者':'一般')+'</td><td>'+del+'</td></tr>';
   }).join('');
 }
-
-function saveOpNameAcc(userId){
-  var inp=document.getElementById('opna-'+userId);if(!inp)return;
-  updateOperatorName(userId,inp.value.trim());renderUsers();
-}
-
-// ⑮ スワイプ：在庫リスト（左=訂正, 右=加工モーダル）
-function attachSwipe(container,items){
-  container.querySelectorAll('.acc-item').forEach(function(row){
-    var id=row.dataset.id;if(!id)return;
-    var startX=0,startY=0,isDrag=false,moved=false,THRESH=60;
-    var header=row.querySelector('.acc-header');if(!header)return;
-    header.addEventListener('touchstart',function(e){
-      startX=e.touches[0].clientX;startY=e.touches[0].clientY;isDrag=true;moved=false;
-    },{passive:true});
-    header.addEventListener('touchmove',function(e){
-      if(!isDrag)return;
-      var dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;
-      if(!moved&&Math.abs(dy)>Math.abs(dx)*1.5){isDrag=false;return;}
-      moved=true;
-      var ratio=Math.min(Math.abs(dx)/THRESH,1);
-      var bgL=document.getElementById('swbg-l-'+id),bgR=document.getElementById('swbg-r-'+id);
-      if(bgL)bgL.style.opacity=dx<0?ratio:0;
-      if(bgR)bgR.style.opacity=dx>0?ratio:0;
-    },{passive:true});
-    header.addEventListener('touchend',function(e){
-      if(!isDrag){return;}isDrag=false;
-      var dx=e.changedTouches[0].clientX-startX;
-      var bgL=document.getElementById('swbg-l-'+id),bgR=document.getElementById('swbg-r-'+id);
-      if(bgL)bgL.style.opacity=0;if(bgR)bgR.style.opacity=0;
-      if(!moved)return;
-      if(dx<-THRESH){
-        var last=DB.history.find(function(h){return h.itemId===id&&h.type!=='訂正'&&!h.corrected;});
-        if(last&&isAdmin())confirmCorrect(last.id);
-        else if(!isAdmin())toast('訂正は管理者のみです','err');
-        else toast('訂正可能な履歴がありません','warn');
-      }else if(dx>THRESH){showOpModal(id,'wip_add');}
-    });
-  });
-}
-
-// ⑮ スワイプ：履歴リスト（左=訂正）
-function attachHistSwipe(container,logs){
-  container.querySelectorAll('.acc-item').forEach(function(row){
-    var histId=row.id.replace('acc-hist-','');
-    var entry=logs.find(function(h){return h.id===histId;});
-    if(!entry||entry.type==='訂正'||entry.corrected)return;
-    var startX=0,isDrag=false,moved=false,THRESH=60;
-    var header=row.querySelector('.acc-header');if(!header)return;
-    header.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;isDrag=true;moved=false;},{passive:true});
-    header.addEventListener('touchmove',function(e){
-      if(!isDrag)return;moved=true;
-      var dx=e.touches[0].clientX-startX;
-      var bgL=document.getElementById('hswbg-l-'+histId);
-      if(bgL)bgL.style.opacity=dx<0?Math.min(Math.abs(dx)/THRESH,1):0;
-    },{passive:true});
-    header.addEventListener('touchend',function(e){
-      isDrag=false;
-      var dx=e.changedTouches[0].clientX-startX;
-      var bgL=document.getElementById('hswbg-l-'+histId);if(bgL)bgL.style.opacity=0;
-      if(!moved)return;
-      if(dx<-THRESH&&isAdmin())confirmCorrect(histId);
-    });
-  });
-}
-
-// ─── 固定フッターバー ───
-function setFbbItem(itemId){
-  var bar=document.getElementById('fixed-bottom-bar');if(!bar)return;
-  if(!itemId){bar.innerHTML='';return;}
-  var it=DB.items.find(function(i){return i.id===itemId;});if(!it)return;
-  bar.innerHTML=
-    '<div style="position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--text-muted);pointer-events:none">'+esc(it.name)+'</div>'
-    +'<button class="fbb-btn fbb-wip" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_add\')"><span class="fbb-icon">⚙</span>加工</button>'
-    +'<button class="fbb-btn fbb-bari" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'wip_to_bari\')"><span class="fbb-icon">→</span>バリ前</button>'
-    +'<button class="fbb-btn fbb-done" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'bari_to_done\')"><span class="fbb-icon">✓</span>完成</button>'
-    +'<button class="fbb-btn fbb-ship" data-id="'+it.id+'" onclick="showOpModal(this.dataset.id,\'done_to_ship\')"><span class="fbb-icon">🚚</span>出荷</button>';
-}
+function delUser(id){ DB.users=DB.users.filter(function(u){return u.id!==id;}); saveDB(); renderUsers(); }
 
 // ═══════════════════════════════════════════════
-//  作業者サジェスト
+//  MODALS & ACTIONS
 // ═══════════════════════════════════════════════
-var _suggestIdx=-1;
-function onOperatorInput(){
-  var q=document.getElementById('op-operator').value;
-  var candidates=getOperatorSuggests(q);
-  var el=document.getElementById('op-suggest');
-  _suggestIdx=-1;
-  if(!candidates.length){el.classList.remove('open');return;}
-  el.innerHTML=candidates.map(function(c){
-    return '<div class="suggest-item" data-val="'+esc(c)+'" onmousedown="pickOperator(this.dataset.val)"><span class="sug-icon">👤</span>'+esc(c)+'</div>';
-  }).join('');
-  el.classList.add('open');
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.overlay').forEach(function(ov){ ov.addEventListener('mousedown',function(e){if(e.target===ov) closeModal(ov.id);}); });
+
+function toast(msg,type){
+  var el = document.createElement('div'); el.className = 'toast '+(type||''); el.innerHTML = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(function(){ el.style.opacity=0; setTimeout(function(){el.remove();},200); }, 2500);
 }
 
-function onOperatorKeydown(e){
-  var el=document.getElementById('op-suggest');
-  var items=el.querySelectorAll('.suggest-item');
-  if(!el.classList.contains('open')){if(e.key==='Enter'){e.preventDefault();execOp();}return;}
-  if(e.key==='ArrowDown'){e.preventDefault();_suggestIdx=Math.min(_suggestIdx+1,items.length-1);items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});}
-  else if(e.key==='ArrowUp'){e.preventDefault();_suggestIdx=Math.max(_suggestIdx-1,-1);items.forEach(function(it,i){it.classList.toggle('active',i===_suggestIdx);});}
-  else if(e.key==='Enter'){e.preventDefault();if(_suggestIdx>=0&&items[_suggestIdx]){pickOperator(items[_suggestIdx].dataset.val);}else{closeSuggest();execOp();}}
-  else if(e.key==='Escape'){closeSuggest();}
-}
-
-function pickOperator(val){
-  document.getElementById('op-operator').value=val;closeSuggest();
-  document.getElementById('op-submit-btn').focus();
-}
-
-function closeSuggest(){
-  var el=document.getElementById('op-suggest');if(el)el.classList.remove('open');_suggestIdx=-1;
-}
-
-document.addEventListener('click',function(e){
-  var wrap=document.getElementById('op-operator');
-  var sug=document.getElementById('op-suggest');
-  if(wrap&&sug&&!wrap.contains(e.target)&&!sug.contains(e.target)){closeSuggest();}
-});
-
-function toggleOperatorInput(show){
-  var barEl=document.getElementById('op-name-bar');
-  var setEl=document.getElementById('op-name-set');
-  if(show){
-    barEl.style.display='none';setEl.classList.add('visible');
-    var opInput=document.getElementById('op-operator');opInput.value='';
-    setTimeout(function(){opInput.focus();onOperatorInput();},50);
-  }else{
-    var myOpName=currentUser&&currentUser.operator_name?currentUser.operator_name:'';
-    barEl.style.display=myOpName?'flex':'none';
-    if(myOpName)document.getElementById('op-name-bar-txt').textContent=myOpName;
-    setEl.classList.remove('visible');
-    document.getElementById('op-operator').value=myOpName;closeSuggest();
-  }
-}
-
-// ─── 警告チェック ───
-function checkOpWarn(){
-  if(!pendingOp)return;
-  var cfg=OP_CONFIG[pendingOp.opType];
-  if(!cfg||!cfg.fromKey)return;
-  var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
-  if(!item)return;
-  var qty=parseInt(document.getElementById('op-qty').value)||0;
-  var src=item.process[cfg.fromKey]||0;
-  var w=document.getElementById('op-warn');
-  w.classList.toggle('show',qty>0&&src>0&&qty/src>=0.8&&qty<=src);
-}
-
-// ═══════════════════════════════════════════════
-//  ⑪ 実行（出荷は確認ダイアログ）
-// ═══════════════════════════════════════════════
-var _opSubmitting=false;
-
-function execOp(){
-  if(_opSubmitting)return;
-  if(!pendingOp)return;
-  var cfg=OP_CONFIG[pendingOp.opType];
-  var item=DB.items.find(function(i){return i.id===pendingOp.itemId;});
-  if(!item)return;
-
-  var qty=parseInt(document.getElementById('op-qty').value);
-  var line=document.getElementById('op-line').value.trim();
-  var barEl=document.getElementById('op-name-bar');
-  var operator='';
-  if(barEl&&barEl.style.display!=='none'&&currentUser&&currentUser.operator_name){
-    operator=currentUser.operator_name;
-  }else{
-    operator=document.getElementById('op-operator').value.trim();
-  }
-
-  var errEl=document.getElementById('op-err');errEl.classList.remove('show');
-
-  if(!qty||qty<=0){errEl.textContent='数量を入力してください（1以上）';errEl.classList.add('show');return;}
-  if(qty>99999){errEl.textContent='異常値：99,999を超える数量は入力できません';errEl.classList.add('show');return;}
-  // ④ ライン必須チェック
-  if(cfg.requireLine&&!line){errEl.textContent='ラインを選択してください';errEl.classList.add('show');return;}
-  if(!operator){errEl.textContent='作業者名を入力してください';errEl.classList.add('show');return;}
-  if(cfg.fromKey){
-    var src=item.process[cfg.fromKey];
-    if(src<qty){errEl.textContent='在庫不足：'+cfg.from+'の在庫は '+fmtNum(src)+item.unit+' です';errEl.classList.add('show');return;}
-  }
-
-  // ⑪ 出荷は確認ダイアログ
-  if(pendingOp.opType==='done_to_ship'){
-    openConfirm('出荷確認',
-      '以下の出荷を実行しますか？\n\n品目: '+item.name+'\n数量: '+fmtNum(qty)+item.unit+'\n作業者: '+operator,
-      function(){doExecOp(item,cfg,qty,line,operator);});
-    return;
-  }
-
-  doExecOp(item,cfg,qty,line,operator);
-}
-
-// [API] doExecOp → GAS/DB連携時はここでfetch POSTに置換可能
-function doExecOp(item,cfg,qty,line,operator){
-  _opSubmitting=true;
-  var group=OP_GROUP[pendingOp.opType]||'';
-
-  if(cfg.fromKey) item.process[cfg.fromKey]-=qty;
-  if(cfg.toKey)   item.process[cfg.toKey]+=qty;
-  item.updatedAt=now();
-
-  addHistory(cfg.label,item,qty,cfg.requireLine?line:null,operator,group);
-  saveDB();
-
-  if(cfg.requireLine&&line) recordLineUse(line);
-  recordOperatorUse(operator);
-  recordGroupUse(group);
-  updateCurrentGroupBar();
-
-  closeModal('modal-op');
-  renderInventory();
-  var lineDisp=(cfg.requireLine&&line)?' / '+line:'';
-  toast(cfg.label+': '+item.name+' '+fmtNum(qty)+item.unit+' ('+operator+lineDisp+')','ok');
-  setTimeout(function(){_opSubmitting=false;},500);
-}
-
-// ═══════════════════════════════════════════════
-//  ITEM CRUD
-// ═══════════════════════════════════════════════
 function showAddModal(){
-  if(!isAdmin())return;
-  document.getElementById('item-modal-title').textContent='品目登録';
   document.getElementById('item-id').value='';
-  ['item-name','item-code','item-unit','item-maker'].forEach(function(id){document.getElementById(id).value='';});
-  ['item-threshold','item-wip','item-bari','item-done'].forEach(function(id){document.getElementById(id).value='0';});
-  document.getElementById('init-stock-row').style.display='';
+  ['item-name','item-code','item-unit','item-init-stock'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('item-err').classList.remove('show');
-  openModal('modal-item');
-}
-
-function showEditModal(id){
-  if(!isAdmin())return;
-  var item=DB.items.find(function(i){return i.id===id;});if(!item)return;
-  document.getElementById('item-modal-title').textContent='品目編集';
-  document.getElementById('item-id').value=item.id;
-  document.getElementById('item-name').value=item.name;
-  document.getElementById('item-code').value=item.code;
-  document.getElementById('item-unit').value=item.unit;
-  document.getElementById('item-threshold').value=item.threshold;
-  document.getElementById('item-maker').value=item.maker||'';
-  document.getElementById('init-stock-row').style.display='none';
-  document.getElementById('item-err').classList.remove('show');
+  document.getElementById('init-stock-row').style.display = '';
   openModal('modal-item');
 }
 
 function saveItem(){
-  if(!isAdmin())return;
-  var id=document.getElementById('item-id').value;
-  var name=document.getElementById('item-name').value.trim();
-  var code=document.getElementById('item-code').value.trim();
-  var unit=document.getElementById('item-unit').value.trim();
-  var threshold=parseInt(document.getElementById('item-threshold').value)||0;
-  var maker=document.getElementById('item-maker').value.trim();
-  var errEl=document.getElementById('item-err');
-  errEl.classList.remove('show');
-  if(!name||!code||!unit){errEl.textContent='品目名・コード・単位は必須です';errEl.classList.add('show');return;}
-  if(!id&&DB.items.find(function(i){return i.code===code;})){errEl.textContent='品目コードが重複しています';errEl.classList.add('show');return;}
-  if(id){
-    var item=DB.items.find(function(i){return i.id===id;});if(!item)return;
-    item.name=name;item.code=code;item.unit=unit;item.threshold=threshold;item.maker=maker;item.updatedAt=now();
-    toast(name+' を更新しました','ok');
-  }else{
-    var wip=parseInt(document.getElementById('item-wip').value)||0;
-    var bari=parseInt(document.getElementById('item-bari').value)||0;
-    var done=parseInt(document.getElementById('item-done').value)||0;
-    var newItem={id:uuid(),name:name,code:code,unit:unit,maker:maker,process:{wip:wip,bari:bari,done:done},threshold:threshold,updatedAt:now()};
-    DB.items.push(newItem);
-    // 初期在庫が入力された場合は操作履歴に記録
-    var opUser=currentUser?currentUser.username:'';
-    var opName=currentUser&&currentUser.operator_name?currentUser.operator_name:opUser;
-    if(wip>0){DB.history.unshift({id:uuid(),timestamp:now(),type:'加工',group:'仕掛品',itemId:newItem.id,itemName:newItem.name,qty:wip,line:null,operator:opName,user:opUser,userId:currentUser?currentUser.id:'',username:opUser,role:currentUser?currentUser.role:''});}
-    if(bari>0){DB.history.unshift({id:uuid(),timestamp:now(),type:'バリ前移動',group:'バリ取り前',itemId:newItem.id,itemName:newItem.name,qty:bari,line:null,operator:opName,user:opUser,userId:currentUser?currentUser.id:'',username:opUser,role:currentUser?currentUser.role:''});}
-    if(done>0){DB.history.unshift({id:uuid(),timestamp:now(),type:'完成',group:'完成品',itemId:newItem.id,itemName:newItem.name,qty:done,line:null,operator:opName,user:opUser,userId:currentUser?currentUser.id:'',username:opUser,role:currentUser?currentUser.role:''});}
-    if(DB.history.length>HIST_MAX)DB.history=DB.history.slice(0,HIST_MAX);
-    toast(name+' を登録しました','ok');
+  var name=document.getElementById('item-name').value.trim(), code=document.getElementById('item-code').value.trim(), unit=document.getElementById('item-unit').value.trim();
+  var err=document.getElementById('item-err'); err.classList.remove('show');
+  if(!name||!code||!unit){ err.textContent='必須項目を入力してください'; err.classList.add('show'); return; }
+  
+  var initStock = parseInt(document.getElementById('item-init-stock').value)||0;
+  var newItem = {id:uuid(), name:name, code:code, unit:unit, process:{done:0}, updatedAt:now()};
+  DB.items.push(newItem);
+  
+  DB.procStock[newItem.id] = {};
+  DB.procConfig.forEach(function(p){ DB.procStock[newItem.id][p.id] = {good:0, ng:0}; });
+  DB.procStock[newItem.id][PROC_DONE_ID] = {good:0, ng:0};
+  
+  if(initStock > 0){
+    var startP = DB.procConfig[0];
+    DB.procStock[newItem.id][startP.id].good = initStock;
+    addHistory('初期在庫', newItem, initStock, currentUser.username, startP.label);
   }
-  saveDB();closeModal('modal-item');renderInventory();
+  
+  saveDB(); closeModal('modal-item'); renderInventory(); toast(name+' を登録しました','ok');
 }
 
-function showDeleteModal(id){
-  if(!isAdmin())return;
-  var item=DB.items.find(function(i){return i.id===id;});if(!item)return;
-  pendingDeleteId=id;
-  document.getElementById('del-item-name').textContent=item.code+' — '+item.name;
-  openModal('modal-delete');
-}
-
-function execDelete(){
-  if(!isAdmin()||!pendingDeleteId)return;
-  var item=DB.items.find(function(i){return i.id===pendingDeleteId;});
-  if(item){DB.items=DB.items.filter(function(i){return i.id!==pendingDeleteId;});saveDB();renderInventory();toast(item.name+' を削除しました','warn');}
-  pendingDeleteId=null;closeModal('modal-delete');
-}
-
-// ═══════════════════════════════════════════════
-//  LINE SETTINGS
-// ═══════════════════════════════════════════════
-function showLineModal(){
-  if(!isAdmin())return;renderLinesList();document.getElementById('new-line-input').value='';openModal('modal-lines');
-}
-
-function renderLinesList(){
-  var el=document.getElementById('lines-list');if(!DB.lines.length){el.innerHTML='<p style="font-size:13px;color:var(--text-muted)">ラインが登録されていません</p>';return;}
-  el.innerHTML=DB.lines.map(function(ln,idx){
-    return '<div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px">'
-      +'<span style="flex:1;font-size:13px;font-weight:500">'+esc(ln)+'</span>'
-      +'<button class="btn btn-ghost btn-sm" onclick="deleteLine('+idx+')" style="padding:3px 8px;font-size:11px;color:var(--red);border-color:rgba(239,68,68,.3)">削除</button>'
-    +'</div>';
-  }).join('');
-}
-
-function addLine(){
-  var val=document.getElementById('new-line-input').value.trim();
-  if(!val){toast('ライン名を入力してください','err');return;}
-  if(DB.lines.includes(val)){toast('このライン名は既に存在します','err');return;}
-  DB.lines.push(val);saveDB();renderLinesList();document.getElementById('new-line-input').value='';
-  toast(val+' を追加しました','ok');
-}
-
-function deleteLine(idx){
-  var name=DB.lines[idx];DB.lines.splice(idx,1);saveDB();renderLinesList();toast(name+' を削除しました','warn');
-}
-
-// ═══════════════════════════════════════════════
-//  HISTORY
-// ═══════════════════════════════════════════════
-var ACT_CLASS={
-  '加工':'ac-wip','バリ前移動':'ac-w2b','完成':'ac-b2d','出荷':'ac-d2s','訂正':'ac-correction'
-};
-
-function renderHistory(){
-  var filterLine=document.getElementById('hist-filter-line').value;
-  var filterOp=document.getElementById('hist-filter-op').value;
-
-  var lineFilter=document.getElementById('hist-filter-line');
-  var currentVal=lineFilter.value;
-  lineFilter.innerHTML='<option value="">全ライン</option>';
-  DB.lines.forEach(function(ln){lineFilter.innerHTML+='<option value="'+esc(ln)+'"'+(currentVal===ln?' selected':'')+'>'+esc(ln)+'</option>';});
-
-  var logs=DB.history.filter(function(h){
-    if(filterLine&&h.line!==filterLine)return false;
-    if(filterOp==='訂正'&&h.type!=='訂正')return false;
-    else if(filterOp&&filterOp!=='訂正'&&h.type!==filterOp)return false;
-    return true;
-  });
-
-  document.getElementById('hist-count').textContent=logs.length+'件';
-  var body=document.getElementById('hist-body');
-  if(!logs.length){
-    body.innerHTML='<tr><td colspan="8"><div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div></td></tr>';
-    var hAcc=document.getElementById('hist-acc-list');if(hAcc)hAcc.innerHTML='<div class="empty"><div class="ei">📋</div><p>履歴がありません</p></div>';
-    updateRecentCorrectionBar();return;
-  }
-
-  body.innerHTML=logs.slice(0,1000).map(function(entry){
-    var isCorr=entry.type==='訂正';
-    var isCorrected=!!entry.corrected;
-    var rowCls=isCorr?'hist-row-correction':'';
-    var cls=ACT_CLASS[entry.type]||'ac-sys';
-    var chip='<span class="act-chip '+cls+'">'+esc(entry.type)+'</span>';
-    if(isCorrected) chip+='<span class="corrected-badge">訂正済</span>';
-    if(isCorr) chip+='<span class="correction-badge">⎌ 訂正</span>';
-
-    // ⑨ 訂正の元操作内容表示
-    var corrOrigDesc='';
-    if(isCorr&&entry.corrected_desc){
-      corrOrigDesc='<span class="correction-orig-desc">'+esc(entry.corrected_desc)+'</span>';
-    }
-
-    // ⑩ correction_count バッジ（警告表示）
-    var cnt=entry.correction_count||0;
-    var cntBadge=cnt>0?'<span class="correction-count-badge'+(cnt>=CORRECTION_LIMIT-1?' warn-cnt':'')+'">訂正'+cnt+'回</span>':'';
-
-    // グループバッジ
-    var grpName=entry.group||'';
-    var grpStyle=grpName==='仕掛品'?'background:var(--wip-dim);color:var(--wip)':grpName==='バリ取り前'?'background:var(--bari-dim);color:var(--bari)':grpName==='完成品'?'background:var(--done-dim);color:var(--done)':'background:var(--surface3);color:var(--text-muted)';
-    var grpBadge=grpName?'<span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;'+grpStyle+'">'+esc(grpName)+'</span>':'—';
-
-    // ⑧ 訂正ボタン：未訂正データのみ対象
-    var correctBtn='';
-    if(!isCorr&&!isCorrected&&isAdmin()){
-      var overLimit=(entry.correction_count||0)>=CORRECTION_LIMIT;
-      correctBtn=overLimit
-        ?'<button class="btn-correct-row" disabled title="訂正上限に達しています">不可</button>'
-        :'<button class="btn-correct-row" data-hid="'+entry.id+'" onclick="confirmCorrect(this.dataset.hid)">訂正</button>';
-    }
-
-    return '<tr class="'+rowCls+'">'
-      +'<td style="white-space:nowrap;color:var(--text-muted);font-size:11px;font-family:var(--fn)">'+fmtDate(entry.timestamp)+'</td>'
-      +'<td>'+chip+corrOrigDesc+'</td>'
-      +'<td>'+grpBadge+'</td>'
-      +'<td style="font-size:13px">'+esc(entry.itemName||'—')+cntBadge+'</td>'
-      +'<td style="font-family:var(--fn);text-align:right;font-weight:600">'+fmtNum(entry.qty)+'</td>'
-      +'<td><span style="font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 7px">'+esc(entry.line||'—')+'</span></td>'
-      +'<td style="font-size:13px;font-weight:500">'+esc(entry.operator||'—')+'</td>'
-      +'<td>'+correctBtn+'</td>'
-    +'</tr>';
-  }).join('');
-  updateRecentCorrectionBar();
-  renderHistAccordion(logs);
-}
-
-// ─── 訂正バー（直近未訂正） ───
-function updateRecentCorrectionBar(){
-  var bar=document.getElementById('recent-correction-bar');
-  var desc=document.getElementById('rcb-desc');
-  if(!bar)return;
-  if(!isAdmin()){bar.style.display='none';return;}
-  // ⑧ 未訂正データのみ
-  var target=DB.history.find(function(e){return e.type!=='訂正'&&!e.corrected;});
-  if(!target){bar.style.display='none';return;}
-  if((target.correction_count||0)>=CORRECTION_LIMIT){bar.style.display='none';return;}
-  bar.style.display='flex';
-  desc.innerHTML=fmtDate(target.timestamp)+' / <strong>'+esc(target.type)+'</strong> / '+esc(target.itemName)+' '+fmtNum(target.qty)+(target.operator?' / '+esc(target.operator):'');
-  document.getElementById('btn-recent-correct').dataset.hid=target.id;
-}
-
-function quickCorrect(){
-  var btn=document.getElementById('btn-recent-correct');
-  if(!btn||!btn.dataset.hid)return;
-  confirmCorrect(btn.dataset.hid);
-}
-
-// ⑪ 訂正確認ダイアログ
-function confirmCorrect(histId){
-  if(!isAdmin()){toast('訂正は管理者のみ実行できます','err');return;}
-  var entry=DB.history.find(function(e){return e.id===histId;});
-  if(!entry){toast('対象データが見つかりません','err');return;}
-  if(entry.type==='訂正'){toast('訂正レコードは訂正できません','err');return;}
-  if(entry.corrected){toast('このデータはすでに訂正済みです','err');return;}
-  if((entry.correction_count||0)>=CORRECTION_LIMIT){toast('訂正回数の上限('+CORRECTION_LIMIT+'回)に達しています','err');return;}
-
-  var cnt=entry.correction_count||0;
-  var msg='以下の操作を訂正（取り消し）しますか？\n\n操作: '+entry.type+'\n品目: '+entry.itemName+'\n数量: '+fmtNum(entry.qty)+'\n作業者: '+(entry.operator||'—')+'\n日時: '+fmtDate(entry.timestamp);
-  // ⑩ 3回目近づいたら警告
-  if(cnt>=CORRECTION_LIMIT-1){
-    msg+='\n\n⚠ 警告: この操作の訂正は上限に達しています（'+(cnt+1)+'/'+CORRECTION_LIMIT+'回目）';
-  }else if(cnt>=1){
-    msg+='\n\n注意: 訂正回数 '+(cnt+1)+'/'+CORRECTION_LIMIT+'回目';
-  }
-
-  openConfirm('訂正確認',msg,function(){execCorrect(histId);});
-}
-
-// ⑨ 訂正実行（元操作内容を保存）
-function execCorrect(histId){
-  var entry=DB.history.find(function(e){return e.id===histId;});
-  if(!entry||entry.type==='訂正'||entry.corrected){toast('訂正できないデータです','err');return;}
-  if((entry.correction_count||0)>=CORRECTION_LIMIT){toast('訂正上限に達しています','err');return;}
-  var cfgMap={'加工':{fromKey:null,toKey:'wip'},'バリ前移動':{fromKey:'wip',toKey:'bari'},'完成':{fromKey:'bari',toKey:'done'},'出荷':{fromKey:'done',toKey:null}};
-  var cfg=cfgMap[entry.type];
-  if(!cfg){toast('この操作種別は訂正できません','err');return;}
-  var item=DB.items.find(function(i){return i.id===entry.itemId;});
-  if(!item){toast('品目が見つかりません（削除済みの可能性があります）','err');return;}
-  var qty=entry.qty;
-  if(cfg.toKey&&item.process[cfg.toKey]-qty<0){toast('訂正できません：在庫が不足します（現在 '+fmtNum(item.process[cfg.toKey])+'）','err');return;}
-  if(cfg.toKey)   item.process[cfg.toKey]-=qty;
-  if(cfg.fromKey) item.process[cfg.fromKey]+=qty;
-  item.updatedAt=now();
-  entry.corrected=true;
-  entry.correction_count=(entry.correction_count||0)+1;
-
-  // ⑨ 元操作内容を訂正レコードに記録
-  var correctedDesc=entry.type+' '+fmtNum(qty)+(entry.itemName?'' : '')+(entry.operator?' ('+entry.operator+')':'')+' を訂正';
-
-  DB.history.unshift({
-    id:uuid(),timestamp:now(),type:'訂正',
-    group: entry.group||'',
-    itemId:item.id,itemName:item.name,
-    qty:qty,line:entry.line||null,
-    operator:currentUser.operator_name||currentUser.username,
-    user:currentUser.username,
-    userId:currentUser.id,username:currentUser.username,role:currentUser.role,
-    original_id:histId,
-    corrected_desc:correctedDesc,
-    correction_count:0
-  });
-  if(DB.history.length>HIST_MAX)DB.history=DB.history.slice(0,HIST_MAX);
-  saveDB();
-  renderInventory();renderHistory();
-  toast('訂正完了: '+esc(item.name)+' '+fmtNum(qty)+' を戻しました','ok');
-  // ⑩ 上限到達警告
-  if(entry.correction_count>=CORRECTION_LIMIT){toast('⚠ この操作の訂正上限('+CORRECTION_LIMIT+'回)に達しました','warn');}
-}
-
-function confirmClearHistory(){
-  openConfirm('履歴クリア','操作履歴をすべて削除しますか？この操作は取り消せません。',function(){
-    DB.history=[];saveDB();renderHistory();toast('履歴をクリアしました','warn');
-  });
-}
-
-// ═══════════════════════════════════════════════
-//  作業者名管理
-// ═══════════════════════════════════════════════
-function saveMyOperatorName(){
-  var val=document.getElementById('op-setup-input').value.trim();
-  if(!val){toast('作業者名を入力してください','err');return;}
-  var user=DB.users.find(function(u){return u.id===currentUser.id;});if(!user)return;
-  user.operator_name=val;currentUser=user;saveDB();
-  document.getElementById('op-setup-banner').style.display='none';
-  var opDisp=document.getElementById('hd-operator-name');if(opDisp)opDisp.textContent='('+val+')';
-  toast('作業者名「'+val+'」を設定しました','ok');
-}
-
-function updateOperatorName(userId,val){
-  if(!isAdmin())return;
-  var user=DB.users.find(function(u){return u.id===userId;});if(!user)return;
-  user.operator_name=val;
-  if(userId===currentUser.id){currentUser=user;var opDisp=document.getElementById('hd-operator-name');if(opDisp)opDisp.textContent=val?'('+val+')':'';}
-  saveDB();toast(user.username+'の作業者名を「'+val+'」に更新しました','ok');
-}
-
-// ═══════════════════════════════════════════════
-//  USERS
-// ═══════════════════════════════════════════════
-function renderUsers(){
-  var body=document.getElementById('user-body');
-  body.innerHTML=DB.users.map(function(u){
-    var del=u.id!==currentUser.id?'<button class="btn-proc bp-del" onclick="deleteUser(\''+u.id+'\')">削除</button>':'<span style="font-size:11px;color:var(--text-dim)">（自分）</span>';
-    var opCell=isAdmin()
-      ?'<div class="editable-operator"><input type="text" value="'+esc(u.operator_name||'')+'" id="opn-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpName(this.dataset.uid)"><button data-uid="'+u.id+'" onclick="saveOpName(this.dataset.uid)">保存</button></div>'
-      :(u.operator_name?esc(u.operator_name):'<span style="color:var(--text-dim)">未設定</span>');
-    return '<tr><td><strong>'+esc(u.username)+'</strong></td><td><span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span></td><td>'+opCell+'</td><td style="font-size:12px;color:var(--text-muted)">'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</td><td>'+del+'</td></tr>';
-  }).join('');
-  renderUserAccordion();
-}
-
-
-// ─── ⑭ アコーディオン ユーザー管理（スマホ） ───
-function renderUserAccordion(){
-  var el=document.getElementById('user-acc-list');if(!el)return;
-  el.innerHTML=DB.users.map(function(u){
-    var opCell=isAdmin()
-      ?'<div class="editable-operator"><input type="text" value="'+esc(u.operator_name||'')+'" id="opna-'+u.id+'" data-uid="'+u.id+'" placeholder="未設定" onkeydown="if(event.key===\'Enter\')saveOpNameAcc(this.dataset.uid)"><button data-uid="'+u.id+'" onclick="saveOpNameAcc(this.dataset.uid)">保存</button></div>'
-      :(u.operator_name?esc(u.operator_name):'<span style="color:var(--text-dim)">未設定</span>');
-    var delBtn=u.id!==currentUser.id
-      ?'<button class="btn btn-danger btn-sm" style="width:100%;margin-top:8px" data-uid="'+u.id+'" onclick="deleteUser(this.dataset.uid);stopProp(event)">削除</button>'
-      :'';
-    return '<div class="acc-item" id="acc-user-'+u.id+'">'
-      +'<div class="acc-header" data-uid="'+u.id+'" onclick="toggleAccUser(this.dataset.uid)">'
-        +'<div class="acc-user-summary">'
-          +'<div class="acc-user-name">'+esc(u.username)+'</div>'
-          +'<div class="acc-user-sub">'
-            +'<span class="role-chip '+u.role+'">'+(u.role==='admin'?'管理者':'一般')+'</span>'
-            +(u.operator_name?'<span>'+esc(u.operator_name)+'</span>':'<span style="color:var(--text-dim)">作業者名未設定</span>')
-          +'</div>'
-        +'</div>'
-        +'<span class="acc-chevron">▼</span>'
-      +'</div>'
-      +'<div class="acc-body">'
-        +'<div class="acc-hist-body">'
-          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">作業者名</span>'+opCell+'</div>'
-          +'<div class="acc-hist-detail"><span class="acc-hist-dlabel">登録日</span><span>'+new Date(u.createdAt).toLocaleDateString('ja-JP')+'</span></div>'
-        +'</div>'
-        +delBtn
-      +'</div>'
-    +'</div>';
-  }).join('');
-}
-function toggleAccUser(id){
-  var item=document.getElementById('acc-user-'+id);if(!item)return;
-  var wasOpen=item.classList.contains('open');
-  document.querySelectorAll('#user-acc-list .acc-item.open').forEach(function(el){el.classList.remove('open');});
-  if(!wasOpen) item.classList.add('open');
-}
-function saveOpNameAcc(userId){
-  var inp=document.getElementById('opna-'+userId);if(!inp)return;
-  updateOperatorName(userId,inp.value.trim());renderUsers();renderUserAccordion();
-}
-function saveOpName(userId){
-  var inp=document.getElementById('opn-'+userId);if(!inp)return;
-  updateOperatorName(userId,inp.value.trim());renderUsers();
-}
-
-function showAddUserModal(){
-  ['au-name','au-pw','au-operator'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('au-role').value='user';
-  document.getElementById('adduser-err').classList.remove('show');
-  openModal('modal-adduser');
-}
-
-function addUser(){
-  var username=document.getElementById('au-name').value.trim();
-  var pw=document.getElementById('au-pw').value;
-  var role=document.getElementById('au-role').value;
-  var errEl=document.getElementById('adduser-err');errEl.classList.remove('show');
-  if(!username){errEl.textContent='ユーザー名を入力してください';errEl.classList.add('show');return;}
-  if(!/^[a-zA-Z0-9_]+$/.test(username)){errEl.textContent='ユーザー名は英数字とアンダースコアのみ';errEl.classList.add('show');return;}
-  if(DB.users.find(function(u){return u.username===username;})){errEl.textContent='このユーザー名は既に使用されています';errEl.classList.add('show');return;}
-  if(pw.length<6){errEl.textContent='パスワードは6文字以上にしてください';errEl.classList.add('show');return;}
-  var opName=document.getElementById('au-operator').value.trim();
-  DB.users.push({id:uuid(),username:username,passwordHash:hashPw(pw),role:role,operator_name:opName,createdAt:now()});
-  saveDB();closeModal('modal-adduser');renderUsers();toast(username+' を追加しました','ok');
-}
-
-function deleteUser(id){
-  if(id===currentUser.id){toast('自分自身は削除できません','err');return;}
-  var u=DB.users.find(function(u){return u.id===id;});if(!u)return;
-  openConfirm('ユーザー削除','「'+u.username+'」を削除しますか？',function(){
-    DB.users=DB.users.filter(function(u){return u.id!==id;});saveDB();renderUsers();toast(u.username+' を削除しました','warn');
-  });
-}
-
-// ═══════════════════════════════════════════════
-//  PASSWORD
-// ═══════════════════════════════════════════════
-function showPwModal(){
-  if(!isAdmin()){toast('パスワード変更は管理者のみ可能です','err');return;}
-  ['pw-current','pw-new','pw-confirm'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('pw-err').classList.remove('show');
-  document.getElementById('pw-bar').style.width='0';
-  openModal('modal-pw');
-}
-
-function updatePwStrength(){
-  var pw=document.getElementById('pw-new').value;
-  var bar=document.getElementById('pw-bar');var score=0;
-  if(pw.length>=6)score++;if(pw.length>=8)score++;if(/[0-9]/.test(pw))score++;if(/[^a-zA-Z0-9]/.test(pw))score++;
-  var colors=['','#ef4444','#f59e0b','#10b981','#2563eb'];
-  bar.style.width=(score*25)+'%';bar.style.background=colors[score]||'#ef4444';
-}
-
-function changePassword(){
-  var cur=document.getElementById('pw-current').value;
-  var nw=document.getElementById('pw-new').value;
-  var cf=document.getElementById('pw-confirm').value;
-  var errEl=document.getElementById('pw-err');errEl.classList.remove('show');
-  if(!currentUser)return;
-  if(currentUser.passwordHash!==hashPw(cur)){errEl.textContent='現在のパスワードが違います';errEl.classList.add('show');return;}
-  if(nw.length<6){errEl.textContent='新しいパスワードは6文字以上にしてください';errEl.classList.add('show');return;}
-  if(nw!==cf){errEl.textContent='確認パスワードが一致しません';errEl.classList.add('show');return;}
-  var user=DB.users.find(function(u){return u.id===currentUser.id;});
-  user.passwordHash=hashPw(nw);currentUser=user;saveDB();saveSession();
-  closeModal('modal-pw');toast('パスワードを変更しました','ok');
-}
-
-// ═══════════════════════════════════════════════
-//  CSV EXPORT
-// ═══════════════════════════════════════════════
-function exportCSV(type){
-  if(!isAdmin())return;
-  var csv='',filename='';
-  if(type==='items'){
-    csv='品目ID,品目名,品目コード,単位,メーカー,仕掛品,バリ前,完成品,警告閾値,更新日時\n';
-    csv+=DB.items.map(function(i){return [i.id,qt(i.name),qt(i.code),qt(i.unit),qt(i.maker||''),i.process.wip,i.process.bari,i.process.done,i.threshold,i.updatedAt].join(',');}).join('\n');
-    filename='在庫一覧_'+dateStr()+'.csv';
-  }else{
-    csv='ID,日時,操作,グループ,品目名,数量,ライン,作業者,ユーザー,権限\n';
-    csv+=DB.history.map(function(h){return [h.id,h.timestamp,qt(h.type),qt(h.group||''),qt(h.itemName),h.qty,qt(h.line||''),qt(h.operator||''),qt(h.username),qt(h.role)].join(',');}).join('\n');
-    filename='操作履歴_'+dateStr()+'.csv';
-  }
-  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();
-  toast(filename+' をダウンロードしました','ok');
-}
-function qt(s){return '"'+String(s||'').replace(/"/g,'""')+'"';}
-function dateStr(){return new Date().toISOString().slice(0,10).replace(/-/g,'');}
-
-// ═══════════════════════════════════════════════
-//  MODALS & TOAST
-// ═══════════════════════════════════════════════
-function openModal(id){document.getElementById(id).classList.add('show');}
-function closeModal(id){document.getElementById(id).classList.remove('show');}
-
-function openConfirm(title,msg,onOk){
-  document.getElementById('conf-title').textContent=title;
-  document.getElementById('conf-msg').textContent=msg;
-  var btn=document.getElementById('conf-ok-btn');
-  btn.onclick=function(){closeModal('modal-confirm');onOk();};
-  openModal('modal-confirm');
-}
-
-document.querySelectorAll('.overlay').forEach(function(ov){
-  ov.addEventListener('mousedown',function(e){if(e.target===ov){closeModal(ov.id);}});
-});
-
-function toast(msg,type){
-  type=type||'';
-  var el=document.createElement('div');
-  el.className='toast'+(type?' '+type:'');
-  var icon={ok:'✓',err:'✕',warn:'⚠'}[type]||'ℹ';
-  el.innerHTML='<span style="font-size:14px">'+icon+'</span><span>'+msg+'</span>';
-  var cont=document.getElementById('toasts');cont.appendChild(el);
-  setTimeout(function(){el.style.animation='tOut .2s ease forwards';setTimeout(function(){el.remove();},200);},3000);
-}
-
-// ═══════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════
-function isAdmin(){return currentUser&&currentUser.role==='admin';}
-
-// ═══════════════════════════════════════════════
-//  工程管理 (PROCESS MANAGEMENT) — v11
-// ═══════════════════════════════════════════════
-
-// 工程カラーパレット（最大6工程）
-var PROC_COLORS = ['#2563eb','#7c3aed','#0891b2','#059669','#d97706','#dc2626'];
-var PROC_DONE_ID = '__done__'; // 完成品の固定ID
-
-// デフォルト工程設定
-function defaultProcConfig(){
-  return [
-    {id:'p1', label:'第1工程', color:PROC_COLORS[0], next:['p2']},
-    {id:'p2', label:'第2工程', color:PROC_COLORS[1], next:[PROC_DONE_ID]},
-  ];
-}
-
-// 工程設定取得（完成品は自動追加しない—表示時に付加）
-function getProcConfig(){
-  if(!DB.procConfig||!DB.procConfig.length) DB.procConfig=defaultProcConfig();
-  return DB.procConfig;
-}
-
-// 工程在庫取得
-function getProcStock(itemId, procId){
-  if(!DB.procStock) DB.procStock={};
-  if(!DB.procStock[itemId]) DB.procStock[itemId]={};
-  if(!DB.procStock[itemId][procId]) DB.procStock[itemId][procId]={good:0,ng:0};
-  return DB.procStock[itemId][procId];
-}
-
-// 完成品在庫は既存のitem.process.done と同期
-function getDoneStock(itemId){
-  var item=DB.items.find(function(i){return i.id===itemId;});
-  return item?{good:item.process.done, ng:0}:{good:0,ng:0};
-}
-
-// 完成品IDかチェック
-function isDoneProc(procId){return procId===PROC_DONE_ID;}
-
-// ─── 工程ページ初期化 ───
-function initProcPage(){
-  if(!DB.procConfig||!DB.procConfig.length) DB.procConfig=defaultProcConfig();
-  if(!DB.procStock) DB.procStock={};
-  // 全品目の工程在庫を初期化
-  DB.items.forEach(function(item){
-    if(!DB.procStock[item.id]) DB.procStock[item.id]={};
-    DB.procConfig.forEach(function(proc){
-      if(!DB.procStock[item.id][proc.id]) DB.procStock[item.id][proc.id]={good:0,ng:0};
-    });
-    if(!DB.procStock[item.id][PROC_DONE_ID]) DB.procStock[item.id][PROC_DONE_ID]={good:0,ng:0};
-  });
-}
-
-// ─── 工程ページレンダリング ───
-function renderProcessPage(){
-  initProcPage();
-  var q=(document.getElementById('proc-search').value||'').toLowerCase();
-  var procs=getProcConfig();
-  var items=DB.items.filter(function(it){
-    if(!q) return true;
-    return it.name.toLowerCase().includes(q)||it.code.toLowerCase().includes(q);
-  });
-
-  var cntEl=document.getElementById('proc-item-count');
-  if(cntEl) cntEl.textContent=items.length+'品目';
-
-  // 管理者ボタン表示制御
-  var cfgBtn=document.getElementById('proc-config-btn');
-  if(cfgBtn) cfgBtn.style.display=isAdmin()?'':'none';
-
-  var html='<div class="proc-grid">';
-
-  // 各工程カード
-  procs.forEach(function(proc){
-    html+=renderProcCard(proc, items, false);
-  });
-
-  html+='</div>'; // end proc-grid
-
-  // 完成品カード（単独 full width）
-  html+='<div class="proc-done-sep">完成品</div>';
-  html+=renderProcCard({id:PROC_DONE_ID, label:'完成品', color:'#10b981', next:[]}, items, true);
-
-  document.getElementById('proc-page-content').innerHTML=html;
-
-  // アコーディオンの開閉状態をリストア
-  _openProcCards.forEach(function(pid){
-    var card=document.getElementById('proc-card-'+pid);
-    if(card) card.classList.add('open');
-  });
-}
-
-// 開いている工程カードIDを記憶
-var _openProcCards=[];
-
-function renderProcCard(proc, items, isDone){
-  var procId=proc.id;
-  var color=proc.color||'#888';
-  var procs=getProcConfig();
-
-  // 次工程ラベル
-  var nextLabels=[];
-  if(!isDone){
-    (proc.next||[]).forEach(function(nid){
-      if(isDoneProc(nid)){nextLabels.push('完成品');}
-      else{
-        var np=procs.find(function(p){return p.id===nid;});
-        if(np) nextLabels.push(np.label);
-      }
-    });
-  }
-
-  // 合計在庫
-  var totalGood=0, totalNg=0;
-  items.forEach(function(item){
-    var st=isDone?getDoneStock(item.id):getProcStock(item.id,procId);
-    totalGood+=st.good;
-    totalNg+=st.ng;
-  });
-
-  var nextChipsHtml=nextLabels.map(function(l){return '<span class="proc-next-chip">→'+l+'</span>';}).join('');
-  var metaHtml=nextLabels.length?nextChipsHtml:'<span class="proc-next-chip" style="color:var(--text-dim)">終点</span>';
-
-  var cardClass='proc-card'+(isDone?' proc-done-card':'');
-  var goodColor=isDone?'var(--done)':'var(--text)';
-
-  var html='<div class="'+cardClass+'" id="proc-card-'+procId+'">'
-    +'<div class="proc-card-head" onclick="toggleProcCard(\''+procId+'\')">'
-      +'<div class="proc-color-bar" style="background:'+color+'"></div>'
-      +'<div class="proc-card-info">'
-        +'<div class="proc-card-label">'+esc(proc.label)+'</div>'
-        +'<div class="proc-card-meta">'+metaHtml+'</div>'
-      +'</div>'
-      +'<div class="proc-card-totals">'
-        +'<div class="proc-total-good" style="color:'+goodColor+'">'+fmtNum(totalGood)+'</div>'
-        +(totalNg>0?'<div class="proc-total-ng">NG '+fmtNum(totalNg)+'</div>':'')
-      +'</div>'
-      +'<span class="proc-chevron">▼</span>'
-    +'</div>'
-    +'<div class="proc-card-body">'
-      +'<div class="proc-item-list">';
-
-  if(!items.length){
-    html+='<div class="proc-item-all-zero">品目が登録されていません</div>';
-  } else {
-    items.forEach(function(item){
-      var st=isDone?getDoneStock(item.id):getProcStock(item.id,procId);
-      var rowCls='proc-item-row'+(st.good===0?' proc-zero':'');
-      var hasNext=!isDone&&proc.next&&proc.next.length>0;
-      var moveBtnHtml='';
-      if(!isDone&&hasNext){
-        moveBtnHtml='<button class="proc-btn-move" data-item="'+item.id+'" data-proc="'+procId+'" onclick="showProcMoveModal(this.dataset.item,this.dataset.proc)">良品移動 →</button>';
-      }
-      var ngBtnHtml='';
-      if(!isDone){
-        ngBtnHtml='<button class="proc-btn-ng" data-item="'+item.id+'" data-proc="'+procId+'" onclick="showNgModal(this.dataset.item,this.dataset.proc)">NG登録</button>';
-      }
-      html+='<div class="'+rowCls+'">'
-        +'<div class="proc-item-name">'
-          +'<div class="proc-item-name-txt">'+esc(item.name)+'</div>'
-          +'<div class="proc-item-code">'+esc(item.code)+'</div>'
-        +'</div>'
-        +'<div class="proc-item-stocks">'
-          +'<span class="proc-good-qty" style="color:'+(st.good===0?'var(--text-dim)':goodColor)+'">'+fmtNum(st.good)+'</span>'
-          +'<span class="proc-good-unit">'+esc(item.unit)+'</span>'
-          +(st.ng>0?'<span class="proc-ng-badge">NG '+fmtNum(st.ng)+'</span>':'')
-        +'</div>'
-        +(moveBtnHtml||ngBtnHtml?'<div class="proc-item-btns">'+moveBtnHtml+ngBtnHtml+'</div>':'')
-      +'</div>';
-    });
-  }
-
-  html+='</div>'  // proc-item-list
-    +'</div>'     // proc-card-body
-  +'</div>';      // proc-card
-
-  return html;
-}
-
-function toggleProcCard(procId){
-  var card=document.getElementById('proc-card-'+procId);
-  if(!card) return;
-  var isOpen=card.classList.toggle('open');
-  if(isOpen){
-    if(_openProcCards.indexOf(procId)<0) _openProcCards.push(procId);
-  } else {
-    _openProcCards=_openProcCards.filter(function(id){return id!==procId;});
-  }
-}
-
-// ─── 良品移動モーダル ───
-var _procMoveState={itemId:null, procId:null, destId:null};
-
-function showProcMoveModal(itemId, procId){
-  _procMoveState={itemId:itemId, procId:procId, destId:null};
-  var item=DB.items.find(function(i){return i.id===itemId;});
-  if(!item) return;
-  var procs=getProcConfig();
-  var proc=procs.find(function(p){return p.id===procId;});
-  if(!proc) return;
-  var st=getProcStock(itemId, procId);
-
-  document.getElementById('pmove-title').textContent='良品移動 — '+item.name;
-  document.getElementById('pmove-from-label').textContent=proc.label;
-  document.getElementById('pmove-stock').textContent=fmtNum(st.good)+' '+item.unit;
-  document.getElementById('pmove-err').classList.remove('show');
-
-  // 数量アジャスター
-  renderProcAdjuster('pmove-adj-row', item.unit, 'pmove-qty');
-
-  // 移動先ボタン
-  var destHtml='';
-  (proc.next||[]).forEach(function(nid){
-    var isDone=isDoneProc(nid);
-    var destLabel=isDone?'完成品':'';
-    var destColor='#10b981';
-    if(!isDone){
-      var np=procs.find(function(p){return p.id===nid;});
-      if(np){destLabel=np.label;destColor=np.color;}
-    }
-    var destStock=isDone
-      ?getDoneStock(itemId).good
-      :getProcStock(itemId,nid).good;
-    destHtml+='<button type="button" class="proc-dest-btn" id="pdest-'+nid+'"'
-      +' style="background:'+hexToRgba(destColor,0.08)+';color:'+destColor+';border-color:'+hexToRgba(destColor,0.25)+'"'
-      +' data-dest="'+nid+'" onclick="selectProcDest(this.dataset.dest)">'
-      +'<span>→ '+esc(destLabel)+'</span>'
-      +'<span class="proc-dest-btn-stock">現在: '+fmtNum(destStock)+' '+esc(item.unit)+'</span>'
-    +'</button>';
-  });
-  document.getElementById('pmove-dest-btns').innerHTML=destHtml||'<p style="color:var(--text-dim);font-size:13px">次工程が設定されていません</p>';
-
-  openModal('modal-proc-move');
-  setTimeout(function(){
-    var qEl=document.getElementById('pmove-qty');
-    if(qEl){qEl.value='';qEl.focus();}
-  },120);
-}
-
-function selectProcDest(destId){
-  _procMoveState.destId=destId;
-  document.querySelectorAll('#pmove-dest-btns .proc-dest-btn').forEach(function(btn){
-    btn.style.fontWeight=btn.dataset.dest===destId?'900':'700';
-    btn.style.outline=btn.dataset.dest===destId?'2px solid currentColor':'none';
-    btn.style.outlineOffset='2px';
-  });
-  // 数量が入力済みなら即実行
-  var qty=parseInt(document.getElementById('pmove-qty').value)||0;
-  if(qty>0) execProcMove();
-}
-
-function execProcMove(){
-  var state=_procMoveState;
-  var item=DB.items.find(function(i){return i.id===state.itemId;});
-  if(!item) return;
-  var qty=parseInt(document.getElementById('pmove-qty').value)||0;
-  var errEl=document.getElementById('pmove-err');
-  errEl.classList.remove('show');
-
-  if(!state.destId){errEl.textContent='移動先を選択してください';errEl.classList.add('show');return;}
-  if(qty<=0){errEl.textContent='数量を入力してください';errEl.classList.add('show');return;}
-
-  var srcStock=getProcStock(state.itemId, state.procId);
-  if(qty>srcStock.good){
-    errEl.textContent='在庫不足です（現在: '+fmtNum(srcStock.good)+' '+item.unit+'）';
-    errEl.classList.add('show');return;
-  }
-
-  // 移動実行
-  srcStock.good-=qty;
-  if(isDoneProc(state.destId)){
-    // 完成品は既存item.process.doneに加算
-    item.process.done=(item.process.done||0)+qty;
-    item.updatedAt=now();
-  } else {
-    var destStock=getProcStock(state.itemId, state.destId);
-    destStock.good+=qty;
-  }
-  saveDB();
-
-  var procs=getProcConfig();
-  var srcProc=procs.find(function(p){return p.id===state.procId;});
-  var srcLabel=srcProc?srcProc.label:'—';
-  var destLabel=isDoneProc(state.destId)?'完成品':(procs.find(function(p){return p.id===state.destId;})||{label:'—'}).label;
-
-  addHistory('工程移動', item, qty, null, currentUser&&currentUser.operator_name, srcLabel+'→'+destLabel);
-  saveDB();
-
-  closeModal('modal-proc-move');
-  toast(esc(item.name)+' '+fmtNum(qty)+item.unit+' を移動しました','ok');
-  renderProcessPage();
-  renderInventory();
-}
-
-// ─── NG登録モーダル ───
-var _ngState={itemId:null, procId:null, ngType:'setup'};
-
-function showNgModal(itemId, procId){
-  _ngState={itemId:itemId, procId:procId, ngType:'setup'};
-  var item=DB.items.find(function(i){return i.id===itemId;});
-  if(!item) return;
-  var procs=getProcConfig();
-  var proc=procs.find(function(p){return p.id===procId;});
-  var st=getProcStock(itemId, procId);
-
-  document.getElementById('png-title').textContent='NG登録 — '+esc(item.name)+' / '+(proc?esc(proc.label):'');
-  document.getElementById('png-current').textContent=fmtNum(st.ng)+' '+item.unit;
-  document.getElementById('png-err').classList.remove('show');
-
-  selectNgType('setup');
-  renderProcAdjuster('png-adj-row', item.unit, 'png-qty');
-
-  openModal('modal-proc-ng');
-  setTimeout(function(){
-    var qEl=document.getElementById('png-qty');
-    if(qEl){qEl.value='';qEl.focus();}
-  },120);
-}
-
-function selectNgType(type){
-  _ngState.ngType=type;
-  document.getElementById('ng-type-setup').classList.toggle('nt-active',type==='setup');
-  document.getElementById('ng-type-defect').classList.toggle('nt-active',type==='defect');
-}
-
-function execNgAdd(){
-  var state=_ngState;
-  var item=DB.items.find(function(i){return i.id===state.itemId;});
-  if(!item) return;
-  var qty=parseInt(document.getElementById('png-qty').value)||0;
-  var errEl=document.getElementById('png-err');
-  errEl.classList.remove('show');
-  if(qty<=0){errEl.textContent='数量を入力してください';errEl.classList.add('show');return;}
-
-  var st=getProcStock(state.itemId, state.procId);
-  st.ng+=qty;
-  saveDB();
-
-  var procs=getProcConfig();
-  var proc=procs.find(function(p){return p.id===state.procId;});
-  var label=(state.ngType==='setup'?'段取り品':'不良品')+'NG登録';
-  addHistory(label, item, qty, null, currentUser&&currentUser.operator_name, proc?proc.label:'');
-  saveDB();
-
-  closeModal('modal-proc-ng');
-  toast(esc(item.name)+' NG '+fmtNum(qty)+item.unit+' を登録しました','err');
-  renderProcessPage();
-}
-
-// ─── 工程設定モーダル ───
-var _editingProcConfig=[];
-
+// ── 工程設定モーダル ──
+var _editProcConfig =[];
 function showProcConfigModal(){
-  if(!isAdmin()){toast('管理者のみ設定変更できます','err');return;}
-  _editingProcConfig=JSON.parse(JSON.stringify(getProcConfig()));
-  renderProcConfigUI();
-  openModal('modal-proc-config');
+  _editProcConfig = JSON.parse(JSON.stringify(DB.procConfig));
+  renderProcConfigUI(); openModal('modal-proc-config');
 }
-
 function renderProcConfigUI(){
-  var procs=_editingProcConfig;
-  var html='';
-  var addDisabled=procs.length>=6;
-
-  procs.forEach(function(proc, idx){
-    var colorDot='<div class="proc-config-color-dot" style="background:'+PROC_COLORS[idx%PROC_COLORS.length]+'"></div>';
-    // 次工程チェックボタン（自分以外の工程 + 完成品）
-    var nextOptions=[];
-    procs.forEach(function(op,oi){if(oi!==idx) nextOptions.push({id:op.id,label:op.label});});
-    nextOptions.push({id:PROC_DONE_ID,label:'完成品'});
-
-    var checkBtns=nextOptions.map(function(op){
-      var isActive=(proc.next||[]).indexOf(op.id)>=0;
-      return '<button type="button" class="proc-next-check-btn'+(isActive?' pnc-active':'')+'"'
-        +' data-proc-idx="'+idx+'" data-next-id="'+op.id+'" onclick="toggleProcNext(this)">'
-        +esc(op.label)
-      +'</button>';
-    }).join('');
-
-    html+='<div class="proc-config-row" id="pconf-row-'+idx+'">'
-      +'<div class="proc-config-row-top">'
-        +colorDot
-        +'<input type="text" class="proc-config-name-inp" value="'+esc(proc.label)+'" data-idx="'+idx+'" onchange="updateProcLabel(this)">'
-        +(procs.length>1?'<button class="proc-del-btn" data-idx="'+idx+'" onclick="removeProcStep(this.dataset.idx)">削除</button>':'')
-      +'</div>'
-      +'<div class="proc-next-editor">'
-        +'<div class="proc-next-editor-label">次工程（移動先）</div>'
-        +'<div class="proc-next-checks">'+checkBtns+'</div>'
-      +'</div>'
-    +'</div>';
-  });
-
-  document.getElementById('proc-config-list').innerHTML=html;
-  var addBtn=document.getElementById('proc-add-step-btn');
-  if(addBtn) addBtn.style.display=addDisabled?'none':'';
+  var html = _editProcConfig.map(function(p, i){
+    return '<div style="display:flex; gap:8px; align-items:center;">'
+      +'<div style="width:16px; height:16px; border-radius:50%; background:'+PROC_COLORS[i%6]+'"></div>'
+      +'<input type="text" value="'+esc(p.label)+'" style="flex:1; padding:8px; border:1px solid var(--border); border-radius:var(--r);" onchange="_editProcConfig['+i+'].label=this.value">'
+      +(_editProcConfig.length>1?'<button class="btn-ghost btn-sm" onclick="removeProcStep('+i+')">削除</button>':'')
+      +'</div>';
+  }).join('');
+  document.getElementById('proc-config-list').innerHTML = html;
+  document.getElementById('proc-add-step-btn').style.display = _editProcConfig.length>=6 ? 'none' : '';
 }
-
-function updateProcLabel(inp){
-  var idx=parseInt(inp.dataset.idx);
-  if(_editingProcConfig[idx]) _editingProcConfig[idx].label=inp.value.trim()||('第'+(idx+1)+'工程');
-}
-
-function toggleProcNext(btn){
-  var idx=parseInt(btn.dataset.procIdx);
-  var nextId=btn.dataset.nextId;
-  var proc=_editingProcConfig[idx];
-  if(!proc) return;
-  if(!proc.next) proc.next=[];
-  var pos=proc.next.indexOf(nextId);
-  if(pos>=0){proc.next.splice(pos,1);}else{proc.next.push(nextId);}
-  btn.classList.toggle('pnc-active', proc.next.indexOf(nextId)>=0);
-}
-
 function addProcStep(){
-  if(_editingProcConfig.length>=6){toast('工程は最大6つまでです','warn');return;}
-  var idx=_editingProcConfig.length;
-  _editingProcConfig.push({id:'p'+(Date.now()),label:'第'+(idx+1)+'工程',color:PROC_COLORS[idx%PROC_COLORS.length],next:[PROC_DONE_ID]});
+  if(_editProcConfig.length>=6) return;
+  var id = 'p'+Date.now();
+  if(_editProcConfig.length>0) _editProcConfig[_editProcConfig.length-1].next = [id];
+  _editProcConfig.push({id:id, label:'新工程', color:PROC_COLORS[_editProcConfig.length%6], next:[PROC_DONE_ID]});
   renderProcConfigUI();
 }
-
-function removeProcStep(idx){
-  idx=parseInt(idx);
-  var removedId=_editingProcConfig[idx].id;
-  _editingProcConfig.splice(idx,1);
-  // 削除した工程への参照を他の工程からも除去
-  _editingProcConfig.forEach(function(p){
-    if(p.next) p.next=p.next.filter(function(n){return n!==removedId;});
-  });
+function removeProcStep(i){
+  _editProcConfig.splice(i,1);
+  for(var j=0; j<_editProcConfig.length; j++){
+    _editProcConfig[j].next = j === _editProcConfig.length-1 ? [PROC_DONE_ID] : [_editProcConfig[j+1].id];
+    _editProcConfig[j].color = PROC_COLORS[j%6];
+  }
   renderProcConfigUI();
 }
-
 function saveProcConfig(){
-  // ラベルを入力フィールドから収集
-  document.querySelectorAll('.proc-config-name-inp').forEach(function(inp){
-    var idx=parseInt(inp.dataset.idx);
-    if(_editingProcConfig[idx]) _editingProcConfig[idx].label=inp.value.trim()||('第'+(idx+1)+'工程');
+  DB.procConfig = _editProcConfig;
+  // 既存アイテムへのプロパティ追加
+  DB.items.forEach(function(it){
+    DB.procConfig.forEach(function(p){ if(!DB.procStock[it.id][p.id]) DB.procStock[it.id][p.id] = {good:0, ng:0}; });
   });
-  // カラー再割当
-  _editingProcConfig.forEach(function(p,i){p.color=PROC_COLORS[i%PROC_COLORS.length];});
-  DB.procConfig=_editingProcConfig;
-  saveDB();
-  closeModal('modal-proc-config');
-  toast('工程設定を保存しました','ok');
-  renderProcessPage();
+  saveDB(); closeModal('modal-proc-config'); renderInventory(); toast('工程設定を保存しました','ok');
 }
 
-// ─── 汎用数量アジャスター（工程管理用） ───
-function renderProcAdjuster(rowId, unit, inputId){
-  var row=document.getElementById(rowId);if(!row)return;
-  var presets=[1,10,50];
-  var minusHtml='';
-  presets.slice().reverse().forEach(function(v){
-    minusHtml+='<button type="button" class="qty-adj-btn" data-delta="-'+v+'" data-target="'+inputId+'">−'+v+'</button>';
-  });
-  var plusHtml='';
-  presets.forEach(function(v){
-    plusHtml+='<button type="button" class="qty-adj-btn" data-delta="+'+v+'" data-target="'+inputId+'">＋'+v+'</button>';
-  });
-  var centerHtml='<div class="qty-adj-center">'
-    +'<input type="number" id="'+inputId+'" min="0" placeholder="0" class="qty-adj-input" onkeydown="if(event.key===\'Enter\'){event.preventDefault();}">'
-    +'<span class="qty-adj-unit">'+(unit||'')+'</span>'
-  +'</div>';
-  row.innerHTML='<div class="adj-minus-row">'+minusHtml+'</div>'+centerHtml+'<div class="adj-plus-row">'+plusHtml+'</div>';
-  row.querySelectorAll('.qty-adj-btn').forEach(function(btn){
-    var delta=parseInt(btn.dataset.delta,10);
-    btn.addEventListener('click',function(){
-      var inp=document.getElementById(btn.dataset.target);if(!inp)return;
-      var val=Math.max(0,(parseInt(inp.value)||0)+delta);
-      inp.value=val;
-    });
-  });
+// ── ユーザー追加 ──
+function showAddUserModal(){ document.getElementById('au-name').value=''; document.getElementById('au-pw').value=''; openModal('modal-adduser'); }
+function addUser(){
+  var n=document.getElementById('au-name').value.trim(), p=document.getElementById('au-pw').value, r=document.getElementById('au-role').value;
+  var err=document.getElementById('adduser-err'); err.classList.remove('show');
+  if(!n||!p){ err.textContent='入力してください'; err.classList.add('show'); return; }
+  DB.users.push({id:uuid(), username:n, passwordHash:hashPw(p), role:r});
+  saveDB(); closeModal('modal-adduser'); renderUsers(); toast(n+' を追加しました','ok');
 }
 
-// ─── カラーユーティリティ ───
-function hexToRgba(hex,alpha){
-  hex=hex.replace('#','');
-  if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-  var r=parseInt(hex.substring(0,2),16);
-  var g=parseInt(hex.substring(2,4),16);
-  var b=parseInt(hex.substring(4,6),16);
-  return 'rgba('+r+','+g+','+b+','+alpha+')';
+function exportCSV(){
+  var csv = '日時,操作,工程,製品,数量,作業者\n' + DB.history.map(function(h){ return[h.timestamp, h.type, h.group, h.itemName, h.qty, h.operator].join(','); }).join('\n');
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'})); a.download='履歴.csv'; a.click();
 }
-
-// ─── DB procStock/procConfig は renderProcessPage() 内で自動初期化 ───
 </script>
 </body>
 </html>
