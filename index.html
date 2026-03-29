@@ -1301,8 +1301,7 @@ function renderPBlock(item,p,pi,allActives){
         <button class="btn btn-move btn-next" ${hasNext&&count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'move-next')">次へ →</button>
       </div>
       <div class="process-actions-row">
-        <button class="btn btn-defect" ${count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'defect')">不良</button>
-        <button class="btn btn-ship" ${count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'ship')">出荷</button>
+        <button class="btn btn-defect btn-ship-full" ${count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'defect')">不良</button>
       </div>
     </div>`;
   }
