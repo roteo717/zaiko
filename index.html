@@ -218,14 +218,14 @@ body{font-family:var(--fj);background:var(--bg);color:var(--text);font-size:14px
 .transfer-warn.show{display:block}
 
 /* ── QTY ADJUSTER ── */
-.qty-adjuster{display:flex;align-items:stretch;gap:0;margin:6px 0 12px;border-radius:10px;overflow:hidden;border:1px solid var(--border2)}
-.adj-minus-row,.adj-plus-row{display:flex;flex:1}
-.qty-adj-center{flex:0 0 auto;min-width:80px;position:relative;border-left:1px solid var(--border2);border-right:1px solid var(--border2)}
-.qty-adj-input{width:100%;height:100%;background:var(--surface2);border:none;color:var(--text);padding:8px 36px 8px 8px;font-size:26px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;appearance:textfield;-moz-appearance:textfield;min-height:60px}
+.qty-adjuster{display:flex;align-items:stretch;gap:0;margin:6px 0 12px;border-radius:10px;overflow:hidden;border:1px solid var(--border2);min-height:60px}
+.adj-minus-row,.adj-plus-row{display:flex;flex:1;min-width:0}
+.qty-adj-center{flex:0 0 120px;width:120px;position:relative;border-left:1px solid var(--border2);border-right:1px solid var(--border2);display:flex;align-items:stretch}
+.qty-adj-input{width:100%;min-height:60px;background:var(--surface2);border:none;color:var(--text);padding:8px 32px 8px 8px;font-size:26px;font-family:var(--fn);font-weight:700;text-align:center;outline:none;appearance:textfield;-moz-appearance:textfield;display:block;box-sizing:border-box}
 .qty-adj-input::-webkit-inner-spin-button,.qty-adj-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .qty-adj-input:focus{background:#fff}
-.qty-adj-unit{position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:11px;pointer-events:none}
-.qty-adj-btn{display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--fn);font-weight:700;line-height:1;user-select:none;-webkit-user-select:none;touch-action:manipulation;outline:none;flex:1;font-size:12px;transition:background .08s}
+.qty-adj-unit{position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:11px;pointer-events:none;white-space:nowrap}
+.qty-adj-btn{display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;font-family:var(--fn);font-weight:700;line-height:1;user-select:none;-webkit-user-select:none;touch-action:manipulation;outline:none;flex:1;font-size:12px;transition:background .08s;min-width:0;padding:0 4px;white-space:nowrap}
 .qty-adj-btn:active{opacity:.75}
 .adj-minus-row .qty-adj-btn{background:#f3f4f6;color:#4b5563;border-right:1px solid var(--border2)}
 .adj-minus-row .qty-adj-btn:hover{background:#e5e7eb}
@@ -1971,7 +1971,15 @@ function saveItem(){
     var wip=parseInt(document.getElementById('item-wip').value)||0;
     var bari=parseInt(document.getElementById('item-bari').value)||0;
     var done=parseInt(document.getElementById('item-done').value)||0;
-    DB.items.push({id:uuid(),name:name,code:code,unit:unit,maker:maker,process:{wip:wip,bari:bari,done:done},threshold:threshold,updatedAt:now()});
+    var newItem={id:uuid(),name:name,code:code,unit:unit,maker:maker,process:{wip:wip,bari:bari,done:done},threshold:threshold,updatedAt:now()};
+    DB.items.push(newItem);
+    // 初期在庫が入力された場合は操作履歴に記録
+    var opUser=currentUser?currentUser.username:'';
+    var opName=currentUser&&currentUser.operator_name?currentUser.operator_name:opUser;
+    if(wip>0){DB.history.unshift({id:uuid(),timestamp:now(),type:'加工',group:'仕掛品',itemId:newItem.id,itemName:newItem.name,qty:wip,line:null,operator:opName,user:opUser,userId:currentUser?currentUser.id:'',username:opUser,role:currentUser?currentUser.role:''});}
+    if(bari>0){DB.history.unshift({id:uuid(),timestamp:now(),type:'バリ前移動',group:'バリ取り前',itemId:newItem.id,itemName:newItem.name,qty:bari,line:null,operator:opName,user:opUser,userId:currentUser?currentUser.id:'',username:opUser,role:currentUser?currentUser.role:''});}
+    if(done>0){DB.history.unshift({id:uuid(),timestamp:now(),type:'完成',group:'完成品',itemId:newItem.id,itemName:newItem.name,qty:done,line:null,operator:opName,user:opUser,userId:currentUser?currentUser.id:'',username:opUser,role:currentUser?currentUser.role:''});}
+    if(DB.history.length>HIST_MAX)DB.history=DB.history.slice(0,HIST_MAX);
     toast(name+' を登録しました','ok');
   }
   saveDB();closeModal('modal-item');renderInventory();
