@@ -1251,12 +1251,7 @@ function renderItemCard(item){
 <div class="item-card" id="card-${item.id}">
   <div class="item-card-header" onclick="toggleCard('${item.id}')">
     <span class="item-code">${escH(item.code)}</span>
-    <span class="item-name">${escH(item.name)}</span>
-    <div class="item-summary">
-      <div class="summary-badge"><span class="summary-label">在庫合計</span><span class="summary-value total">${total}</span></div>
-      <div class="summary-badge"><span class="summary-label">不良</span><span class="summary-value danger">${item.defectiveCount}</span></div>
-      <div class="summary-badge"><span class="summary-label">出荷済</span><span class="summary-value shipped">${item.shippedCount}</span></div>
-    </div>
+    <span class="item-name" style="flex:1">${escH(item.name)}</span>
     <span class="expand-icon">▼</span>
   </div>
   <div class="item-card-body">
