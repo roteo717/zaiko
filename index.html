@@ -1006,6 +1006,7 @@ body {
         <tr>
           <th onclick="sortAdmin('code')">品番↕</th>
           <th onclick="sortAdmin('name')">品名↕</th>
+          <th>メーカー</th>
           <th style="text-align:center">工程1</th><th style="text-align:center">工程2</th><th style="text-align:center">工程3</th><th style="text-align:center">工程4</th><th style="text-align:center">工程5</th><th style="text-align:center">工程6</th>
           <th onclick="sortAdmin('done')" style="text-align:right">完成↕</th>
           <th onclick="sortAdmin('defective')" style="text-align:right">不良↕</th>
@@ -1066,6 +1067,10 @@ body {
     <div class="form-group">
       <label class="form-label">品名</label>
       <input class="form-input" id="form-name" placeholder="例: フランジ部品" type="text">
+    </div>
+    <div class="form-group">
+      <label class="form-label">メーカー</label>
+      <input class="form-input" id="form-maker" placeholder="例: 株式会社〇〇" type="text">
     </div>
     <div class="form-group">
       <label class="form-label">単位</label>
@@ -1139,7 +1144,7 @@ const PNAMES = ['工程1','工程2','工程3','工程4','工程5','工程6'];
 let db = {
   items: [
     {
-      id:'i1', code:'A-001', name:'フランジ部品', unit:'個',
+      id:'i1', code:'A-001', name:'フランジ部品', unit:'個', maker:'',
       processCounts:[45,28,12,8,0,0], doneCount:6,
       defectiveCount:3, shippedCount:120,
       processConfig:[
@@ -1149,7 +1154,7 @@ let db = {
       ]
     },
     {
-      id:'i2', code:'B-042', name:'シャフトカラー', unit:'個',
+      id:'i2', code:'B-042', name:'シャフトカラー', unit:'個', maker:'',
       processCounts:[80,0,35,0,0,0], doneCount:12,
       defectiveCount:1, shippedCount:340,
       processConfig:[
@@ -1159,7 +1164,7 @@ let db = {
       ]
     },
     {
-      id:'i3', code:'C-017', name:'ブラケット', unit:'個',
+      id:'i3', code:'C-017', name:'ブラケット', unit:'個', maker:'',
       processCounts:[120,60,20,15,5,0], doneCount:3,
       defectiveCount:8, shippedCount:88,
       processConfig:[
@@ -1169,7 +1174,7 @@ let db = {
       ]
     },
     {
-      id:'i4', code:'D-003', name:'スペーサー', unit:'個',
+      id:'i4', code:'D-003', name:'スペーサー', unit:'個', maker:'',
       processCounts:[200,0,0,0,0,0], doneCount:0,
       defectiveCount:0, shippedCount:500,
       processConfig:[
@@ -1238,7 +1243,7 @@ function switchMode(mode){
 
 // FIELD
 function renderField(){
-  const list=db.items.filter(it=>!fieldFilter||it.name.includes(fieldFilter)||it.code.toLowerCase().includes(fieldFilter.toLowerCase()));
+  const list=db.items.filter(it=>!fieldFilter||it.name.includes(fieldFilter)||it.code.toLowerCase().includes(fieldFilter.toLowerCase())||(it.maker||'').includes(fieldFilter));
   gid('item-count-label').textContent=`品目一覧（${list.length}件）`;
   gid('field-items').innerHTML=list.map(renderItemCard).join('');
 }
@@ -1251,7 +1256,7 @@ function renderItemCard(item){
 <div class="item-card" id="card-${item.id}">
   <div class="item-card-header" onclick="toggleCard('${item.id}')">
     <span class="item-code">${escH(item.code)}</span>
-    <span class="item-name" style="flex:1">${escH(item.name)}</span>
+    <span class="item-name" style="flex:1">${escH(item.name)}${item.maker?`<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">${escH(item.maker)}</span>`:''}</span>
     <span class="expand-icon">▼</span>
   </div>
   <div class="item-card-body">
@@ -1433,7 +1438,7 @@ function renderAdminStats(){
   `;
 }
 function renderAdminTable(){
-  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase()));
+  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase())||(it.maker||'').includes(adminFilter));
   if(adminSortKey){
     items=[...items].sort((a,b)=>{
       const va=adminSortKey==='code'?a.code:adminSortKey==='name'?a.name:adminSortKey==='defective'?a.defectiveCount:adminSortKey==='done'?a.doneCount:a.shippedCount;
@@ -1449,7 +1454,7 @@ function renderAdminTable(){
       return `<td style="text-align:center"><span class="process-cell${cls}">${item.processCounts[i]}</span></td>`;
     }).join('');
     return `<tr>
-      <td class="mono">${escH(item.code)}</td><td>${escH(item.name)}</td>
+      <td class="mono">${escH(item.code)}</td><td>${escH(item.name)}</td><td style="color:var(--text2)">${escH(item.maker||'')}</td>
       ${cols}
       <td class="num num-done">${item.doneCount}</td>
       <td class="num ${item.defectiveCount>0?'num-red':''}">${item.defectiveCount}</td>
@@ -1463,7 +1468,7 @@ function filterAdmin(v){ adminFilter=v; renderAdminTable(); renderAdminCards(); 
 function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminTable(); renderAdminCards(); }
 
 function renderAdminCards(){
-  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase()));
+  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase())||(it.maker||'').includes(adminFilter));
   gid('admin-cards').innerHTML=items.map(item=>{
     const total=getTotalStock(item);
     const procs=item.processConfig.map((c,i)=>{
@@ -1478,7 +1483,7 @@ function renderAdminCards(){
     return `<div class="admin-card" id="acard-${item.id}">
       <div class="admin-card-header" onclick="toggleAdminCard('${item.id}')">
         <span class="item-code">${escH(item.code)}</span>
-        <span class="item-name" style="flex:1">${escH(item.name)}</span>
+        <span class="item-name" style="flex:1">${escH(item.name)}${item.maker?`<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">${escH(item.maker)}</span>`:''}</span>
         <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent)">${total}</span>
         <span class="expand-icon">▼</span>
       </div>
@@ -1557,7 +1562,7 @@ function openItemForm(){
   editingItem=null;
   gid('form-modal-title').textContent='品目登録';
   gid('item-form-confirm').textContent='登録';
-  gid('form-code').value=''; gid('form-name').value=''; gid('form-unit').value='個';
+  gid('form-code').value=''; gid('form-name').value=''; gid('form-unit').value='個'; gid('form-maker').value='';
   initFormPC();
   gid('item-form-modal').classList.add('open');
 }
@@ -1566,21 +1571,21 @@ function openItemFormEdit(itemId){
   editingItem=item;
   gid('form-modal-title').textContent='品目編集';
   gid('item-form-confirm').textContent='保存';
-  gid('form-code').value=item.code; gid('form-name').value=item.name; gid('form-unit').value=item.unit;
+  gid('form-code').value=item.code; gid('form-name').value=item.name; gid('form-unit').value=item.unit; gid('form-maker').value=item.maker||'';
   initFormPC();
   item.processConfig.forEach((c,i)=>{ formPC[i].active=c.active; formPC[i].type=c.type; updatePCUI(i); });
   gid('item-form-modal').classList.add('open');
 }
 function saveItem(){
-  const code=gid('form-code').value.trim(), name=gid('form-name').value.trim(), unit=gid('form-unit').value.trim();
+  const code=gid('form-code').value.trim(), name=gid('form-name').value.trim(), unit=gid('form-unit').value.trim(), maker=gid('form-maker').value.trim();
   if(!code||!name){ toast('品番と品名は必須です','error'); return; }
   if(!formPC.some(c=>c.active)){ toast('1つ以上の工程を設定してください','error'); return; }
   const config=formPC.map(c=>({type:c.type,active:c.active}));
   if(editingItem){
-    editingItem.code=code; editingItem.name=name; editingItem.unit=unit; editingItem.processConfig=config;
+    editingItem.code=code; editingItem.name=name; editingItem.unit=unit; editingItem.maker=maker; editingItem.processConfig=config;
     toast(`${name} を更新しました`,'success');
   } else {
-    db.items.push({id:genId(),code,name,unit,processCounts:[0,0,0,0,0,0],doneCount:0,defectiveCount:0,shippedCount:0,processConfig:config});
+    db.items.push({id:genId(),code,name,unit,maker,processCounts:[0,0,0,0,0,0],doneCount:0,defectiveCount:0,shippedCount:0,processConfig:config});
     toast(`${name} を登録しました`,'success');
   }
   closeModal('item-form-modal');
@@ -1616,8 +1621,8 @@ function confirmAdjust(){
 
 // CSV
 function exportCSV(){
-  const headers=['品番','品名','単位','工程1','工程2','工程3','工程4','工程5','工程6','完成','不良','出荷','在庫合計'];
-  const rows=db.items.map(item=>[item.code,item.name,item.unit,...item.processCounts,item.doneCount,item.defectiveCount,item.shippedCount,getTotalStock(item)]);
+  const headers=['品番','品名','メーカー','単位','工程1','工程2','工程3','工程4','工程5','工程6','完成','不良','出荷','在庫合計'];
+  const rows=db.items.map(item=>[item.code,item.name,item.maker||'',item.unit,...item.processCounts,item.doneCount,item.defectiveCount,item.shippedCount,getTotalStock(item)]);
   const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
