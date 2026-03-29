@@ -1346,11 +1346,13 @@ function renderQtyAdjuster(unit){
 }
 
 
+// requireLine: true → ライン選択UIを表示・必須チェックあり
+// requireLine: false → ライン入力欄を完全非表示・チェックなし（将来、他項目も同様に拡張可能）
 var OP_CONFIG = {
-  wip_add:     {label:'＋加工',      from:null,   to:'仕掛品',   fromKey:null,    toKey:'wip',  color:'var(--wip)',  btnClass:'bp-wip'},
-  wip_to_bari: {label:'バリ前移動', from:'仕掛品', to:'バリ前',   fromKey:'wip',   toKey:'bari', color:'var(--bari)', btnClass:'bp-w2b'},
-  bari_to_done:{label:'完成',       from:'バリ前', to:'完成品',   fromKey:'bari',  toKey:'done', color:'var(--done)', btnClass:'bp-b2d'},
-  done_to_ship:{label:'出荷',       from:'完成品', to:'出荷',     fromKey:'done',  toKey:null,   color:'var(--red)',  btnClass:'bp-d2s'}
+  wip_add:     {label:'＋加工',      from:null,   to:'仕掛品', fromKey:null,   toKey:'wip',  color:'var(--wip)',  btnClass:'bp-wip',  requireLine:true},
+  wip_to_bari: {label:'バリ前移動', from:'仕掛品', to:'バリ前', fromKey:'wip',  toKey:'bari', color:'var(--bari)', btnClass:'bp-w2b', requireLine:false},
+  bari_to_done:{label:'完成',       from:'バリ前', to:'完成品', fromKey:'bari', toKey:'done', color:'var(--done)', btnClass:'bp-b2d', requireLine:false},
+  done_to_ship:{label:'出荷',       from:'完成品', to:'出荷',   fromKey:'done', toKey:null,   color:'var(--red)',  btnClass:'bp-d2s', requireLine:false}
 };
 
 function showOpModal(itemId, opType){
@@ -1378,18 +1380,29 @@ function showOpModal(itemId, opType){
   // 新プリセット調整UIをレンダリング（unitと入力欄もここで生成）
   renderQtyAdjuster(item.unit);
 
-  // Line buttons（使用頻度順）
-  var lastLine=localStorage.getItem('last_line')||'';
-  var sortedLines=getLineSorted();
-  var recentLines=loadHist(HIST_LINE_KEY).slice(0,3);
-  var lineBtnsEl=document.getElementById('op-line-btns');
-  document.getElementById('op-line').value=lastLine;
-  lineBtnsEl.innerHTML=sortedLines.map(function(ln){
-    var isRecent=recentLines.indexOf(ln)>=0;
-    var isSel=ln===lastLine;
-        return '<button type="button" class="line-btn'+(isRecent?' recent':'')+(isSel?' selected':'')+'" data-line="'+esc(ln)+'" onclick="selectLine(this,this.dataset.line)">'
-      +esc(ln)+'</button>';
-  }).join('');
+  // Line buttons（使用頻度順） — requireLine の場合のみ表示
+  var lineRow = document.getElementById('op-line-row');
+  var hintEl  = document.getElementById('op-hint');
+  if(cfg.requireLine){
+    lineRow.style.display = '';
+    var lastLine=localStorage.getItem('last_line')||'';
+    var sortedLines=getLineSorted();
+    var recentLines=loadHist(HIST_LINE_KEY).slice(0,3);
+    var lineBtnsEl=document.getElementById('op-line-btns');
+    document.getElementById('op-line').value=lastLine;
+    lineBtnsEl.innerHTML=sortedLines.map(function(ln){
+      var isRecent=recentLines.indexOf(ln)>=0;
+      var isSel=ln===lastLine;
+      return '<button type="button" class="line-btn'+(isRecent?' recent':'')+(isSel?' selected':'')+'" data-line="'+esc(ln)+'" onclick="selectLine(this,this.dataset.line)">'
+        +esc(ln)+'</button>';
+    }).join('');
+    if(hintEl) hintEl.textContent='※ ライン（★=最近使用）・作業者は必須入力です';
+  } else {
+    // ライン不要グループ：完全に非表示・値をクリア
+    lineRow.style.display = 'none';
+    document.getElementById('op-line').value = '';
+    if(hintEl) hintEl.textContent='※ 作業者は必須入力です';
+  }
 
   // 作業者欄の表示ロジック
   var myOpName = currentUser&&currentUser.operator_name ? currentUser.operator_name : '';
@@ -1455,7 +1468,8 @@ function execOp(){
   // Validation
   if(!qty||qty<=0){errEl.textContent='数量を入力してください（1以上）';errEl.classList.add('show');return;}
   if(qty>99999){errEl.textContent='異常値：99,999を超える数量は入力できません';errEl.classList.add('show');return;}
-  if(!line){errEl.textContent='ラインを選択してください';errEl.classList.add('show');return;}
+  // ライン必須チェック：requireLine が true のグループのみ
+  if(cfg.requireLine && !line){errEl.textContent='ラインを選択してください';errEl.classList.add('show');return;}
   if(!operator){errEl.textContent='作業者名を入力してください';errEl.classList.add('show');return;}
 
   // Stock check
@@ -1476,13 +1490,15 @@ function execOp(){
   addHistory(cfg.label, item, qty, line, operator);
   saveDB();
 
-  // 履歴記録
-  recordLineUse(line);
+  // 履歴記録（ライン必須グループのみライン記録）
+  if(cfg.requireLine && line) recordLineUse(line);
   recordOperatorUse(operator);
 
   closeModal('modal-op');
   renderInventory();
-  toast(cfg.label+': '+item.name+' '+fmtNum(qty)+item.unit+' ('+line+' / '+operator+')','ok');
+  // トースト：ライン不要グループはライン表示を省略
+  var lineDisp = (cfg.requireLine && line) ? ' / '+line : '';
+  toast(cfg.label+': '+item.name+' '+fmtNum(qty)+item.unit+' ('+operator+lineDisp+')','ok');
 }
 
 // ═══════════════════════════════════════════════
