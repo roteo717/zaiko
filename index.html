@@ -196,58 +196,68 @@ body {
 .expand-icon { color: var(--text3); font-size: 11px; transition: transform 0.2s; flex-shrink: 0; margin-left: 2px; }
 .item-card.expanded .expand-icon { transform: rotate(180deg); }
 
-.item-card-body { display: none; padding: 0 14px 14px; }
+.item-card-body { display: none; padding: 12px 14px 14px; }
 .item-card.expanded .item-card-body { display: block; }
 
-/* Receive row */
+/* ===== 入庫エリア（PC・スマホ共通 縦グリッド）=====
+   HTML順: btn(-50)(1) btn(-10)(2) input(3) btn(-1)(4) btn(+1)(5) btn(+10)(6) btn(+50)(7) btn(入庫)
+   上段: -50 / -10 / -1
+   中段: [    数値入力（大）    ]
+   下段: +1  / +10 / +50
+*/
 .receive-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #f8f9ff;
+  border-radius: 12px;
+  border: 1px solid #dbe3ff;
+}
+.receive-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+/* 入庫アコーディオン */
+.receive-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.receive-header-left {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  background: var(--bg3);
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
 }
-.receive-label { font-size: 11px; color: var(--text3); font-weight: 500; flex-shrink: 0; }
-.receive-btns { display: flex; gap: 4px; align-items: center; }
-.qty-btn {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  padding: 5px 9px;
+.receive-header-title {
   font-size: 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: var(--mono);
-  font-weight: 600;
-  transition: all 0.1s;
-  flex-shrink: 0;
-}
-.qty-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-.qty-display {
-  width: 56px;
-  text-align: center;
-  font-size: 14px;
   font-weight: 700;
-  font-family: var(--mono);
   color: var(--accent);
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 4px 6px;
-  outline: none;
+  white-space: nowrap;
 }
-.qty-display:focus { border-color: var(--accent); }
-.btn-receive {
-  padding: 6px 16px;
+.receive-header-stock {
+  font-size: 12px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+.btn-receive-toggle {
+  padding: 6px 13px;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   font-family: var(--font);
@@ -255,8 +265,159 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
 }
-.btn-receive:hover { background: #6b94ff; }
-.btn-receive:active { transform: scale(0.96); }
+.btn-receive-toggle:hover { background: #6b94ff; }
+.btn-receive-toggle.open { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+.btn-receive-toggle.open:hover { background: var(--bg4); }
+/* 開閉される入力エリア */
+.stock-input {
+  display: none;
+  padding-top: 12px;
+  border-top: 1px dashed #dbe3ff;
+  margin-top: 6px;
+}
+.stock-input.active {
+  display: block;
+}
+/* 入庫数ラベル */
+.stock-input-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+/* ① 数値表示（主役）*/
+.stock-input .qty-display {
+  display: block;
+  width: 100%;
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  padding: 16px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  color: var(--accent);
+  background: var(--bg2);
+  outline: none;
+  font-family: var(--mono);
+}
+.stock-input .qty-display:focus { border-color: var(--accent2); background: #f4f7ff; }
+/* ② ボタン行：加算・減算を2行に分離 */
+/* 加算行（+1/+10/+50）：nth-child(5)(6)(7) */
+.btn-row-plus,
+.btn-row-minus {
+  display: flex;
+  gap: 6px;
+}
+.btn-row-plus .qty-btn,
+.btn-row-minus .qty-btn {
+  flex: 1;
+  padding: 11px 8px;
+  font-size: 15px;
+}
+/* 加算ボタン：青系 */
+.btn-row-plus .qty-btn {
+  background: #eef2ff;
+  border-color: #c5d0ff;
+  color: var(--accent);
+  font-weight: 700;
+}
+.btn-row-plus .qty-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+/* 減算ボタン：グレー系 */
+.btn-row-minus .qty-btn {
+  background: var(--bg3);
+  border-color: var(--border);
+  color: var(--text3);
+  font-size: 13px;
+}
+.btn-row-minus .qty-btn:hover { background: var(--bg4); color: var(--text2); }
+/* 区切り線 */
+.stock-input-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 10px 0;
+}
+/* ⑥ 入庫ボタン */
+.stock-input .btn-receive {
+  margin-top: 0;
+}
+.process-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.receive-label { font-size: 11px; color: var(--text3); font-weight: 500; }
+.receive-display { grid-column: 2 / 4; grid-row: 1 / 3; }
+.receive-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 6px;
+}
+/* HTML順: -50(1) -10(2) input(3) -1(4) +1(5) +10(6) +50(7) */
+.receive-btns > *:nth-child(1) { grid-column: 1; grid-row: 1; } /* -50 */
+.receive-btns > *:nth-child(2) { grid-column: 2; grid-row: 1; } /* -10 */
+.receive-btns > *:nth-child(3) { grid-column: 1 / 4; grid-row: 2; } /* input 全幅 */
+.receive-btns > *:nth-child(4) { grid-column: 3; grid-row: 1; } /* -1  */
+.receive-btns > *:nth-child(5) { grid-column: 1; grid-row: 3; } /* +1  */
+.receive-btns > *:nth-child(6) { grid-column: 2; grid-row: 3; } /* +10 */
+.receive-btns > *:nth-child(7) { grid-column: 3; grid-row: 3; } /* +50 */
+
+.qty-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 10px 8px;
+  font-size: 13px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-weight: 600;
+  transition: all 0.12s;
+  width: 100%;
+  text-align: center;
+  line-height: 1;
+}
+.qty-btn:hover  { background: var(--accent);  color: #fff; border-color: var(--accent); }
+.qty-btn:active { background: var(--accent2); color: #fff; transform: scale(0.97); }
+.qty-display {
+  width: 100%;
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  font-family: var(--mono);
+  color: var(--accent);
+  background: var(--bg2);
+  border: 2px solid var(--accent);
+  border-radius: 5px;
+  padding: 10px 12px;
+  outline: none;
+  line-height: 1.2;
+}
+.qty-display:focus { border-color: var(--accent2); background: #f4f7ff; }
+.btn-receive {
+  padding: 11px 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 0.1s;
+  white-space: nowrap;
+  width: 100%;
+}
+.btn-receive:hover  { background: #6b94ff; }
+.btn-receive:active { transform: scale(0.97); }
 
 /* ===== PROCESS GRID ===== */
 .process-grid {
@@ -748,36 +909,93 @@ body {
 }
 .form-select:focus { border-color: var(--accent); }
 
-.qty-input-row { display: flex; gap: 5px; align-items: center; }
+/* ===== 数量入力グリッド（統一UI）=====
+   HTML順: btn(-50)(1) btn(-10)(2) input(3) btn(-1)(4) btn(+1)(5) btn(+10)(6) btn(+50)(7)
+   row 1: [         数値（大）         ]  ← 3番目
+   row 2:  +1   /  +10  /  +50         ← 5・6・7番目（accent blue）
+   row 3: -50   /  -10  /  -1          ← 1・2・4番目（gray）
+   row 4: [      実行ボタン（外側）     ]
+*/
+.qty-input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+/* row 1: 数値入力 全幅 */
+.qty-input-row > *:nth-child(3) { grid-column: 1 / 4; grid-row: 1; }
+.qty-main-input                 { grid-column: 1 / 4; grid-row: 1; }
+/* row 2: 加算ボタン +1 / +10 / +50 */
+.qty-input-row > *:nth-child(5) { grid-column: 1; grid-row: 2; }
+.qty-input-row > *:nth-child(6) { grid-column: 2; grid-row: 2; }
+.qty-input-row > *:nth-child(7) { grid-column: 3; grid-row: 2; }
+/* row 3: 減算ボタン -50 / -10 / -1 */
+.qty-input-row > *:nth-child(1) { grid-column: 1; grid-row: 3; }
+.qty-input-row > *:nth-child(2) { grid-column: 2; grid-row: 3; }
+.qty-input-row > *:nth-child(4) { grid-column: 3; grid-row: 3; }
+/* 加算ボタン（row 2）: accent blue — 入庫エリアの btn-row-plus に揃える */
+.qty-input-row > *:nth-child(5),
+.qty-input-row > *:nth-child(6),
+.qty-input-row > *:nth-child(7) {
+  background: #eef2ff;
+  border-color: #c5d0ff;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 15px;
+}
+.qty-input-row > *:nth-child(5):hover,
+.qty-input-row > *:nth-child(6):hover,
+.qty-input-row > *:nth-child(7):hover {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+/* 減算ボタン（row 3）: gray — 入庫エリアの btn-row-minus に揃える */
+.qty-input-row > *:nth-child(1),
+.qty-input-row > *:nth-child(2),
+.qty-input-row > *:nth-child(4) {
+  background: var(--bg3);
+  border-color: var(--border);
+  color: var(--text3);
+  font-size: 13px;
+}
+.qty-input-row > *:nth-child(1):hover,
+.qty-input-row > *:nth-child(2):hover,
+.qty-input-row > *:nth-child(4):hover {
+  background: var(--bg4); color: var(--text2); border-color: var(--border2);
+}
+
 .qty-preset-btn {
-  padding: 9px 12px;
+  padding: 10px 8px;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text2);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
   font-family: var(--mono);
   font-weight: 600;
-  transition: all 0.1s;
-  flex-shrink: 0;
+  transition: all 0.12s;
+  width: 100%;
+  text-align: center;
+  line-height: 1;
 }
-.qty-preset-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.qty-preset-btn:hover  { background: var(--accent);  color: #fff; border-color: var(--accent); }
+.qty-preset-btn:active { background: var(--accent2); color: #fff; border-color: var(--accent2); transform: scale(0.97); }
+
 .qty-main-input {
-  flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border);
+  width: 100%;
+  background: var(--bg2);
+  border: 2px solid var(--accent);
   border-radius: var(--r-sm);
-  padding: 8px 10px;
-  color: var(--text);
-  font-size: 20px;
-  font-weight: 700;
+  padding: 10px 12px;
+  color: var(--accent);
+  font-size: 32px;
+  font-weight: bold;
   font-family: var(--mono);
   text-align: center;
   outline: none;
   min-width: 0;
+  line-height: 1.2;
 }
-.qty-main-input:focus { border-color: var(--accent); background: var(--bg2); }
+.qty-main-input:focus { border-color: var(--accent2); background: #f4f7ff; }
 
 .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
 .btn-confirm {
@@ -944,12 +1162,15 @@ input[type=number] { -moz-appearance: textfield; }
   .item-card-header { padding: 10px 12px; gap: 6px; }
   .item-summary { gap: 8px; }
 
-  /* Receive row: wrap */
-  .receive-row { gap: 6px; }
-  .receive-btns { flex-wrap: wrap; }
-  .qty-btn { padding: 6px 10px; }
-  .qty-display { width: 52px; }
-  .btn-receive { width: 100%; padding: 8px; font-size: 12px; }
+  /* Receive row: スマホでは既にベーススタイルで縦グリッド対応済み */
+  .receive-row { padding: 10px; }
+  .qty-btn { padding: 10px 6px; font-size: 12px; }
+  .qty-display { font-size: 28px; }
+  .btn-receive { padding: 11px; font-size: 14px; }
+
+  /* モーダル数量入力: スマホでは既にベーススタイルで縦グリッド対応済み */
+  .qty-preset-btn { padding: 10px 6px; font-size: 12px; }
+  .qty-main-input { font-size: 28px; }
 
   /* Process block */
   .process-block { flex: 0 0 138px; }
@@ -1057,8 +1278,8 @@ input[type=number] { -moz-appearance: textfield; }
       <div class="qty-input-row">
         <button class="qty-preset-btn" onclick="addQty(-50)">-50</button>
         <button class="qty-preset-btn" onclick="addQty(-10)">-10</button>
-        <button class="qty-preset-btn" onclick="addQty(-1)">-1</button>
         <input class="qty-main-input" id="op-qty" type="number" min="1" value="0" inputmode="numeric" oninput="updateOpConfirmState()">
+        <button class="qty-preset-btn" onclick="addQty(-1)">-1</button>
         <button class="qty-preset-btn" onclick="addQty(1)">+1</button>
         <button class="qty-preset-btn" onclick="addQty(10)">+10</button>
         <button class="qty-preset-btn" onclick="addQty(50)">+50</button>
@@ -1181,8 +1402,8 @@ input[type=number] { -moz-appearance: textfield; }
         <div class="qty-input-row">
           <button class="qty-preset-btn" onclick="addQcDefect(-50)">-50</button>
           <button class="qty-preset-btn" onclick="addQcDefect(-10)">-10</button>
-          <button class="qty-preset-btn" onclick="addQcDefect(-1)">-1</button>
           <input class="qty-main-input" id="qc-defect-qty" type="number" min="1" value="0" inputmode="numeric" oninput="updateQcBreakdown()">
+          <button class="qty-preset-btn" onclick="addQcDefect(-1)">-1</button>
           <button class="qty-preset-btn" onclick="addQcDefect(1)">+1</button>
           <button class="qty-preset-btn" onclick="addQcDefect(10)">+10</button>
           <button class="qty-preset-btn" onclick="addQcDefect(50)">+50</button>
@@ -1375,18 +1596,31 @@ function renderItemCard(item){
   </div>
   <div class="item-card-body">
     <div class="receive-row">
-      <span class="receive-label">入庫数：</span>
-      <div class="receive-btns">
-        <button class="qty-btn" onclick="addRQ('${item.id}',-50)">-50</button>
-        <button class="qty-btn" onclick="addRQ('${item.id}',-10)">-10</button>
-        <button class="qty-btn" onclick="addRQ('${item.id}',-1)">-1</button>
-        <input class="qty-display" id="rq-${item.id}" type="number" min="1" value="0" inputmode="numeric">
-        <button class="qty-btn" onclick="addRQ('${item.id}',1)">+1</button>
-        <button class="qty-btn" onclick="addRQ('${item.id}',10)">+10</button>
-        <button class="qty-btn" onclick="addRQ('${item.id}',50)">+50</button>
+      <div class="receive-header">
+        <div class="receive-header-left">
+          <span class="receive-header-title">📦 入庫（スタート）</span>
+          <span class="receive-header-stock">現在在庫：${getTotalStock(item)}個</span>
+        </div>
+        <button class="btn-receive-toggle" id="recv-toggle-${item.id}" onclick="toggleReceive('${item.id}')">入庫する</button>
       </div>
-      <button class="btn-receive" onclick="receiveItem('${item.id}')">入庫</button>
+      <div class="stock-input" id="stock-input-${item.id}">
+        <div class="stock-input-label">入庫数</div>
+        <input class="qty-display" id="rq-${item.id}" type="number" min="1" value="0" inputmode="numeric">
+        <div class="btn-row-plus">
+          <button class="qty-btn" onclick="addRQ('${item.id}',1)">+1</button>
+          <button class="qty-btn" onclick="addRQ('${item.id}',10)">+10</button>
+          <button class="qty-btn" onclick="addRQ('${item.id}',50)">+50</button>
+        </div>
+        <div class="btn-row-minus">
+          <button class="qty-btn" onclick="addRQ('${item.id}',-1)">-1</button>
+          <button class="qty-btn" onclick="addRQ('${item.id}',-10)">-10</button>
+          <button class="qty-btn" onclick="addRQ('${item.id}',-50)">-50</button>
+        </div>
+        <hr class="stock-input-divider">
+        <button class="btn-receive" onclick="receiveItem('${item.id}')">入庫</button>
+      </div>
     </div>
+    <div class="process-section-label">⚙ 工程フロー</div>
     <div class="process-grid">${actives.map((p,pi)=>renderPBlock(item,p,pi,actives)).join('')}</div>
   </div>
 </div>`;
@@ -1419,6 +1653,14 @@ function renderPBlock(item,p,pi,allActives){
 }
 
 function toggleCard(id){ gid('card-'+id).classList.toggle('expanded'); }
+
+function toggleReceive(id){
+  const input = gid('stock-input-'+id);
+  const btn   = gid('recv-toggle-'+id);
+  const isOpen = input.classList.toggle('active');
+  btn.textContent = isOpen ? '閉じる' : '入庫する';
+  btn.classList.toggle('open', isOpen);
+}
 
 // RECEIVE
 function addRQ(id,d){ const inp=gid('rq-'+id); inp.value=Math.max(0,parseInt(inp.value||0)+d); }
