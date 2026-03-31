@@ -622,11 +622,17 @@ body {
 .admin-card-body { display: none; padding: 0 12px 12px; }
 .admin-card.expanded .admin-card-body { display: block; }
 .admin-card.expanded .expand-icon { transform: rotate(180deg); }
+/* ===== 工程：横スクロール（統一UI改善）===== */
 .acard-processes {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
 }
 .acard-proc {
   display: flex;
@@ -648,23 +654,28 @@ body {
 .acard-proc.deburr .acard-proc-val { color: var(--amber); }
 .acard-proc.done-p .acard-proc-val { color: var(--done); }
 .acard-proc-inactive .acard-proc-val { color: var(--text3); font-size: 13px; }
+/* ===== サブ情報：1行コンパクト表示（統一UI改善）===== */
 .acard-stats {
   display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 0;
+  margin-bottom: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
 }
 .acard-stat {
   flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 8px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 6px;
+  border-right: 1px solid var(--border);
 }
-.acard-stat-label { font-size: 9px; color: var(--text3); margin-bottom: 2px; }
-.acard-stat-val { font-size: 14px; font-weight: 700; font-family: var(--mono); }
+.acard-stat:last-child { border-right: none; }
+.acard-stat-label { font-size: 9px; color: var(--text3); white-space: nowrap; }
+.acard-stat-val { font-size: 13px; font-weight: 700; font-family: var(--mono); }
 .acard-stat-val.red { color: var(--red); }
 .acard-stat-val.teal { color: var(--teal); }
 .acard-stat-val.blue { color: var(--accent); }
