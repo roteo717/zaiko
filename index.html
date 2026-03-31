@@ -339,9 +339,21 @@ body {
   border-top: 1px solid var(--border);
   margin: 10px 0;
 }
-/* ⑥ 入庫ボタン */
-.stock-input .btn-receive {
-  margin-top: 0;
+/* 入庫エリア：「増やす」「減らす」セクションラベル */
+.qty-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin: 4px 0 0;
+}
+.qty-section-label--plus  { color: var(--accent); }
+.qty-section-label--minus { color: var(--text3); }
+/* 入庫エリア：+100追加により4ボタン対応 */
+.btn-row-plus .qty-btn,
+.btn-row-minus .qty-btn {
+  flex: 1;
+  padding: 11px 4px;
+  font-size: 14px;
 }
 .process-section-label {
   font-size: 11px;
@@ -921,44 +933,70 @@ body {
 .form-select:focus { border-color: var(--accent); }
 
 /* ===== 数量入力グリッド（統一UI）=====
-   HTML順: btn(-50)(1) btn(-10)(2) input(3) btn(-1)(4) btn(+1)(5) btn(+10)(6) btn(+50)(7)
-   row 1: [         数値（大）         ]  ← 3番目
-   row 2:  +1   /  +10  /  +50         ← 5・6・7番目（accent blue）
-   row 3: -50   /  -10  /  -1          ← 1・2・4番目（gray）
-   row 4: [      実行ボタン（外側）     ]
+   HTML順: btn(-50)(1) btn(-10)(2) input(3) btn(-1)(4) btn(+1)(5) btn(+10)(6) btn(+50)(7) btn(+100)(8)
+   row 1: [            数値（大）             ]
+   row 2: 増やす  ← ::before
+   row 3:  +1  /  +10  /  +50  /  +100
+   row 4: 減らす  ← ::after
+   row 5: -50  /  -10  /  -1
 */
 .qty-input-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 6px;
 }
 /* row 1: 数値入力 全幅 */
-.qty-input-row > *:nth-child(3) { grid-column: 1 / 4; grid-row: 1; }
-.qty-main-input                 { grid-column: 1 / 4; grid-row: 1; }
-/* row 2: 加算ボタン +1 / +10 / +50 */
-.qty-input-row > *:nth-child(5) { grid-column: 1; grid-row: 2; }
-.qty-input-row > *:nth-child(6) { grid-column: 2; grid-row: 2; }
-.qty-input-row > *:nth-child(7) { grid-column: 3; grid-row: 2; }
-/* row 3: 減算ボタン -50 / -10 / -1 */
-.qty-input-row > *:nth-child(1) { grid-column: 1; grid-row: 3; }
-.qty-input-row > *:nth-child(2) { grid-column: 2; grid-row: 3; }
-.qty-input-row > *:nth-child(4) { grid-column: 3; grid-row: 3; }
-/* 加算ボタン（row 2）: accent blue — 入庫エリアの btn-row-plus に揃える */
+.qty-input-row > *:nth-child(3) { grid-column: 1 / 5; grid-row: 1; }
+.qty-main-input                 { grid-column: 1 / 5; grid-row: 1; }
+/* row 2: "増やす" ラベル via ::before */
+.qty-input-row::before {
+  content: "増やす";
+  grid-column: 1 / 5;
+  grid-row: 2;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.4px;
+  padding: 2px 0 0;
+}
+/* row 3: 加算ボタン +1 / +10 / +50 / +100 */
+.qty-input-row > *:nth-child(5) { grid-column: 1; grid-row: 3; }
+.qty-input-row > *:nth-child(6) { grid-column: 2; grid-row: 3; }
+.qty-input-row > *:nth-child(7) { grid-column: 3; grid-row: 3; }
+.qty-input-row > *:nth-child(8) { grid-column: 4; grid-row: 3; }
+/* row 4: "減らす" ラベル via ::after */
+.qty-input-row::after {
+  content: "減らす";
+  grid-column: 1 / 5;
+  grid-row: 4;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.4px;
+  padding: 2px 0 0;
+}
+/* row 5: 減算ボタン -50 / -10 / -1 */
+.qty-input-row > *:nth-child(1) { grid-column: 1; grid-row: 5; }
+.qty-input-row > *:nth-child(2) { grid-column: 2; grid-row: 5; }
+.qty-input-row > *:nth-child(4) { grid-column: 3; grid-row: 5; }
+/* 加算ボタン（row 3）: accent blue */
 .qty-input-row > *:nth-child(5),
 .qty-input-row > *:nth-child(6),
-.qty-input-row > *:nth-child(7) {
+.qty-input-row > *:nth-child(7),
+.qty-input-row > *:nth-child(8) {
   background: #eef2ff;
   border-color: #c5d0ff;
   color: var(--accent);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
 }
 .qty-input-row > *:nth-child(5):hover,
 .qty-input-row > *:nth-child(6):hover,
-.qty-input-row > *:nth-child(7):hover {
+.qty-input-row > *:nth-child(7):hover,
+.qty-input-row > *:nth-child(8):hover {
   background: var(--accent); color: #fff; border-color: var(--accent);
 }
-/* 減算ボタン（row 3）: gray — 入庫エリアの btn-row-minus に揃える */
+/* 減算ボタン（row 5）: gray */
 .qty-input-row > *:nth-child(1),
 .qty-input-row > *:nth-child(2),
 .qty-input-row > *:nth-child(4) {
@@ -1294,6 +1332,7 @@ input[type=number] { -moz-appearance: textfield; }
         <button class="qty-preset-btn" onclick="addQty(1)">+1</button>
         <button class="qty-preset-btn" onclick="addQty(10)">+10</button>
         <button class="qty-preset-btn" onclick="addQty(50)">+50</button>
+        <button class="qty-preset-btn" onclick="addQty(100)">+100</button>
       </div>
     </div>
     <div class="form-group" id="op-to-process-group" style="display:none">
@@ -1418,6 +1457,7 @@ input[type=number] { -moz-appearance: textfield; }
           <button class="qty-preset-btn" onclick="addQcDefect(1)">+1</button>
           <button class="qty-preset-btn" onclick="addQcDefect(10)">+10</button>
           <button class="qty-preset-btn" onclick="addQcDefect(50)">+50</button>
+          <button class="qty-preset-btn" onclick="addQcDefect(100)">+100</button>
         </div>
         <div id="qc-breakdown" style="display:flex;gap:8px;margin-top:10px">
           <div style="flex:1;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r-sm);padding:8px 10px;text-align:center">
@@ -1617,11 +1657,14 @@ function renderItemCard(item){
       <div class="stock-input" id="stock-input-${item.id}">
         <div class="stock-input-label">入庫数</div>
         <input class="qty-display" id="rq-${item.id}" type="number" min="1" value="0" inputmode="numeric">
+        <div class="qty-section-label qty-section-label--plus">増やす</div>
         <div class="btn-row-plus">
           <button class="qty-btn" onclick="addRQ('${item.id}',1)">+1</button>
           <button class="qty-btn" onclick="addRQ('${item.id}',10)">+10</button>
           <button class="qty-btn" onclick="addRQ('${item.id}',50)">+50</button>
+          <button class="qty-btn" onclick="addRQ('${item.id}',100)">+100</button>
         </div>
+        <div class="qty-section-label qty-section-label--minus">減らす</div>
         <div class="btn-row-minus">
           <button class="qty-btn" onclick="addRQ('${item.id}',-1)">-1</button>
           <button class="qty-btn" onclick="addRQ('${item.id}',-10)">-10</button>
