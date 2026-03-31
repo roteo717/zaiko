@@ -1323,9 +1323,20 @@ function nowStr(){ return new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',
 function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function getActives(item){ return item.processConfig.map((c,i)=>({...c,idx:i})).filter(c=>c.active); }
 function getTotalStock(item){ return item.processCounts.reduce((s,n)=>s+n,0); }
+
+function saveDb(){ try{ localStorage.setItem('inv_db', JSON.stringify(db)); }catch(e){} }
+function loadDb(){
+  try{
+    const saved=localStorage.getItem('inv_db');
+    if(saved){ const parsed=JSON.parse(saved); if(parsed&&parsed.items) db=parsed; }
+  }catch(e){}
+}
+loadDb();
+
 function addTx(itemId,type,qty,from,to,note=''){
   db.transactions.unshift({id:genId(),itemId,type,quantity:qty,fromProcess:from,toProcess:to,userId:currentUser,timestamp:nowStr(),note});
   if(db.transactions.length>500) db.transactions=db.transactions.slice(0,500);
+  saveDb();
 }
 
 // MODE
@@ -1421,6 +1432,7 @@ function receiveItem(itemId){
   const firstIdx=actives[0].idx;
   item.processCounts[firstIdx]+=qty;
   addTx(itemId,'入庫',qty,null,firstIdx);
+  saveDb();
   toast(`${item.name} を ${qty}${item.unit} 入庫`,'success');
   renderField();
 }
@@ -1670,6 +1682,10 @@ function confirmQualityDefect(){
       `<div style="font-size:10px;color:var(--text3);font-weight:700;letter-spacing:0.5px;margin:10px 0 4px">【品質結果】</div>`+
       card('var(--bg2)','var(--border)',resultRows);
     closeModal('quality-check-modal');
+    const execBtn=gid('confirm-exec-btn');
+    execBtn.disabled=false;
+    execBtn.textContent='確定する';
+    execBtn.style.opacity='';
     gid('confirm-modal').classList.add('open');
   } else if(pendingQC){
     const item=db.items.find(i=>i.id===pendingQC.itemId);
@@ -1922,9 +1938,11 @@ function saveItem(){
   const config=formPC.map(c=>({type:c.type,active:c.active}));
   if(editingItem){
     editingItem.code=code; editingItem.name=name; editingItem.unit=unit; editingItem.maker=maker; editingItem.processConfig=config;
+    saveDb();
     toast(`${name} を更新しました`,'success');
   } else {
     db.items.push({id:genId(),code,name,unit,maker,processCounts:[0,0,0,0,0,0],doneCount:0,defectiveCount:0,shippedCount:0,processConfig:config});
+    saveDb();
     toast(`${name} を登録しました`,'success');
   }
   closeModal('item-form-modal');
@@ -1954,6 +1972,7 @@ function confirmAdjust(){
   item.processCounts[procIdx]=qty;
   if(item.processConfig[procIdx]?.type==='done') item.doneCount=qty;
   addTx(item.id,'修正',Math.abs(qty-old),procIdx,procIdx,reason);
+  saveDb();
   toast(`在庫調整：${item.name} ${PNAMES[procIdx]} ${old}→${qty}`,'success');
   closeModal('adjust-modal'); renderAdmin();
 }
