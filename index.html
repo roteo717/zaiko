@@ -434,12 +434,12 @@ body {
 /* ===== PROCESS GRID ===== */
 .process-grid {
   display: flex;
+  align-items: stretch;
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 8px;
   margin-bottom: 12px;
   -webkit-overflow-scrolling: touch;
-  /* スクロールバーを薄く */
   scrollbar-width: thin;
   scrollbar-color: var(--border2) transparent;
 }
@@ -451,7 +451,8 @@ body {
   border-radius: var(--r);
   padding: 10px;
   position: relative;
-  /* overflow: visible はデフォルト */
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===== バリ取り：ブロック上部の帯 ===== */
@@ -470,7 +471,6 @@ body {
   padding: 2px 0;
   border-radius: 3px;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -492,7 +492,6 @@ body {
   padding: 2px 0;
   border-radius: 3px;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -515,7 +514,6 @@ body {
   padding: 2px 0;
   border-radius: 3px;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -527,6 +525,16 @@ body {
 }
 .group-block .process-count {
   color: var(--purple);
+  flex: 1;
+}
+.group-desc {
+  font-size: 9px;
+  color: var(--purple);
+  opacity: 0.7;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  margin-bottom: 2px;
 }
 .group-block .btn-next {
   background: var(--purple) !important;
@@ -602,24 +610,28 @@ body {
 .process-name {
   font-size: 10px;
   color: var(--text3);
-  margin-bottom: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
 }
 .process-count {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
   font-family: var(--mono);
   color: var(--text);
-  margin-bottom: 8px;
   line-height: 1;
   text-align: center;
+  letter-spacing: -0.5px;
+  flex: 1;                   /* 余白を吸収して数値エリアを伸ばす */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 0;
 }
 .process-count.zero { color: var(--text3); }
 
-.process-actions { display: flex; flex-direction: column; gap: 4px; }
+.process-actions { display: flex; flex-direction: column; gap: 4px; margin-top: auto; }
 .process-actions-row { display: flex; gap: 4px; }
 
 /* ===== BUTTONS ===== */
@@ -1350,7 +1362,848 @@ input[type=number] { -moz-appearance: textfield; }
   .btn-move, .btn-defect, .btn-qc, .btn-ship { font-size: 9px; }
   .deburr-label, .done-label { font-size: 8px; }
 }
+
+/* ===== 出荷連携UI ===== */
+.ship-alert-panel{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r);padding:10px 14px;margin-bottom:10px}
+.ship-alert-panel.ship-alert-ok{background:var(--green-bg);border-color:var(--green-bd)}
+.ship-alert-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.ship-alert-icon{font-size:15px;flex-shrink:0}
+.ship-alert-title{font-size:12px;font-weight:700;color:var(--text2);flex:1;min-width:0}
+.ship-alert-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:var(--red);color:#fff;flex-shrink:0}
+.ship-alert-list{display:flex;flex-direction:column;gap:3px}
+.ship-alert-row{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:5px;font-size:11px}
+.ship-alert-row.ng{background:rgba(217,41,63,0.08);border:1px solid var(--red-bd)}
+.ship-alert-row.ok{background:rgba(26,158,98,0.08);border:1px solid var(--green-bd)}
+.ship-alert-day{font-size:10px;font-weight:700;min-width:34px;color:var(--text2);flex-shrink:0}
+.ship-alert-name{flex:1;font-weight:600;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ship-alert-qty{font-weight:700;font-family:var(--mono);font-size:10px;color:var(--text2);flex-shrink:0}
+.ship-alert-shortage{font-size:10px;font-weight:700;color:var(--red);white-space:nowrap;flex-shrink:0}
+.ship-alert-ok-lbl{font-size:10px;font-weight:700;color:var(--green);flex-shrink:0}
+/* アイテムカード内の出荷セクション */
+.item-ship-section{margin-top:10px;padding:9px 11px;background:#f0faf4;border:1px solid var(--green-bd);border-radius:var(--r-sm)}
+.item-ship-section.has-shortage{background:var(--red-bg);border-color:var(--red-bd)}
+.item-ship-title{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.item-ship-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:11px;border-bottom:1px solid rgba(0,0,0,0.05)}
+.item-ship-row:last-child{border-bottom:none}
+.item-ship-row.today{background:rgba(217,41,63,0.04)}
+.item-ship-row.soon{background:rgba(200,121,10,0.04)}
+.item-ship-date{color:var(--text3);min-width:32px;font-family:var(--mono);font-size:10px;flex-shrink:0}
+.item-ship-dest{flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-ship-qty{font-weight:700;font-family:var(--mono);font-size:10px;color:var(--text);white-space:nowrap;flex-shrink:0}
+.item-ship-ok{font-size:10px;font-weight:700;color:var(--green);flex-shrink:0}
+.item-ship-ng{font-size:10px;font-weight:700;color:var(--red);flex-shrink:0}
+/* header ship link */
+.ship-link-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all 0.1s;text-decoration:none;appearance:none;-webkit-appearance:none}
+.ship-link-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+.ship-schedule-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ship-schedule-modal-inner{background:#fff;border-radius:12px;overflow:hidden;width:96vw;max-width:1120px;height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+@media(max-width:640px){
+  .ship-schedule-modal{padding:0;align-items:stretch;justify-content:flex-end}
+  .ship-schedule-modal-inner{width:100%;max-width:100%;height:92dvh;border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.18)}
+}
+.ship-schedule-modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--accent);color:#fff;flex-shrink:0}
+.ship-schedule-modal-title{font-size:13px;font-weight:700}
+.ship-schedule-modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;font-family:var(--font)}
+.ship-schedule-modal-close:hover{background:rgba(255,255,255,.35)}
+.ship-schedule-iframe{flex:1;border:none;width:100%}
+
+
+/* ===== 出荷スケジュール 埋め込みCSS ===== */
+.ship-inner { overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
+.ship-inner .tab-bar { position: sticky; top: 0; z-index: 40; }
+
+.ship-inner {box-sizing:border-box;margin:0;padding:0}
+.ship-inner {font-family:'Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif;font-size:13px;background:#f4f6f5;color:#1a1a1a}
+.ship-inner .app-header {background:#1a6b45;color:#fff;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.15);position:sticky;top:0;z-index:50}
+.ship-inner .app-logo {font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ship-inner .logo-icon {width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ship-inner .header-actions {display:flex;gap:8px}
+.ship-inner .hbtn {padding:5px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;font-size:12px;cursor:pointer;font-family:inherit}
+.ship-inner .hbtn:hover {background:rgba(255,255,255,.25)}
+.ship-inner .hbtn.primary {background:#fff;color:#1a6b45;border-color:#fff;font-weight:700}
+.ship-inner .hbtn.primary:hover {background:#e6f4ed}
+.ship-inner .tab-bar {background:#fff;border-bottom:1px solid #e0e0e0;padding:0 20px;display:flex;position:sticky;top:0;z-index:40;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.ship-inner .tab-btn {padding:12px 20px;font-size:13px;font-weight:600;color:#999;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.ship-inner .tab-btn.active {color:#1a6b45;border-bottom-color:#1a6b45}
+.ship-inner .tab-btn:hover:not(.active) {color:#555}
+.ship-inner .main {max-width:1100px;margin:0 auto;padding:16px 12px 80px}
+.ship-inner .toolbar {display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.ship-inner .page-title {font-size:17px;font-weight:700;color:#1a1a1a}
+.ship-inner .nav-group {display:flex;align-items:center;gap:6px;margin-left:auto}
+.ship-inner .nbtn {width:30px;height:30px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#444}
+.ship-inner .nbtn:hover {background:#f0f0f0}
+.ship-inner .month-label {font-size:15px;font-weight:700;min-width:110px;text-align:center;color:#1a1a1a}
+.ship-inner .today-btn {padding:5px 12px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:12px;font-family:inherit;color:#444}
+.ship-inner .today-btn:hover {background:#f0f0f0}
+.ship-inner .cal-card {background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
+.ship-inner .dow-row {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:#f7f9f8;border-bottom:1px solid #e0e8e4}
+.ship-inner .dow {padding:8px;font-size:11px;font-weight:700;color:#666;text-align:center;letter-spacing:.5px}
+.ship-inner .dow.sun {color:#c0392b}.ship-inner .dow.sat {color:#1a6b45}
+.ship-inner .grid {display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.ship-inner .cell {min-height:108px;border-right:1px solid #e8eee9;border-bottom:1px solid #e8eee9;padding:6px}
+.ship-inner .cell:nth-child(7n) {border-right:none}
+.ship-inner .cell.other {background:#fafafa}
+.ship-inner .cell.today-cell {background:#f0faf4}
+.ship-inner .day-num {font-size:12px;font-weight:700;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin-bottom:3px;color:#333}
+.ship-inner .cell.today-cell .day-num {background:#1a6b45;color:#fff}
+.ship-inner .day-num.sun-c {color:#c0392b}
+.ship-inner .day-num.sat-c {color:#1a6b45}
+.ship-inner .cell.other .day-num {color:#bbb}
+.ship-inner .chip {border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;line-height:1.6;display:block}
+.ship-inner .chip:hover {opacity:.82}
+.ship-inner .chip.warn-stock {outline:2px solid #dc2626;outline-offset:-1px}
+.ship-inner .chip.shipped {text-decoration:line-through;opacity:.45}
+.ship-inner .more-tag {font-size:10px;color:#888;cursor:pointer;margin-top:1px;padding:1px 4px}
+.ship-inner .more-tag:hover {color:#1a6b45}
+.ship-inner .legend {display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:10px 14px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ship-inner .leg {display:flex;align-items:center;gap:5px;font-size:11px;color:#555}
+.ship-inner .leg-dot {width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.ship-inner .sec-header {display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.ship-inner .sec-title {font-size:17px;font-weight:700;color:#1a1a1a}
+.ship-inner .totals-bar {display:flex;gap:10px;flex-wrap:wrap}
+.ship-inner .total-pill {display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.ship-inner .total-pill.fin {background:#e6f4ed;color:#1a6b45}
+.ship-inner .total-pill.wip {background:#fff7ed;color:#d97706}
+.ship-inner .prod-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.ship-inner .prod-card {background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:16px 18px;border:1px solid #e8e8e8}
+.ship-inner .prod-name {font-size:14px;font-weight:700;color:#111;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.ship-inner .stock-row {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.ship-inner .sbox {border-radius:8px;padding:10px 12px}
+.ship-inner .sbox.fin {background:#e6f4ed;border:1px solid #a7d9bc}
+.ship-inner .sbox.wip {background:#fff7ed;border:1px solid #fed7aa}
+.ship-inner .sbox-label {font-size:10px;font-weight:700;letter-spacing:.4px;margin-bottom:3px}
+.ship-inner .sbox-label.fin {color:#1a6b45}
+.ship-inner .sbox-label.wip {color:#d97706}
+.ship-inner .sbox-val {font-size:22px;font-weight:700;line-height:1}
+.ship-inner .sbox-val.fin {color:#1a6b45}
+.ship-inner .sbox-val.wip {color:#d97706}
+.ship-inner .sbox-unit {font-size:11px;font-weight:400;color:#888;margin-left:2px}
+.ship-inner .proc-section {margin-bottom:10px}
+.ship-inner .proc-label {font-size:10px;font-weight:700;color:#aaa;letter-spacing:.5px;margin-bottom:5px}
+.ship-inner .proc-row {display:flex;gap:3px}
+.ship-inner .proc-box {flex:1;display:flex;flex-direction:column;align-items:center;background:#f5f5f5;border-radius:6px;padding:5px 3px;border:1px solid #e5e5e5;min-width:0}
+.ship-inner .proc-box.active {background:#fff7ed;border-color:#fbbf24}
+.ship-inner .proc-step {font-size:9px;font-weight:700;color:#bbb;margin-bottom:2px}
+.ship-inner .proc-step.active {color:#d97706}
+.ship-inner .proc-qty {font-size:12px;font-weight:700;color:#ccc}
+.ship-inner .proc-qty.active {color:#d97706}
+.ship-inner .avail-bar {display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:7px;margin-bottom:10px}
+.ship-inner .avail-bar.ok {background:#e6f4ed}
+.ship-inner .avail-bar.warn {background:#fef2f2}
+.ship-inner .avail-label {font-size:11px;font-weight:700}
+.ship-inner .avail-label.ok {color:#1a6b45}
+.ship-inner .avail-label.warn {color:#dc2626}
+.ship-inner .avail-qty {font-size:14px;font-weight:700}
+.ship-inner .avail-qty.ok {color:#1a6b45}
+.ship-inner .avail-qty.warn {color:#dc2626}
+.ship-inner .comp-btn {width:100%;padding:8px;border-radius:7px;border:none;background:#d97706;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.ship-inner .comp-btn:hover {background:#b45309}
+.ship-inner .comp-btn:disabled {background:#e5e7eb;color:#9ca3af;cursor:not-allowed}
+.ship-inner .modal-bg {position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:200}
+.ship-inner .modal {background:#fff;border-radius:14px;padding:22px 24px;width:380px;max-width:94vw;box-shadow:0 16px 48px rgba(0,0,0,.2)}
+.ship-inner .modal-head {display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.ship-inner .modal-title {font-size:15px;font-weight:700;color:#111;margin-top:4px}
+.ship-inner .modal-close {width:28px;height:28px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#555;border:none;flex-shrink:0}
+.ship-inner .modal-close:hover {background:#e0e0e0}
+.ship-inner .mrow {display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.ship-inner .mrow:last-child {border-bottom:none}
+.ship-inner .mkey {color:#999;min-width:80px;font-size:11px;padding-top:2px;font-weight:600}
+.ship-inner .mval {color:#111;font-weight:700}
+.ship-inner .badge {display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:6px}
+.ship-inner .wip-chips {display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.ship-inner .wip-chip {background:#fff7ed;border:1px solid #fed7aa;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;color:#d97706}
+.ship-inner .stock-status {border-radius:7px;padding:7px 10px;font-size:12px;font-weight:700;margin-top:8px;display:flex;align-items:center;gap:5px}
+.ship-inner .stock-status.ok {background:#e6f4ed;color:#1a6b45}
+.ship-inner .stock-status.warn {background:#fef2f2;color:#dc2626}
+.ship-inner .edit-panel {position:fixed;right:0;top:0;height:100%;width:340px;max-width:96vw;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);z-index:300;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease}
+.ship-inner .edit-panel.open {transform:translateX(0)}
+.ship-inner .ep-hdr {padding:16px 18px;border-bottom:1px solid #e8e8e8;display:flex;justify-content:space-between;align-items:center;background:#1a6b45;color:#fff}
+.ship-inner .ep-title {font-size:14px;font-weight:700}
+.ship-inner .ep-close {background:rgba(255,255,255,.2);border:none;border-radius:6px;color:#fff;cursor:pointer;padding:4px 10px;font-size:14px}
+.ship-inner .ep-body {flex:1;overflow-y:auto;padding:16px 18px}
+.ship-inner .ep-foot {padding:14px 18px;border-top:1px solid #e8e8e8;display:flex;gap:8px}
+.ship-inner label {display:block;font-size:11px;font-weight:700;color:#666;margin-bottom:4px;margin-top:12px;letter-spacing:.3px}
+.ship-inner label:first-child {margin-top:0}
+.ship-inner input[type=text], .ship-inner input[type=number], .ship-inner input[type=date], .ship-inner select {width:100%;padding:8px 10px;border:1px solid #d0d0d0;border-radius:7px;font-size:13px;font-family:inherit;background:#fff;color:#111;outline:none}
+.ship-inner input:focus, .ship-inner select:focus {border-color:#1a6b45;box-shadow:0 0 0 3px rgba(26,107,69,.12)}
+.ship-inner .btn {flex:1;padding:9px;border-radius:8px;border:none;font-size:13px;font-family:inherit;cursor:pointer;font-weight:700}
+.ship-inner .btn-primary {background:#1a6b45;color:#fff}
+.ship-inner .btn-primary:hover {background:#155836}
+.ship-inner .btn-del {background:#fef2f2;color:#c0392b;border:1px solid #fca5a5}
+.ship-inner .btn-del:hover {background:#fee2e2}
+.ship-inner .btn-cancel {background:#f3f4f6;color:#444;border:1px solid #e0e0e0}
+.ship-inner .btn-cancel:hover {background:#e5e7eb}
+.ship-inner .srow {display:flex;align-items:center;gap:3px;padding:3px 5px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;margin-bottom:2px;user-select:none;transition:filter .1s;white-space:nowrap;overflow:hidden}
+.ship-inner .srow:hover {filter:brightness(.9)}
+.ship-inner .srow.ng {background:#fee2e2;color:#dc2626}
+.ship-inner .srow.cond {background:#fef9c3;color:#a16207}
+.ship-inner .srow.ok {background:#dcfce7;color:#166534}
+.ship-inner .srow-icon {flex-shrink:0;font-size:9px;line-height:1}
+.ship-inner .srow-label {flex-shrink:0}
+.ship-inner .srow-count {flex-shrink:0}
+@media(max-width:640px){
+  .ship-inner .cell {min-height:64px;padding:4px 2px}
+  .ship-inner .day-num {font-size:11px;width:20px;height:20px;margin-bottom:2px}
+  .ship-inner .srow {padding:2px 4px;font-size:9px;gap:2px;margin-bottom:1px;border-radius:4px}
+  .ship-inner .srow-label {display:none}
+}
+.ship-inner .slist-wrap {background:#fff;border-radius:14px;padding:20px 22px;width:420px;max-width:95vw;box-shadow:0 16px 48px rgba(0,0,0,.2);max-height:80vh;overflow-y:auto}
+.ship-inner .slist-hdr {display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ship-inner .slist-title {font-size:15px;font-weight:700;color:#111}
+.ship-inner .slist-item {display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.ship-inner .slist-item:last-child {border-bottom:none}
+.ship-inner .slist-item:hover {background:#fafafa;margin:0 -8px;padding:8px 8px;border-radius:6px}
+.ship-inner .slist-icon {font-size:14px;flex-shrink:0}
+.ship-inner .slist-name {font-size:13px;font-weight:700;color:#111;flex:1;min-width:0}
+.ship-inner .slist-sub {font-size:11px;color:#888;white-space:nowrap}
+.ship-inner .slist-empty {text-align:center;color:#aaa;font-size:13px;padding:24px 0}
+@media(max-width:640px){
+  .ship-inner .modal-bg.slist-bg {align-items:flex-end}
+  .ship-inner .slist-wrap {width:100%;border-radius:16px 16px 0 0;padding:16px 16px 36px;max-height:72vh}
+}
+.ship-inner .fab {position:fixed;bottom:28px;right:24px;width:52px;height:52px;border-radius:50%;background:#1a6b45;color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(26,107,69,.4);display:flex;align-items:center;justify-content:center;z-index:100}
+.ship-inner .fab:hover {background:#155836;transform:scale(1.06)}
+@media print{.ship-inner .app-header .header-actions, .ship-inner .fab, .ship-inner .edit-panel, .ship-inner .tab-bar {display:none!important}.ship-inner {background:#fff}.ship-inner .main {padding:10px}}
+.ship-inner .search-wrap {position:relative;margin-bottom:14px}
+.ship-inner .search-input {width:100%;padding:9px 36px 9px 14px;border:1px solid #d0d0d0;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:#111;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ship-inner .search-input:focus {border-color:#1a6b45;box-shadow:0 0 0 3px rgba(26,107,69,.12)}
+.ship-inner .search-icon {position:absolute;left:11px;top:0;bottom:0;display:flex;align-items:center;pointer-events:none;line-height:1}
+.ship-inner .search-icon svg {display:block;width:16px;height:16px;color:#aaa}
+.ship-inner .search-clear {position:absolute;right:10px;top:0;bottom:0;display:flex;align-items:center;background:none;border:none;cursor:pointer;font-size:16px;color:#aaa;padding:0 4px;line-height:1}
+.ship-inner .search-clear:hover {color:#555}
+.ship-inner .sresult-list {background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
+.ship-inner .sresult-hdr {padding:10px 16px;background:#f7f9f8;border-bottom:1px solid #e8eee9;font-size:12px;font-weight:700;color:#666}
+.ship-inner .sresult-item {display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.ship-inner .sresult-item:last-child {border-bottom:none}
+.ship-inner .sresult-item:hover {background:#f9fafb}
+.ship-inner .sresult-date {font-size:11px;color:#aaa;min-width:90px;flex-shrink:0}
+.ship-inner .sresult-name {font-size:13px;font-weight:700;color:#111;flex:1;min-width:0}
+.ship-inner .sresult-qty {font-size:12px;color:#888;font-weight:600;white-space:nowrap}
+.ship-inner .sresult-st {width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ship-inner .sresult-empty {padding:32px 16px;text-align:center;color:#aaa;font-size:13px}
+@media(max-width:640px){.ship-inner .search-input {font-size:16px}}
+
+.ship-inner /* ===== 統合UI: 不足一覧 ===== */
+.shortage-row {display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background .1s}
+.ship-inner .shortage-row:hover {background:#fafafa}
+.ship-inner .shortage-row.ng {border-left:3px solid #dc2626}
+.ship-inner .shortage-row.cond {border-left:3px solid #d97706}
+.ship-inner .shortage-row.ok {border-left:3px solid #16a34a}
+.ship-inner .shortage-day {font-size:11px;font-weight:700;min-width:42px;padding-top:1px;flex-shrink:0}
+.ship-inner .shortage-day.ng {color:#dc2626}
+.ship-inner .shortage-day.cond {color:#d97706}
+.ship-inner .shortage-day.ok {color:#16a34a}
+.ship-inner .shortage-info {flex:1;min-width:0}
+.ship-inner .shortage-name {font-size:13px;font-weight:700;color:#111;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ship-inner .shortage-dest {font-size:11px;color:#888}
+.ship-inner .shortage-calc {font-size:11px;color:#d97706;font-weight:600;margin-top:3px}
+.ship-inner .shortage-nums {text-align:right;flex-shrink:0}
+.ship-inner .shortage-qty {font-size:12px;font-weight:700;color:#555;margin-bottom:2px}
+.ship-inner .shortage-avail {font-size:11px;font-weight:700}
+.ship-inner .shortage-avail.ng {color:#dc2626}
+.ship-inner .shortage-avail.cond {color:#d97706}
+.ship-inner .shortage-avail.ok {color:#16a34a}
+.ship-inner .shortage-miss {font-size:11px;font-weight:700;color:#dc2626;margin-top:2px}
+.ship-inner .inv-link-btn {padding:5px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all .1s}
+.ship-inner .inv-link-btn:hover {background:rgba(255,255,255,.25)}
+.ship-inner .sync-badge {display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);margin-left:8px}
+.ship-inner .sync-badge.live {background:rgba(26,200,130,.3);color:#a7f3d0}
+
+
+
+/* ===== 設備名バッジ（ヘッダー）===== */
+.machine-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--amber-bg);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--amber);
+  border: 1px solid var(--amber-bd);
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.machine-badge:hover { background: var(--amber); color: #fff; border-color: var(--amber); }
+.machine-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+.machine-badge:hover .machine-dot { background: #fff; }
+
+/* ===== 設備名セル（履歴・日報）===== */
+.history-machine {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: center;
+}
+.history-machine.none {
+  color: var(--text3);
+  background: var(--bg3);
+  border-color: var(--border);
+  font-weight: 400;
+}
+
+/* ===== op-modal 設備選択 ===== */
+.machine-select-row {
+  margin-bottom: 12px;
+}
+.machine-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 5px;
+}
+.machine-chip {
+  padding: 5px 11px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all 0.1s;
+}
+.machine-chip:hover { border-color: var(--amber); color: var(--amber); }
+.machine-chip.selected { background: var(--amber); color: #fff; border-color: var(--amber); }
+
+/* ===== 設備モーダル ===== */
+.machine-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 6px;
+}
+.machine-preset-btn {
+  padding: 9px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all 0.1s;
+  text-align: center;
+}
+.machine-preset-btn:hover  { border-color: var(--amber); color: var(--amber); background: var(--amber-bg); }
+.machine-preset-btn.active { background: var(--amber); color: #fff; border-color: var(--amber); }
+
+/* ===== history-item に設備列追加 ===== */
+.history-item { gap: 6px; }
+
+
+/* ===== 日報パネル ===== */
+.nippo-panel {
+  margin-top: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  display: none;
+}
+.nippo-panel.open { display: block; }
+.nippo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.nippo-header-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nippo-filters {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.nippo-filter-select {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg2);
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font);
+  outline: none;
+  cursor: pointer;
+}
+.nippo-filter-select:focus { border-color: var(--accent); }
+.nippo-export-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg2);
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+}
+.nippo-export-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.nippo-pdf-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--red-bd);
+  border-radius: var(--r-sm);
+  background: var(--red-bg);
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+  white-space: nowrap;
+}
+.nippo-pdf-btn:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.nippo-pdf-btn:disabled { opacity: 0.5; cursor: default; }
+/* PDF出力時にのみ表示するタイトル */
+/* ===== PDF印刷タイトルブロック ===== */
+.pdf-print-title {
+  display: none;
+  padding: 12px 14px 10px;
+  border-bottom: 2px solid var(--accent);
+  margin-bottom: 14px;
+  background: #f4f7ff;
+  border-radius: var(--r) var(--r) 0 0;
+}
+.pdf-print-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.pdf-title-main {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+.pdf-title-sub {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 400;
+}
+.pdf-print-meta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.pdf-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+.pdf-meta-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: 0.4px;
+  background: var(--bg3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.pdf-meta-value {
+  font-weight: 700;
+  color: var(--text);
+}
+/* ===== 改ページ制御 ===== */
+/* avoid-all 禁止。no-break クラス単位で制御する */
+.no-break {
+  page-break-inside: avoid;
+  break-inside:      avoid;
+}
+/* 集計フッターは前で改ページしない */
+.nippo-summary-bar {
+  page-break-before: avoid;
+  break-before:      avoid;
+}
+/* PDF出力エリア: A4幅に固定してキャプチャ時のレイアウト崩れを防ぐ */
+#reportArea {
+  width:     210mm;
+  max-width: 210mm;
+  padding:   10px;
+  box-sizing: border-box;
+  overflow:  hidden;
+}
+
+/* 設備グループヘッダー */
+.nippo-machine-group {
+  border-bottom: 1px solid var(--border);
+}
+.nippo-machine-group:last-child { border-bottom: none; }
+.nippo-machine-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--amber-bg);
+  border-bottom: 1px solid var(--amber-bd);
+  position: sticky;
+  top: 0;
+}
+.nippo-machine-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amber);
+  min-width: 52px;
+}
+.nippo-machine-count {
+  font-size: 10px;
+  color: var(--amber);
+  flex: 1;
+}
+.nippo-machine-total {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--amber);
+}
+
+/* 日報行 */
+.nippo-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px 6px 22px;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  min-width: 0;
+}
+.nippo-row:last-child { border-bottom: none; }
+.nippo-machine-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 40px;
+  text-align: center;
+}
+.nippo-machine-tag.none {
+  color: var(--text3);
+  background: var(--bg3);
+  border-color: var(--border);
+  font-weight: 400;
+}
+.nippo-sep {
+  color: var(--border2);
+  font-weight: 700;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+.nippo-item-name {
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nippo-qty {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nippo-status {
+  font-size: 10px;
+  color: var(--text2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nippo-type-tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.nippo-user {
+  font-size: 9px;
+  color: var(--text3);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.nippo-time {
+  font-size: 9px;
+  color: var(--text3);
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-family: var(--mono);
+}
+.nippo-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.nippo-empty {
+  padding: 28px 14px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+/* ===== adminCard 設備サマリー行（1行形式）===== */
+.acard-machine-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  border-radius: var(--r-sm);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  margin-bottom: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
+}
+.acard-machine-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+.acard-machine-sep {
+  color: var(--text3);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.acard-machine-detail {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+}
+.acard-machine-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+.acard-machine-status.ok {
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1px solid var(--green-bd);
+}
+.acard-machine-status.ng {
+  color: var(--red);
+  background: var(--red-bg);
+  border: 1px solid var(--red-bd);
+}
+.acard-machine-proc {
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 1px;
+}
+.acard-machine-row.no-machine {
+  background: var(--bg3);
+  border-color: var(--border);
+}
+.acard-machine-row.no-machine .acard-machine-label { color: var(--text3); }
+
+/* 履歴パネルヘッダー拡張 */
+.history-header-ext {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.history-filter-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.history-filter-select {
+  padding: 3px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg2);
+  color: var(--text);
+  font-size: 10px;
+  font-family: var(--font);
+  outline: none;
+  cursor: pointer;
+}
+
+
+/* ===== 入庫エリア内 設備チップ ===== */
+.recv-machine-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 0 4px;
+  flex-wrap: wrap;
+}
+.recv-machine-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.recv-machine-chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.recv-machine-chips::-webkit-scrollbar { display: none; }
+.recv-chip {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--amber-bd);
+  background: var(--amber-bg);
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--mono);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.1s;
+}
+.recv-chip:hover   { background: var(--amber); color: #fff; }
+.recv-chip.selected { background: var(--amber); color: #fff; border-color: var(--amber); }
+.recv-chip.none-chip {
+  border-color: var(--border);
+  background: var(--bg3);
+  color: var(--text3);
+  font-weight: 400;
+}
+.recv-chip.none-chip.selected { background: var(--text3); color: #fff; border-color: var(--text3); }
+
+/* ===== カードヘッダーの設備バッジ ===== */
+.card-machine-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 64px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== 日報: 日付ピッカー ===== */
+.nippo-date-input {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg2);
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font);
+  outline: none;
+  cursor: pointer;
+}
+.nippo-date-input:focus { border-color: var(--accent); }
+.nippo-today-btn {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+  white-space: nowrap;
+}
+.nippo-today-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ===== 日報: 設備別サマリーフッター ===== */
+.nippo-summary-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--bg3);
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text3);
+  flex-wrap: wrap;
+}
+.nippo-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nippo-summary-machine {
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bd);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 9px;
+}
+.nippo-summary-cnt {
+  color: var(--text2);
+  font-weight: 600;
+}
+
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div class="app" id="app">
@@ -1359,8 +2212,13 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="switchMode('field')">📱 現場</button>
     <button class="mode-tab" onclick="switchMode('admin')">🖥 管理</button>
+    <button type="button" class="mode-tab" onclick="handleAction('出荷スケジュール')">🚢 出荷</button>
   </div>
-  <div class="header-right">
+  <div class="header-right" style="display:flex;align-items:center;gap:6px;">
+    <div class="machine-badge" id="machine-badge" onclick="openMachineModal()" title="使用設備を変更">
+      <div class="machine-dot"></div>
+      <span id="current-machine-label">設備未設定</span>
+    </div>
     <div class="user-badge" onclick="openUserModal()" style="cursor:pointer" title="名前を変更">
       <div class="user-dot"></div>
       <span class="user-name" id="current-user">田中 一郎</span>
@@ -1372,6 +2230,7 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="field-search">
     <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterItems(this.value)">
   </div>
+  <div id="ship-alert-wrap"></div>
   <div class="section-title" id="item-count-label">品目一覧</div>
   <div id="field-items"></div>
 </div>
@@ -1387,6 +2246,7 @@ input[type=number] { -moz-appearance: textfield; }
     <div class="admin-btn-group admin-btn-group-sub">
       <button class="btn-secondary" onclick="openAdjustModal()">📝 調整</button>
       <button class="btn-secondary" onclick="showHistory()">📋 履歴</button>
+      <button class="btn-secondary" onclick="showNippo()" id="nippo-toggle-btn" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-bd)">📄 日報</button>
     </div>
   </div>
   <div class="table-wrapper" id="admin-table-wrapper">
@@ -1412,6 +2272,60 @@ input[type=number] { -moz-appearance: textfield; }
     <div class="history-header">📋 操作履歴（最新50件）</div>
     <div class="history-list" id="history-list-admin"></div>
   </div>
+
+  <!-- 日報パネル -->
+  <div id="nippo-panel" class="nippo-panel">
+    <div class="nippo-header">
+      <div class="nippo-header-title">📄 日報一覧</div>
+      <div class="nippo-filters">
+        <input type="date" class="nippo-date-input" id="nippo-date-picker" onchange="onNippoDateChange()">
+        <button class="nippo-today-btn" onclick="onNippoToday()">今日</button>
+        <select class="nippo-filter-select" id="nippo-machine-filter" onchange="renderNippo()">
+          <option value="">全設備</option>
+        </select>
+        <select class="nippo-filter-select" id="nippo-user-filter" onchange="renderNippo()">
+          <option value="">全作業者</option>
+        </select>
+        <select class="nippo-filter-select" id="nippo-type-filter" onchange="renderNippo()">
+          <option value="">全操作</option>
+          <option value="入庫">入庫</option>
+          <option value="移動">移動</option>
+          <option value="出荷">出荷</option>
+          <option value="不良">不良</option>
+        </select>
+        <button class="nippo-pdf-btn" id="nippo-pdf-btn" onclick="exportNippoPdf()">⬇ PDF</button>
+      </div>
+    </div>
+    <div id="reportArea">
+      <div class="pdf-print-title" id="pdf-print-title">
+        <div class="pdf-print-title-row">
+          <span class="pdf-title-main">📄 日報一覧</span>
+          <span class="pdf-title-sub" id="pdf-title-generated">出力：</span>
+        </div>
+        <div class="pdf-print-meta">
+          <div class="pdf-meta-item">
+            <span class="pdf-meta-label">日付</span>
+            <span class="pdf-meta-value" id="pdf-meta-date">—</span>
+          </div>
+          <div class="pdf-meta-item">
+            <span class="pdf-meta-label">作業者</span>
+            <span class="pdf-meta-value" id="pdf-meta-user">—</span>
+          </div>
+          <div class="pdf-meta-item">
+            <span class="pdf-meta-label">件数</span>
+            <span class="pdf-meta-value" id="pdf-meta-count">—</span>
+          </div>
+          <div class="pdf-meta-item">
+            <span class="pdf-meta-label">合計数量</span>
+            <span class="pdf-meta-value" id="pdf-meta-qty">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="nippo-list" id="nippo-list"></div>
+      <div class="nippo-summary-bar" id="nippo-summary-bar"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- OP MODAL -->
@@ -1439,6 +2353,10 @@ input[type=number] { -moz-appearance: textfield; }
     <div class="form-group" id="op-to-process-group" style="display:none">
       <label class="form-label">移動先工程</label>
       <select class="form-select" id="op-to-process"></select>
+    </div>
+    <div class="machine-select-row" id="op-machine-row">
+      <label class="form-label" style="color:var(--amber)">🔧 設備名（この操作に使用）</label>
+      <div class="machine-chips" id="op-machine-chips"></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('op-modal')">キャンセル</button>
@@ -1525,6 +2443,26 @@ input[type=number] { -moz-appearance: textfield; }
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('adjust-modal')">キャンセル</button>
       <button class="btn-confirm" style="background:var(--purple)" onclick="confirmAdjust()">調整実行</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MACHINE SELECT MODAL -->
+<div class="modal-overlay" id="machine-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <div class="modal-icon" style="background:var(--amber-bg);font-size:16px">🔧</div>
+      <span>使用設備を選択</span>
+    </div>
+    <div class="form-group">
+      <label class="form-label">設備名</label>
+      <div class="machine-modal-grid" id="machine-preset-list"></div>
+      <input class="form-input" id="machine-name-input" placeholder="または直接入力（例：NC3）" type="text" style="margin-top:8px">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="clearMachine()">設備なし</button>
+      <button class="btn-confirm" style="background:var(--amber)" onclick="saveMachine()">確定</button>
     </div>
   </div>
 </div>
@@ -1625,14 +2563,112 @@ input[type=number] { -moz-appearance: textfield; }
 
 <div id="toast-container"></div>
 
+<div id="ship-schedule-modal" class="ship-schedule-modal" style="display:none" onclick="if(event.target===this)closeShipScheduleModal()">
+  <div class="ship-schedule-modal-inner">
+    <div class="ship-schedule-modal-header">
+      <span class="ship-schedule-modal-title">🚢 出荷スケジュール</span>
+      <button type="button" class="ship-schedule-modal-close" onclick="closeShipScheduleModal()">✕ 閉じる</button>
+    </div>
+    <div class="ship-inner" id="ship-inner">
+<span class="sync-badge" id="sync-badge" style="display:none"></span>
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tbtn-cal" onclick="switchTab('cal')">📅 出荷予定</button>
+  <button class="tab-btn" id="tbtn-shortage" onclick="switchTab('shortage')">🔴 不足一覧</button>
+</div>
+
+<div id="tab-cal">
+  <div class="main">
+    <div class="toolbar">
+      <div class="page-title">月間出荷予定表</div>
+      <div class="nav-group">
+        <button class="today-btn" onclick="goToday()">今月</button>
+        <button class="nbtn" onclick="prevMonth()">&#8249;</button>
+        <div class="month-label" id="mlabel"></div>
+        <button class="nbtn" onclick="nextMonth()">&#8250;</button>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <input class="search-input" id="search-input" type="text" placeholder="品名・品番で検索" oninput="onSearch(this.value)">
+      <button class="search-clear" id="search-clear" style="display:none" onclick="clearSearch()">✕</button>
+    </div>
+    <div id="search-results" style="display:none;margin-bottom:14px"></div>
+    <div id="cal-area">
+    <div class="cal-card">
+      <div class="dow-row">
+        <div class="dow sun">日</div><div class="dow">月</div><div class="dow">火</div>
+        <div class="dow">水</div><div class="dow">木</div><div class="dow">金</div>
+        <div class="dow sat">土</div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="tab-shortage" style="display:none">
+  <div class="main">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="font-size:17px;font-weight:700;color:#1a1a1a">🔴 不足一覧（7日以内）</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="shortage-range" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
+          <option value="3">3日以内</option>
+          <option value="7" selected>7日以内</option>
+          <option value="14">14日以内</option>
+          <option value="30">30日以内</option>
+        </select>
+        <select id="shortage-filter" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
+          <option value="all">すべて</option>
+          <option value="ng">不足のみ</option>
+          <option value="cond">条件OK含む</option>
+        </select>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden" id="shortage-list">
+      <div style="text-align:center;padding:40px;color:#aaa">読み込み中...</div>
+    </div>
+  </div>
+</div>
+
+<button class="fab"  id="fab" onclick="openAdd()">＋</button>
+<div id="modal-wrap"></div>
+
+<div class="edit-panel" id="edit-panel">
+  <div class="ep-hdr">
+    <div class="ep-title" id="ep-title">出荷を追加</div>
+    <button class="ep-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="ep-body">
+    <input type="hidden" id="ep-idx" value="-1">
+    <input type="hidden" id="ep-cat" value="">
+    <label>出荷日</label><input type="date" id="ep-date">
+
+    <label>品名</label><input type="text" id="ep-name" placeholder="例：製品α">
+    <label>品番</label><input type="text" id="ep-code" placeholder="例：α-100">
+    <label>数量（個）</label><input type="number" id="ep-qty" min="1" placeholder="例：100">
+    <label>出荷先</label><input type="text" id="ep-dest" placeholder="例：東京倉庫">
+    <label>備考</label><input type="text" id="ep-note" placeholder="任意">
+    <div id="ep-stock-info" style="margin-top:12px"></div>
+  </div>
+  <div class="ep-foot" id="ep-foot"></div>
+</div>
+<div id="panel-bg" style="display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.2)" onclick="closePanel()"></div>
+</div>
+  </div>
+</div>
+
 <script>
 const PNAMES = ['工程①','工程②','工程③','工程④','工程⑤','工程⑥','バリ取り','完成品'];
+
+// セッション中に記録されたTx IDセット（TDZ回避のためスクリプト先頭で宣言）
+let _sessionTxIds = null;
 
 let db = {
   items: [
     {
       id:'i1', code:'A-001', name:'フランジ部品', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
+      processCounts:[10,5,8,0,0,0,3,150], doneCount:150,
       defectiveCount:0, shippedCount:0,
       processConfig:[
         {type:'process',active:true},{type:'process',active:true},
@@ -1644,7 +2680,7 @@ let db = {
     },
     {
       id:'i2', code:'B-042', name:'シャフトカラー', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
+      processCounts:[8,12,0,0,0,0,5,80], doneCount:80,
       defectiveCount:0, shippedCount:0,
       processConfig:[
         {type:'process',active:true},{type:'process',active:true},
@@ -1656,7 +2692,7 @@ let db = {
     },
     {
       id:'i3', code:'C-017', name:'ブラケット', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
+      processCounts:[15,10,20,8,5,0,7,200], doneCount:200,
       defectiveCount:0, shippedCount:0,
       processConfig:[
         {type:'process',active:true},{type:'process',active:true},
@@ -1668,7 +2704,7 @@ let db = {
     },
     {
       id:'i4', code:'D-003', name:'スペーサー', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
+      processCounts:[5,3,0,0,0,0,2,60], doneCount:60,
       defectiveCount:0, shippedCount:0,
       processConfig:[
         {type:'process',active:true},{type:'process',active:true},
@@ -1679,13 +2715,91 @@ let db = {
       processGroups:[]
     }
   ],
-  transactions:[]
+  transactions:[],
+  shipments:[
+    {id:'s001',itemId:'i1',date:'2026-04-05',qty:120,dest:'東京倉庫',note:'',shipped:false},
+    {id:'s002',itemId:'i2',date:'2026-04-07',qty:80, dest:'名古屋DC',note:'',shipped:false},
+    {id:'s003',itemId:'i3',date:'2026-04-08',qty:200,dest:'福岡倉庫',note:'',shipped:false},
+    {id:'s004',itemId:'i4',date:'2026-04-05',qty:60, dest:'大阪港',  note:'',shipped:false},
+    {id:'s005',itemId:'i1',date:'2026-04-10',qty:95, dest:'東京倉庫',note:'',shipped:false},
+    {id:'s006',itemId:'i2',date:'2026-04-12',qty:140,dest:'名古屋DC',note:'',shipped:false},
+    {id:'s007',itemId:'i3',date:'2026-04-15',qty:180,dest:'福岡倉庫',note:'',shipped:false},
+    {id:'s008',itemId:'i4',date:'2026-04-14',qty:75, dest:'大阪港',  note:'',shipped:false},
+  ]
 };
 
 let currentMode='field', pendingOp=null, fieldFilter='', adminFilter='';
 let adminSortKey=null, adminSortDir=1, editingItem=null;
 const formPC = Array.from({length:8},()=>({type:'process',active:false}));
 let formGroups = []; // まとめ工程設定 [{start, end}, ...]
+
+
+// ===== 設備マスター =====
+const MACHINE_PRESETS = ['NC1','NC2','MC1','MC2','研磨機1','研磨機2','旋盤1','旋盤2','フライス1','その他'];
+let currentMachine = localStorage.getItem('inv_machine') || '';
+
+function openMachineModal(){
+  const list = gid('machine-preset-list');
+  list.innerHTML = MACHINE_PRESETS.map(m=>`
+    <button class="machine-preset-btn${currentMachine===m?' active':''}"
+      onclick="selectMachinePreset('${escH(m)}')">${escH(m)}</button>`).join('');
+  gid('machine-name-input').value = currentMachine;
+  gid('machine-modal').classList.add('open');
+}
+function selectMachinePreset(name){
+  currentMachine = name;
+  gid('machine-name-input').value = name;
+  // ボタン強調更新
+  document.querySelectorAll('.machine-preset-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent===name);
+  });
+}
+function saveMachine(){
+  const name = gid('machine-name-input').value.trim();
+  currentMachine = name;
+  localStorage.setItem('inv_machine', name);
+  _updateMachineBadge();
+  closeModal('machine-modal');
+  // op-modal が開いていれば更新
+  _renderOpMachineChips();
+  toast(name ? `設備を「${name}」に設定しました`:'設備をクリアしました', 'success');
+}
+function clearMachine(){
+  currentMachine = '';
+  localStorage.setItem('inv_machine', '');
+  gid('machine-name-input').value = '';
+  _updateMachineBadge();
+  closeModal('machine-modal');
+  _renderOpMachineChips();
+  toast('設備をクリアしました','success');
+}
+function _updateMachineBadge(){
+  const lbl = gid('current-machine-label');
+  if(lbl) lbl.textContent = currentMachine || '設備未設定';
+  const badge = gid('machine-badge');
+  if(badge) badge.style.opacity = currentMachine ? '1' : '0.65';
+}
+
+// op-modal のチップ選択描画
+function _renderOpMachineChips(){
+  const el = gid('op-machine-chips'); if(!el) return;
+  // 現在のモーダル内選択値を取得
+  const selected = el.dataset.selected || currentMachine;
+  el.innerHTML = MACHINE_PRESETS.slice(0,8).map(m=>`
+    <span class="machine-chip${selected===m?' selected':''}"
+      onclick="_selectOpMachine(this,'${escH(m)}')">${escH(m)}</span>`).join('');
+  el.dataset.selected = selected;
+}
+function _selectOpMachine(el, name){
+  const chips = gid('op-machine-chips');
+  chips.querySelectorAll('.machine-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  chips.dataset.selected = name;
+}
+function _getOpMachine(){
+  const el = gid('op-machine-chips');
+  return el ? (el.dataset.selected || currentMachine) : currentMachine;
+}
 
 // USER
 const USER_PRESETS = ['田中 一郎','鈴木 次郎','佐藤 三郎','高橋 四郎','山田 五郎'];
@@ -1721,14 +2835,34 @@ function gid(id){ return document.getElementById(id); }
 function genId(){ return '_'+Math.random().toString(36).slice(2,9); }
 function nowStr(){ return new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
 function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ===== ① 数量表示・バリデーションユーティリティ =====
+function formatQty(value){ return value + '個'; }
+function sanitizeQty(value){
+  value = parseInt(value, 10);
+  if(isNaN(value) || value < 0) value = 0;
+  if(value > 99999) value = 99999;
+  return value;
+}
+
 function getActives(item){ return item.processConfig.map((c,i)=>({...c,idx:i})).filter(c=>c.active); }
 function getTotalStock(item){ return item.processCounts.reduce((s,n)=>s+n,0); }
 
-function saveDb(){ try{ localStorage.setItem('inv_db', JSON.stringify(db)); }catch(e){} }
+function saveDb(){ try{ localStorage.setItem('inv_db', JSON.stringify(db)); }catch(e){} try{saveUnifiedDb();}catch(e){} }
 function loadDb(){
   try{
     const saved=localStorage.getItem('inv_db');
     if(saved){ const parsed=JSON.parse(saved); if(parsed&&parsed.items) db=parsed; }
+    if(!db.shipments) db.shipments=[];
+  }catch(e){}
+  // ship_db から出荷済みステータスを同期
+  try{
+    const sr=localStorage.getItem('ship_db'); if(!sr) return;
+    const sd=JSON.parse(sr); if(!sd||!sd.shipments) return;
+    sd.shipments.forEach(ss=>{
+      const m=db.shipments.find(s=>s.id===ss.id);
+      if(m&&ss.shipped) m.shipped=true;
+    });
   }catch(e){}
 }
 loadDb();
@@ -1813,13 +2947,13 @@ function renderGroupBlock(item, entry, di, displayList){
     <div class="process-actions-row">
       <button class="btn btn-move btn-next btn-ship-full"
         ${hasNext&&count>0?'':'disabled'}
-        onclick="openGroupOp('${item.id}',${group.start},${group.end})">次へ →</button>
+        onclick="handleAction('まとめ移動',{itemId:'${item.id}',groupStart:${group.start},groupEnd:${group.end}})">次へ →</button>
     </div>
   </div>`;
-  return `<div class="process-block group-block">
-    <span class="group-range-label">まとめ工程</span>
-    <div class="process-name">${displayName}</div>
-    <div class="process-count${count===0?' zero':''}">${count}</div>
+  return `<div class="process-block group-block" title="複数工程をまとめて処理できます（${displayName}）">
+    <span class="group-range-label">まとめ工程（${displayName}）</span>
+    <div class="process-count${count===0?' zero':''}">${formatQty(count)}</div>
+    <div class="group-desc">範囲内の工程を一括処理</div>
     ${actions}
   </div>`;
 }
@@ -1857,12 +2991,15 @@ function openGroupOp(itemId, groupStart, groupEnd){
   gid('op-to-process-group').style.display = 'none';
   gid('op-confirm-btn').className = 'btn-confirm';
   gid('op-confirm-btn').textContent = '移動する';
+  _renderOpMachineChips();
   gid('op-modal').classList.add('open');
   updateOpConfirmState();
 }
 
-function addTx(itemId,type,qty,from,to,note=''){
-  db.transactions.unshift({id:genId(),itemId,type,quantity:qty,fromProcess:from,toProcess:to,userId:currentUser,timestamp:nowStr(),note});
+function addTx(itemId,type,qty,from,to,note='',machine=''){
+  const _txId=genId();
+  if(_sessionTxIds) _addSessionTxId(_txId);
+  db.transactions.unshift({id:_txId,itemId,type,quantity:qty,fromProcess:from,toProcess:to,userId:currentUser,machine:machine||currentMachine,timestamp:nowStr(),note,dateStr:_getTodayDate()});
   if(db.transactions.length>500) db.transactions=db.transactions.slice(0,500);
   saveDb();
 }
@@ -1882,14 +3019,167 @@ function renderField(){
   const expanded=new Set();
   document.querySelectorAll('.item-card.expanded').forEach(el=>expanded.add(el.id));
 
-  const list=db.items.filter(it=>!fieldFilter||it.name.includes(fieldFilter)||it.code.toLowerCase().includes(fieldFilter.toLowerCase())||(it.maker||'').includes(fieldFilter));
+  const list=db.items.filter(it=>matchesFilter(it,fieldFilter));
   gid('item-count-label').textContent=`品目一覧（${list.length}件）`;
   gid('field-items').innerHTML=list.map(renderItemCard).join('');
 
   // 展開状態を復元
   expanded.forEach(id=>{ const el=gid(id); if(el) el.classList.add('expanded'); });
+  // 出荷アラートを更新
+  renderShipmentAlert();
+  // 入力途中の状態を復元
+  _restoreReceiveQtys();
 }
-function filterItems(v){ fieldFilter=v; renderField(); }
+function filterItems(v){
+  fieldFilter=v.trim();
+  renderField();
+}
+
+// ==========================================
+// 🔗 統合レイヤー：出荷スケジュール連携
+// ==========================================
+const UNIFIED_KEY='unified_db';
+const SHIP_KEY='ship_db';
+
+function getFinishedStock(item){ return item.processCounts[7]||0; }
+function getWipTotal(item){ return item.processCounts.slice(0,7).reduce((a,b)=>a+b,0); }
+
+function checkShipmentStock(item,ship){
+  const avail=getFinishedStock(item);
+  const gap=ship.qty-avail;
+  return{ok:gap<=0,shortage:Math.max(0,gap)};
+}
+
+// unified_db に書き出し（出荷画面が読む）
+function saveUnifiedDb(){
+  try{
+    const u={
+      version:1,updatedAt:Date.now(),source:'inventory',
+      items:db.items.map(it=>({
+        id:it.id,code:it.code,name:it.name,unit:it.unit||'個',
+        finishedStock:it.processCounts[7]||0,
+        processCounts:[...it.processCounts],
+      })),
+      shipments:db.shipments||[]
+    };
+    localStorage.setItem(UNIFIED_KEY,JSON.stringify(u));
+  }catch(e){}
+}
+
+// 出荷側の変更を取り込む
+function syncFromShipDb(){
+  try{
+    const raw=localStorage.getItem(SHIP_KEY); if(!raw) return;
+    const sd=JSON.parse(raw); if(!sd) return;
+    // shipped フラグを同期
+    if(sd.shipments) sd.shipments.forEach(ss=>{
+      const m=(db.shipments||[]).find(s=>s.id===ss.id);
+      if(m) m.shipped=ss.shipped;
+    });
+    // 在庫減算を同期（出荷確定時）
+    if(sd.stockUpdates) sd.stockUpdates.forEach(u=>{
+      const item=db.items.find(i=>i.id===u.itemId); if(!item) return;
+      item.processCounts[7]=Math.max(0,(item.processCounts[7]||0)+u.delta);
+      item.doneCount=item.processCounts[7];
+    });
+    saveDb();
+  }catch(e){}
+}
+
+// cross-tab sync
+window.addEventListener('storage',e=>{
+  if(e.key===SHIP_KEY){
+    syncFromShipDb();
+    if(currentMode==='field') renderField(); else renderAdmin();
+  }
+});
+
+// 出荷アラートパネル
+function renderShipmentAlert(){
+  const wrap=gid('ship-alert-wrap'); if(!wrap) return;
+  const ships=db.shipments||[];
+  if(!ships.length){wrap.innerHTML='';return;}
+  const now=new Date(); now.setHours(0,0,0,0);
+  const in3=new Date(now.getTime()+3*86400000);
+  const rows=[];
+  ships.forEach(s=>{
+    if(s.shipped) return;
+    const d=new Date(s.date); d.setHours(0,0,0,0);
+    if(d<now||d>in3) return;
+    const item=db.items.find(i=>i.id===s.itemId); if(!item) return;
+    const chk=checkShipmentStock(item,s);
+    const diff=Math.round((d-now)/86400000);
+    rows.push({item,s,chk,diff,dayLabel:diff===0?'今日':diff===1?'明日':diff+'日後'});
+  });
+  if(!rows.length){wrap.innerHTML='';return;}
+  rows.sort((a,b)=>(!a.chk.ok&&b.chk.ok)?-1:(a.chk.ok&&!b.chk.ok)?1:a.diff-b.diff);
+  const ngCount=rows.filter(r=>!r.chk.ok).length;
+  wrap.innerHTML=`<div class="ship-alert-panel${ngCount===0?' ship-alert-ok':''}">
+    <div class="ship-alert-header">
+      <span class="ship-alert-icon">${ngCount>0?'⚠':'🚢'}</span>
+      <span class="ship-alert-title">出荷アラート（3日以内 ${rows.length}件）</span>
+      ${ngCount>0?`<span class="ship-alert-badge">${ngCount}件 在庫不足</span>`:''}
+    </div>
+    <div class="ship-alert-list">
+      ${rows.map(r=>`<div class="ship-alert-row ${r.chk.ok?'ok':'ng'}">
+        <span class="ship-alert-day">${r.dayLabel}</span>
+        <span class="ship-alert-name">${escH(r.item.name)}</span>
+        <span class="ship-alert-qty">${r.s.qty.toLocaleString()}個</span>
+        ${!r.chk.ok
+          ?`<span class="ship-alert-shortage">不足 ${r.chk.shortage}個</span>`
+          :`<span class="ship-alert-ok-lbl">✓ OK</span>`}
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// アイテムカード内の出荷予定セクション
+function renderItemShipments(item){
+  const ships=(db.shipments||[]).filter(s=>s.itemId===item.id&&!s.shipped);
+  if(!ships.length) return '';
+  const fin=getFinishedStock(item);
+  const hasNG=ships.some(s=>checkShipmentStock(item,s).shortage>0);
+  const now=new Date(); now.setHours(0,0,0,0);
+  const rows=ships
+    .sort((a,b)=>new Date(a.date)-new Date(b.date))
+    .slice(0,5)
+    .map(s=>{
+      const d=new Date(s.date);
+      const chk=checkShipmentStock(item,s);
+      const diff=Math.round((new Date(s.date)-now)/86400000);
+      const urgency=diff<=0?'today':diff<=3?'soon':'';
+      return `<div class="item-ship-row ${urgency}">
+        <span class="item-ship-date">${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}</span>
+        <span class="item-ship-dest">${escH(s.dest||'')}</span>
+        <span class="item-ship-qty">${s.qty.toLocaleString()}個</span>
+        ${!chk.ok
+          ?`<span class="item-ship-ng">不足${chk.shortage}</span>`
+          :`<span class="item-ship-ok">✓</span>`}
+      </div>`;
+    }).join('');
+  return `<div class="item-ship-section${hasNG?' has-shortage':''}">
+    <div class="item-ship-title">
+      🚢 出荷予定（${ships.length}件）
+      <span style="font-weight:400;font-size:10px;color:var(--text3)">完成品在庫: <strong>${fin}</strong>個</span>
+    </div>
+    ${rows}
+    ${ships.length>5?`<div style="font-size:10px;color:var(--text3);text-align:center;padding-top:4px">他 ${ships.length-5}件…</div>`:''}
+  </div>`;
+}
+
+// 初期同期
+saveUnifiedDb();
+
+renderField();
+
+// ③ 検索フィルタ共通ヘルパー（大文字小文字無視・部分一致）
+function matchesFilter(item, keyword){
+  if(!keyword) return true;
+  const kw = keyword.toLowerCase();
+  return item.name.toLowerCase().includes(kw)
+      || item.code.toLowerCase().includes(kw)
+      || (item.maker||'').toLowerCase().includes(kw);
+}
 
 function renderItemCard(item){
   const displayList=buildDisplayActives(item);
@@ -1899,6 +3189,7 @@ function renderItemCard(item){
   <div class="item-card-header" onclick="toggleCard('${item.id}')">
     <span class="item-code">${escH(item.code)}</span>
     <span class="item-name" style="flex:1">${escH(item.name)}${item.maker?`<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">${escH(item.maker)}</span>`:''}</span>
+    ${(()=>{ const lastM=getLastMachineForItem(item.id); return lastM?`<span class="card-machine-badge" title="本日最終使用設備">${escH(lastM)}</span>`:''; })()}
     <span class="expand-icon">▼</span>
   </div>
   <div class="item-card-body">
@@ -1927,7 +3218,11 @@ function renderItemCard(item){
           <button class="qty-btn" onclick="addRQ('${item.id}',-50)">-50</button>
         </div>
         <hr class="stock-input-divider">
-        <button class="btn-receive" onclick="receiveItem('${item.id}')">入庫</button>
+        <div class="recv-machine-row">
+          <span class="recv-machine-label">🔧 設備</span>
+          <div class="recv-machine-chips" id="recv-mc-${item.id}">${_buildRecvChipsHtml(item.id)}</div>
+        </div>
+        <button class="btn-receive" onclick="handleAction('入庫',{itemId:'${item.id}'})">入庫</button>
       </div>
     </div>
     <div class="process-section-label">⚙ 工程フロー</div>
@@ -1953,7 +3248,7 @@ function renderPBlock(item,p,di,displayList){
   if(isDone){
     actions=`<div class="process-actions">
       <div class="process-actions-row">
-        <button class="btn btn-ship btn-ship-full" ${count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'ship')">🚚 出荷</button>
+        <button class="btn btn-ship btn-ship-full" ${count>0?'':'disabled'} onclick="handleAction('出荷',{itemId:'${item.id}',processIdx:${p.idx}})">🚚 出荷</button>
       </div>
     </div>`;
   } else {
@@ -1963,15 +3258,15 @@ function renderPBlock(item,p,di,displayList){
     const canNext=hasNext&&count>0&&nextActives.length>0;
     actions=`<div class="process-actions">
       <div class="process-actions-row">
-        <button class="btn btn-move btn-next btn-ship-full" ${canNext?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'move-next')">次へ →</button>
+        <button class="btn btn-move btn-next btn-ship-full" ${canNext?'':'disabled'} onclick="handleAction('工程移動',{itemId:'${item.id}',processIdx:${p.idx}})">次へ →</button>
       </div>
     </div>`;
   }
   const nameHtml = (isDeburr||isDone) ? '' : `<div class="process-name">${PNAMES[p.idx]}</div>`;
-  return `<div class="${blockCls}">${labelHtml}${nameHtml}<div class="process-count${count===0?' zero':''}">${count}</div>${actions}</div>`;
+  return `<div class="${blockCls}">${labelHtml}${nameHtml}<div class="process-count${count===0?' zero':''}">${formatQty(count)}</div>${actions}</div>`;
 }
 
-function toggleCard(id){ gid('card-'+id).classList.toggle('expanded'); }
+function toggleCard(id){ gid('card-'+id).classList.toggle('expanded'); autoSaveState(); }
 
 function toggleReceive(id){
   const input = gid('stock-input-'+id);
@@ -1982,20 +3277,129 @@ function toggleReceive(id){
 }
 
 // RECEIVE
-function addRQ(id,d){ const inp=gid('rq-'+id); inp.value=Math.max(0,parseInt(inp.value||0)+d); }
+function addRQ(id,d){
+  const inp=gid('rq-'+id);
+  inp.value=sanitizeQty(sanitizeQty(inp.value)+d);
+}
 function receiveItem(itemId){
   const item=db.items.find(i=>i.id===itemId);
   if(!item) return;
   const actives=getActives(item);
   if(!actives.length){ toast('工程が設定されていません','error'); return; }
   const qty=parseInt(gid('rq-'+itemId).value);
-  if(!qty||qty<1){ toast('数量を入力してください','error'); return; }
+  if(isNaN(qty)||qty<1){ toast('数量は1以上を入力してください','error'); return; }
+  if(qty>99999){ toast('数量が上限（99999）を超えています','error'); return; }
   const firstIdx=actives[0].idx;
   item.processCounts[firstIdx]+=qty;
-  addTx(itemId,'入庫',qty,null,firstIdx);
+  addTx(itemId,'入庫',qty,null,firstIdx,'',currentMachine);
   saveDb();
   toast(`${item.name} を ${qty}${item.unit} 入庫`,'success');
   renderField();
+}
+
+// ===== 操作処理共通化 =====
+// すべての操作はこの関数を経由する
+// ===== payload 仕様 =====
+// {
+//   itemId      : string   (必須: 品目ID)
+//   processIdx  : number   (工程操作時必須: 工程インデックス)
+//   quantity    : number   (数量指定時: 1以上の整数)
+//   groupStart  : number   (まとめ移動時必須)
+//   groupEnd    : number   (まとめ移動時必須)
+// }
+// ※ machine(設備名) フィールド: addTx(itemId,type,qty,from,to,note,machine) で記録
+
+// ===== 入力チェック =====
+function validatePayload(actionType, payload){
+  if(!payload || typeof payload !== 'object'){
+    toast('操作データが不正です','error'); return false;
+  }
+
+  // 品目チェック（productCode に相当）
+  if(!payload.itemId){
+    toast('品目が指定されていません','error'); return false;
+  }
+  const item = db.items.find(i => i.id === payload.itemId);
+  if(!item){
+    toast('品目が見つかりません（品番エラー）','error'); return false;
+  }
+
+  // 工程チェック（process に相当）
+  const needsProcess = ['工程移動','移動戻し','不良','出荷'].includes(actionType);
+  if(needsProcess){
+    if(payload.processIdx === undefined || payload.processIdx === null){
+      toast('工程が指定されていません','error'); return false;
+    }
+    const cfg = item.processConfig[payload.processIdx];
+    if(!cfg || !cfg.active){
+      toast('無効な工程です','error'); return false;
+    }
+  }
+
+  // まとめ移動チェック
+  if(actionType === 'まとめ移動'){
+    if(!payload.groupStart || !payload.groupEnd || payload.groupStart > payload.groupEnd){
+      toast('まとめ工程の範囲が不正です','error'); return false;
+    }
+  }
+
+  // 数量チェック（payload に quantity が含まれる場合）
+  if(payload.quantity !== undefined){
+    const qty = Number(payload.quantity);
+    if(isNaN(qty) || qty <= 0){
+      toast('数量は1以上を入力してください','error'); return false;
+    }
+    if(!Number.isInteger(qty)){
+      toast('数量は整数で入力してください','error'); return false;
+    }
+    if(qty > 99999){
+      toast('数量が上限（99999）を超えています','error'); return false;
+    }
+  }
+
+  return true;
+}
+
+// ===== ログ記録（addTx経由で自動記録。直接呼び出し禁止）=====
+function recordLog(actionType, payload){
+  // addTx() が confirmOp / receiveItem 内で自動的に呼ばれる
+}
+
+// ===== 在庫更新（各処理関数内で自動更新。直接呼び出し禁止）=====
+function updateInventory(actionType, payload){
+  // confirmOp / receiveItem 内で item.processCounts を更新 → saveDb() → saveUnifiedDb()
+}
+
+// ===== UI更新 =====
+function updateUI(){
+  if(currentMode === 'field') renderField(); else renderAdmin();
+}
+
+// ===== 操作処理共通化（唯一の入口）=====
+function handleAction(actionType, payload){
+  if(!payload) payload = {};
+
+  // 出荷スケジュール・まとめ移動はpayload不要なケースを除き検証
+  if(actionType !== '出荷スケジュール'){
+    if(!validatePayload(actionType, payload)) return;
+  }
+
+  // ログ・在庫更新は各処理関数内（confirmOp/receiveItem）で実行
+  recordLog(actionType, payload);
+
+  // 操作開始時点の状態を保存
+  autoSaveState();
+
+  switch(actionType){
+    case '入庫':           receiveItem(payload.itemId); break;
+    case '工程移動':       openOp(payload.itemId, payload.processIdx, 'move-next'); break;
+    case '移動戻し':       openOp(payload.itemId, payload.processIdx, 'move-back'); break;
+    case '不良':           openOp(payload.itemId, payload.processIdx, 'defect'); break;
+    case '出荷':           openOp(payload.itemId, payload.processIdx, 'ship'); break;
+    case '出荷スケジュール': openShipScheduleModal(); break;
+    case 'まとめ移動':     openGroupOp(payload.itemId, payload.groupStart, payload.groupEnd); break;
+    default: console.warn('handleAction: unknown actionType', actionType);
+  }
 }
 
 // OP MODAL
@@ -2050,13 +3454,15 @@ function openOp(itemId,processIdx,opType){
     gid('op-to-process-group').style.display='none';
     gid('op-confirm-btn').className='btn-confirm teal'; gid('op-confirm-btn').textContent='出荷確定';
   }
+  _renderOpMachineChips();
   gid('op-modal').classList.add('open');
   updateOpConfirmState();
 }
 
 function addQty(n){
   const inp=gid('op-qty');
-  inp.value=Math.max(0,Math.min(parseInt(inp.max||9999),parseInt(inp.value||0)+n));
+  const max=sanitizeQty(inp.max||99999);
+  inp.value=Math.min(max, sanitizeQty(sanitizeQty(inp.value)+n));
   updateOpConfirmState();
 }
 
@@ -2091,34 +3497,34 @@ function confirmOp(){
   const item=db.items.find(i=>i.id===itemId);
   if(!item) return;
   const qty=parseInt(gid('op-qty').value);
-  if(!qty||qty<1){ toast('数量を入力してください','error'); return; }
+  if(isNaN(qty)||qty<1){ toast('数量は1以上を入力してください','error'); return; }
+  if(qty>99999){ toast('数量が上限（99999）を超えています','error'); return; }
 
   // ===== まとめ工程移動（グループ移動）=====
   if(opType==='group-move'){
     const {groupActives, toIdx, groupStart, groupEnd}=pendingOp;
     const groupCount=groupActives.reduce((s,a)=>s+item.processCounts[a.idx],0);
     if(qty>groupCount){ toast('グループ在庫合計を超えています','error'); return; }
-    // 後ろの工程から順番に在庫を消費（まとめ工程の出口から引く）
-    let remaining=qty;
-    const ordered=[...groupActives].reverse();
-    for(const a of ordered){
-      const take=Math.min(remaining, item.processCounts[a.idx]);
-      item.processCounts[a.idx]-=take;
-      remaining-=take;
-      if(remaining<=0) break;
-    }
-    const actualMoved=qty-remaining;
-    if(actualMoved>0){
-      item.processCounts[toIdx]+=actualMoved;
-      addTx(itemId,'移動',actualMoved,groupActives[groupActives.length-1].idx,toIdx);
-    }
     const dispName=`${GRP_LABELS[groupStart-1]}〜${GRP_LABELS[groupEnd-1]}`;
-    toast(`${actualMoved}個 → ${PNAMES[toIdx]}へ移動（${dispName}まとめ）`,'success');
+    // 品質確認フローへ（通常工程と同じ）
+    const remaining=groupCount-qty;
+    pendingMove={itemId,processIdx:null,opType:'group-move',qty,toIdx,groupActives,groupStart,groupEnd,remaining};
+    pendingQC=null;
     closeModal('op-modal');
-    pendingOp=null;
-    saveDb();
-    renderField();
-    if(currentMode==='admin') renderAdmin();
+    if(remaining<=0){
+      // 残在庫ゼロ → 品質入力スキップして即移動
+      executeMoveWithQuality(qty,0);
+      return;
+    }
+    gid('qc-info').innerHTML=`<strong>${escH(item.name)}</strong>（${dispName}）：移動後の残在庫 <strong>${remaining}</strong>${escH(item.unit)}`;
+    gid('qc-desc').textContent='不良の数量を入力してください（残りは良品になります）';
+    gid('qc-select-btns').style.display='none';
+    gid('qc-defect-group').style.display='';
+    gid('qc-success').style.display='none';
+    gid('qc-cancel-row').style.display='flex';
+    gid('qc-defect-qty').value=0;
+    updateQcBreakdown();
+    gid('quality-check-modal').classList.add('open');
     return;
   }
 
@@ -2138,13 +3544,13 @@ function confirmOp(){
     item.processCounts[processIdx]-=qty;
     if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-qty);
     item.defectiveCount+=qty;
-    addTx(itemId,'不良',qty,processIdx,null);
+    addTx(itemId,'不良',qty,processIdx,null,'',_getOpMachine());
     toast(`${qty}${item.unit} を不良処理しました`,'success');
   } else if(opType==='ship'){
     item.processCounts[processIdx]-=qty;
     if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-qty);
     item.shippedCount+=qty;
-    addTx(itemId,'出荷',qty,processIdx,null);
+    addTx(itemId,'出荷',qty,processIdx,null,'',_getOpMachine());
     toast(`${qty}${item.unit} を出荷しました`,'success');
   }
   closeModal('op-modal');
@@ -2222,9 +3628,9 @@ function addQcDefect(n){
   if(pendingMove) max=pendingMove.remaining||0;
   else if(pendingQC){
     const item=db.items.find(i=>i.id===pendingQC.itemId);
-    max=item?item.processCounts[pendingQC.processIdx]:9999;
-  } else max=9999;
-  inp.value=Math.max(0,Math.min(max,parseInt(inp.value||0)+n));
+    max=item?item.processCounts[pendingQC.processIdx]:99999;
+  } else max=99999;
+  inp.value=Math.min(max, sanitizeQty(sanitizeQty(inp.value)+n));
   updateQcBreakdown();
 }
 
@@ -2290,7 +3696,7 @@ function confirmQualityDefect(){
     const srcCfg=item.processConfig[processIdx];
     if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-defectQty);
     item.defectiveCount+=defectQty;
-    addTx(pendingQC.itemId,'不良',defectQty,processIdx,null);
+    addTx(pendingQC.itemId,'不良',defectQty,processIdx,null,'',currentMachine);
     renderField();
     if(currentMode==='admin') renderAdmin();
     gid('qc-select-btns').style.display='none';
@@ -2304,28 +3710,63 @@ function confirmQualityDefect(){
 
 function executeMoveWithQuality(moveQty,defectQty){
   if(!pendingMove) return;
-  const {itemId,processIdx,toIdx}=pendingMove;
+  const {itemId,processIdx,toIdx,opType}=pendingMove;
   const item=db.items.find(i=>i.id===itemId);
   if(!item) return;
-  const srcCfg=item.processConfig[processIdx];
-  const dstCfg=item.processConfig[toIdx];
 
-  item.processCounts[processIdx]-=moveQty+defectQty;
-  item.processCounts[toIdx]+=moveQty;
-  if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-(moveQty+defectQty));
-  if(dstCfg?.type==='done') item.doneCount+=moveQty;
-  if(defectQty>0){
-    item.defectiveCount+=defectQty;
-    addTx(itemId,'不良',defectQty,processIdx,null);
+  if(opType==='group-move'){
+    // まとめ工程: 後ろから消費して移動 + 不良処理
+    const {groupActives,groupStart,groupEnd}=pendingMove;
+    const dispName=`${GRP_LABELS[groupStart-1]}〜${GRP_LABELS[groupEnd-1]}`;
+    // moveQty を後ろの工程から消費
+    let toMove=moveQty;
+    const ordered=[...groupActives].reverse();
+    for(const a of ordered){
+      const take=Math.min(toMove,item.processCounts[a.idx]);
+      item.processCounts[a.idx]-=take;
+      toMove-=take;
+      if(toMove<=0) break;
+    }
+    item.processCounts[toIdx]+=moveQty;
+    addTx(itemId,'移動',moveQty,groupActives[groupActives.length-1].idx,toIdx,'',currentMachine);
+    // 不良処理: 後ろから消費
+    if(defectQty>0){
+      let toDef=defectQty;
+      for(const a of ordered){
+        const take=Math.min(toDef,item.processCounts[a.idx]);
+        item.processCounts[a.idx]-=take;
+        toDef-=take;
+        if(toDef<=0) break;
+      }
+      item.defectiveCount+=defectQty;
+      addTx(itemId,'不良',defectQty,groupActives[groupActives.length-1].idx,null,'',currentMachine);
+    }
+    const dstCfg=item.processConfig[toIdx];
+    if(dstCfg?.type==='done') item.doneCount+=moveQty;
+    const msg=defectQty>0
+      ?`${moveQty}個 → ${PNAMES[toIdx]}へ移動・不良${defectQty}個処理（${dispName}）`
+      :`${moveQty}個 → ${PNAMES[toIdx]}へ移動（${dispName}）`;
+    toast(msg,'success');
+  } else {
+    // 通常工程
+    const srcCfg=item.processConfig[processIdx];
+    const dstCfg=item.processConfig[toIdx];
+    item.processCounts[processIdx]-=moveQty+defectQty;
+    item.processCounts[toIdx]+=moveQty;
+    if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-(moveQty+defectQty));
+    if(dstCfg?.type==='done') item.doneCount+=moveQty;
+    if(defectQty>0){
+      item.defectiveCount+=defectQty;
+      addTx(itemId,'不良',defectQty,processIdx,null,'',currentMachine);
+    }
+    addTx(itemId,'移動',moveQty,processIdx,toIdx,'',currentMachine);
+    const msg=defectQty>0
+      ?`${moveQty}個 → ${PNAMES[toIdx]}へ移動・不良${defectQty}個処理`
+      :`${moveQty}個 → ${PNAMES[toIdx]}へ移動（全数良品）`;
+    toast(msg,'success');
   }
-  addTx(itemId,'移動',moveQty,processIdx,toIdx);
 
-  const remaining=pendingMove.remaining||0;
-  const msg=defectQty>0
-    ?`${moveQty}個 → ${PNAMES[toIdx]}へ移動・不良${defectQty}個処理`
-    :`${moveQty}個 → ${PNAMES[toIdx]}へ移動（全数良品）`;
-  toast(msg,'success');
-
+  saveDb();
   closeModal('confirm-modal');
   closeModal('quality-check-modal');
   pendingMove=null;
@@ -2368,7 +3809,7 @@ function cancelAll(){
 }
 
 // ADMIN
-function renderAdmin(){ renderAdminStats(); renderAdminTable(); renderAdminCards(); }
+function renderAdmin(){ renderAdminStats(); renderAdminTable(); renderAdminCards(); if(gid('nippo-panel').classList.contains('open')){_buildNippoFilters();renderNippo();} }
 function renderAdminStats(){
   const tS=db.items.reduce((s,i)=>s+getTotalStock(i),0);
   const tD=db.items.reduce((s,i)=>s+i.doneCount,0);
@@ -2376,15 +3817,15 @@ function renderAdminStats(){
   const tDf=db.items.reduce((s,i)=>s+i.defectiveCount,0);
   gid('admin-stats').innerHTML=`
     <div class="stat-card"><div class="stat-card-label">品目数</div><div class="stat-card-value blue">${db.items.length}</div></div>
-    <div class="stat-card"><div class="stat-card-label">仕掛在庫</div><div class="stat-card-value blue">${tS}</div></div>
-    <div class="stat-card"><div class="stat-card-label">完成</div><div class="stat-card-value done-c">${tD}</div></div>
-    <div class="stat-card"><div class="stat-card-label">出荷済</div><div class="stat-card-value teal">${tSh}</div></div>
-    <div class="stat-card"><div class="stat-card-label">不良</div><div class="stat-card-value red">${tDf}</div></div>
+    <div class="stat-card"><div class="stat-card-label">仕掛在庫</div><div class="stat-card-value blue">${formatQty(tS)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">完成</div><div class="stat-card-value done-c">${formatQty(tD)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">出荷済</div><div class="stat-card-value teal">${formatQty(tSh)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">不良</div><div class="stat-card-value red">${formatQty(tDf)}</div></div>
     <div class="stat-card"><div class="stat-card-label">直行率</div><div class="stat-card-value amber">${tSh>0?((tSh/(tSh+tDf))*100).toFixed(1):100}%</div></div>
   `;
 }
 function renderAdminTable(){
-  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase())||(it.maker||'').includes(adminFilter));
+  let items=db.items.filter(it=>matchesFilter(it,adminFilter));
   if(adminSortKey){
     items=[...items].sort((a,b)=>{
       const va=adminSortKey==='code'?a.code:adminSortKey==='name'?a.name:adminSortKey==='defective'?a.defectiveCount:adminSortKey==='done'?a.doneCount:a.shippedCount;
@@ -2397,24 +3838,24 @@ function renderAdminTable(){
     const cols=item.processConfig.map((c,i)=>{
       if(!c.active) return `<td style="text-align:center"><span class="process-cell num-zero">—</span></td>`;
       const cls=c.type==='deburr'?' deburr':c.type==='done'?' done-cell':'';
-      return `<td style="text-align:center"><span class="process-cell${cls}">${item.processCounts[i]}</span></td>`;
+      return `<td style="text-align:center"><span class="process-cell${cls}">${formatQty(item.processCounts[i])}</span></td>`;
     }).join('');
     return `<tr>
       <td class="mono">${escH(item.code)}</td><td>${escH(item.name)}</td><td style="color:var(--text2)">${escH(item.maker||'')}</td>
       ${cols}
-      <td class="num num-done">${item.doneCount}</td>
-      <td class="num ${item.defectiveCount>0?'num-red':''}">${item.defectiveCount}</td>
-      <td class="num num-teal">${item.shippedCount}</td>
-      <td class="num num-blue">${total}</td>
+      <td class="num num-done">${formatQty(item.doneCount)}</td>
+      <td class="num ${item.defectiveCount>0?'num-red':''}">${formatQty(item.defectiveCount)}</td>
+      <td class="num num-teal">${formatQty(item.shippedCount)}</td>
+      <td class="num num-blue">${formatQty(total)}</td>
       <td><button class="action-btn" onclick="openItemFormEdit('${item.id}')">編集</button></td>
     </tr>`;
   }).join('');
 }
-function filterAdmin(v){ adminFilter=v; renderAdminTable(); renderAdminCards(); }
+function filterAdmin(v){ adminFilter=v.trim(); renderAdminTable(); renderAdminCards(); }
 function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminTable(); renderAdminCards(); }
 
 function renderAdminCards(){
-  let items=db.items.filter(it=>!adminFilter||it.name.includes(adminFilter)||it.code.toLowerCase().includes(adminFilter.toLowerCase())||(it.maker||'').includes(adminFilter));
+  let items=db.items.filter(it=>matchesFilter(it,adminFilter));
   gid('admin-cards').innerHTML=items.map(item=>{
     const total=getTotalStock(item);
     const procs=item.processConfig.map((c,i)=>{
@@ -2423,30 +3864,53 @@ function renderAdminCards(){
       const label=c.type==='deburr'?`バリ取り`:c.type==='done'?`完成`:PNAMES[i];
       return `<div class="acard-proc${cls}">
         <div class="acard-proc-label">${label}</div>
-        <div class="acard-proc-val">${item.processCounts[i]}</div>
+        <div class="acard-proc-val">${formatQty(item.processCounts[i])}</div>
       </div>`;
     }).join('');
+    // 今日の設備別サマリー計算
+    const todayMachineMap = getTodayMachineMap(item.id);
+    const machineRows = Object.entries(todayMachineMap).map(([m,entry])=>{
+      const mLabel    = m||'—';
+      const mCls      = m ? '' : ' no-machine';
+      const ops       = entry.ops;
+      const totalQty  = ops.reduce((s,o)=>s+o.qty,0);
+      const hasDefect = ops.some(o=>o.type==='不良');
+      const stCls     = hasDefect ? 'ng' : 'ok';
+      const stLabel   = hasDefect ? 'NG' : 'OK';
+      const procLabel = fmtProcs(entry.procs);
+      const procHtml  = procLabel ? `<span class="acard-machine-proc">（${escH(procLabel)}）</span>` : '';
+      return `<div class="acard-machine-row${mCls}">
+        <span class="acard-machine-label">${escH(mLabel)}</span>
+        <span class="acard-machine-sep">｜</span>
+        <span class="acard-machine-detail">${escH(item.name)}（${escH(item.code)}）${totalQty.toLocaleString()}個${procHtml}</span>
+        <span class="acard-machine-status ${stCls}">${stLabel}</span>
+      </div>`;
+    }).join('');
+    const machineSection = machineRows
+      ? `<div style="margin-bottom:6px"><div style="font-size:9px;color:var(--text3);font-weight:600;margin-bottom:4px;letter-spacing:0.4px">🔧 本日使用設備</div>${machineRows}</div>`
+      : '';
     return `<div class="admin-card" id="acard-${item.id}">
       <div class="admin-card-header" onclick="toggleAdminCard('${item.id}')">
         <span class="item-code">${escH(item.code)}</span>
         <span class="item-name" style="flex:1">${escH(item.name)}${item.maker?`<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">${escH(item.maker)}</span>`:''}</span>
-        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent)">${total}</span>
+        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent)">${formatQty(total)}</span>
         <span class="expand-icon">▼</span>
       </div>
       <div class="admin-card-body">
+        ${machineSection}
         <div class="acard-processes">${procs}</div>
         <div class="acard-stats">
           <div class="acard-stat">
             <div class="acard-stat-label">完成</div>
-            <div class="acard-stat-val">${item.doneCount}</div>
+            <div class="acard-stat-val">${formatQty(item.doneCount)}</div>
           </div>
           <div class="acard-stat">
             <div class="acard-stat-label">不良</div>
-            <div class="acard-stat-val red">${item.defectiveCount}</div>
+            <div class="acard-stat-val red">${formatQty(item.defectiveCount)}</div>
           </div>
           <div class="acard-stat">
             <div class="acard-stat-label">出荷済</div>
-            <div class="acard-stat-val teal">${item.shippedCount}</div>
+            <div class="acard-stat-val teal">${formatQty(item.shippedCount)}</div>
           </div>
         </div>
         <button class="acard-edit-btn" onclick="openItemFormEdit('${item.id}')">✏️ 編集</button>
@@ -2463,21 +3927,428 @@ function showHistory(){
     const typeMap={入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
     gid('history-list-admin').innerHTML=db.transactions.slice(0,50).map(tx=>{
       const item=db.items.find(i=>i.id===tx.itemId);
-      let desc=(item?item.name:'不明')+'：';
-      if(tx.type==='移動') desc+=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
-      else if(tx.type==='入庫') desc+=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
-      else if(tx.type==='出荷') desc+=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
-      else if(tx.type==='不良') desc+=`${PNAMES[tx.fromProcess]||'?'}から不良`;
-      else if(tx.type==='修正') desc+=`${PNAMES[tx.fromProcess]||'?'} 調整${tx.note?'('+tx.note+')':''}`;
+      const itemName=item?item.name:'不明';
+      // 状態テキスト（/ 以降）
+      let stateText='';
+      if(tx.type==='移動') stateText=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
+      else if(tx.type==='入庫') stateText=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
+      else if(tx.type==='出荷') stateText=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
+      else if(tx.type==='不良') stateText=`${PNAMES[tx.fromProcess]||'?'}から不良`;
+      else if(tx.type==='修正') stateText=`${PNAMES[tx.fromProcess]||'?'} 調整${tx.note?'('+tx.note+')':''}`;
+      // 表示形式: 設備名｜品名　数量 / 状態
+      const machineName = tx.machine||'';
+      const machineCls  = machineName ? '' : ' none';
+      const machineLabel= machineName || '—';
       return `<div class="history-item">
+        <span class="history-machine${machineCls}">${escH(machineLabel)}</span>
         <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
-        <span class="history-desc">${escH(desc)}</span>
-        <span class="history-qty">${tx.quantity}</span>
+        <span class="history-desc">${escH(itemName)}　${tx.quantity}個 / ${escH(stateText)}</span>
         <span class="history-user" style="color:var(--text3);font-size:9px;flex-shrink:0;white-space:nowrap">${escH(tx.userId||'')}</span>
         <span class="history-time">${tx.timestamp}</span>
       </div>`;
     }).join('')||'<div style="padding:14px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
   }
+}
+
+
+// ===== 日報パネル =====
+const TYPE_MAP_NIPPO = {入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
+
+// 今日のトランザクションを設備ごとにまとめるヘルパー
+// 工程番号 → 丸数字シンボル
+const PROC_SYMS = ['①','②','③','④','⑤','⑥','バリ','完'];
+
+// Set<number> → "①〜③"（連続）or "①・③・⑤"（非連続）
+function fmtProcs(procSet){
+  if(!procSet || procSet.size===0) return '';
+  const arr = [...procSet].sort((a,b)=>a-b);
+  const sym = i => PROC_SYMS[i] !== undefined ? PROC_SYMS[i] : String(i+1);
+  if(arr.length === 1) return sym(arr[0]);
+  // 連続判定
+  let isSeq = true;
+  for(let i=1;i<arr.length;i++){ if(arr[i]!==arr[i-1]+1){isSeq=false;break;} }
+  return isSeq
+    ? `${sym(arr[0])}〜${sym(arr[arr.length-1])}`
+    : arr.map(sym).join('・');
+}
+
+function getTodayMachineMap(itemId){
+  const txs = db.transactions.filter(tx=>
+    tx.itemId===itemId && _isTodayTx(tx)
+  );
+  // machine → {ops:[{type,qty}], procs:Set<number>}
+  const map = {};
+  txs.forEach(tx=>{
+    const m = tx.machine||'';
+    if(!map[m]) map[m]={ops:[], procs:new Set()};
+    map[m].ops.push({type:tx.type, qty:tx.quantity});
+    if(tx.fromProcess != null) map[m].procs.add(tx.fromProcess);
+    if(tx.toProcess   != null) map[m].procs.add(tx.toProcess);
+  });
+  return map;
+}
+
+// タイムスタンプが今日かどうか（hh:mm:ss 形式なので日付は別途記録が必要）
+// → db.transactions に date フィールドがなく時刻のみのため、起動日＝今日として扱う
+// → localStorage に今日の日付を記録して比較する方式を採用
+const _TODAY_KEY = 'nippo_today';
+function _getTodayDate(){ return new Date().toLocaleDateString('ja-JP'); }
+function _isTodayTx(tx){
+  // tx に dateStr がある場合はそれを使う（新規記録分）
+  if(tx.dateStr) return tx.dateStr === _getTodayDate();
+  // 旧データはセッション内（ページ再ロード後はリセットされる）とみなす
+  // → 起動時に記録したトランザクションIDセットを参照
+  return _sessionTxIds && _sessionTxIds.has(tx.id);
+}
+
+
+// ===== 日報: 日付ピッカー対応 =====
+let _nippoPicking = ''; // '' = 今日, 'YYYY/M/D' = 過去日
+
+function _dateToLocalStr(d){ return d.toLocaleDateString('ja-JP'); }
+function _isoToLocalStr(iso){
+  const [y,m,d] = iso.split('-');
+  return _dateToLocalStr(new Date(+y, +m-1, +d));
+}
+function _localStrToIso(ls){
+  // ja-JP localeDateString は "2026/4/4" 形式
+  const parts = ls.split('/');
+  if(parts.length !== 3) return '';
+  const [y,m,d] = parts;
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function onNippoDateChange(){
+  const inp = gid('nippo-date-picker');
+  if(!inp || !inp.value){ _nippoPicking = ''; }
+  else { _nippoPicking = _isoToLocalStr(inp.value); }
+  _buildNippoFilters();
+  renderNippo();
+}
+function onNippoToday(){
+  _nippoPicking = '';
+  const inp = gid('nippo-date-picker');
+  if(inp) inp.value = '';
+  _buildNippoFilters();
+  renderNippo();
+}
+
+// _isTodayTx を日付ピッカー対応に拡張
+function _isTargetDateTx(tx){
+  const target = _nippoPicking || _getTodayDate();
+  if(tx.dateStr) return tx.dateStr === target;
+  if(_nippoPicking) return false; // 過去日は dateStr がないと判断不能
+  return _sessionTxIds && _sessionTxIds.has(tx.id);
+}
+
+// ===== カードヘッダー: 品目の当日最終使用設備を返す =====
+function getLastMachineForItem(itemId){
+  const txs = db.transactions.filter(tx => tx.itemId===itemId && _isTodayTx(tx) && tx.machine);
+  if(!txs.length) return '';
+  return txs[0].machine; // unshift で追加しているので[0]が最新
+}
+
+// ===== 入庫エリア: 設備チップHTML生成 =====
+function _buildRecvChipsHtml(itemId){
+  // MACHINE_PRESTSから最初の6個 + 「なし」
+  const presets = MACHINE_PRESETS.slice(0, 6);
+  const cur = currentMachine;
+  const chips = presets.map(m =>
+    `<span class="recv-chip${cur===m?' selected':''}" onclick="selectRecvMachine(this,'${m.replace(/'/g,"\\'")}','${itemId}')">${m}</span>`
+  ).join('');
+  const noneSelected = !cur ? ' selected' : '';
+  return `<span class="recv-chip none-chip${noneSelected}" onclick="selectRecvMachine(this,'','${itemId}')">なし</span>${chips}`;
+}
+
+function selectRecvMachine(el, name, itemId){
+  // 同じ入庫エリア内のチップを全解除
+  const container = el.closest('.recv-machine-chips');
+  if(container) container.querySelectorAll('.recv-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  // グローバル設備も更新（この入庫操作だけでなく以降の操作にも反映）
+  currentMachine = name;
+  localStorage.setItem('inv_machine', name);
+  _updateMachineBadge();
+  // 他の入庫チップ欄も同期
+  document.querySelectorAll('.recv-machine-chips').forEach(cont=>{
+    if(cont === container) return;
+    cont.querySelectorAll('.recv-chip').forEach(c=>{
+      const isNone = c.classList.contains('none-chip');
+      c.classList.toggle('selected', isNone ? !name : c.textContent===name);
+    });
+  });
+  // op-modal チップも同期
+  _renderOpMachineChips();
+}
+
+// セッション中に記録されたTx IDセット（宣言はスクリプト先頭に移動済み）
+function _initSessionTxIds(){
+  const key = 'nippo_session_ids_' + _getTodayDate();
+  try{
+    const raw = sessionStorage.getItem(key);
+    _sessionTxIds = raw ? new Set(JSON.parse(raw)) : new Set();
+  }catch(e){ _sessionTxIds = new Set(); }
+}
+function _addSessionTxId(id){
+  if(!_sessionTxIds) return;
+  _sessionTxIds.add(id);
+  const key = 'nippo_session_ids_' + _getTodayDate();
+  try{ sessionStorage.setItem(key, JSON.stringify([..._sessionTxIds])); }catch(e){}
+}
+_initSessionTxIds();
+
+function showNippo(){
+  const panel  = gid('nippo-panel');
+  const btn    = gid('nippo-toggle-btn');
+  const isOpen = panel.classList.toggle('open');
+  if(btn) btn.style.fontWeight = isOpen ? '800' : '';
+  if(isOpen){
+    if(!_nippoPicking){
+      const picker=gid('nippo-date-picker');
+      if(picker) picker.value=_localStrToIso(_getTodayDate());
+    }
+    _buildNippoFilters();
+    renderNippo();
+  }
+}
+
+function _buildNippoFilters(){
+  // 今日のTx一覧
+  const txs = _getTodayTxs();
+  // 設備フィルター
+  const machines = [...new Set(txs.map(tx=>tx.machine||''))].sort();
+  const mSel = gid('nippo-machine-filter');
+  const mCur = mSel.value;
+  mSel.innerHTML = '<option value="">全設備</option>' +
+    machines.map(m=>`<option value="${escH(m||'—')}"${mCur===(m||'—')?'selected':''}>${escH(m||'—（設備なし）')}</option>`).join('');
+  // 作業者フィルター
+  const users = [...new Set(txs.map(tx=>tx.userId||''))].filter(Boolean).sort();
+  const uSel = gid('nippo-user-filter');
+  const uCur = uSel.value;
+  uSel.innerHTML = '<option value="">全作業者</option>' +
+    users.map(u=>`<option value="${escH(u)}"${uCur===u?'selected':''}>${escH(u)}</option>`).join('');
+  // 日付ラベル
+  // 日付ピッカーの初期値セット
+  const picker = gid('nippo-date-picker');
+  if(picker && !_nippoPicking) picker.value = _localStrToIso(_getTodayDate());
+}
+
+function _getTodayTxs(){
+  return db.transactions.filter(tx => _isTargetDateTx(tx));
+}
+
+function renderNippo(){
+  const el = gid('nippo-list'); if(!el) return;
+  const machineFilter = (gid('nippo-machine-filter')||{value:''}).value;
+  const userFilter    = (gid('nippo-user-filter')||{value:''}).value;
+  const typeFilter    = (gid('nippo-type-filter')||{value:''}).value;
+
+  let txs = _getTodayTxs();
+  if(machineFilter) txs = txs.filter(tx=>(tx.machine||'—')===machineFilter);
+  if(userFilter)    txs = txs.filter(tx=>tx.userId===userFilter);
+  if(typeFilter)    txs = txs.filter(tx=>tx.type===typeFilter);
+
+  if(!txs.length){
+    el.innerHTML = '<div class="nippo-empty">本日の操作履歴がありません</div>';
+    return;
+  }
+
+  // 設備ごとにグループ化（設備なし → "—"）
+  const grouped = {};
+  txs.forEach(tx=>{
+    const m = tx.machine||'—';
+    if(!grouped[m]) grouped[m]=[];
+    grouped[m].push(tx);
+  });
+
+  // 設備名ソート（名前順、"—" は末尾）
+  const sortedMachines = Object.keys(grouped).sort((a,b)=>{
+    if(a==='—') return 1; if(b==='—') return -1;
+    return a.localeCompare(b,'ja');
+  });
+
+
+  // 設備別集計バー
+  const summaryBar = gid('nippo-summary-bar');
+  if(summaryBar){
+    if(!txs.length){ summaryBar.innerHTML=''; }
+    else{
+      const allGrouped = {};
+      txs.forEach(tx=>{ const m=tx.machine||'—'; if(!allGrouped[m])allGrouped[m]=0; allGrouped[m]+=tx.quantity; });
+      const allSorted = Object.keys(allGrouped).sort((a,b)=>a==='—'?1:b==='—'?-1:a.localeCompare(b,'ja'));
+      const totalQty = txs.reduce((s,tx)=>s+tx.quantity,0);
+      summaryBar.innerHTML =
+        `<span style="font-weight:700;color:var(--text2)">合計 ${totalQty}個 / ${txs.length}件</span>` +
+        allSorted.map(m=>`<span class="nippo-summary-item"><span class="nippo-summary-machine">${escH(m)}</span><span class="nippo-summary-cnt">${allGrouped[m]}個</span></span>`).join('');
+    }
+  }
+
+    el.innerHTML = sortedMachines.map(machine=>{
+    const mTxs  = grouped[machine];
+    const total = mTxs.reduce((s,tx)=>s+tx.quantity,0);
+    const isMachine = machine!=='—';
+    const tagCls = isMachine ? '' : ' none';
+    const rows = mTxs.map(tx=>{
+      const item = db.items.find(i=>i.id===tx.itemId);
+      const itemName = item?item.name:'不明';
+      let stateText='';
+      if(tx.type==='移動') stateText=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
+      else if(tx.type==='入庫') stateText=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
+      else if(tx.type==='出荷') stateText=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
+      else if(tx.type==='不良') stateText=`${PNAMES[tx.fromProcess]||'?'}から不良`;
+      else if(tx.type==='修正') stateText=`調整${tx.note?'('+tx.note+')':''}`;
+      return `<div class="nippo-row">
+        <span class="nippo-machine-tag${tagCls}">${escH(machine)}</span>
+        <span class="nippo-sep">｜</span>
+        <span class="nippo-item-name">${escH(itemName)}</span>
+        <span class="nippo-qty">${tx.quantity}個</span>
+        <span class="nippo-sep">/</span>
+        <span class="nippo-status">${escH(stateText)}</span>
+        <span class="nippo-type-tag type-${TYPE_MAP_NIPPO[tx.type]||'move'}">${tx.type}</span>
+        <span class="nippo-user">${escH(tx.userId||'')}</span>
+        <span class="nippo-time">${tx.timestamp}</span>
+      </div>`;
+    }).join('');
+
+    const headTag = isMachine
+      ? `<span class="nippo-machine-name">🔧 ${escH(machine)}</span>`
+      : `<span class="nippo-machine-name" style="color:var(--text3)">— 設備未設定</span>`;
+
+    return `<div class="nippo-machine-group no-break">
+      <div class="nippo-machine-head">
+        ${headTag}
+        <span class="nippo-machine-count">${mTxs.length}件</span>
+        <span class="nippo-machine-total">計 ${total}個</span>
+      </div>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+function exportNippoCsv(){
+  const txs = _getTodayTxs(); // _isTargetDateTx 経由で日付ピッカーに対応済み
+  if(!txs.length){ toast('本日の操作データがありません','error'); return; }
+  const headers = ['日付','時刻','設備名','作業者','品番','品名','操作','数量','詳細'];
+  const today   = _nippoPicking || _getTodayDate();
+  const rows    = txs.map(tx=>{
+    const item  = db.items.find(i=>i.id===tx.itemId);
+    let detail  = '';
+    if(tx.type==='移動') detail=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
+    else if(tx.type==='入庫') detail=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
+    else if(tx.type==='出荷') detail=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
+    else if(tx.type==='不良') detail=`${PNAMES[tx.fromProcess]||'?'}から不良`;
+    else if(tx.type==='修正') detail=tx.note||'調整';
+    return [
+      today,
+      tx.timestamp||'',
+      tx.machine||'',
+      tx.userId||'',
+      item?item.code:'',
+      item?item.name:'不明',
+      tx.type,
+      tx.quantity,
+      detail
+    ];
+  });
+  const csv = [headers,...rows]
+    .map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `日報_${today.replace(/\//g,'-')}.csv`; // 日付ピッカー選択日をファイル名に使用
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('日報CSVをエクスポートしました','success');
+}
+
+// ===== 日報 PDF出力 =====
+function exportNippoPdf(){
+  const el = gid('reportArea'); if(!el) return;
+  const txs = _getTodayTxs();
+  if(!txs.length){ toast('出力するデータがありません','error'); return; }
+
+  const btn = gid('nippo-pdf-btn');
+  if(btn){ btn.disabled = true; btn.textContent = '生成中…'; }
+
+  // ── 日付・作業者を取得 ──
+  const dateStr   = _nippoPicking || _getTodayDate();
+  const userFilter= (gid('nippo-user-filter')||{value:''}).value;
+  const userLabel = userFilter || currentUser || '全作業者';
+  const totalQty  = txs.reduce((s,tx)=>s+tx.quantity, 0);
+
+  // ── ファイル名: 日報_2026-04-04_作業者.pdf ──
+  const datePart = dateStr.replace(/\//g,'-').replace(/(\d+)-(\d+)-(\d+)/, (_,y,m,d)=>
+    `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`
+  );
+  const userPart = userLabel.replace(/[\s\\/:*?"<>|]/g,'_');
+  const filename  = `日報_${datePart}_${userPart}.pdf`;
+
+  // ── タイトルブロックを一時表示してメタ情報を埋める ──
+  const titleEl = gid('pdf-print-title');
+  if(titleEl) titleEl.style.display = 'block';
+  const _set = (id, val) => { const e=gid(id); if(e) e.textContent=val; };
+  _set('pdf-meta-date',  dateStr);
+  _set('pdf-meta-user',  userLabel);
+  _set('pdf-meta-count', txs.length + '件');
+  _set('pdf-meta-qty',   totalQty.toLocaleString() + '個');
+  _set('pdf-title-generated', '出力：' + new Date().toLocaleString('ja-JP'));
+
+  // ── overflow:hidden の祖先要素を一時的に visible へ ──
+  // html2canvas は親要素の overflow:hidden でコンテンツをクリップするため全解除
+  const clipped = [];
+  let node = el.parentElement;
+  while(node && node !== document.body){
+    const ov  = getComputedStyle(node).overflow;
+    const ovY = getComputedStyle(node).overflowY;
+    if(ov === 'hidden' || ovY === 'hidden'){
+      clipped.push({ el: node, overflow: node.style.overflow, overflowY: node.style.overflowY });
+      node.style.overflow  = 'visible';
+      node.style.overflowY = 'visible';
+    }
+    node = node.parentElement;
+  }
+
+  // ── sticky を解除（html2canvas 非対応）──
+  el.querySelectorAll('.nippo-machine-head').forEach(h=>{
+    h.dataset._pos = h.style.position;
+    h.style.position = 'relative';
+  });
+
+  const opt = {
+    margin:      [10, 10, 10, 10],
+    filename:    filename,
+    image:       { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale:           1.5,        // 横幅収まり優先で1.5に設定
+      useCORS:         true,
+      logging:         false,
+      backgroundColor: '#ffffff',
+      scrollY:         0
+    },
+    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'landscape' },
+    pagebreak:   {
+      mode:  ['css', 'legacy'],    // legacyでhtml2pdf自身の改ページ処理を有効化
+      avoid: ['.no-break']         // .no-breakクラスで要素単位の分断を防ぐ
+    }
+  };
+
+  html2pdf().set(opt).from(el).save()
+    .then(()=>{ toast('PDFを出力しました：' + filename, 'success'); })
+    .catch(()=>{ toast('PDF出力に失敗しました','error'); })
+    .finally(()=>{
+      // overflow を元に戻す
+      clipped.forEach(c=>{
+        c.el.style.overflow  = c.overflow;
+        c.el.style.overflowY = c.overflowY;
+      });
+      if(titleEl) titleEl.style.display = 'none';
+      el.querySelectorAll('.nippo-machine-head').forEach(h=>{
+        h.style.position = h.dataset._pos || '';
+        delete h.dataset._pos;
+      });
+      if(btn){ btn.disabled = false; btn.textContent = '⬇ PDF'; }
+    });
 }
 
 // ===== まとめ工程フォーム管理 =====
@@ -2622,7 +4493,7 @@ function confirmAdjust(){
   const old=item.processCounts[procIdx];
   item.processCounts[procIdx]=qty;
   if(item.processConfig[procIdx]?.type==='done') item.doneCount=qty;
-  addTx(item.id,'修正',Math.abs(qty-old),procIdx,procIdx,reason);
+  addTx(item.id,'修正',Math.abs(qty-old),procIdx,procIdx,reason,'');
   saveDb();
   toast(`在庫調整：${item.name} ${PNAMES[procIdx]} ${old}→${qty}`,'success');
   closeModal('adjust-modal'); renderAdmin();
@@ -2650,14 +4521,1026 @@ function toast(msg,type='success'){
   gid('toast-container').appendChild(el); setTimeout(()=>el.remove(),3000);
 }
 
+// ===== 出荷スケジュール モーダル（ページ遷移なし・SPA内完結）=====
+function openShipScheduleModal(){
+  saveUnifiedDb();
+  gid('ship-schedule-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  shipInit();
+}
+function closeShipScheduleModal(){
+  gid('ship-schedule-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  syncFromShipDb(); // 出荷側の変更を取り込む
+  if(currentMode === 'field') renderField(); else renderAdmin();
+}
+
 renderField();
 
 // 初期化：ユーザー名セット＆未設定なら選択モーダルを開く
 gid('current-user').textContent = currentUser || '名前未設定';
+_updateMachineBadge();
 if(!currentUser) openUserModal();
 
-// 不良数入力フィールドのリアルタイム更新
-gid('qc-defect-qty').addEventListener('input',()=>{ updateQcBreakdown(); });
+// ===== 入力バリデーション: inputイベントで sanitizeQty を強制適用 =====
+gid('op-qty').addEventListener('input', function(){
+  const max = sanitizeQty(this.max || 99999);
+  this.value = Math.min(max, sanitizeQty(this.value));
+  updateOpConfirmState();
+});
+gid('qc-defect-qty').addEventListener('input', function(){
+  let max;
+  if(pendingMove) max = pendingMove.remaining || 0;
+  else if(pendingQC){
+    const item = db.items.find(i=>i.id===pendingQC.itemId);
+    max = item ? item.processCounts[pendingQC.processIdx] : 99999;
+  } else max = 99999;
+  this.value = Math.min(max, sanitizeQty(this.value));
+  updateQcBreakdown();
+});
+// 入庫 qty-display input バリデーションは動的に生成されるため、イベント委譲で処理
+document.addEventListener('input', function(e){
+  if(e.target.classList.contains('qty-display')){
+    const v = sanitizeQty(e.target.value);
+    if(parseInt(e.target.value) !== v) e.target.value = v;
+  }
+});
+
+// ===== 出荷スケジュール 埋め込みJS =====
+const shipToday = new Date();
+
+/* ========== DATA ==========
+   ルール:
+   - process[0..5] = 工程①〜⑥ → すべて仕掛品(WIP)
+   - stock = 完成品（工程⑥完了操作後のみ加算）
+   - 出荷は stock からのみ減算（仕掛品からの出荷禁止）
+*/
+let CATS=[
+  {id:'A',label:'得意先 AAA',bg:'#dbeafe',tc:'#1e40af',prodId:'i1'},
+  {id:'B',label:'得意先 BBB',bg:'#dcfce7',tc:'#166534',prodId:'i2'},
+  {id:'C',label:'得意先 CCC',bg:'#fef9c3',tc:'#854d0e',prodId:'i3'},
+  {id:'D',label:'得意先 DDD',bg:'#ffe4e6',tc:'#9f1239',prodId:'i4'},
+  {id:'E',label:'得意先 EEE',bg:'#f3e8ff',tc:'#6b21a8',prodId:'i1'},
+  {id:'F',label:'得意先 FFF',bg:'#ffedd5',tc:'#9a3412',prodId:'i2'},
+];
+let catMap=Object.fromEntries(CATS.map(c=>[c.id,c]));
+function rebuildCatMap(){catMap=Object.fromEntries(CATS.map(c=>[c.id,c]));}
+const COLOR_PRESETS=[
+  {name:'青',bg:'#dbeafe',tc:'#1e40af'},{name:'緑',bg:'#dcfce7',tc:'#166534'},
+  {name:'黄',bg:'#fef9c3',tc:'#854d0e'},{name:'赤',bg:'#ffe4e6',tc:'#9f1239'},
+  {name:'紫',bg:'#f3e8ff',tc:'#6b21a8'},{name:'橙',bg:'#ffedd5',tc:'#9a3412'},
+  {name:'水',bg:'#cffafe',tc:'#155e75'},{name:'桃',bg:'#fce7f3',tc:'#9d174d'},
+  {name:'灰',bg:'#f1f5f9',tc:'#334155'},{name:'茶',bg:'#fdf2e9',tc:'#7d4f00'},
+];
+
+// PRODUCTS は unified_db（工程管理）から同期される。初期値はフォールバック。
+let PRODUCTS=[
+  {id:'i1',code:'A-001',name:'フランジ部品',stock:150,process:[10,5,8,0,0,0,3]},
+  {id:'i2',code:'B-042',name:'シャフトカラー',stock:80, process:[8,12,0,0,0,0,5]},
+  {id:'i3',code:'C-017',name:'ブラケット',   stock:200,process:[15,10,20,8,5,0,7]},
+  {id:'i4',code:'D-003',name:'スペーサー',   stock:60, process:[5,3,0,0,0,0,2]},
+];
+const prodMap=Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+
+let SHIPS=[
+  {d:[2026,4, 1],cat:'A',item:'製品α-100',qty:120,dest:'東京倉庫',note:'',shipped:false},
+  {d:[2026,4, 1],cat:'D',item:'製品δ-400',qty: 60,dest:'大阪港',  note:'',shipped:false},
+  {d:[2026,4, 2],cat:'B', item:'製品β-200',qty: 80,dest:'名古屋DC',note:'',shipped:false},
+  {d:[2026,4, 3],cat:'C',item:'製品γ-300',qty:200,dest:'福岡倉庫',note:'',shipped:false},
+  {d:[2026,4, 4],cat:'E',  item:'製品ε-500',qty: 50,dest:'仙台倉庫',note:'',shipped:false},
+  {d:[2026,4, 7],cat:'A',item:'製品α-110',qty: 95,dest:'東京倉庫',note:'',shipped:false},
+  {d:[2026,4, 7],cat:'F', item:'製品ζ-600',qty: 30,dest:'札幌DC',  note:'',shipped:false},
+  {d:[2026,4, 8],cat:'B', item:'製品β-210',qty:140,dest:'名古屋DC',note:'',shipped:false},
+  {d:[2026,4, 9],cat:'D',item:'製品δ-410',qty: 75,dest:'大阪港',  note:'',shipped:false},
+  {d:[2026,4,10],cat:'C',item:'製品γ-310',qty:180,dest:'福岡倉庫',note:'',shipped:false},
+  {d:[2026,4,11],cat:'A',item:'製品α-120',qty:110,dest:'東京倉庫',note:'',shipped:false},
+  {d:[2026,4,14],cat:'E',  item:'製品ε-510',qty: 65,dest:'仙台倉庫',note:'',shipped:false},
+  {d:[2026,4,14],cat:'B', item:'製品β-220',qty: 90,dest:'名古屋DC',note:'',shipped:false},
+  {d:[2026,4,15],cat:'F', item:'製品ζ-610',qty: 45,dest:'札幌DC',  note:'',shipped:false},
+  {d:[2026,4,15],cat:'A',item:'製品α-130',qty:130,dest:'東京倉庫',note:'',shipped:false},
+  {d:[2026,4,16],cat:'D',item:'製品δ-420',qty: 88,dest:'大阪港',  note:'',shipped:false},
+  {d:[2026,4,17],cat:'C',item:'製品γ-320',qty:210,dest:'福岡倉庫',note:'',shipped:false},
+  {d:[2026,4,18],cat:'B', item:'製品β-230',qty:160,dest:'名古屋DC',note:'',shipped:false},
+  {d:[2026,4,21],cat:'A',item:'製品α-140',qty:100,dest:'東京倉庫',note:'',shipped:false},
+  {d:[2026,4,21],cat:'E',  item:'製品ε-520',qty: 55,dest:'仙台倉庫',note:'',shipped:false},
+  {d:[2026,4,22],cat:'F', item:'製品ζ-620',qty: 40,dest:'札幌DC',  note:'',shipped:false},
+  {d:[2026,4,23],cat:'D',item:'製品δ-430',qty: 72,dest:'大阪港',  note:'',shipped:false},
+  {d:[2026,4,24],cat:'C',item:'製品γ-330',qty:195,dest:'福岡倉庫',note:'',shipped:false},
+  {d:[2026,4,25],cat:'B', item:'製品β-240',qty:125,dest:'名古屋DC',note:'',shipped:false},
+  {d:[2026,4,28],cat:'A',item:'製品α-150',qty:115,dest:'東京倉庫',note:'',shipped:false},
+  {d:[2026,4,28],cat:'F', item:'製品ζ-630',qty: 35,dest:'札幌DC',  note:'',shipped:false},
+  {d:[2026,4,30],cat:'E',  item:'製品ε-530',qty: 70,dest:'仙台倉庫',note:'',shipped:false},
+];
+
+/* ========== WIP / STOCK LOGIC ==========
+   wip = 工程①〜⑥の合計（仕掛品）
+   getFutureStock = 対象日までの出荷予定を順番に減算した残在庫
+   仕掛品は引当不可・出荷不可
+*/
+const SL=['①','②','③','④','⑤','⑥','バリ取'];
+function getWip(p){return p.process.reduce((a,b)=>a+b,0)}
+// 後方互換のため残す（updateStockInfo等で使用）
+function getReserved(prodId){return SHIPS.filter(s=>!s.shipped&&getShipProdId(s)===prodId).reduce((a,s)=>a+s.qty,0)}
+function getAvailable(prodId){return prodMap[prodId].stock-getReserved(prodId)}
+// prodId解決: s.prodId優先、なければcatMap経由
+function getShipProdId(s){return s.prodId||(catMap[s.cat]&&catMap[s.cat].prodId)||null}
+
+/* ① 未来在庫：対象日までの出荷予定を日付順に減算 */
+function getFutureStock(prodId, targetDate){
+  let stock=prodMap[prodId].stock;
+  const list=SHIPS
+    .filter(s=>!s.shipped&&getShipProdId(s)===prodId)
+    .sort((a,b)=>new Date(a.d[0],a.d[1]-1,a.d[2])-new Date(b.d[0],b.d[1]-1,b.d[2]));
+  list.forEach(s=>{
+    const d=new Date(s.d[0],s.d[1]-1,s.d[2]);
+    if(d<=targetDate) stock-=s.qty;
+  });
+  return stock;
+}
+
+/* ③ 同日出荷の順序考慮：インデックス順に減算して個別判定 */
+function getDayStockMap(targetDate){
+  // prodIdごとの「対象日直前」残在庫を計算
+  const stockBefore={};
+  PRODUCTS.forEach(p=>{
+    let stock=p.stock;
+    SHIPS.filter(s=>!s.shipped&&getShipProdId(s)===p.id)
+      .sort((a,b)=>new Date(a.d[0],a.d[1]-1,a.d[2])-new Date(b.d[0],b.d[1]-1,b.d[2]))
+      .forEach(s=>{
+        const d=new Date(s.d[0],s.d[1]-1,s.d[2]);
+        if(d<targetDate) stock-=s.qty;
+      });
+    stockBefore[p.id]=stock;
+  });
+  return stockBefore;
+}
+
+/* ① + ③ getShipStatus：未来在庫＋同日順序考慮 */
+function getShipStatus(s, stockOverride){
+  const prodId=getShipProdId(s);
+  if(!prodId||!prodMap[prodId])return'ok';
+  const p=prodMap[prodId];
+  const targetDate=new Date(s.d[0],s.d[1]-1,s.d[2]);
+  // stockOverride: 同日処理で外部から渡された在庫値
+  const stock=(stockOverride!==undefined)?stockOverride:getFutureStock(prodId,targetDate);
+  const wip=getWip(p);
+  if(stock>=s.qty)return'ok';
+  if(stock+wip>=s.qty)return'cond';
+  return'ng';
+}
+
+/* ⑤ 不足数取得 */
+function getShortage(s, stockOverride){
+  const prodId=getShipProdId(s);
+  if(!prodId||!prodMap[prodId])return 0;
+  const targetDate=new Date(s.d[0],s.d[1]-1,s.d[2]);
+  const stock=(stockOverride!==undefined)?stockOverride:getFutureStock(prodId,targetDate);
+  return stock-s.qty; // 負なら不足
+}
+
+/* カレンダー用：同日の出荷を順番に処理してステータスを返す */
+function getDayStatuses(shipIndices){  // 同日内の各prodIdのrunning stock（当日開始時点）
+  const firstDate=SHIPS[shipIndices[0]];
+  const targetDate=new Date(firstDate.d[0],firstDate.d[1]-1,firstDate.d[2]);
+  const stockMap=getDayStockMap(targetDate);
+  const result={};
+  shipIndices.forEach(idx=>{
+    const s=SHIPS[idx];
+    const prodId=getShipProdId(s);
+    if(!prodId)return;
+    if(stockMap[prodId]===undefined)stockMap[prodId]=prodMap[prodId]?.stock||0;
+    const st=getShipStatus(s,stockMap[prodId]);
+    result[idx]=st;
+    stockMap[prodId]-=s.qty; // 減算して次の判定へ
+  });
+  return result;
+}
+
+let shipCur=new Date(2026,3,1);
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+const STATUS_META={ng:{icon:'🔴',label:'不足',cls:'ng'},cond:{icon:'🟡',label:'条件OK',cls:'cond'},ok:{icon:'🟢',label:'OK',cls:'ok'}};
+
+/* ========== CALENDAR ========== */
+function renderCal(){
+  const y=shipCur.getFullYear(),m=shipCur.getMonth();
+  document.getElementById('mlabel').textContent=y+'年'+(m+1)+'月';
+  const byDay={};
+  SHIPS.forEach((s,i)=>{if(s.d[0]===y&&s.d[1]===(m+1)){(byDay[s.d[2]]=byDay[s.d[2]]||[]).push(i)}});
+  const sd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),pd=new Date(y,m,0).getDate();
+  const total=Math.ceil((sd+dim)/7)*7;
+  let html='';
+  for(let i=0;i<total;i++){
+    let day,oth=false;
+    if(i<sd){day=pd-sd+i+1;oth=true;}
+    else if(i>=sd+dim){day=i-sd-dim+1;oth=true;}
+    else day=i-sd+1;
+    const dow=i%7,isT=!oth&&sameDay(new Date(y,m,day),shipToday);
+    const di=(!oth&&byDay[day])||[];
+    const nc=dow===0?'sun-c':dow===6?'sat-c':'';
+    html+=`<div class="cell${oth?' other':''}${isT?' today-cell':''}"><div class="day-num ${nc}">${day}</div>`;
+    if(!oth&&di.length>0){
+      const counts={ng:0,cond:0,ok:0};
+      const dayStatuses=getDayStatuses(di);
+      di.forEach(idx=>{
+        const s=SHIPS[idx];
+        counts[s.shipped?'ok':(dayStatuses[idx]||'ok')]++;
+      });
+      ['ng','cond','ok'].forEach(st=>{
+        if(counts[st]>0){
+          const meta=STATUS_META[st];
+          html+=`<div class="srow ${meta.cls}" data-y="${y}" data-m="${m+1}" data-d="${day}" data-st="${st}"><span class="srow-icon">${meta.icon}</span><span class="srow-label">${meta.label}</span><span class="srow-count"> ${counts[st]}件</span></div>`;
+        }
+      });
+    }
+    html+='</div>';
+  }
+  document.getElementById('grid').innerHTML=html;
+  document.getElementById('grid').addEventListener('click',e=>{
+    const row=e.target.closest('.srow');
+    if(row)showStatusList(+row.dataset.y,+row.dataset.m,+row.dataset.d,row.dataset.st);
+  },{once:false});
+
+}
+
+/* ========== INVENTORY ========== */
+function renderInv(){
+  const tF=PRODUCTS.reduce((a,p)=>a+p.stock,0),tW=PRODUCTS.reduce((a,p)=>a+getWip(p),0);
+  document.getElementById('totals-bar').innerHTML=`<div class="total-pill fin">● 完成品合計 ${tF.toLocaleString()}個</div><div class="total-pill wip">● 仕掛品合計 ${tW.toLocaleString()}個</div>`;
+  let html='';
+  PRODUCTS.forEach(p=>{
+    const wip=getWip(p),avail=getAvailable(p.id),warn=avail<0;
+    const pb=p.process.map((q,i)=>`<div class="proc-box${q>0?' active':''}"><div class="proc-step${q>0?' active':''}">工${SL[i]}</div><div class="proc-qty${q>0?' active':''}">${q}</div></div>`).join('');
+    html+=`<div class="prod-card">
+      <div class="prod-name"><span style="font-size:18px">📦</span>${p.name}</div>
+      <div class="stock-row">
+        <div class="sbox fin"><div class="sbox-label fin">完成品</div><span class="sbox-val fin">${p.stock.toLocaleString()}</span><span class="sbox-unit">個</span></div>
+        <div class="sbox wip"><div class="sbox-label wip">仕掛品（WIP）</div><span class="sbox-val wip">${wip.toLocaleString()}</span><span class="sbox-unit">個</span></div>
+      </div>
+      <div class="proc-section">
+        <div class="proc-label">工程別内訳（①〜⑥すべて仕掛品）</div>
+        <div class="proc-row">${pb}</div>
+      </div>
+      <div class="avail-bar ${warn?'warn':'ok'}">
+        <span class="avail-label ${warn?'warn':'ok'}">引当可能数（完成品のみ）</span>
+        <span class="avail-qty ${warn?'warn':'ok'}">${warn?'⚠ ':''}${avail.toLocaleString()} 個</span>
+      </div>
+      <button class="comp-btn" ${p.process[5]===0?'disabled':''} onclick="openCompleteModal('${p.id}')">
+        ⑥完了 → 完成品へ移動　${p.process[5]>0?'（工程⑥：'+p.process[5]+'個）':'（工程⑥在庫なし）'}
+      </button>
+    </div>`;
+  });
+  document.getElementById('prod-grid').innerHTML=html;
+}
+
+function shipRender(){syncStockFromInventory();renderCal();}
+
+/* ========== MODALS ========== */
+function showDetail(idx){
+  const s=SHIPS[idx];
+  const prodId=getShipProdId(s);
+  const p=prodId?prodMap[prodId]:null;
+  const d=new Date(s.d[0],s.d[1]-1,s.d[2]);
+  const dows=['日','月','火','水','木','金','土'];
+  const wip=p?getWip(p):0;
+  const wc=p?p.process.map((q,i)=>`<span class="wip-chip">${SL[i]}：${q}</span>`).join(''):'';
+  const futureStock=p?getFutureStock(prodId,d):0;
+  const shortage=futureStock-s.qty;
+  const stOk=futureStock>=s.qty, stCond=!stOk&&p&&(futureStock+wip>=s.qty);
+  const st=stOk
+    ?`<div class="stock-status ok">✓ 出荷可能（出荷日時点在庫 ${futureStock.toLocaleString()} 個）</div>`
+    :stCond
+    ?`<div class="stock-status warn" style="background:#fef9c3;color:#a16207">🟡 完成品不足（仕掛品考慮で対応可）　不足数: ${Math.abs(shortage).toLocaleString()}個</div>`
+    :`<div class="stock-status warn">🔴 不足（${shortage.toLocaleString()}）個（仕掛品含めても不足）</div>`;
+  document.getElementById('modal-wrap').innerHTML=`
+    <div class="modal-bg" id="mbg">
+      <div class="modal">
+        <div class="modal-head">
+          <div><div class="modal-title">${s.name||s.item}${s.code?` <span style="font-weight:400;font-size:12px;color:#888">${s.code}</span>`:''}</div></div>
+          <button class="modal-close" onclick="shipCloseModal()">✕</button>
+        </div>
+        <div class="mrow"><span class="mkey">出荷日</span><span class="mval">${s.d[0]}年${s.d[1]}月${s.d[2]}日（${dows[d.getDay()]}）</span></div>
+        <div class="mrow"><span class="mkey">数量</span><span class="mval">${s.qty.toLocaleString()} 個</span></div>
+        <div class="mrow"><span class="mkey">出荷先</span><span class="mval">${s.dest}</span></div>
+        <div class="mrow"><span class="mkey">ステータス</span><span class="mval" style="color:${s.shipped?'#1a6b45':'#888'}">${s.shipped?'✓ 出荷済':'未出荷'}</span></div>
+        <div class="mrow"><span class="mkey">完成品在庫</span><span class="mval" style="color:#1a6b45">${p?p.stock.toLocaleString():'-'} 個<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:6px">（出荷日時点: ${futureStock.toLocaleString()}個）</span></span></div>
+        <div class="mrow"><span class="mkey">仕掛品（WIP）</span><div><span class="mval" style="color:#d97706">${wip.toLocaleString()} 個</span><div class="wip-chips">${wc}</div></div></div>
+        ${s.note?`<div class="mrow"><span class="mkey">備考</span><span class="mval">${s.note}</span></div>`:''}
+        ${st}
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-cancel" onclick="shipCloseModal();openEdit(${idx})">編集</button>
+          <button class="btn btn-del" onclick="deleteShip(${idx})">削除</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')shipCloseModal()});
+}
+
+/* ========== STATUS LIST MODAL ========== */
+function showStatusList(y,m,d,st){
+  const meta=STATUS_META[st];
+  const allDay=SHIPS.map((s,i)=>({s,i})).filter(({s})=>s.d[0]===y&&s.d[1]===m&&s.d[2]===d);
+  const dayStatuses=allDay.length?getDayStatuses(allDay.map(({i})=>i)):{};
+  const items=allDay.filter(({s,i})=>{
+    const sst=s.shipped?'ok':(dayStatuses[i]||getShipStatus(s));
+    return sst===st;
+  });
+  const dows=['日','月','火','水','木','金','土'];
+  const dateLabel=`${y}年${m}月${d}日（${dows[new Date(y,m-1,d).getDay()]}）`;
+  const targetDate=new Date(y,m-1,d);
+  const stockMap=getDayStockMap(targetDate);
+  const rows=items.length?items.map(({s,i})=>{
+    const prodId=getShipProdId(s);
+    const p=prodId?prodMap[prodId]:null;
+    const stock=stockMap[prodId]!==undefined?stockMap[prodId]:p?.stock||0;
+    const shortage=getShortage(s,stock);
+    stockMap[prodId]=(stockMap[prodId]||0)-s.qty;
+    const shortageLabel=shortage<0?` <span style="font-size:10px;color:#dc2626;font-weight:700">(${shortage})</span>`:'';
+    return`<div class="slist-item" onclick="shipCloseModal();showDetail(${i})">
+      <span class="slist-icon">${meta.icon}</span>
+      <span class="slist-name">${p?p.name:'?'}　${s.item}${shortageLabel}</span>
+      <span class="slist-sub">${s.qty.toLocaleString()}個</span>
+    </div>`;
+  }).join(''):`<div class="slist-empty">該当データなし</div>`;
+  document.getElementById('modal-wrap').innerHTML=`
+    <div class="modal-bg slist-bg" id="mbg">
+      <div class="slist-wrap">
+        <div class="slist-hdr">
+          <div>
+            <div style="font-size:11px;color:#aaa;margin-bottom:3px">${dateLabel}</div>
+            <div class="slist-title">${meta.icon} ${meta.label}（${items.length}件）</div>
+          </div>
+          <button class="modal-close" onclick="shipCloseModal()">✕</button>
+        </div>
+        ${rows}
+      </div>
+    </div>`;
+  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')shipCloseModal()});
+}
+
+function showDayList(y,m,d){
+  const items=SHIPS.map((s,i)=>({s,i})).filter(({s})=>s.d[0]===y&&s.d[1]===m&&s.d[2]===d);
+  const rows=items.map(({s,i})=>{const c=catMap[s.cat];return`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0;cursor:pointer" onclick="shipCloseModal();showDetail(${i})"><span style="background:${c.bg};color:${c.tc};border-radius:4px;padding:2px 7px;font-size:11px;font-weight:700">${c.label.split(' ')[1]}</span><span style="font-size:13px;font-weight:600">${s.item}</span><span style="margin-left:auto;font-size:12px;color:#666;font-weight:600">${s.qty}個</span></div>`}).join('');
+  document.getElementById('modal-wrap').innerHTML=`
+    <div class="modal-bg" id="mbg">
+      <div class="modal">
+        <div class="modal-head"><div class="modal-title">${y}年${m}月${d}日 の出荷一覧</div><button class="modal-close" onclick="shipCloseModal()">✕</button></div>
+        ${rows}
+      </div>
+    </div>`;
+  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')shipCloseModal()});
+}
+
+/* ===== 工程完了 → 完成品移動 ===== */
+function openCompleteModal(prodId){
+  const p=prodMap[prodId];
+  document.getElementById('modal-wrap').innerHTML=`
+    <div class="modal-bg" id="mbg">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title">⑥ 工程完了 → 完成品へ移動</div>
+          <button class="modal-close" onclick="shipCloseModal()">✕</button>
+        </div>
+        <div style="background:#fff7ed;border:1px solid #fbbf24;border-radius:8px;padding:12px;margin-bottom:14px">
+          <div style="font-size:14px;font-weight:700;color:#d97706;margin-bottom:6px">📦 ${p.name}</div>
+          <div style="display:flex;gap:20px;font-size:12px">
+            <span>工程⑥（仕掛品）：<strong style="color:#d97706">${p.process[5]}個</strong></span>
+            <span>現在の完成品：<strong style="color:#1a6b45">${p.stock.toLocaleString()}個</strong></span>
+          </div>
+        </div>
+        <label style="margin-top:0">完了数量（最大 ${p.process[5]} 個）</label>
+        <input type="number" id="comp-qty" min="1" max="${p.process[5]}" value="${p.process[5]}" style="margin-top:6px">
+        <div style="margin-top:10px;background:#f9fafb;border-radius:7px;padding:9px 11px;font-size:11px;color:#888;line-height:1.8;border:1px solid #e8e8e8">
+          ⚠ 工程⑥にある仕掛品のうち、完了した数量のみ完成品へ移動します。<br>
+          工程①〜⑤の仕掛品は完成品になりません。完成品のみ出荷できます。
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="btn btn-cancel" onclick="shipCloseModal()">キャンセル</button>
+          <button class="btn" style="flex:1;background:#d97706;color:#fff;font-weight:700;border:none" onclick="doComplete('${prodId}')">✓ 完成品へ移動する</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')shipCloseModal()});
+}
+
+function doComplete(prodId){
+  const p=prodMap[prodId];
+  const qty=parseInt(document.getElementById('comp-qty').value);
+  if(!qty||qty<1){alert('数量を入力してください');return;}
+  if(qty>p.process[5]){alert(`工程⑥の仕掛品（${p.process[5]}個）を超えています`);return;}
+  p.process[5]-=qty;  // 工程⑥から減算
+  p.stock+=qty;       // 完成品に加算
+  shipCloseModal();shipRender();
+  setTimeout(()=>{
+    document.getElementById('modal-wrap').innerHTML=`
+      <div class="modal-bg" id="mbg">
+        <div class="modal" style="text-align:center;padding:28px 24px">
+          <div style="font-size:36px;margin-bottom:8px">✅</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px">${qty.toLocaleString()}個 を完成品に移動しました</div>
+          <div style="font-size:13px;color:#666;margin-bottom:14px">${p.name}</div>
+          <div style="display:flex;justify-content:center;gap:24px;font-size:13px;margin-bottom:18px">
+            <span style="color:#1a6b45;font-weight:700">完成品：${p.stock.toLocaleString()}個</span>
+            <span style="color:#d97706;font-weight:700">仕掛品：${getWip(p)}個</span>
+          </div>
+          <button class="btn btn-primary" onclick="shipCloseModal()" style="width:120px;display:inline-block">閉じる</button>
+        </div>
+      </div>`;
+  },10);
+}
+
+/* ===== 出荷済処理（完成品のみ） ===== */
+function markShipped(idx){
+  const s=SHIPS[idx],p=prodMap[catMap[s.cat]?.prodId||s.prodId];
+  if(!p){alert('製品情報が見つかりません');return;}
+  if(p.stock<s.qty){
+    alert(`⚠ 出荷できません\n\n完成品在庫：${p.stock.toLocaleString()}個\n出荷要求数：${s.qty.toLocaleString()}個\n\n工程管理で完成品を増やしてから出荷してください。`);
+    return;
+  }
+  if(!confirm(`出荷済にしますか？\n\n完成品在庫 ${p.stock.toLocaleString()}個 → ${(p.stock-s.qty).toLocaleString()}個`))return;
+  p.stock-=s.qty;
+  s.shipped=true;
+  saveShipDb(idx, -s.qty, p.id); // 在庫減算を工程管理に通知
+  shipCloseModal();shipRender();
+}
+
+function deleteShip(idx){
+  if(!confirm('この出荷予定を削除しますか？'))return;
+  SHIPS.splice(idx,1);shipCloseModal();shipRender();
+}
+
+/* ========== DRAWER ========== */
+function rebuildCatSelect(){
+  const sel=document.getElementById('ep-cat');
+  const shipCur=sel.value;
+  sel.innerHTML='<option value="">-- 選択 --</option>';
+  CATS.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.label;sel.appendChild(o)});
+  sel.value=shipCur;
+}
+// rebuildCatSelect() called in shipInit
+
+function openAdd(){
+  document.getElementById('ep-title').textContent='出荷を追加';
+  document.getElementById('ep-idx').value=-1;
+  document.getElementById('ep-date').value=`${shipToday.getFullYear()}-${String(shipToday.getMonth()+1).padStart(2,'0')}-${String(shipToday.getDate()).padStart(2,'0')}`;
+  ['ep-cat','ep-name','ep-code','ep-dest','ep-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ep-qty').value='';
+  document.getElementById('ep-foot').innerHTML=`<button class="btn btn-cancel" onclick="closePanel()">キャンセル</button><button class="btn btn-primary" onclick="saveShip()">保存</button>`;
+  updateStockInfo();openPanel();
+}
+
+function openEdit(idx){
+  const s=SHIPS[idx];
+  document.getElementById('ep-title').textContent='出荷を編集';
+  document.getElementById('ep-idx').value=idx;
+  document.getElementById('ep-date').value=`${s.d[0]}-${String(s.d[1]).padStart(2,'0')}-${String(s.d[2]).padStart(2,'0')}`;
+  document.getElementById('ep-cat').value=s.cat;
+  document.getElementById('ep-name').value=s.name||s.item||'';
+  document.getElementById('ep-code').value=s.code||'';
+  document.getElementById('ep-qty').value=s.qty;
+  document.getElementById('ep-dest').value=s.dest;
+  document.getElementById('ep-note').value=s.note||'';
+  document.getElementById('ep-foot').innerHTML=`<button class="btn btn-cancel" onclick="closePanel()">キャンセル</button><button class="btn btn-primary" onclick="saveShip()">更新</button>`;
+  updateStockInfo();openPanel();
+}
+
+function updateStockInfo(){
+  const catId=document.getElementById('ep-cat').value;
+  const qty=parseInt(document.getElementById('ep-qty').value)||0;
+  const el=document.getElementById('ep-stock-info');
+  if(!el||!catId){if(el)el.innerHTML='';return;}
+  const c=catMap[catId],p=prodMap[c.prodId];
+  const avail=getAvailable(c.prodId),wip=getWip(p);
+  const ok=qty>0&&avail>=qty;
+  const warn=qty>0&&avail<qty;
+  el.innerHTML=`
+    <div style="background:#f9fafb;border-radius:8px;padding:10px 12px;border:1px solid #e5e5e5">
+      <div style="font-size:10px;font-weight:700;color:#aaa;letter-spacing:.5px;margin-bottom:7px">在庫確認（完成品のみ出荷可能）</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">
+        <span style="color:#666">完成品在庫</span><span style="font-weight:700;color:#1a6b45">${p.stock.toLocaleString()} 個</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #f0f0f0">
+        <span style="color:#666">仕掛品 (WIP)</span><span style="font-weight:700;color:#d97706">${wip.toLocaleString()} 個</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0">
+        <span style="color:#666">引当可能数</span><span style="font-weight:700;color:${avail>=0?'#1a6b45':'#dc2626'}">${avail.toLocaleString()} 個</span>
+      </div>
+      ${qty>0?`<div style="margin-top:8px;padding:6px 8px;border-radius:6px;font-size:12px;font-weight:700;background:${ok?'#e6f4ed':'#fef2f2'};color:${ok?'#1a6b45':'#dc2626'}">
+        ${ok?'✓ 出荷可能':'⚠ 完成品在庫が不足（仕掛品からの出荷は不可）'}
+      </div>`:''}
+    </div>`;
+}
+
+function saveShip(){
+  const dateVal=document.getElementById('ep-date').value;
+  const cat=document.getElementById('ep-cat').value;
+  const name=document.getElementById('ep-name').value.trim();
+  const code=document.getElementById('ep-code').value.trim();
+  const item=name+(code?' '+code:'');
+  const qty=parseInt(document.getElementById('ep-qty').value);
+  const dest=document.getElementById('ep-dest').value.trim();
+  const note=document.getElementById('ep-note').value.trim();
+  if(!dateVal||!cat||!name||!qty||!dest){alert('必須項目をすべて入力してください');return;}
+  const avail=getAvailable(catMap[cat].prodId);
+  if(avail<qty&&!confirm(`⚠ 完成品在庫が不足しています。\n引当可能：${avail}個 / 要求：${qty}個\n\n仕掛品からの出荷は実行できません。\n予定として登録しますか？`))return;
+  const parts=dateVal.split('-').map(Number);
+  const idx=+document.getElementById('ep-idx').value;
+  const prodId=catMap[cat]?.prodId||null;
+  if(idx>=0)SHIPS[idx]={...SHIPS[idx],d:parts,cat,prodId,name,code,item,qty,dest,note,shipped:false};
+  else SHIPS.push({d:parts,cat,prodId,name,code,item,qty,dest,note,shipped:false});
+  SHIPS.sort((a,b)=>a.d[0]-b.d[0]||a.d[1]-b.d[1]||a.d[2]-b.d[2]);
+  closePanel();shipRender();
+}
+
+/* ========== 取引先管理 ========== */
+function openCatManager(){
+  const rows=CATS.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f0f0">
+      <span style="background:${c.bg};color:${c.tc};border-radius:5px;padding:3px 10px;font-size:12px;font-weight:700;flex-shrink:0">${c.label}</span>
+      <span style="font-size:11px;color:#aaa;flex:1">${PRODUCTS.find(p=>p.id===c.prodId)?.name||'?'}</span>
+      <button onclick="openCatForm(${i})" style="padding:4px 12px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer;font-size:12px;font-family:inherit">編集</button>
+      <button onclick="deleteCat(${i})" style="padding:4px 10px;border-radius:6px;border:1px solid #fca5a5;background:#fef2f2;color:#dc2626;cursor:pointer;font-size:12px;font-family:inherit">削除</button>
+    </div>`).join('');
+  document.getElementById('modal-wrap').innerHTML=`
+    <div class="modal-bg" id="mbg">
+      <div class="modal" style="width:440px">
+        <div class="modal-head">
+          <div class="modal-title">🏢 取引先管理</div>
+          <button class="modal-close" onclick="shipCloseModal()">✕</button>
+        </div>
+        <div style="max-height:55vh;overflow-y:auto">${rows||'<div style="color:#aaa;text-align:center;padding:20px">取引先がありません</div>'}</div>
+        <div style="margin-top:14px">
+          <button onclick="openCatForm(-1)" style="width:100%;padding:9px;border-radius:8px;border:2px dashed #1a6b45;background:#f0faf4;color:#1a6b45;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">＋ 取引先を追加</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')shipCloseModal()});
+}
+
+function openCatForm(idx){
+  const isNew=idx<0;
+  const c=isNew?{label:'',bg:COLOR_PRESETS[0].bg,tc:COLOR_PRESETS[0].tc,prodId:PRODUCTS[0]?.id||''}:CATS[idx];
+  const colorBtns=COLOR_PRESETS.map((cp,ci)=>`
+    <button type="button" id="cpbtn-${ci}" onclick="selectColor(${ci})"
+      style="width:32px;height:32px;border-radius:6px;background:${cp.bg};color:${cp.tc};font-size:11px;font-weight:700;cursor:pointer;border:2px solid ${cp.bg===c.bg?cp.tc:'transparent'};font-family:inherit">${cp.name}</button>`).join('');
+  const prodOpts=PRODUCTS.map(p=>`<option value="${p.id}"${p.id===c.prodId?' selected':''}>${p.name}</option>`).join('');
+  document.getElementById('modal-wrap').innerHTML=`
+    <div class="modal-bg" id="mbg2">
+      <div class="modal" style="width:380px">
+        <div class="modal-head">
+          <div class="modal-title">${isNew?'取引先を追加':'取引先を編集'}</div>
+          <button class="modal-close" onclick="openCatManager()">✕</button>
+        </div>
+        <input type="hidden" id="cf-idx" value="${idx}">
+        <input type="hidden" id="cf-bg" value="${c.bg}">
+        <input type="hidden" id="cf-tc" value="${c.tc}">
+        <label style="margin-top:0">取引先名</label>
+        <input type="text" id="cf-label" value="${c.label}" placeholder="例：得意先 ABC">
+        <label>製品</label>
+        <select id="cf-prod">${prodOpts}</select>
+        <label>カラー</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px" id="color-btns">${colorBtns}</div>
+        <div id="cf-preview" style="margin-top:10px;padding:6px 12px;border-radius:6px;display:inline-block;font-size:13px;font-weight:700;background:${c.bg};color:${c.tc}">${c.label||'プレビュー'}</div>
+        <div style="display:flex;gap:8px;margin-top:18px">
+          <button class="btn btn-cancel" onclick="openCatManager()">戻る</button>
+          <button class="btn btn-primary" onclick="saveCat()">保存</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('cf-label').addEventListener('input',updateCatPreview);
+}
+
+function selectColor(ci){
+  const cp=COLOR_PRESETS[ci];
+  document.getElementById('cf-bg').value=cp.bg;
+  document.getElementById('cf-tc').value=cp.tc;
+  document.querySelectorAll('[id^="cpbtn-"]').forEach((b,i)=>{
+    b.style.border=`2px solid ${i===ci?cp.tc:'transparent'}`;
+  });
+  updateCatPreview();
+}
+
+function updateCatPreview(){
+  const label=document.getElementById('cf-label').value||'プレビュー';
+  const bg=document.getElementById('cf-bg').value;
+  const tc=document.getElementById('cf-tc').value;
+  const el=document.getElementById('cf-preview');
+  if(el){el.textContent=label;el.style.background=bg;el.style.color=tc;}
+}
+
+function saveCat(){
+  const label=document.getElementById('cf-label').value.trim();
+  if(!label){alert('取引先名を入力してください');return;}
+  const idx=+document.getElementById('cf-idx').value;
+  const bg=document.getElementById('cf-bg').value;
+  const tc=document.getElementById('cf-tc').value;
+  const prodId=document.getElementById('cf-prod').value;
+  if(idx<0){
+    const newId='CAT'+Date.now();
+    CATS.push({id:newId,label,bg,tc,prodId});
+  } else {
+    CATS[idx]={...CATS[idx],label,bg,tc,prodId};
+  }
+  rebuildCatMap();rebuildCatSelect();shipRender();openCatManager();
+}
+
+function deleteCat(idx){
+  const c=CATS[idx];
+  const inUse=SHIPS.some(s=>s.cat===c.id);
+  if(inUse&&!confirm(`「${c.label}」は出荷予定で使用されています。\n削除すると関連する出荷データも影響を受けます。\n本当に削除しますか？`))return;
+  if(!inUse&&!confirm(`「${c.label}」を削除しますか？`))return;
+  CATS.splice(idx,1);
+  rebuildCatMap();rebuildCatSelect();shipRender();openCatManager();
+}
+
+/* ========== SEARCH ========== */
+let shipSearchQuery='';
+const DOWS=['日','月','火','水','木','金','土'];
+function onSearch(val){
+  shipSearchQuery=val.trim();
+  document.getElementById('search-clear').style.display=shipSearchQuery?'':'none';
+  if(shipSearchQuery){
+    document.getElementById('cal-area').style.display='none';
+    renderSearchResults();
+  } else {
+    document.getElementById('cal-area').style.display='';
+    document.getElementById('search-results').style.display='none';
+  }
+}
+function clearSearch(){
+  document.getElementById('search-input').value='';
+  onSearch('');
+}
+/* ④ 検索結果から直接編集 */
+function openEditFromSearch(index){
+  shipCloseModal();
+  openEdit(index);
+}
+
+function renderSearchResults(){
+  const q=shipSearchQuery.toLowerCase();
+  const matched=SHIPS.map((s,i)=>({s,i})).filter(({s})=>{
+    const prodId=getShipProdId(s);
+    const p=prodId?prodMap[prodId]:null;
+    return (p&&p.name.toLowerCase().includes(q))||(s.item||'').toLowerCase().includes(q)||(s.name||'').toLowerCase().includes(q)||(s.code||'').toLowerCase().includes(q);
+  });
+  const el=document.getElementById('search-results');
+  el.style.display='';
+  if(!matched.length){
+    el.innerHTML=`<div class="sresult-list"><div class="sresult-empty">「${shipSearchQuery}」に一致するデータなし</div></div>`;
+    return;
+  }
+  const rows=matched.map(({s,i})=>{
+    const prodId=getShipProdId(s);
+    const p=prodId?prodMap[prodId]:null;
+    const targetDate=new Date(s.d[0],s.d[1]-1,s.d[2]);
+    const futureStock=p?getFutureStock(prodId,targetDate):0;
+    const st=s.shipped?'ok':getShipStatus(s);
+    const shortage=futureStock-s.qty;
+    const stColor={ok:'#16a34a',cond:'#ca8a04',ng:'#dc2626'}[st];
+    const shortageLabel=st==='ng'?` <span style="font-size:10px;color:#dc2626;font-weight:700">(${shortage})</span>`:
+      st==='cond'?` <span style="font-size:10px;color:#ca8a04;font-weight:700">条件OK</span>`:'';
+    const d=new Date(s.d[0],s.d[1]-1,s.d[2]);
+    const dateStr=`${s.d[0]}/${String(s.d[1]).padStart(2,'0')}/${String(s.d[2]).padStart(2,'0')}（${DOWS[d.getDay()]}）`;
+    return`<div class="sresult-item" style="gap:8px">
+      <div class="sresult-st" style="background:${stColor}"></div>
+      <div class="sresult-date">${dateStr}</div>
+      <div class="sresult-name">${p?p.name+' ':''}<span style="font-weight:400;color:#555">${s.item||''}</span>${shortageLabel}</div>
+      <div class="sresult-qty">${s.qty.toLocaleString()}個</div>
+      <button onclick="openEditFromSearch(${i})" style="flex-shrink:0;padding:3px 10px;border-radius:5px;border:1px solid #ccc;background:#fff;cursor:pointer;font-size:11px;font-family:inherit;color:#444">編集</button>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="sresult-list">
+    <div class="sresult-hdr">「${shipSearchQuery}」の検索結果　${matched.length}件</div>
+    ${rows}
+  </div>`;
+}
+
+
+function openPanel(){document.getElementById('edit-panel').classList.add('open');document.getElementById('panel-bg').style.display='block'}
+function closePanel(){document.getElementById('edit-panel').classList.remove('open');document.getElementById('panel-bg').style.display='none'}
+function shipCloseModal(){document.getElementById('modal-wrap').innerHTML=''}
+function toDateStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`}
+function prevMonth(){shipCur=new Date(shipCur.getFullYear(),shipCur.getMonth()-1,1);renderCal()}
+function nextMonth(){shipCur=new Date(shipCur.getFullYear(),shipCur.getMonth()+1,1);renderCal()}
+function goToday(){shipCur=new Date(shipToday.getFullYear(),shipToday.getMonth(),1);renderCal()}
+document.addEventListener('change',e=>{if(['ep-cat','ep-qty'].includes(e.target.id))updateStockInfo()});
+document.addEventListener('input',e=>{if(e.target.id==='ep-qty')updateStockInfo()});
+
+// ==========================================
+// 🔗 統合レイヤー：工程在庫連携
+// ==========================================
+let shipInvSynced=false;
+
+function escSH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// unified_db（工程管理）から在庫を同期
+function syncStockFromInventory(){
+  try{
+    const raw=localStorage.getItem(UNIFIED_KEY); if(!raw) return false;
+    const u=JSON.parse(raw); if(!u||!u.items) return false;
+    let synced=false;
+    u.items.forEach(invItem=>{
+      const p=PRODUCTS.find(pr=>pr.id===invItem.id||pr.code===invItem.code);
+      if(!p) return;
+      p.stock=invItem.finishedStock||0;
+      if(invItem.processCounts){
+        p.process=invItem.processCounts.slice(0,7);
+        while(p.process.length<7) p.process.push(0);
+      }
+      synced=true;
+    });
+    // 出荷予定を unified_db から取り込む
+    if(u.shipments&&u.shipments.length){
+      mergeUnifiedShipments(u.shipments,u.items);
+    }
+    if(synced){
+      shipInvSynced=true;
+      const badge=document.getElementById('sync-badge');
+      if(badge){badge.textContent='⬤ 同期済';badge.className='sync-badge live';}
+    }
+    return synced;
+  }catch(e){return false;}
+}
+
+// unified_db の出荷予定を SHIPS にマージ
+function mergeUnifiedShipments(unifiedShips, invItems){
+  // IDベースでマッチング。存在しない場合は追加。
+  unifiedShips.forEach(us=>{
+    if(us.shipped) return; // 出荷済みは無視
+    const invItem=invItems.find(i=>i.id===us.itemId); if(!invItem) return;
+    const p=PRODUCTS.find(pr=>pr.id===invItem.id||pr.code===invItem.code); if(!p) return;
+    // すでに同じIDの出荷がSHIPSにあるかチェック
+    const exists=SHIPS.some(s=>s._unifiedId===us.id);
+    if(!exists){
+      const d=us.date.split('-');
+      // CATS から cat ID を探す（prodId 一致）
+      const cat=CATS.find(c=>c.prodId===p.id);
+      SHIPS.push({
+        d:[parseInt(d[0]),parseInt(d[1]),parseInt(d[2])],
+        cat:cat?cat.id:'A',
+        item:p.name+' '+us.qty+'個',
+        name:p.name,
+        qty:us.qty,
+        dest:us.dest||'',
+        note:us.note||'',
+        shipped:us.shipped||false,
+        _unifiedId:us.id,
+        _itemId:us.itemId
+      });
+    }
+  });
+}
+
+// 出荷確定を工程管理ファイルに通知
+function saveShipDb(idx, stockDelta, prodId){
+  try{
+    const existing=JSON.parse(localStorage.getItem('ship_db')||'{}');
+    const updates=existing.stockUpdates||[];
+    // itemId を探す
+    const p=PRODUCTS.find(pr=>pr.id===prodId);
+    if(p){
+      updates.push({itemId:prodId,code:p.code,delta:stockDelta,ts:Date.now()});
+    }
+    const payload={
+      version:1,updatedAt:Date.now(),
+      shipments:SHIPS.map((s,i)=>({
+        id:s._unifiedId||('ship_'+i),
+        cat:s.cat,
+        date:`${s.d[0]}-${String(s.d[1]).padStart(2,'0')}-${String(s.d[2]).padStart(2,'0')}`,
+        qty:s.qty,dest:s.dest||'',note:s.note||'',
+        shipped:s.shipped,
+        _unifiedId:s._unifiedId||null,
+        _itemId:s._itemId||null
+      })),
+      stockUpdates:updates
+    };
+    localStorage.setItem('ship_db',JSON.stringify(payload));
+  }catch(e){}
+}
+
+// cross-tab sync (inventory changed)
+window.addEventListener('storage',e=>{
+  if(e.key===UNIFIED_KEY){
+    syncStockFromInventory();
+    renderCal();
+    if(shipActiveTab==='shortage') renderShortage();
+  }
+});
+
+// tab 切り替え
+let shipActiveTab='cal';
+function switchTab(tab){
+  shipActiveTab=tab;
+  document.getElementById('tab-cal').style.display=tab==='cal'?'':'none';
+  document.getElementById('tab-shortage').style.display=tab==='shortage'?'':'none';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(tab==='cal') document.getElementById('tbtn-cal').classList.add('active');
+  else document.getElementById('tbtn-shortage').classList.add('active');
+  if(tab==='shortage') renderShortage();
+}
+
+// 不足一覧レンダリング
+const DOWS_S=['日','月','火','水','木','金','土'];
+function renderShortage(){
+  const el=document.getElementById('shortage-list'); if(!el) return;
+  syncStockFromInventory();
+  const rangeDays=parseInt((document.getElementById('shortage-range')||{value:'7'}).value)||7;
+  const filterMode=(document.getElementById('shortage-filter')||{value:'all'}).value;
+  const now=new Date(); now.setHours(0,0,0,0);
+  const inN=new Date(now.getTime()+rangeDays*86400000);
+  const items=[];
+  SHIPS.forEach((s,i)=>{
+    if(s.shipped) return;
+    const d=new Date(s.d[0],s.d[1]-1,s.d[2]); d.setHours(0,0,0,0);
+    if(d<now||d>inN) return;
+    const prodId=getShipProdId(s);
+    const p=prodId?prodMap[prodId]:null; if(!p) return;
+    const futureStock=getFutureStock(prodId,d);
+    const shortage=futureStock-s.qty;
+    const wip=getWip(p);
+    const stClass=shortage>=0?'ok':wip+futureStock>=s.qty?'cond':'ng';
+    if(filterMode==='ng'&&stClass!=='ng') return;
+    if(filterMode==='cond'&&stClass==='ok') return;
+    const diff=Math.round((d-now)/86400000);
+    items.push({s,i,p,futureStock,shortage,wip,date:d,stClass,diff});
+  });
+  items.sort((a,b)=>a.shortage-b.shortage||a.diff-b.diff);
+  if(!items.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px;color:#888;font-size:14px">✓ ${rangeDays}日以内の対象なし</div>`;
+    return;
+  }
+  el.innerHTML=items.map(({s,i,p,futureStock,shortage,stClass,diff})=>{
+    const dayLabel=diff===0?'今日':diff===1?'明日':diff+'日後';
+    // 工程逆算: 在庫不足の場合、いつまでに製造開始すべきか
+    const processCnt=p.process.filter(v=>v>0).length||3;
+    const startBy=new Date(items[0].date.getTime()-(processCnt+1)*86400000);
+    const calcMsg=shortage<0?`⏰ ${startBy.getMonth()+1}/${startBy.getDate()}までに製造開始が必要`:'';
+    return `<div class="shortage-row ${stClass}" onclick="shipCloseModal();showDetail(${i})">
+      <div class="shortage-day ${stClass}">${dayLabel}</div>
+      <div class="shortage-info">
+        <div class="shortage-name">${escSH(p.name)}${s.item?' <span style="font-weight:400;color:#666;font-size:11px">'+escSH(s.item)+'</span>':''}</div>
+        <div class="shortage-dest">${escSH(s.dest||'')} / ${s.d[0]}/${s.d[1]}/${s.d[2]}（${DOWS_S[items[0].date.getDay()]}）</div>
+        ${calcMsg?`<div class="shortage-calc">${calcMsg}</div>`:''}
+      </div>
+      <div class="shortage-nums">
+        <div class="shortage-qty">出荷 ${s.qty.toLocaleString()}個</div>
+        <div class="shortage-avail ${stClass}">在庫 ${futureStock.toLocaleString()}個</div>
+        ${shortage<0?`<div class="shortage-miss">不足 ${Math.abs(shortage).toLocaleString()}個</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// shipRender() called from openShipScheduleModal
+
+// ===== 出荷スケジュール初期化 =====
+function shipInit(){
+  // shipCur が未設定なら今月にリセット
+  const now = new Date();
+  if(!shipCur) shipCur = new Date(now.getFullYear(), now.getMonth(), 1);
+  rebuildCatSelect();
+  shipRender();
+}
+
+
+// ===== 自動保存モジュール =====
+const DAILY_STATE_KEY = 'dailyReportState';
+
+// 現在のUI状態を収集
+function getCurrentState(){
+  const receiveQtys = {};
+  db.items.forEach(item => {
+    const el = gid('rq-' + item.id);
+    const qty = el ? parseInt(el.value) || 0 : 0;
+    if(qty > 0) receiveQtys[item.id] = qty;
+  });
+
+  const expandedCards = [];
+  document.querySelectorAll('.item-card.expanded').forEach(el => {
+    expandedCards.push(el.id.replace('card-', ''));
+  });
+
+  const receiveOpen = [];
+  db.items.forEach(item => {
+    const el = gid('stock-input-' + item.id);
+    if(el && el.classList.contains('active')) receiveOpen.push(item.id);
+  });
+
+  return {
+    version: 1,
+    savedAt: Date.now(),
+    mode: currentMode,
+    searchText: fieldFilter || '',
+    expandedCards,
+    receiveOpen,
+    receiveQtys,
+    user: currentUser,
+    machine: currentMachine
+  };
+}
+
+// 保存
+function saveState(state){
+  try{ localStorage.setItem(DAILY_STATE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+// 読み込み
+function loadState(){
+  try{
+    const data = localStorage.getItem(DAILY_STATE_KEY);
+    return data ? JSON.parse(data) : null;
+  }catch(e){ return null; }
+}
+
+// クリア
+function clearState(){
+  localStorage.removeItem(DAILY_STATE_KEY);
+}
+
+// 入庫数量フィールドのみ復元（renderField後に毎回呼ばれる）
+function _restoreReceiveQtys(){
+  const state = loadState(); if(!state) return;
+  const qtys = state.receiveQtys || {};
+  const open  = state.receiveOpen || [];
+  db.items.forEach(item => {
+    // 入庫数量
+    const el = gid('rq-' + item.id);
+    if(el && qtys[item.id]) el.value = qtys[item.id];
+    // 入庫パネル開閉
+    if(open.includes(item.id)){
+      const inp = gid('stock-input-' + item.id);
+      const btn = gid('recv-toggle-' + item.id);
+      if(inp && !inp.classList.contains('active')){
+        inp.classList.add('active');
+        if(btn){ btn.textContent='閉じる'; btn.classList.add('open'); }
+      }
+    }
+  });
+}
+
+// UI全体を復元（初回ロード時）
+function restoreUI(state){
+  if(!state) return;
+
+  // 設備復元
+  if(state.machine !== undefined){
+    currentMachine = state.machine;
+    localStorage.setItem('inv_machine', currentMachine);
+    _updateMachineBadge();
+  }
+  // モード復元
+  if(state.mode && state.mode !== currentMode){
+    switchMode(state.mode);
+  }
+
+  // 検索テキスト復元
+  if(state.searchText){
+    fieldFilter = state.searchText;
+    const si = document.querySelector('.search-input');
+    if(si) si.value = state.searchText;
+  }
+
+  // カード展開状態復元（renderField後に適用）
+  (state.expandedCards || []).forEach(id => {
+    const el = gid('card-' + id);
+    if(el) el.classList.add('expanded');
+  });
+
+  // 入庫数量・パネル復元
+  _restoreReceiveQtys();
+}
+
+// 自動保存（デバウンス付き: 300ms）
+let _autoSaveTimer = null;
+function autoSaveState(){
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => saveState(getCurrentState()), 300);
+}
+
+// 入力変更時に自動保存
+function onInputChange(){
+  autoSaveState();
+}
+
+// 初期化時に状態復元
+(function initAutoSave(){
+  const state = loadState();
+  if(state){
+    // カード展開・入力値は renderField/renderAdmin 後に復元
+    requestAnimationFrame(() => restoreUI(state));
+  }
+
+  // rq- 入力フィールドへの変更を監視（イベント委譲）
+  document.addEventListener('input', function(e){
+    if(e.target && (
+      e.target.id && e.target.id.startsWith('rq-') ||
+      e.target.classList.contains('qty-display') ||
+      e.target.classList.contains('search-input')
+    )){
+      autoSaveState();
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
