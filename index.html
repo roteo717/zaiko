@@ -498,6 +498,107 @@ body {
   text-overflow: ellipsis;
 }
 
+/* ===== まとめ工程ブロック ===== */
+.process-block.group-block {
+  flex: 0 0 168px;
+  border-color: #b8a4e8;
+  background: #f5f0ff;
+  padding-top: 8px;
+}
+.group-range-label {
+  display: block;
+  background: var(--purple);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.group-block .process-name {
+  color: var(--purple);
+  font-weight: 700;
+  font-size: 13px;
+}
+.group-block .process-count {
+  color: var(--purple);
+}
+.group-block .btn-next {
+  background: var(--purple) !important;
+  border-color: var(--purple) !important;
+}
+.group-block .btn-next:hover:not(:disabled) {
+  background: #9b7fd4 !important;
+}
+/* まとめ工程設定UI */
+.group-config-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  background: #f5f0ff;
+  border: 1px solid #b8a4e8;
+  border-radius: var(--r-sm);
+  margin-bottom: 4px;
+}
+.group-config-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--purple);
+  flex: 1;
+}
+.group-config-del {
+  font-size: 10px;
+  padding: 2px 7px;
+  border: 1px solid var(--red-bd);
+  background: var(--red-bg);
+  color: var(--red);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.1s;
+}
+.group-config-del:hover { background: var(--red); color: #fff; }
+.group-add-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 6px;
+}
+.group-add-row select {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--bg3);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  outline: none;
+}
+.group-add-row select:focus { border-color: var(--purple); }
+.group-add-row .sep { font-size: 12px; color: var(--text3); font-weight: 700; flex-shrink: 0; }
+.group-add-btn {
+  padding: 6px 11px;
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: background 0.1s;
+  flex-shrink: 0;
+}
+.group-add-btn:hover { background: #9b7fd4; }
+
 .process-name {
   font-size: 10px;
   color: var(--text3);
@@ -1295,7 +1396,7 @@ input[type=number] { -moz-appearance: textfield; }
           <th onclick="sortAdmin('code')">品番↕</th>
           <th onclick="sortAdmin('name')">品名↕</th>
           <th>メーカー</th>
-          <th style="text-align:center">工程1</th><th style="text-align:center">工程2</th><th style="text-align:center">工程3</th><th style="text-align:center">工程4</th><th style="text-align:center">工程5</th><th style="text-align:center">工程6</th>
+          <th style="text-align:center">工程①</th><th style="text-align:center">工程②</th><th style="text-align:center">工程③</th><th style="text-align:center">工程④</th><th style="text-align:center">工程⑤</th><th style="text-align:center">工程⑥</th><th style="text-align:center;background:var(--amber-bg);color:var(--amber)">バリ取り</th><th style="text-align:center;background:var(--done-bg);color:var(--done)">完成品</th>
           <th onclick="sortAdmin('done')" style="text-align:right">完成↕</th>
           <th onclick="sortAdmin('defective')" style="text-align:right">不良↕</th>
           <th onclick="sortAdmin('shipped')" style="text-align:right">出荷↕</th>
@@ -1372,6 +1473,24 @@ input[type=number] { -moz-appearance: textfield; }
     <div class="form-group">
       <label class="form-label">工程設定</label>
       <div class="process-config-grid" id="process-config-grid"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" style="color:var(--purple)">まとめ工程設定（任意）</label>
+      <div id="form-group-list" style="min-height:22px"></div>
+      <div class="group-add-row">
+        <select id="gc-start">
+          <option value="1">①</option><option value="2">②</option>
+          <option value="3">③</option><option value="4">④</option>
+          <option value="5">⑤</option><option value="6">⑥</option>
+        </select>
+        <span class="sep">〜</span>
+        <select id="gc-end">
+          <option value="1">①</option><option value="2">②</option>
+          <option value="3">③</option><option value="4" selected>④</option>
+          <option value="5">⑤</option><option value="6">⑥</option>
+        </select>
+        <button class="group-add-btn" onclick="addProcessGroup()">＋ 追加</button>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('item-form-modal')">キャンセル</button>
@@ -1507,49 +1626,57 @@ input[type=number] { -moz-appearance: textfield; }
 <div id="toast-container"></div>
 
 <script>
-const PNAMES = ['工程1','工程2','工程3','工程4','工程5','工程6'];
+const PNAMES = ['工程①','工程②','工程③','工程④','工程⑤','工程⑥','バリ取り','完成品'];
 
 let db = {
   items: [
     {
       id:'i1', code:'A-001', name:'フランジ部品', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0], doneCount:0,
+      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
       defectiveCount:0, shippedCount:0,
       processConfig:[
         {type:'process',active:true},{type:'process',active:true},
-        {type:'deburr',active:true},{type:'process',active:true},
-        {type:'done',active:true},{type:'process',active:false}
-      ]
+        {type:'process',active:true},{type:'process',active:true},
+        {type:'process',active:false},{type:'process',active:false},
+        {type:'deburr',active:true},{type:'done',active:true}
+      ],
+      processGroups:[{start:1,end:4}]
     },
     {
       id:'i2', code:'B-042', name:'シャフトカラー', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0], doneCount:0,
-      defectiveCount:0, shippedCount:0,
-      processConfig:[
-        {type:'process',active:true},{type:'deburr',active:true},
-        {type:'process',active:true},{type:'done',active:true},
-        {type:'process',active:false},{type:'process',active:false}
-      ]
-    },
-    {
-      id:'i3', code:'C-017', name:'ブラケット', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0], doneCount:0,
+      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
       defectiveCount:0, shippedCount:0,
       processConfig:[
         {type:'process',active:true},{type:'process',active:true},
-        {type:'process',active:true},{type:'deburr',active:true},
-        {type:'process',active:true},{type:'done',active:true}
-      ]
+        {type:'process',active:true},{type:'process',active:false},
+        {type:'process',active:false},{type:'process',active:false},
+        {type:'deburr',active:true},{type:'done',active:true}
+      ],
+      processGroups:[]
+    },
+    {
+      id:'i3', code:'C-017', name:'ブラケット', unit:'個', maker:'',
+      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
+      defectiveCount:0, shippedCount:0,
+      processConfig:[
+        {type:'process',active:true},{type:'process',active:true},
+        {type:'process',active:true},{type:'process',active:true},
+        {type:'process',active:true},{type:'process',active:true},
+        {type:'deburr',active:true},{type:'done',active:true}
+      ],
+      processGroups:[{start:1,end:6}]
     },
     {
       id:'i4', code:'D-003', name:'スペーサー', unit:'個', maker:'',
-      processCounts:[0,0,0,0,0,0], doneCount:0,
+      processCounts:[0,0,0,0,0,0,0,0], doneCount:0,
       defectiveCount:0, shippedCount:0,
       processConfig:[
-        {type:'process',active:true},{type:'deburr',active:true},
-        {type:'done',active:true},{type:'process',active:false},
-        {type:'process',active:false},{type:'process',active:false}
-      ]
+        {type:'process',active:true},{type:'process',active:true},
+        {type:'process',active:false},{type:'process',active:false},
+        {type:'process',active:false},{type:'process',active:false},
+        {type:'deburr',active:true},{type:'done',active:true}
+      ],
+      processGroups:[]
     }
   ],
   transactions:[]
@@ -1557,7 +1684,8 @@ let db = {
 
 let currentMode='field', pendingOp=null, fieldFilter='', adminFilter='';
 let adminSortKey=null, adminSortDir=1, editingItem=null;
-const formPC = Array.from({length:6},()=>({type:'process',active:false}));
+const formPC = Array.from({length:8},()=>({type:'process',active:false}));
+let formGroups = []; // まとめ工程設定 [{start, end}, ...]
 
 // USER
 const USER_PRESETS = ['田中 一郎','鈴木 次郎','佐藤 三郎','高橋 四郎','山田 五郎'];
@@ -1605,6 +1733,134 @@ function loadDb(){
 }
 loadDb();
 
+// === マイグレーション: 旧6スロット → 新8スロット ===
+(function migrateDb(){
+  db.items.forEach(item=>{
+    // processGroups が未設定なら空配列で初期化
+    if(!item.processGroups) item.processGroups=[];
+    // processCounts を8要素に拡張
+    while(item.processCounts.length < 8) item.processCounts.push(0);
+    // processConfig を8要素に拡張（既存に deburr/done があれば抽出して再配置）
+    if(item.processConfig.length < 8){
+      // 旧データから deburr/done スロットの在庫を引き継ぐ
+      const oldDeburr = item.processConfig.findIndex(c=>c.type==='deburr'&&c.active);
+      const oldDone   = item.processConfig.findIndex(c=>c.type==='done'&&c.active);
+      if(oldDeburr>=0){ item.processCounts[6]+=item.processCounts[oldDeburr]; item.processCounts[oldDeburr]=0; }
+      if(oldDone>=0)  { item.processCounts[7]+=item.processCounts[oldDone];   item.processCounts[oldDone]=0; }
+      // 旧スロットの type を 'process' に戻す
+      item.processConfig.forEach(c=>{ if(c.type==='deburr'||c.type==='done') c.type='process'; });
+      // 不足分を補填し、末尾にバリ取り・完成品を固定
+      while(item.processConfig.length < 6) item.processConfig.push({type:'process',active:false});
+      item.processConfig[6]={type:'deburr',active:true};
+      item.processConfig[7]={type:'done',active:true};
+      // processCounts も8要素保証
+      while(item.processCounts.length < 8) item.processCounts.push(0);
+    } else {
+      // 8スロット済みでも index 6,7 は強制固定
+      item.processConfig[6]={type:'deburr',active:true};
+      item.processConfig[7]={type:'done',active:true};
+    }
+    // doneCount を index 7 の在庫と同期
+    if(item.processCounts[7] > 0 && item.doneCount === 0) item.doneCount = item.processCounts[7];
+  });
+  saveDb(); // マイグレーション結果を保存
+})();
+
+// ===== まとめ工程ヘルパー =====
+const GRP_LABELS = ['①','②','③','④','⑤','⑥'];
+
+// アクティブ工程リストをまとめ工程を考慮した表示リストに変換
+function buildDisplayActives(item){
+  const actives = getActives(item);
+  const groups = (item.processGroups||[]).filter(g=>
+    g.start>=1 && g.end<=6 && g.start<=g.end
+  );
+  const displayList = [];
+  const covered = new Set();
+
+  // 各グループについて、アクティブな工程を収集
+  for(const g of groups){
+    const si = g.start - 1; // 0-indexed
+    const ei = g.end - 1;
+    const ga = actives.filter(a => a.idx >= si && a.idx <= ei);
+    if(ga.length > 0){
+      ga.forEach(a => covered.add(a.idx));
+      displayList.push({ isGroup:true, group:g, groupActives:ga });
+    }
+  }
+  // グループ外のアクティブ工程を個別エントリとして追加
+  for(const p of actives){
+    if(!covered.has(p.idx)){
+      displayList.push({ isGroup:false, process:p });
+    }
+  }
+  // 先頭のインデックス順にソート
+  displayList.sort((a,b)=>{
+    const ai = a.isGroup ? a.groupActives[0].idx : a.process.idx;
+    const bi = b.isGroup ? b.groupActives[0].idx : b.process.idx;
+    return ai - bi;
+  });
+  return displayList;
+}
+
+// まとめ工程ブロックのレンダリング
+function renderGroupBlock(item, entry, di, displayList){
+  const { group, groupActives } = entry;
+  const count = groupActives.reduce((s,a) => s + item.processCounts[a.idx], 0);
+  const hasNext = di < displayList.length - 1;
+  const displayName = `${GRP_LABELS[group.start-1]}〜${GRP_LABELS[group.end-1]}`;
+  const actions = `<div class="process-actions">
+    <div class="process-actions-row">
+      <button class="btn btn-move btn-next btn-ship-full"
+        ${hasNext&&count>0?'':'disabled'}
+        onclick="openGroupOp('${item.id}',${group.start},${group.end})">次へ →</button>
+    </div>
+  </div>`;
+  return `<div class="process-block group-block">
+    <span class="group-range-label">まとめ工程</span>
+    <div class="process-name">${displayName}</div>
+    <div class="process-count${count===0?' zero':''}">${count}</div>
+    ${actions}
+  </div>`;
+}
+
+// まとめ工程の「次へ」操作
+function openGroupOp(itemId, groupStart, groupEnd){
+  const item = db.items.find(i=>i.id===itemId);
+  if(!item) return;
+  const allActives = getActives(item);
+  const si = groupStart - 1;
+  const ei = groupEnd - 1;
+  const groupActives = allActives.filter(a => a.idx >= si && a.idx <= ei);
+  const groupCount = groupActives.reduce((s,a) => s + item.processCounts[a.idx], 0);
+  const nextProcess = allActives.find(a => a.idx > ei);
+  if(!nextProcess){ toast('次工程がありません','error'); return; }
+
+  const displayName = `${GRP_LABELS[groupStart-1]}〜${GRP_LABELS[groupEnd-1]}`;
+  pendingOp = {
+    itemId,
+    processIdx: null,
+    opType: 'group-move',
+    groupStart, groupEnd,
+    groupActives,
+    toIdx: nextProcess.idx
+  };
+  const opQty = gid('op-qty');
+  opQty.value = 0;
+  opQty.max = groupCount;
+  gid('op-title').textContent = '次工程へ移動（まとめ）';
+  gid('op-icon').textContent = '→';
+  gid('op-icon').className = 'modal-icon move';
+  gid('op-info').innerHTML = `<strong>${escH(item.name)}</strong>（${displayName}：在庫合計 <strong>${groupCount}</strong>${escH(item.unit)}）`;
+  gid('op-desc').style.display = '';
+  gid('op-desc').textContent = `${displayName} の合計在庫から数量を選択し、次工程 [${PNAMES[nextProcess.idx]}] へ移動します`;
+  gid('op-to-process-group').style.display = 'none';
+  gid('op-confirm-btn').className = 'btn-confirm';
+  gid('op-confirm-btn').textContent = '移動する';
+  gid('op-modal').classList.add('open');
+  updateOpConfirmState();
+}
+
 function addTx(itemId,type,qty,from,to,note=''){
   db.transactions.unshift({id:genId(),itemId,type,quantity:qty,fromProcess:from,toProcess:to,userId:currentUser,timestamp:nowStr(),note});
   if(db.transactions.length>500) db.transactions=db.transactions.slice(0,500);
@@ -1636,7 +1892,7 @@ function renderField(){
 function filterItems(v){ fieldFilter=v; renderField(); }
 
 function renderItemCard(item){
-  const actives=getActives(item);
+  const displayList=buildDisplayActives(item);
   const total=getTotalStock(item);
   return `
 <div class="item-card" id="card-${item.id}">
@@ -1675,15 +1931,19 @@ function renderItemCard(item){
       </div>
     </div>
     <div class="process-section-label">⚙ 工程フロー</div>
-    <div class="process-grid">${actives.map((p,pi)=>renderPBlock(item,p,pi,actives)).join('')}</div>
+    <div class="process-grid">${displayList.map((entry,di)=>
+      entry.isGroup
+        ? renderGroupBlock(item,entry,di,displayList)
+        : renderPBlock(item,entry.process,di,displayList)
+    ).join('')}</div>
   </div>
 </div>`;
 }
 
-function renderPBlock(item,p,pi,allActives){
+function renderPBlock(item,p,di,displayList){
   const count=item.processCounts[p.idx];
   const isDeburr=p.type==='deburr', isDone=p.type==='done';
-  const hasPrev=pi>0, hasNext=pi<allActives.length-1;
+  const hasNext=di<displayList.length-1;
   let blockCls='process-block', labelHtml='';
   if(isDeburr){ blockCls+=' deburr-block'; labelHtml='<span class="deburr-label">バリ取り</span>'; }
   else if(isDone){ blockCls+=' done-block'; labelHtml='<span class="done-label">完成</span>'; }
@@ -1697,13 +1957,18 @@ function renderPBlock(item,p,pi,allActives){
       </div>
     </div>`;
   } else {
+    // 次の移動先: displayListの次のentryから最初の個別工程、またはグループ内最初の工程を取得
+    const allActives=getActives(item);
+    const nextActives=allActives.filter(a=>a.idx>p.idx);
+    const canNext=hasNext&&count>0&&nextActives.length>0;
     actions=`<div class="process-actions">
       <div class="process-actions-row">
-        <button class="btn btn-move btn-next btn-ship-full" ${hasNext&&count>0?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'move-next')">次へ →</button>
+        <button class="btn btn-move btn-next btn-ship-full" ${canNext?'':'disabled'} onclick="openOp('${item.id}',${p.idx},'move-next')">次へ →</button>
       </div>
     </div>`;
   }
-  return `<div class="${blockCls}">${labelHtml}<div class="process-name">${PNAMES[p.idx]}</div><div class="process-count${count===0?' zero':''}">${count}</div>${actions}</div>`;
+  const nameHtml = (isDeburr||isDone) ? '' : `<div class="process-name">${PNAMES[p.idx]}</div>`;
+  return `<div class="${blockCls}">${labelHtml}${nameHtml}<div class="process-count${count===0?' zero':''}">${count}</div>${actions}</div>`;
 }
 
 function toggleCard(id){ gid('card-'+id).classList.toggle('expanded'); }
@@ -1827,6 +2092,36 @@ function confirmOp(){
   if(!item) return;
   const qty=parseInt(gid('op-qty').value);
   if(!qty||qty<1){ toast('数量を入力してください','error'); return; }
+
+  // ===== まとめ工程移動（グループ移動）=====
+  if(opType==='group-move'){
+    const {groupActives, toIdx, groupStart, groupEnd}=pendingOp;
+    const groupCount=groupActives.reduce((s,a)=>s+item.processCounts[a.idx],0);
+    if(qty>groupCount){ toast('グループ在庫合計を超えています','error'); return; }
+    // 後ろの工程から順番に在庫を消費（まとめ工程の出口から引く）
+    let remaining=qty;
+    const ordered=[...groupActives].reverse();
+    for(const a of ordered){
+      const take=Math.min(remaining, item.processCounts[a.idx]);
+      item.processCounts[a.idx]-=take;
+      remaining-=take;
+      if(remaining<=0) break;
+    }
+    const actualMoved=qty-remaining;
+    if(actualMoved>0){
+      item.processCounts[toIdx]+=actualMoved;
+      addTx(itemId,'移動',actualMoved,groupActives[groupActives.length-1].idx,toIdx);
+    }
+    const dispName=`${GRP_LABELS[groupStart-1]}〜${GRP_LABELS[groupEnd-1]}`;
+    toast(`${actualMoved}個 → ${PNAMES[toIdx]}へ移動（${dispName}まとめ）`,'success');
+    closeModal('op-modal');
+    pendingOp=null;
+    saveDb();
+    renderField();
+    if(currentMode==='admin') renderAdmin();
+    return;
+  }
+
   if(qty>item.processCounts[processIdx]){ toast('在庫数を超えています','error'); return; }
 
   const srcCfg=item.processConfig[processIdx];
@@ -2170,7 +2465,7 @@ function showHistory(){
       const item=db.items.find(i=>i.id===tx.itemId);
       let desc=(item?item.name:'不明')+'：';
       if(tx.type==='移動') desc+=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
-      else if(tx.type==='入庫') desc+=`${PNAMES[tx.toProcess]||'工程1'}へ入庫`;
+      else if(tx.type==='入庫') desc+=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
       else if(tx.type==='出荷') desc+=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
       else if(tx.type==='不良') desc+=`${PNAMES[tx.fromProcess]||'?'}から不良`;
       else if(tx.type==='修正') desc+=`${PNAMES[tx.fromProcess]||'?'} 調整${tx.note?'('+tx.note+')':''}`;
@@ -2185,24 +2480,70 @@ function showHistory(){
   }
 }
 
+// ===== まとめ工程フォーム管理 =====
+function renderFormGroups(){
+  const el = gid('form-group-list');
+  if(!el) return;
+  if(formGroups.length===0){
+    el.innerHTML='<div style="font-size:11px;color:var(--text3);padding:3px 0">グループ未設定（従来表示）</div>';
+    return;
+  }
+  el.innerHTML = formGroups.map((g,i)=>`
+    <div class="group-config-row">
+      <span class="group-config-name">${GRP_LABELS[g.start-1]}〜${GRP_LABELS[g.end-1]}</span>
+      <button class="group-config-del" onclick="removeProcessGroup(${i})">削除</button>
+    </div>`).join('');
+}
+function addProcessGroup(){
+  const s=parseInt(gid('gc-start').value);
+  const e=parseInt(gid('gc-end').value);
+  if(s>e){ toast('開始≤終了になるよう指定してください','error'); return; }
+  if(formGroups.some(g=>g.start===s&&g.end===e)){ toast('同じグループがすでに存在します','error'); return; }
+  // 重複チェック（既存グループと範囲が重なる場合は警告のみ）
+  formGroups.push({start:s, end:e});
+  renderFormGroups();
+  toast(`まとめ工程 ${GRP_LABELS[s-1]}〜${GRP_LABELS[e-1]} を追加しました`,'success');
+}
+function removeProcessGroup(idx){
+  formGroups.splice(idx,1);
+  renderFormGroups();
+}
+
 // ITEM FORM
 function initFormPC(){
-  gid('process-config-grid').innerHTML=Array.from({length:6},(_,i)=>`
+  // 工程①〜⑥（インデックス 0-5）: 通常設定
+  const configSlots = Array.from({length:6},(_,i)=>`
     <div class="process-config-item">
       <div class="process-config-label">${PNAMES[i]}</div>
       <div class="process-toggle">
         <button class="type-btn" id="pc-off-${i}" onclick="setPC(${i},'off')">なし</button>
         <button class="type-btn" id="pc-process-${i}" onclick="setPC(${i},'process')">通常</button>
-        <button class="type-btn" id="pc-deburr-${i}" onclick="setPC(${i},'deburr')">バリ取</button>
-        <button class="type-btn" id="pc-done-${i}" onclick="setPC(${i},'done')">完成</button>
       </div>
     </div>`).join('');
-  formPC.forEach((c,i)=>{ c.active=false; c.type='process'; updatePCUI(i); });
+  // バリ取り・完成品は常に固定
+  const fixedSlots = `
+    <div class="process-config-item" style="border-color:var(--amber-bd);background:var(--amber-bg)">
+      <div class="process-config-label" style="color:var(--amber)">⑦ バリ取り</div>
+      <div style="font-size:10px;color:var(--amber);font-weight:600;padding:4px 0">常時有効（固定）</div>
+    </div>
+    <div class="process-config-item" style="border-color:var(--done-bd);background:var(--done-bg)">
+      <div class="process-config-label" style="color:var(--done)">⑧ 完成品</div>
+      <div style="font-size:10px;color:var(--done);font-weight:600;padding:4px 0">常時有効（固定）</div>
+    </div>`;
+  gid('process-config-grid').innerHTML = configSlots + fixedSlots;
+  // formPC 初期化: ①-⑥ リセット、⑦⑧ 固定
+  for(let i=0;i<6;i++){ formPC[i].active=false; formPC[i].type='process'; updatePCUI(i); }
+  formPC[6]={type:'deburr',active:true};
+  formPC[7]={type:'done',active:true};
+  // formGroups リセット
+  formGroups = [];
+  renderFormGroups();
 }
 function setPC(i,type){ formPC[i].type=type==='off'?'process':type; formPC[i].active=type!=='off'; updatePCUI(i); }
 function updatePCUI(i){
+  if(i>=6) return; // バリ取り・完成品は固定のため更新不要
   const c=formPC[i];
-  ['off','process','deburr','done'].forEach(t=>{
+  ['off','process'].forEach(t=>{
     const btn=gid(`pc-${t}-${i}`); if(!btn) return;
     btn.className='type-btn';
     if(!c.active&&t==='off') btn.classList.add('active-off');
@@ -2224,20 +2565,34 @@ function openItemFormEdit(itemId){
   gid('item-form-confirm').textContent='保存';
   gid('form-code').value=item.code; gid('form-name').value=item.name; gid('form-unit').value=item.unit; gid('form-maker').value=item.maker||'';
   initFormPC();
-  item.processConfig.forEach((c,i)=>{ formPC[i].active=c.active; formPC[i].type=c.type; updatePCUI(i); });
+  item.processConfig.forEach((c,i)=>{
+    if(i>=6) return; // バリ取り・完成品は固定のため編集不可
+    formPC[i].active=c.active; formPC[i].type='process'; updatePCUI(i);
+  });
+  // バリ取り・完成品は常に固定
+  formPC[6]={type:'deburr',active:true};
+  formPC[7]={type:'done',active:true};
+  // まとめ工程設定を読み込む
+  formGroups = (item.processGroups||[]).map(g=>({...g}));
+  renderFormGroups();
   gid('item-form-modal').classList.add('open');
 }
 function saveItem(){
   const code=gid('form-code').value.trim(), name=gid('form-name').value.trim(), unit=gid('form-unit').value.trim(), maker=gid('form-maker').value.trim();
   if(!code||!name){ toast('品番と品名は必須です','error'); return; }
   if(!formPC.some(c=>c.active)){ toast('1つ以上の工程を設定してください','error'); return; }
-  const config=formPC.map(c=>({type:c.type,active:c.active}));
+  const config=formPC.map((c,i)=>{
+    if(i===6) return {type:'deburr',active:true};
+    if(i===7) return {type:'done',active:true};
+    return {type:c.type,active:c.active};
+  });
   if(editingItem){
     editingItem.code=code; editingItem.name=name; editingItem.unit=unit; editingItem.maker=maker; editingItem.processConfig=config;
+    editingItem.processGroups=[...formGroups];
     saveDb();
     toast(`${name} を更新しました`,'success');
   } else {
-    db.items.push({id:genId(),code,name,unit,maker,processCounts:[0,0,0,0,0,0],doneCount:0,defectiveCount:0,shippedCount:0,processConfig:config});
+    db.items.push({id:genId(),code,name,unit,maker,processCounts:[0,0,0,0,0,0,0,0],doneCount:0,defectiveCount:0,shippedCount:0,processConfig:config,processGroups:[...formGroups]});
     saveDb();
     toast(`${name} を登録しました`,'success');
   }
@@ -2275,7 +2630,7 @@ function confirmAdjust(){
 
 // CSV
 function exportCSV(){
-  const headers=['品番','品名','メーカー','単位','工程1','工程2','工程3','工程4','工程5','工程6','完成','不良','出荷','在庫合計'];
+  const headers=['品番','品名','メーカー','単位','工程①','工程②','工程③','工程④','工程⑤','工程⑥','バリ取り','完成品在庫','完成','不良','出荷','在庫合計'];
   const rows=db.items.map(item=>[item.code,item.name,item.maker||'',item.unit,...item.processCounts,item.doneCount,item.defectiveCount,item.shippedCount,getTotalStock(item)]);
   const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
