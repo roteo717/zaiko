@@ -52,6 +52,12 @@ body {
   overflow-x: hidden;
 }
 
+/* ===== iOS ズーム防止: input/select/textarea は必ず16px ===== */
+input, select, textarea {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: 100%;
+}
+
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 
 /* ===== HEADER ===== */
@@ -2424,6 +2430,7 @@ input[type=number] { -moz-appearance: textfield; }
   border-bottom: 1px solid var(--border);
   font-size: 11px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 .nippo-row:last-child { border-bottom: none; }
 .nippo-machine-tag {
@@ -2492,6 +2499,7 @@ input[type=number] { -moz-appearance: textfield; }
   color: var(--text3);
   flex-shrink: 0;
   white-space: nowrap;
+  margin-left: auto;
 }
 .nippo-time {
   font-size: 9px;
@@ -2503,12 +2511,46 @@ input[type=number] { -moz-appearance: textfield; }
 .nippo-list {
   max-height: 400px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .nippo-empty {
   padding: 28px 14px;
   text-align: center;
   color: var(--text3);
   font-size: 12px;
+}
+
+/* ===== スマホ 日報行 2段レイアウト ===== */
+@media (max-width: 520px) {
+  .nippo-row {
+    padding: 8px 12px 8px 14px;
+    gap: 5px;
+    row-gap: 2px;
+  }
+  /* 1段目: machine-tag | item-name qty / status type-tag */
+  .nippo-machine-tag { order: 1; }
+  .nippo-row > .nippo-sep:first-of-type { order: 2; }
+  .nippo-item-name   { order: 3; font-size: 10px; }
+  .nippo-qty         { order: 4; font-size: 13px; font-weight: 800; }
+  .nippo-row > .nippo-sep:last-of-type  { order: 5; }
+  .nippo-status      { order: 6; font-size: 10px; max-width: none; flex: 1 1 0; min-width: 0; }
+  .nippo-type-tag    { order: 7; }
+  /* 2段目: user と time を右端に押し出す */
+  .nippo-user {
+    order: 8;
+    margin-left: auto;
+    font-size: 9px;
+  }
+  .nippo-time {
+    order: 9;
+    font-size: 9px;
+  }
+
+  /* フィルター群: 折り返し許容 */
+  .nippo-filters { gap: 5px; }
+  .nippo-date-input    { flex: 1 1 110px; }
+  .nippo-filter-select { flex: 1 1 90px; }
+  .nippo-pdf-btn { margin-top: 2px; }
 }
 
 /* ===== adminCard 設備サマリー行（1行形式）===== */
