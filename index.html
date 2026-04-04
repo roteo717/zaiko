@@ -60,170 +60,136 @@ input, select, textarea {
 
 .app { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* ===== HEADER ===== */
-.header {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 0 12px;
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid var(--border);
   display: flex;
-  align-items: center;
-  height: 44px;
-  gap: 8px;
-  position: sticky;
-  top: 0;
+  align-items: stretch;
   z-index: 100;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 -1px 6px rgba(0,0,0,0.06);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.logo {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
+.nav-tab {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
-}
-.logo-icon {
-  width: 26px; height: 26px;
-  background: var(--accent);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; color: #fff;
-}
-.logo-text { white-space: nowrap; }
-.mode-tabs {
-  display: flex;
-  background: var(--bg3);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 2px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  flex-shrink: 1;
-  min-width: 0;
-}
-.mode-tabs::-webkit-scrollbar { display: none; }
-.mode-tab {
-  padding: 5px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text2);
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px 10px;
   border: none;
   background: transparent;
-  transition: all 0.15s;
-  white-space: nowrap;
+  cursor: pointer;
   font-family: var(--font);
+  color: var(--text3);
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.mode-tab.active { background: var(--accent); color: #fff; }
-.header-right { margin-left: auto; flex-shrink: 0; }
-.user-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  background: var(--bg3);
-  border-radius: 20px;
-  font-size: 11px;
-  color: var(--text2);
-  border: 1px solid var(--border);
-}
-.user-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
-.user-name { white-space: nowrap; }
+.nav-tab.active { color: var(--accent); }
+.nav-tab svg { width: 22px; height: 22px; display: block; }
+.nav-tab-label { font-size: 10px; font-weight: 500; white-space: nowrap; }
 
 /* ===== FIELD MODE ===== */
-.field-mode { padding: 12px; max-width: 1200px; margin: 0 auto; width: 100%; }
+.field-mode { padding: 12px; max-width: 1200px; margin: 0 auto; width: 100%; padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 .field-search { margin-bottom: 10px; }
 
 /* ===== 検索バー（QR内蔵・絶対配置方式）===== */
-.search-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.search-wrapper .search-input,
-.search-bar .search-input,
-.search-input {
-  width: 100%;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 11px 80px 11px 14px; /* 右にQRボタン分の余白 */
-  color: var(--text);
-  font-size: 14px;
-  font-family: var(--font);
-  outline: none;
-  transition: border-color 0.15s;
-  box-sizing: border-box;
-}
-.search-wrapper .search-input:focus,
-.search-bar .search-input:focus,
-.search-input:focus { border-color: var(--accent); }
-.search-input::placeholder { color: var(--text3); }
-
-/* QRボタン: inputの内側右端にぴったり貼り付け（一体型アドオン）*/
-.btn-qr-inline {
-  position: absolute;
-  right: 1px;
-  top: 1px;
-  bottom: 1px;
-  width: 68px;
-  min-width: 68px;
-  background: #eef2ff;
-  border: none;
-  border-left: 1px solid #c8d4ff;
-  border-radius: 0 calc(var(--r) - 1px) calc(var(--r) - 1px) 0;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: var(--font);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  color: var(--accent);
-  transition: color 0.12s, background 0.12s;
-  -webkit-tap-highlight-color: transparent;
-  z-index: 2;
-  white-space: nowrap;
-}
-/* 左側区切り線: 削除 */
-.btn-qr-inline:hover {
-  color: #fff;
-  background: var(--accent);
-  border-left-color: var(--accent);
-}
-/* focus時: inputのborderがアクセントカラーになるのに連動 */
-.search-wrapper .search-input:focus ~ .btn-qr-inline,
-.search-bar .search-input:focus ~ .btn-qr-inline {
-  background: var(--accent);
-  color: #fff;
-  border-left-color: var(--accent);
-}
-.btn-qr-inline:active {
-  color: #fff;
-  background: var(--accent2);
-  opacity: 0.9;
-}
-
-/* search-bar は後方互換のため残す */
+/* ===== 検索バー（新デザイン: 🔍 左アイコン + QR右アイコンのみ）===== */
+.search-wrapper,
 .search-bar {
   position: relative;
   width: 100%;
 }
 
+/* 角丸矩形コンテナ */
+.search-wrapper,
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid #e4e6ef;
+  border-radius: 12px;
+  padding: 0 12px 0 14px;
+  gap: 6px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+.search-wrapper:focus-within,
+.search-bar:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,126,255,0.10);
+}
+
+/* 🔍 左アイコン */
+.search-wrapper::before,
+.search-bar::before {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239198b5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* input 本体 */
+.search-wrapper .search-input,
+.search-bar .search-input,
+.search-input {
+  flex: 1;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 11px 0;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  box-sizing: border-box;
+  min-width: 0;
+}
+.search-input::placeholder { color: var(--text3); }
+
+/* QR ボタン（右・アイコンのみ）*/
+.btn-qr-inline {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+  color: var(--text3);
+  font-size: 18px;
+  padding: 0;
+}
+.btn-qr-inline:hover  { background: rgba(79,126,255,0.10); color: var(--accent); }
+.btn-qr-inline:active { background: rgba(79,126,255,0.18); }
+
+/* QRアイコン SVG（📷 を SVG グリッドアイコンに変更）*/
+.btn-qr-inline .qr-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* iOS zoom 防止 */
 @media (max-width: 768px) {
   .search-wrapper .search-input,
-  .search-bar .search-input {
-    font-size: 16px; /* iOS ズーム防止 */
-    padding-right: 80px;
-  }
-  .btn-qr-inline {
-    width: 72px;
-    min-width: 72px;
-    font-size: 12px;
+  .search-bar .search-input,
+  .search-input {
+    font-size: 16px;
   }
 }
 .section-title {
@@ -1016,7 +982,7 @@ input, select, textarea {
 .qr-btn:active { background: var(--accent2); color: #fff; transform: translateY(-50%) scale(0.94); }
 
 /* ===== ADMIN MODE ===== */
-.admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; }
+.admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 
 /* ① 操作エリア: テーブル一覧と完全に分離されたカード */
 .action-area {
@@ -1348,7 +1314,7 @@ input, select, textarea {
 .acv2-edit-btn:active { transform: scale(0.90); }
 
 /* ===== ADMIN MODE (action-area is defined above) ===== */
-.admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; }
+.admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 .admin-search { flex: 1; min-width: 160px; max-width: 100%; }
 
 /* Stats */
@@ -1932,7 +1898,7 @@ input[type=number] { -moz-appearance: textfield; }
   .logo-text { display: none; }
   .user-badge { padding: 4px 8px; font-size: 11px; }
   .user-name { font-size: 11px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .mode-tab { padding: 5px 9px; font-size: 11px; }
+  
 
   /* Field */
   .field-mode, .admin-mode { padding: 10px; }
@@ -1997,7 +1963,7 @@ input[type=number] { -moz-appearance: textfield; }
 @media print {
   .header, .action-area, .field-search,
   .btn-receive-toggle, .process-actions,
-  #toast-container, #ship-schedule-modal { display: none !important; }
+  #toast-container { display: none !important; }
   body { background: #fff !important; overflow: visible; }
   .field-mode, .admin-mode { max-width: 210mm; padding: 8mm; margin: 0 auto; }
   .item-card { break-inside: avoid; page-break-inside: avoid;
@@ -2039,21 +2005,11 @@ input[type=number] { -moz-appearance: textfield; }
 /* header ship link */
 .ship-link-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:4px;white-space:nowrap;transition:all 0.1s;text-decoration:none;appearance:none;-webkit-appearance:none}
 .ship-link-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
-.ship-schedule-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ship-schedule-modal-inner{background:#fff;border-radius:12px;overflow:hidden;width:96vw;max-width:1120px;height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.25)}
-@media(max-width:640px){
-  .ship-schedule-modal{padding:0;align-items:stretch;justify-content:flex-end}
-  .ship-schedule-modal-inner{width:100%;max-width:100%;height:92dvh;border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.18)}
-}
-.ship-schedule-modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--accent);color:#fff;flex-shrink:0}
-.ship-schedule-modal-title{font-size:13px;font-weight:700}
-.ship-schedule-modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:4px 10px;font-size:14px;cursor:pointer;font-family:var(--font)}
-.ship-schedule-modal-close:hover{background:rgba(255,255,255,.35)}
-.ship-schedule-iframe{flex:1;border:none;width:100%}
+#ship-mode{width:100%;padding:0;padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))}
 
 
 /* ===== 出荷スケジュール 埋め込みCSS ===== */
-.ship-inner { overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
+.ship-inner { display: block; }
 .ship-inner .tab-bar { position: sticky; top: 0; z-index: 40; }
 
 .ship-inner {box-sizing:border-box;margin:0;padding:0}
@@ -3128,6 +3084,9 @@ input[type=number] { -moz-appearance: textfield; }
    ================================================================ */
 
 /* カード基盤 */
+/* ================================================================
+   現場カード v3: 工程→在庫→操作
+   ================================================================ */
 .fc {
   background: #fff;
   border-radius: 12px;
@@ -3141,12 +3100,12 @@ input[type=number] { -moz-appearance: textfield; }
 .fc.status-warn { background: #fffbf0; border-left: 4px solid var(--amber); }
 .fc.status-ok   { background: #f4fdf8; border-left: 4px solid var(--green); }
 
-/* ヘッダー（品名+品番+ステータス）*/
+/* ① ヘッダー（品名・品番・設備・⚙）*/
 .fc-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 14px 6px;
+  padding: 11px 14px 6px;
 }
 .fc-name {
   font-size: 15px;
@@ -3170,12 +3129,78 @@ input[type=number] { -moz-appearance: textfield; }
   flex-shrink: 0;
 }
 
-/* 数値エリア（仕掛品主役 + 完成品補助）*/
+/* ② 工程フロー（最上部・主役）*/
+.fc-procflow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 14px 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.fc-procflow::-webkit-scrollbar { display: none; }
+.fc-pf-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 8px;
+  padding: 5px 10px;
+  min-width: 52px;
+  border: 1.5px solid var(--border);
+  background: var(--bg3);
+  gap: 1px;
+}
+.fc-pf-chip.has-stock {
+  background: #eff4ff;
+  border-color: #b8ccff;
+}
+.fc-pf-chip.is-done.has-stock {
+  background: var(--done-bg);
+  border-color: var(--done-bd);
+}
+.fc-pf-chip.is-deburr.has-stock {
+  background: var(--amber-bg);
+  border-color: var(--amber-bd);
+}
+.fc-pf-chip-label {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+.fc-pf-chip.has-stock .fc-pf-chip-label { color: var(--accent); }
+.fc-pf-chip.is-done.has-stock .fc-pf-chip-label { color: var(--done); }
+.fc-pf-chip.is-deburr.has-stock .fc-pf-chip-label { color: var(--amber); }
+.fc-pf-chip-val {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 800;
+  color: #ccc;
+  line-height: 1;
+}
+.fc-pf-chip.has-stock .fc-pf-chip-val { color: var(--accent); }
+.fc-pf-chip.is-done.has-stock .fc-pf-chip-val { color: var(--done); }
+.fc-pf-chip.is-deburr.has-stock .fc-pf-chip-val { color: var(--amber); }
+/* 矢印セパレータ */
+.fc-pf-arrow {
+  font-size: 10px;
+  color: var(--border2);
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+/* ③ 在庫情報（仕掛品主役）*/
 .fc-nums {
   display: flex;
   align-items: baseline;
   gap: 14px;
-  padding: 2px 14px 10px;
+  padding: 0 14px 8px;
+  border-top: 1px solid var(--border);
+  margin: 0 0 0;
+  padding-top: 10px;
 }
 .fc-wip-block {
   display: flex;
@@ -3220,7 +3245,7 @@ input[type=number] { -moz-appearance: textfield; }
 }
 .fc-done-val.zero { color: #ddd; font-weight: 400; font-size: 18px; }
 
-/* 不足バッジ（仕掛品の下）*/
+/* 不足バッジ */
 .fc-shortage {
   margin: 0 14px 8px;
   display: inline-flex;
@@ -3235,12 +3260,13 @@ input[type=number] { -moz-appearance: textfield; }
   padding: 3px 10px;
 }
 
-/* 操作ボタン行 */
+/* ④ 操作エリア */
 .fc-actions {
   display: flex;
   gap: 8px;
   padding: 0 12px 12px;
 }
+/* 入庫ボタン（大・主役）*/
 .fc-btn-receive {
   flex: 1;
   height: 52px;
@@ -3261,7 +3287,13 @@ input[type=number] { -moz-appearance: textfield; }
   transition: all 0.12s;
 }
 .fc-btn-receive:active { transform: scale(0.97); background: var(--accent2); }
-
+.fc-btn-receive.open {
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+/* 工程詳細ボタン（小・補助）*/
 .fc-btn-detail {
   width: 52px;
   height: 52px;
@@ -3281,24 +3313,30 @@ input[type=number] { -moz-appearance: textfield; }
 .fc-btn-detail:active { background: var(--bg4); }
 .fc-expanded .fc-btn-detail { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-/* 工程サマリー（補助・小さめ）*/
-.fc-proc-row {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding: 0 14px 8px;
-  flex-wrap: wrap;
+/* ⑤ インライン入庫フォーム（展開式）*/
+.fc-inline-recv {
+  max-height: 0;
   overflow: hidden;
+  transition: max-height 0.28s cubic-bezier(0.4,0,0.2,1);
 }
-.fc-proc-label {
-  font-size: 9px;
-  color: var(--text3);
-  font-weight: 600;
-  white-space: nowrap;
-  flex-shrink: 0;
+.fc.recv-open .fc-inline-recv {
+  max-height: 600px;
+}
+.fc-inline-recv-inner {
+  padding: 0 14px 14px;
+  border-top: 1px solid var(--border);
+}
+.fc-inline-recv-inner .stock-input-label {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
 }
 
-/* 展開ボディ（詳細操作エリア）*/
+/* ⑥ 展開ボディ（工程フロー詳細）*/
 .fc-body {
   max-height: 0;
   overflow: hidden;
@@ -3311,6 +3349,9 @@ input[type=number] { -moz-appearance: textfield; }
   padding: 4px 14px 14px;
   border-top: 1px solid var(--border);
 }
+
+/* 後方互換用（旧クラス）*/
+.fc-proc-row { display: none; }
 
 /* ================================================================
    v10: 管理カード（可視化特化）強化
@@ -3545,33 +3586,41 @@ input[type=number] { -moz-appearance: textfield; }
 </head>
 <body>
 <div class="app" id="app">
+<div id="machine-badge" style="display:none"><span id="current-machine-label"></span></div>
 
-<header class="header">
-  <div class="mode-tabs">
-    <button class="mode-tab active" onclick="switchMode('field')">📱 現場</button>
-    <button class="mode-tab" onclick="switchMode('admin')">🖥 管理</button>
-    <button type="button" class="mode-tab" onclick="handleAction('出荷スケジュール')">🚢 出荷</button>
-    <button type="button" class="mode-tab" id="hdr-nippo-btn" onclick="switchMode('admin');setTimeout(()=>{showNippo();},80)">📄 日報</button>
-    <button type="button" class="mode-tab" onclick="switchMode('admin');setTimeout(()=>{showHistory();},80)">📋 履歴</button>
-  </div>
-  <div class="header-right" style="display:flex;align-items:center;gap:6px;">
-    <div class="machine-badge" id="machine-badge" onclick="openMachineModal()" title="使用設備を変更">
-      <div class="machine-dot"></div>
-      <span id="current-machine-label">設備未設定</span>
-    </div>
-    <div class="user-badge" onclick="openUserModal()" style="cursor:pointer" title="名前を変更">
-      <div class="user-dot"></div>
-      <span class="user-name" id="current-user">田中 一郎</span>
-    </div>
-  </div>
-</header>
+<nav class="bottom-nav">
+  <button class="nav-tab active" onclick="switchMode('field')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+    </svg>
+    <span class="nav-tab-label">現場</span>
+  </button>
+  <button class="nav-tab" onclick="switchMode('admin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <span class="nav-tab-label">管理</span>
+  </button>
+  <button class="nav-tab" onclick="switchMode('ship')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9a2 2 0 0 1-2 2h-2"/><circle cx="9" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+    </svg>
+    <span class="nav-tab-label">出荷</span>
+  </button>
+  <button class="nav-tab" onclick="switchMode('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+    <span class="nav-tab-label">設定</span>
+  </button>
+</nav>
 
 <div id="field-mode" class="field-mode">
   <!-- 操作エリア: 検索＋QR → +品目登録 → 日報 → 調整 履歴 -->
   <div class="action-area field-action-area">
     <div class="search-wrapper">
-      <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterItems(this.value)" id="field-search-input">
-      <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-field')" title="QRコードで検索">📷 QR</button>
+      <input class="search-input" type="search" placeholder="商品名・ヨミ・バーコードで検索" oninput="filterItems(this.value)" id="field-search-input" autocomplete="off">
+      <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-field')" title="QRコードで検索"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx="0.5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
 
   </div>
@@ -3590,13 +3639,8 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="action-area">
     <!-- 検索＋QR（一体化）-->
     <div class="search-wrapper">
-      <input class="search-input admin-search" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
-      <button type="button" class="qr-btn" onclick="openQrScanner('search-admin')" title="QRコードで検索">📷 QR</button>
-    </div>
-    <!-- ボタン群: 主操作→補助操作 -->
-    <div class="action-buttons">
-      <button class="btn-action-primary" onclick="openItemForm()">＋ 品目登録</button>
-      <button class="btn-action-sub" onclick="openAdjustModal()">📝 調整</button>
+      <input class="search-input admin-search" type="search" placeholder="商品名・ヨミ・バーコードで検索" oninput="filterAdmin(this.value)" autocomplete="off">
+      <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-admin')" title="QRコードで検索"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx="0.5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
   </div>
   <!-- テーブルレイアウト廃止 → カードレイアウトに統一 (v8) -->
@@ -3928,13 +3972,8 @@ input[type=number] { -moz-appearance: textfield; }
 
 <div id="toast-container"></div>
 
-<div id="ship-schedule-modal" class="ship-schedule-modal" style="display:none" onclick="if(event.target===this)closeShipScheduleModal()">
-  <div class="ship-schedule-modal-inner">
-    <div class="ship-schedule-modal-header">
-      <span class="ship-schedule-modal-title">🚢 出荷スケジュール</span>
-      <button type="button" class="ship-schedule-modal-close" onclick="closeShipScheduleModal()">✕ 閉じる</button>
-    </div>
-    <div class="ship-inner" id="ship-inner">
+<div id="ship-mode" style="display:none">
+  <div class="ship-inner" id="ship-inner">
 <span class="sync-badge" id="sync-badge" style="display:none"></span>
 
 <div class="tab-bar">
@@ -4020,7 +4059,6 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 <div id="panel-bg" style="display:none;position:fixed;inset:0;z-index:299;background:rgba(0,0,0,.2)" onclick="closePanel()"></div>
 </div>
-  </div>
 </div>
 
 <script>
@@ -4197,7 +4235,7 @@ function saveUserName(){
   if(!name){ toast('名前を入力または選択してください','error'); return; }
   currentUser = name;
   localStorage.setItem('inv_user', name);
-  gid('current-user').textContent = name;
+  const _cu = gid('current-user'); if(_cu) _cu.textContent = name;
   closeModal('user-modal');
   toast(`作業者を「${name}」に設定しました`,'success');
 }
@@ -4379,11 +4417,19 @@ function addTx(itemId,type,qty,from,to,note='',machine=''){
 
 // MODE
 function switchMode(mode){
+  if(currentMode==='ship' && mode!=='ship') syncFromShipDb();
   currentMode=mode;
   gid('field-mode').style.display=mode==='field'?'':'none';
   gid('admin-mode').style.display=mode==='admin'?'':'none';
-  document.querySelectorAll('.mode-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&mode==='field')||(i===1&&mode==='admin')));
-  mode==='field'?renderField():renderAdmin();
+  gid('ship-mode').style.display=mode==='ship'?'':'none';
+  gid('settings-mode').style.display=mode==='settings'?'':'none';
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',
+    (i===0&&mode==='field')||(i===1&&mode==='admin')||(i===2&&mode==='ship')||(i===3&&mode==='settings')
+  ));
+  if(mode==='field') renderField();
+  else if(mode==='admin') renderAdmin();
+  else if(mode==='ship'){ saveUnifiedDb(); shipInit(); }
+  else if(mode==='settings'){ _renderSettingsMachines(); _renderSettingsUsers(); }
 }
 
 // FIELD
@@ -4630,93 +4676,130 @@ function renderItemCard(item){
   const total=getTotalStock(item);
   const doneCount=item.processCounts[7]||0;
   const wipCount=item.processCounts.slice(0,7).reduce((a,b)=>a+b,0);
-  const isZero = total===0;
-  const lastM = getLastMachineForItem(item.id);
+  const lastM=getLastMachineForItem(item.id);
   const status=getItemStatus(item);
-  const statusCls=status?` status-${status}`:'';
+  const statusCls=status?' status-'+status:'';
 
   // 不足数
   let shortageQty=0;
   const ships=(db.shipments||[]).filter(s=>s.itemId===item.id&&!s.shipped);
   if(ships.length) ships.forEach(s=>{const chk=checkShipmentStock(item,s);shortageQty=Math.max(shortageQty,chk.shortage);});
 
-  // 工程サマリーチップ（通常工程のみ・ゼロ非表示）
-  const procChips=[];
-  displayList.forEach(entry=>{
-    if(entry.isGroup){
-      const cnt=entry.groupActives.reduce((s,a)=>s+item.processCounts[a.idx],0);
-      if(cnt===0) return;
-      const lbl=GRP_LABELS[entry.group.start-1]+'〜'+GRP_LABELS[entry.group.end-1];
-      procChips.push('<span class="process-chip">'+lbl+' '+cnt+'</span>');
-    } else {
-      const p=entry.process;
-      if(p.type==='deburr'||p.type==='done') return;
-      const cnt=item.processCounts[p.idx];
-      if(cnt===0) return;
-      procChips.push('<span class="process-chip">'+PNAMES[p.idx]+' '+cnt+'</span>');
-    }
-  });
-  const procRowHtml=procChips.length
-    ?'<div class="fc-proc-row"><span class="fc-proc-label">工程：</span>'+procChips.join('')+'</div>':'';
-
-  // ステータスアイコン
+  // ── ① ステータスアイコン ──
   const statusIconMap={ng:'🔴',warn:'🟡',ok:'🟢'};
   const statusIcon=status?statusIconMap[status]:'';
 
+  // ── ② 工程フロー（最上部・全工程表示・0はグレー）──
+  const pfChips=[];
+  displayList.forEach((entry,di)=>{
+    if(di>0) pfChips.push('<span class="fc-pf-arrow">›</span>');
+    if(entry.isGroup){
+      const cnt=entry.groupActives.reduce((s,a)=>s+item.processCounts[a.idx],0);
+      const hasSt=cnt>0;
+      const lbl=GRP_LABELS[entry.group.start-1]+'〜'+GRP_LABELS[entry.group.end-1];
+      pfChips.push('<div class="fc-pf-chip'+(hasSt?' has-stock':'')+'"><span class="fc-pf-chip-label">'+lbl+'</span><span class="fc-pf-chip-val">'+cnt+'</span></div>');
+    } else {
+      const p=entry.process;
+      const cnt=item.processCounts[p.idx];
+      const hasSt=cnt>0;
+      const isDone=p.type==='done', isDeburr=p.type==='deburr';
+      const typeCls=(isDone?' is-done':isDeburr?' is-deburr':'');
+      const lbl=isDone?'完成':isDeburr?'バリ取':PNAMES[p.idx];
+      pfChips.push('<div class="fc-pf-chip'+typeCls+(hasSt?' has-stock':'')+'"><span class="fc-pf-chip-label">'+lbl+'</span><span class="fc-pf-chip-val">'+cnt+'</span></div>');
+    }
+  });
+
+  // ── ③ 在庫（仕掛品主役）──
   const wipHtml='<span class="fc-wip-val'+(wipCount===0?' zero':'')+'">'+wipCount.toLocaleString()+'</span>';
   const doneHtml='<span class="fc-done-val'+(doneCount===0?' zero':'')+'">'+doneCount.toLocaleString()+'</span>';
 
+  // ── ④ インライン入庫フォーム（展開式）──
+  const inlineRecvHtml=''
+    +'<div class="fc-inline-recv" id="fc-recv-'+item.id+'">'
+      +'<div class="fc-inline-recv-inner">'
+        +'<div class="stock-input-label">入庫数</div>'
+        +'<input class="qty-display" id="rq-'+item.id+'" type="number" min="1" value="0" inputmode="numeric">'
+        +'<div class="qty-section-label qty-section-label--plus">増やす</div>'
+        +'<div class="btn-row-plus">'
+          +'<button class="qty-btn" onclick="addRQ(\''+item.id+'\',1)">+1</button>'
+          +'<button class="qty-btn" onclick="addRQ(\''+item.id+'\',10)">+10</button>'
+          +'<button class="qty-btn" onclick="addRQ(\''+item.id+'\',50)">+50</button>'
+        +'</div>'
+        +'<div class="qty-section-label qty-section-label--minus">減らす</div>'
+        +'<div class="btn-row-minus">'
+          +'<button class="qty-btn" onclick="addRQ(\''+item.id+'\',-1)">-1</button>'
+          +'<button class="qty-btn" onclick="addRQ(\''+item.id+'\',-10)">-10</button>'
+        +'</div>'
+        +'<hr class="stock-input-divider">'
+        +'<div class="recv-machine-row"><span class="recv-machine-label">🔧 設備</span><div class="recv-machine-chips" id="recv-mc-'+item.id+'">'+_buildRecvChipsHtml(item.id)+'</div></div>'
+        +'<button class="btn-receive" onclick="handleAction(\'入庫\',{itemId:\''+item.id+'\'})">入庫</button>'
+      +'</div>'
+    +'</div>';
+
+  // ── ⑤ 工程詳細ボディ（⚙タップで展開）──
+  const detailBodyHtml=''
+    +'<div class="fc-body">'
+      +'<div class="process-section-label">⚙ 工程フロー</div>'
+      +'<div class="process-grid">'+displayList.map((entry,di)=>entry.isGroup?renderGroupBlock(item,entry,di,displayList):renderPBlock(item,entry.process,di,displayList)).join('')+'</div>'
+      +'<div class="item-footer">'
+        +(doneCount>0?'<div class="footer-stat"><span class="footer-stat-label">完成品</span><span class="footer-stat-value done-c">'+doneCount.toLocaleString()+'個</span></div>':'')
+        +(wipCount>0?'<div class="footer-stat"><span class="footer-stat-label">仕掛品</span><span class="footer-stat-value">'+wipCount.toLocaleString()+'個</span></div>':'')
+      +'</div>'
+    +'</div>';
+
   return '<div class="fc'+statusCls+'" id="card-'+item.id+'">'
-  +'<div class="fc-head">'
-  +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
-  +'<span class="fc-code">'+escH(item.code)+'</span>'
-  +(statusIcon?'<span style="font-size:15px;flex-shrink:0">'+statusIcon+'</span>':'')
-  +(lastM?'<span class="card-machine-badge" style="font-size:9px;color:var(--text3);flex-shrink:0">🔧'+escH(lastM)+'</span>':'')
-  +'</div>'
-  +'<div class="fc-nums">'
-    +'<div class="fc-wip-block"><span class="fc-wip-label">仕掛品</span>'+wipHtml+'</div>'
-    +'<div class="fc-done-block"><span class="fc-done-label">完成品</span>'+doneHtml+'</div>'
-  +'</div>'
-  +(shortageQty>0?'<div class="fc-shortage">⚠ 不足 '+shortageQty.toLocaleString()+'個</div>':'')
-  +procRowHtml
-  +'<div class="fc-actions">'
-    +'<button class="fc-btn-receive" onclick="event.stopPropagation();_fcReceive(\''+item.id+'\')">＋ 入庫</button>'
-    +'<button class="fc-btn-detail" onclick="toggleCard(\''+item.id+'\')" title="詳細・工程操作">⚙</button>'
-  +'</div>'
-  +'<div class="fc-body">'
-    +'<div class="receive-row"><div class="receive-header"><div class="receive-header-left"><span class="receive-header-title">📦 入庫（スタート）</span><span class="receive-header-stock">現在在庫：'+getTotalStock(item)+'個</span></div><button class="btn-receive-toggle" id="recv-toggle-'+item.id+'" onclick="toggleReceive(\''+item.id+'\')">入庫する</button></div>'
-    +'<div class="stock-input" id="stock-input-'+item.id+'"><div class="stock-input-label">入庫数</div>'
-    +'<input class="qty-display" id="rq-'+item.id+'" type="number" min="1" value="0" inputmode="numeric">'
-    +'<div class="qty-section-label qty-section-label--plus">増やす</div>'
-    +'<div class="btn-row-plus"><button class="qty-btn" onclick="addRQ(\''+item.id+'\',1)">+1</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',10)">+10</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',50)">+50</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',100)">+100</button></div>'
-    +'<div class="qty-section-label qty-section-label--minus">減らす</div>'
-    +'<div class="btn-row-minus"><button class="qty-btn" onclick="addRQ(\''+item.id+'\',-1)">-1</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',-10)">-10</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',-50)">-50</button></div>'
-    +'<hr class="stock-input-divider">'
-    +'<div class="recv-machine-row"><span class="recv-machine-label">🔧 設備</span><div class="recv-machine-chips" id="recv-mc-'+item.id+'">'+_buildRecvChipsHtml(item.id)+'</div></div>'
-    +'<button class="btn-receive" onclick="handleAction(\'入庫\',{itemId:\''+item.id+'\'})">入庫</button></div></div>'
-    +'<div class="process-section-label">⚙ 工程フロー</div>'
-    +'<div class="process-grid">'+displayList.map((entry,di)=>entry.isGroup?renderGroupBlock(item,entry,di,displayList):renderPBlock(item,entry.process,di,displayList)).join('')+'</div>'
-        +'<div class="item-footer">'
-    +(doneCount>0?'<div class="footer-stat"><span class="footer-stat-label">完成品</span><span class="footer-stat-value done-c">'+doneCount.toLocaleString()+'個</span></div>':'')
-    +(wipCount>0?'<div class="footer-stat"><span class="footer-stat-label">仕掛品</span><span class="footer-stat-value">'+wipCount.toLocaleString()+'個</span></div>':'')
+    // ヘッダー
+    +'<div class="fc-head">'
+      +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
+      +'<span class="fc-code">'+escH(item.code)+'</span>'
+      +(statusIcon?'<span style="font-size:15px;flex-shrink:0">'+statusIcon+'</span>':'')
+      +(lastM?'<span class="card-machine-badge" style="font-size:9px;color:var(--text3);flex-shrink:0">🔧'+escH(lastM)+'</span>':'')
     +'</div>'
-  +'</div>'
+    // 工程フロー（最上部・主役）
+    +'<div class="fc-procflow">'+pfChips.join('')+'</div>'
+    // 在庫情報
+    +'<div class="fc-nums">'
+      +'<div class="fc-wip-block"><span class="fc-wip-label">仕掛品</span>'+wipHtml+'</div>'
+      +'<div class="fc-done-block"><span class="fc-done-label">完成品</span>'+doneHtml+'</div>'
+    +'</div>'
+    // 不足バッジ
+    +(shortageQty>0?'<div class="fc-shortage">⚠ 不足 '+shortageQty.toLocaleString()+'個</div>':'')
+    // 操作エリア
+    +'<div class="fc-actions">'
+      +'<button class="fc-btn-receive" id="recv-btn-'+item.id+'" onclick="event.stopPropagation();_fcToggleRecv(\''+item.id+'\')">＋ 入庫</button>'
+      +'<button class="fc-btn-detail" onclick="event.stopPropagation();toggleCard(\''+item.id+'\')" title="工程詳細">⚙</button>'
+    +'</div>'
+    // インライン入庫フォーム
+    +inlineRecvHtml
+    // 工程詳細ボディ
+    +detailBodyHtml
   +'</div>';
+}
+
+function _fcToggleRecv(itemId){
+  const card=gid('card-'+itemId);
+  const recv=gid('fc-recv-'+itemId);
+  const btn=gid('recv-btn-'+itemId);
+  if(!card||!recv||!btn) return;
+  const isOpen=card.classList.toggle('recv-open');
+  btn.textContent=isOpen?'✕ 閉じる':'＋ 入庫';
+  btn.classList.toggle('open',isOpen);
+  if(isOpen){
+    setTimeout(()=>recv.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+  }
+  autoSaveState();
 }
 
 function _fcReceive(itemId){
   const card=gid('card-'+itemId);
   if(!card) return;
-  card.classList.add('expanded','fc-expanded');
+  card.classList.add('recv-open');
+  const btn=gid('recv-btn-'+itemId);
+  if(btn){ btn.textContent='✕ 閉じる'; btn.classList.add('open'); }
   setTimeout(()=>{
-    const inp=gid('stock-input-'+itemId);
-    const btn=gid('recv-toggle-'+itemId);
-    if(inp&&!inp.classList.contains('active')){
-      inp.classList.add('active');
-      if(btn){ btn.textContent='閉じる'; btn.classList.add('open'); }
-    }
-    card.scrollIntoView({behavior:'smooth',block:'nearest'});
-  },50);
+    const recv=gid('fc-recv-'+itemId);
+    if(recv) recv.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },80);
   autoSaveState();
 }
 
@@ -6103,7 +6186,7 @@ function confirmAdjust(){
   addTx(item.id,'修正',Math.abs(qty-old),procIdx,procIdx,reason,'');
   saveDb();
   toast(`在庫調整：${item.name} ${PNAMES[procIdx]} ${old}→${qty}`,'success');
-  closeModal('adjust-modal'); renderAdmin();
+  closeModal('adjust-modal'); if(currentMode==='admin') renderAdmin(); else renderField();
 }
 
 // CSV
@@ -6142,22 +6225,16 @@ function toast(msg, type='success', undoCb=null, duration=3500){
 
 // ===== 出荷スケジュール モーダル（ページ遷移なし・SPA内完結）=====
 function openShipScheduleModal(){
-  saveUnifiedDb();
-  gid('ship-schedule-modal').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  shipInit();
+  switchMode('ship');
 }
 function closeShipScheduleModal(){
-  gid('ship-schedule-modal').style.display = 'none';
-  document.body.style.overflow = '';
-  syncFromShipDb(); // 出荷側の変更を取り込む
-  if(currentMode === 'field') renderField(); else renderAdmin();
+  switchMode('field');
 }
 
 renderField();
 
 // 初期化：ユーザー名セット＆未設定なら選択モーダルを開く
-gid('current-user').textContent = currentUser || '名前未設定';
+if(gid('current-user')) gid('current-user').textContent = currentUser || '名前未設定';
 _updateMachineBadge();
 if(!currentUser) openUserModal();
 
@@ -7067,8 +7144,8 @@ function getCurrentState(){
 
   const receiveOpen = [];
   db.items.forEach(item => {
-    const el = gid('stock-input-' + item.id);
-    if(el && el.classList.contains('active')) receiveOpen.push(item.id);
+    const card = gid('card-' + item.id);
+    if(card && card.classList.contains('recv-open')) receiveOpen.push(item.id);
   });
 
   return {
@@ -7111,13 +7188,13 @@ function _restoreReceiveQtys(){
     // 入庫数量
     const el = gid('rq-' + item.id);
     if(el && qtys[item.id]) el.value = qtys[item.id];
-    // 入庫パネル開閉
+    // 入庫パネル開閉（新UIに対応）
     if(open.includes(item.id)){
-      const inp = gid('stock-input-' + item.id);
-      const btn = gid('recv-toggle-' + item.id);
-      if(inp && !inp.classList.contains('active')){
-        inp.classList.add('active');
-        if(btn){ btn.textContent='閉じる'; btn.classList.add('open'); }
+      const card = gid('card-' + item.id);
+      const btn  = gid('recv-btn-' + item.id);
+      if(card && !card.classList.contains('recv-open')){
+        card.classList.add('recv-open');
+        if(btn){ btn.textContent='✕ 閉じる'; btn.classList.add('open'); }
       }
     }
   });
@@ -7437,6 +7514,591 @@ function _fillShipFormFromQr(text){
   toast(`QR読取: ${code}${name?' / '+name:''}`, 'success');
 }
 
+// ===== 設定パネル =====
+let _machinePresets = JSON.parse(localStorage.getItem('inv_machine_presets') || 'null') || [...MACHINE_PRESETS];
+let _userPresets    = JSON.parse(localStorage.getItem('inv_user_presets')    || 'null') || [...USER_PRESETS];
+
+function _sttToggle(id){
+  const el = gid(id);
+  if(!el) return;
+  el.classList.toggle('open');
+}
+
+function openSettings(){
+  switchMode('settings');
+}
+
+function _renderSettingsMachines(){
+  const el = gid('settings-machine-list');
+  el.innerHTML = _machinePresets.map((m,i)=>
+    `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600;color:var(--text2)">
+      ${escH(m)}
+      <button onclick="_removeMachinePreset(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:0;line-height:1;margin-left:2px">✕</button>
+    </span>`
+  ).join('');
+}
+
+function _renderSettingsUsers(){
+  const el = gid('settings-user-list');
+  el.innerHTML = _userPresets.map((u,i)=>
+    `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600;color:var(--text2)">
+      ${escH(u)}
+      <button onclick="_removeUserPreset(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:0;line-height:1;margin-left:2px">✕</button>
+    </span>`
+  ).join('');
+}
+
+function addMachinePreset(){
+  const v = gid('settings-machine-input').value.trim();
+  if(!v){ toast('設備名を入力してください','error'); return; }
+  if(_machinePresets.includes(v)){ toast('すでに登録されています','warn'); return; }
+  _machinePresets.push(v);
+  gid('settings-machine-input').value = '';
+  _renderSettingsMachines();
+}
+
+function _removeMachinePreset(i){
+  _machinePresets.splice(i,1);
+  _renderSettingsMachines();
+}
+
+function addUserPreset(){
+  const v = gid('settings-user-input').value.trim();
+  if(!v){ toast('作業者名を入力してください','error'); return; }
+  if(_userPresets.includes(v)){ toast('すでに登録されています','warn'); return; }
+  _userPresets.push(v);
+  gid('settings-user-input').value = '';
+  _renderSettingsUsers();
+}
+
+function _removeUserPreset(i){
+  _userPresets.splice(i,1);
+  _renderSettingsUsers();
+}
+
+// ===== 設定パネル内 日報サブページ =====
+let _snNippoPicking = '';
+
+function openSttNippo(){
+  gid('stt-main-page').style.display = 'none';
+  gid('stt-nippo-page').style.display = '';
+  if(!_snNippoPicking){
+    const picker = gid('sn-date-picker');
+    if(picker) picker.value = _localStrToIso(_getTodayDate());
+  }
+  _buildSnNippoFilters();
+  renderSnNippo();
+}
+
+function closeSttNippo(){
+  gid('stt-nippo-page').style.display = 'none';
+  gid('stt-main-page').style.display = '';
+}
+
+function onSnNippoDateChange(){
+  const inp = gid('sn-date-picker');
+  if(!inp || !inp.value){ _snNippoPicking = ''; }
+  else { _snNippoPicking = _isoToLocalStr(inp.value); }
+  _buildSnNippoFilters();
+  renderSnNippo();
+}
+
+function onSnNippoToday(){
+  _snNippoPicking = '';
+  const inp = gid('sn-date-picker');
+  if(inp) inp.value = _localStrToIso(_getTodayDate());
+  _buildSnNippoFilters();
+  renderSnNippo();
+}
+
+function _isSnTargetDateTx(tx){
+  const target = _snNippoPicking || _getTodayDate();
+  if(tx.dateStr) return tx.dateStr === target;
+  if(_snNippoPicking) return false;
+  return _sessionTxIds && _sessionTxIds.has(tx.id);
+}
+
+function _getSnTodayTxs(){
+  return db.transactions.filter(tx => _isSnTargetDateTx(tx));
+}
+
+function _buildSnNippoFilters(){
+  const txs = _getSnTodayTxs();
+  const machines = [...new Set(txs.map(tx=>tx.machine||''))].sort();
+  const mSel = gid('sn-machine-filter'), mCur = mSel ? mSel.value : '';
+  if(mSel) mSel.innerHTML = '<option value="">全設備</option>' +
+    machines.map(m=>`<option value="${escH(m||'—')}"${mCur===(m||'—')?'selected':''}>${escH(m||'—（設備なし）')}</option>`).join('');
+  const users = [...new Set(txs.map(tx=>tx.userId||''))].filter(Boolean).sort();
+  const uSel = gid('sn-user-filter'), uCur = uSel ? uSel.value : '';
+  if(uSel) uSel.innerHTML = '<option value="">全作業者</option>' +
+    users.map(u=>`<option value="${escH(u)}"${uCur===u?'selected':''}>${escH(u)}</option>`).join('');
+}
+
+function renderSnNippo(){
+  const el = gid('sn-nippo-list'); if(!el) return;
+  const machineFilter = (gid('sn-machine-filter')||{value:''}).value;
+  const userFilter    = (gid('sn-user-filter')||{value:''}).value;
+  const typeFilter    = (gid('sn-type-filter')||{value:''}).value;
+  let txs = _getSnTodayTxs();
+  if(machineFilter) txs = txs.filter(tx=>(tx.machine||'—')===machineFilter);
+  if(userFilter)    txs = txs.filter(tx=>tx.userId===userFilter);
+  if(typeFilter)    txs = txs.filter(tx=>tx.type===typeFilter);
+  const summaryBar = gid('sn-summary-bar');
+  if(!txs.length){
+    el.innerHTML = '<div class="nippo-empty">操作履歴がありません</div>';
+    if(summaryBar) summaryBar.innerHTML = '';
+    return;
+  }
+  if(summaryBar){
+    const ag={};
+    txs.forEach(tx=>{const m=tx.machine||'—';if(!ag[m])ag[m]=0;ag[m]+=tx.quantity;});
+    const as=Object.keys(ag).sort((a,b)=>a==='—'?1:b==='—'?-1:a.localeCompare(b,'ja'));
+    const tq=txs.reduce((s,tx)=>s+tx.quantity,0);
+    summaryBar.innerHTML=`<span style="font-weight:700;color:var(--text2)">合計 ${tq}個 / ${txs.length}件</span>`+
+      as.map(m=>`<span class="nippo-summary-item"><span class="nippo-summary-machine">${escH(m)}</span><span class="nippo-summary-cnt">${ag[m]}個</span></span>`).join('');
+  }
+  const grouped={};
+  txs.forEach(tx=>{const m=tx.machine||'—';if(!grouped[m])grouped[m]=[];grouped[m].push(tx);});
+  const sm=Object.keys(grouped).sort((a,b)=>a==='—'?1:b==='—'?-1:a.localeCompare(b,'ja'));
+  el.innerHTML=sm.map(machine=>{
+    const mTxs=grouped[machine],total=mTxs.reduce((s,tx)=>s+tx.quantity,0),isMachine=machine!=='—',tagCls=isMachine?'':' none';
+    const rows=mTxs.map(tx=>{
+      const item=db.items.find(i=>i.id===tx.itemId),itemName=item?item.name:'不明';
+      let st='';
+      if(tx.type==='移動')st=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
+      else if(tx.type==='入庫')st=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
+      else if(tx.type==='出荷')st=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
+      else if(tx.type==='不良')st=`${PNAMES[tx.fromProcess]||'?'}から不良`;
+      else if(tx.type==='修正')st=`調整${tx.note?'('+tx.note+')':''}`;
+      return `<div class="nippo-row"><span class="nippo-machine-tag${tagCls}">${escH(machine)}</span><span class="nippo-sep">｜</span><span class="nippo-item-name">${escH(itemName)}</span><span class="nippo-qty">${tx.quantity}個</span><span class="nippo-sep">/</span><span class="nippo-status">${escH(st)}</span><span class="nippo-type-tag type-${TYPE_MAP_NIPPO[tx.type]||'move'}">${tx.type}</span><span class="nippo-user">${escH(tx.userId||'')}</span><span class="nippo-time">${tx.timestamp}</span></div>`;
+    }).join('');
+    const headTag=isMachine?`<span class="nippo-machine-name">🔧 ${escH(machine)}</span>`:`<span class="nippo-machine-name" style="color:var(--text3)">— 設備未設定</span>`;
+    return `<div class="nippo-machine-group no-break"><div class="nippo-machine-head">${headTag}<span class="nippo-machine-count">${mTxs.length}件</span><span class="nippo-machine-total">計 ${total}個</span></div>${rows}</div>`;
+  }).join('');
+}
+
+function exportSnNippoPdf(){
+  const origPicking=_nippoPicking;
+  _nippoPicking=_snNippoPicking;
+  const panel=gid('nippo-panel');
+  panel.classList.add('open');
+  _buildNippoFilters();renderNippo();
+  exportNippoPdf();
+  setTimeout(()=>{_nippoPicking=origPicking;},4000);
+}
+
+// ===== 設定パネル内 履歴サブページ =====
+function openSttHistory(){
+  gid('stt-main-page').style.display = 'none';
+  gid('stt-history-page').style.display = '';
+  _renderSttHistory();
+}
+
+function closeSttHistory(){
+  gid('stt-history-page').style.display = 'none';
+  gid('stt-main-page').style.display = '';
+}
+
+function _renderSttHistory(){
+  const el = gid('sn-history-list'); if(!el) return;
+  const typeMap={入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
+  el.innerHTML = db.transactions.slice(0,50).map(tx=>{
+    const item = db.items.find(i=>i.id===tx.itemId);
+    const itemName = item ? item.name : '不明';
+    let stateText='';
+    if(tx.type==='移動')      stateText=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
+    else if(tx.type==='入庫') stateText=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
+    else if(tx.type==='出荷') stateText=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
+    else if(tx.type==='不良') stateText=`${PNAMES[tx.fromProcess]||'?'}から不良`;
+    else if(tx.type==='修正') stateText=`${PNAMES[tx.fromProcess]||'?'} 調整${tx.note?'('+tx.note+')':''}`;
+    const machineName = tx.machine||'';
+    const machineCls  = machineName ? '' : ' none';
+    const machineLabel= machineName || '—';
+    return `<div class="history-item">
+      <span class="history-machine${machineCls}">${escH(machineLabel)}</span>
+      <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
+      <span class="history-desc">${escH(itemName)}　${tx.quantity}個 / ${escH(stateText)}</span>
+      <span class="history-user" style="color:var(--text3);font-size:9px;flex-shrink:0;white-space:nowrap">${escH(tx.userId||'')}</span>
+      <span class="history-time">${tx.timestamp}</span>
+    </div>`;
+  }).join('') || '<div style="padding:14px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
+}
+
+function saveSettings(){
+  localStorage.setItem('inv_user_presets',    JSON.stringify(_userPresets));
+  MACHINE_PRESETS.length = 0; _machinePresets.forEach(m=>MACHINE_PRESETS.push(m));
+  USER_PRESETS.length    = 0; _userPresets.forEach(u=>USER_PRESETS.push(u));
+  toast('設定を保存しました','success');
+}
+
+function exportData(){
+  const data = { db, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'inventory_export_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  toast('エクスポートしました','success');
+}
+
+function clearHistory(){
+  if(!confirm('操作履歴をすべて削除しますか？（在庫データは保持されます）')) return;
+  db.transactions = [];
+  saveDb();
+  toast('操作履歴をクリアしました','success');
+}
+
+function resetAllData(){
+  if(!confirm('⚠ 全データをリセットしますか？\nこの操作は取り消せません。')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+</script>
+
+<!-- SETTINGS MODAL -->
+<style>
+/* ===== 設定パネル iOS風 ===== */
+/* 設定パネルより上に表示されるよう z-index を上書き */
+#user-modal, #item-form-modal, #adjust-modal { z-index: 300; }
+
+#settings-mode {
+  padding: 12px;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+.stt-header {
+  text-align: center;
+  padding: 22px 20px 14px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  background: #f2f3f7;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.stt-close {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #dde0ee;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.stt-body { padding: 0 16px 24px; }
+.stt-section-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.3px;
+  padding: 18px 4px 8px;
+}
+.stt-group {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.stt-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f1f6;
+  cursor: pointer;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 400;
+  background: #fff;
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.stt-row:last-child { border-bottom: none; }
+.stt-row:active { background: #f5f6fa; }
+.stt-row-label { flex: 1; }
+.stt-row-chevron {
+  color: #c0c4d6;
+  font-size: 14px;
+  font-weight: 700;
+}
+.stt-row.danger .stt-row-label { color: var(--red); }
+/* 展開サブパネル */
+.stt-sub {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  background: #f8f9fc;
+  border-top: 0;
+}
+.stt-sub.open { max-height: 400px; }
+.stt-sub-inner {
+  padding: 12px 16px 16px;
+  border-top: 1px solid #eceef5;
+}
+.stt-chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.stt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+}
+.stt-chip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+  margin-left: 2px;
+}
+.stt-add-row { display: flex; gap: 6px; }
+.stt-add-row input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font);
+  background: #fff;
+  outline: none;
+  color: var(--text);
+}
+.stt-add-row input:focus { border-color: var(--teal); }
+.stt-add-row button {
+  padding: 9px 14px;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+}
+.stt-save-bar {
+  padding: 16px 16px 0;
+}
+.stt-save-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.1s;
+}
+.stt-save-btn:active { opacity: 0.85; }
+
+/* ===== 設定パネル：サブページ共通 ===== */
+.stt-back-btn {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #dde0ee;
+  border: none;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.stt-nippo-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+.stt-nippo-content {
+  padding: 0 0 24px;
+}
+#stt-nippo-page .nippo-list {
+  padding: 0 4px;
+}
+#stt-nippo-page .nippo-summary-bar {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  font-size: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+</style>
+
+<div id="settings-mode" style="display:none">
+
+    <!-- ===== メインページ ===== -->
+    <div id="stt-main-page">
+
+    <div class="stt-body">
+
+      <!-- アカウント -->
+      <div class="stt-section-label">アカウント</div>
+      <div class="stt-group">
+        <div class="stt-row" onclick="openUserModal()">
+          <span class="stt-row-label">ユーザー名</span>
+          <span style="font-size:14px;color:var(--text2);margin-right:4px" id="current-user">田中 一郎</span>
+          <span class="stt-row-chevron">›</span>
+        </div>
+      </div>
+
+      <!-- 現場設定 -->
+      <div class="stt-section-label">現場設定</div>
+      <div class="stt-group">
+        <div class="stt-row" onclick="_sttToggle('sub-machine')">
+          <span class="stt-row-label">🔧 設備プリセット</span>
+          <span class="stt-row-chevron">›</span>
+        </div>
+        <div class="stt-sub" id="sub-machine">
+          <div class="stt-sub-inner">
+            <div class="stt-chip-row" id="settings-machine-list"></div>
+            <div class="stt-add-row">
+              <input id="settings-machine-input" placeholder="設備名を追加..." type="text" onkeydown="if(event.key==='Enter')addMachinePreset()">
+              <button onclick="addMachinePreset()">追加</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="stt-row" onclick="_sttToggle('sub-user')">
+          <span class="stt-row-label">👤 作業者プリセット</span>
+          <span class="stt-row-chevron">›</span>
+        </div>
+        <div class="stt-sub" id="sub-user">
+          <div class="stt-sub-inner">
+            <div class="stt-chip-row" id="settings-user-list"></div>
+            <div class="stt-add-row">
+              <input id="settings-user-input" placeholder="作業者名を追加..." type="text" onkeydown="if(event.key==='Enter')addUserPreset()">
+              <button onclick="addUserPreset()">追加</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 品目管理 -->
+      <div class="stt-section-label">品目管理</div>
+      <div class="stt-group">
+        <div class="stt-row" onclick="openItemForm()">
+          <span class="stt-row-label">＋ 品目登録</span>
+          <span class="stt-row-chevron">›</span>
+        </div>
+        <div class="stt-row" onclick="openAdjustModal()">
+          <span class="stt-row-label">📝 在庫調整</span>
+          <span class="stt-row-chevron">›</span>
+        </div>
+      </div>
+
+      <!-- レポート -->
+      <div class="stt-section-label">レポート</div>
+      <div class="stt-group">
+        <div class="stt-row" onclick="openSttNippo()">
+          <span class="stt-row-label">📄 日報</span>
+          <span class="stt-row-chevron">›</span>
+        </div>
+        <div class="stt-row" onclick="openSttHistory()">
+          <span class="stt-row-label">📋 履歴</span>
+          <span class="stt-row-chevron">›</span>
+        </div>
+      </div>
+
+      <!-- データ管理 -->
+      <div class="stt-section-label">データ管理</div>
+      <div class="stt-group">
+        <div class="stt-row danger" onclick="clearHistory()">
+          <span class="stt-row-label">🗑 操作履歴をクリア</span>
+          <span class="stt-row-chevron" style="color:var(--red-bd)">›</span>
+        </div>
+        <div class="stt-row danger" onclick="resetAllData()">
+          <span class="stt-row-label">⚠ 全データをリセット</span>
+          <span class="stt-row-chevron" style="color:var(--red-bd)">›</span>
+        </div>
+      </div>
+
+    </div><!-- /stt-body -->
+    </div><!-- /stt-main-page -->
+
+    <!-- ===== 日報サブページ ===== -->
+    <div id="stt-nippo-page" style="display:none">
+      <div class="stt-header" style="position:relative">
+        <button class="stt-back-btn" onclick="closeSttNippo()">‹</button>
+        📄 日報
+      </div>
+      <div class="stt-nippo-filters">
+        <input type="date" class="nippo-date-input" id="sn-date-picker" onchange="onSnNippoDateChange()">
+        <button class="nippo-today-btn" onclick="onSnNippoToday()">今日</button>
+        <select class="nippo-filter-select" id="sn-machine-filter" onchange="renderSnNippo()"><option value="">全設備</option></select>
+        <select class="nippo-filter-select" id="sn-user-filter"    onchange="renderSnNippo()"><option value="">全作業者</option></select>
+        <select class="nippo-filter-select" id="sn-type-filter"    onchange="renderSnNippo()">
+          <option value="">全操作</option>
+          <option value="入庫">入庫</option>
+          <option value="移動">移動</option>
+          <option value="出荷">出荷</option>
+          <option value="不良">不良</option>
+        </select>
+        <button class="nippo-pdf-btn" onclick="exportSnNippoPdf()">⬇ PDF</button>
+      </div>
+      <div class="stt-nippo-content">
+        <div class="nippo-summary-bar" id="sn-summary-bar"></div>
+        <div class="nippo-list" id="sn-nippo-list"></div>
+      </div>
+    </div><!-- /stt-nippo-page -->
+
+    <!-- ===== 履歴サブページ ===== -->
+    <div id="stt-history-page" style="display:none">
+      <div class="stt-header" style="position:relative">
+        <button class="stt-back-btn" onclick="closeSttHistory()">‹</button>
+        📋 操作履歴
+      </div>
+      <div>
+        <div id="sn-history-list" class="history-list" style="max-height:none;padding:4px 0"></div>
+      </div>
+    </div><!-- /stt-history-page -->
+
+</div><!-- /settings-mode -->
+<script>
+// 設定モーダルのDOM定義後に初期値をセット
+(function(){
+  var u = document.getElementById('current-user');
+  if(u) u.textContent = (typeof currentUser !== 'undefined' ? currentUser : '') || '名前未設定';
+  if(typeof _updateMachineBadge === 'function') _updateMachineBadge();
+})();
 </script>
 </body>
 </html>
