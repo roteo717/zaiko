@@ -3097,6 +3097,12 @@ let formGroups = []; // まとめ工程設定 [{start, end}, ...]
 // ===== 設備マスター =====
 const MACHINE_PRESETS = ['NC1','NC2','MC1','MC2','研磨機1','研磨機2','旋盤1','旋盤2','フライス1','その他'];
 let currentMachine = localStorage.getItem('inv_machine') || '';
+// per-item 設備マップ: { [itemId]: machineName } — レコードごとに独立管理
+const _recvMachineMap = {};
+// per-item 設備取得（未選択時はヘッダーのcurrentMachineをデフォルトとして使用）
+function _getRecvMachine(itemId){
+  return (itemId in _recvMachineMap) ? _recvMachineMap[itemId] : currentMachine;
+}
 
 function openMachineModal(){
   const list = gid('machine-preset-list');
@@ -3660,7 +3666,7 @@ function receiveItem(itemId){
   if(qty>99999){ toast('数量が上限（99999）を超えています','error'); return; }
   const firstIdx=actives[0].idx;
   item.processCounts[firstIdx]+=qty;
-  addTx(itemId,'入庫',qty,null,firstIdx,'',currentMachine);
+  addTx(itemId,'入庫',qty,null,firstIdx,'',_getRecvMachine(itemId));
   saveDb();
   toast(`${item.name} を ${qty}${item.unit} 入庫`,'success');
   renderField();
@@ -3877,7 +3883,7 @@ function confirmOp(){
     const dispName=`${GRP_LABELS[groupStart-1]}〜${GRP_LABELS[groupEnd-1]}`;
     // 品質確認フローへ（通常工程と同じ）
     const remaining=groupCount-qty;
-    pendingMove={itemId,processIdx:null,opType:'group-move',qty,toIdx,groupActives,groupStart,groupEnd,remaining};
+    pendingMove={itemId,processIdx:null,opType:'group-move',qty,toIdx,groupActives,groupStart,groupEnd,remaining,machine:_getOpMachine()};
     pendingQC=null;
     closeModal('op-modal');
     if(remaining<=0){
@@ -3904,7 +3910,7 @@ function confirmOp(){
   if(opType==='move-next'||opType==='move-back'){
     const toIdx=parseInt(gid('op-to-process').value);
     // 移動後に品質確認モーダルを表示
-    pendingMove={itemId,processIdx,opType,qty,toIdx};
+    pendingMove={itemId,processIdx,opType,qty,toIdx,machine:_getOpMachine()};
     pendingQC=null;
     closeModal('op-modal');
     openQualityCheck(item,qty);
@@ -3937,7 +3943,7 @@ function openQcForProcess(itemId, processIdx){
   if(!item) return;
   const count=item.processCounts[processIdx];
   if(count<1){ toast('在庫がありません','error'); return; }
-  pendingQC={itemId,processIdx};
+  pendingQC={itemId,processIdx,machine:currentMachine};
   pendingMove=null;
   const cfg=item.processConfig[processIdx];
   const pname=PNAMES[processIdx]+(cfg?.type==='deburr'?' (バリ取り)':cfg?.type==='done'?' (完成置き場)':'');
@@ -4065,7 +4071,7 @@ function confirmQualityDefect(){
     const srcCfg=item.processConfig[processIdx];
     if(srcCfg?.type==='done') item.doneCount=Math.max(0,item.doneCount-defectQty);
     item.defectiveCount+=defectQty;
-    addTx(pendingQC.itemId,'不良',defectQty,processIdx,null,'',currentMachine);
+    addTx(pendingQC.itemId,'不良',defectQty,processIdx,null,'',pendingQC.machine||currentMachine);
     renderField();
     if(currentMode==='admin') renderAdmin();
     gid('qc-select-btns').style.display='none';
@@ -4097,7 +4103,7 @@ function executeMoveWithQuality(moveQty,defectQty){
       if(toMove<=0) break;
     }
     item.processCounts[toIdx]+=moveQty;
-    addTx(itemId,'移動',moveQty,groupActives[groupActives.length-1].idx,toIdx,'',currentMachine);
+    addTx(itemId,'移動',moveQty,groupActives[groupActives.length-1].idx,toIdx,'',pendingMove.machine||currentMachine);
     // 不良処理: 後ろから消費
     if(defectQty>0){
       let toDef=defectQty;
@@ -4108,7 +4114,7 @@ function executeMoveWithQuality(moveQty,defectQty){
         if(toDef<=0) break;
       }
       item.defectiveCount+=defectQty;
-      addTx(itemId,'不良',defectQty,groupActives[groupActives.length-1].idx,null,'',currentMachine);
+      addTx(itemId,'不良',defectQty,groupActives[groupActives.length-1].idx,null,'',pendingMove.machine||currentMachine);
     }
     const dstCfg=item.processConfig[toIdx];
     if(dstCfg?.type==='done') item.doneCount+=moveQty;
@@ -4126,9 +4132,9 @@ function executeMoveWithQuality(moveQty,defectQty){
     if(dstCfg?.type==='done') item.doneCount+=moveQty;
     if(defectQty>0){
       item.defectiveCount+=defectQty;
-      addTx(itemId,'不良',defectQty,processIdx,null,'',currentMachine);
+      addTx(itemId,'不良',defectQty,processIdx,null,'',pendingMove.machine||currentMachine);
     }
-    addTx(itemId,'移動',moveQty,processIdx,toIdx,'',currentMachine);
+    addTx(itemId,'移動',moveQty,processIdx,toIdx,'',pendingMove.machine||currentMachine);
     const msg=defectQty>0
       ?`${moveQty}個 → ${PNAMES[toIdx]}へ移動・不良${defectQty}個処理`
       :`${moveQty}個 → ${PNAMES[toIdx]}へ移動（全数良品）`;
@@ -4423,7 +4429,7 @@ function getLastMachineForItem(itemId){
 function _buildRecvChipsHtml(itemId){
   // MACHINE_PRESTSから最初の6個 + 「なし」
   const presets = MACHINE_PRESETS.slice(0, 6);
-  const cur = currentMachine;
+  const cur = _getRecvMachine(itemId);
   const chips = presets.map(m =>
     `<span class="recv-chip${cur===m?' selected':''}" onclick="selectRecvMachine(this,'${m.replace(/'/g,"\\'")}','${itemId}')">${m}</span>`
   ).join('');
@@ -4432,24 +4438,12 @@ function _buildRecvChipsHtml(itemId){
 }
 
 function selectRecvMachine(el, name, itemId){
-  // 同じ入庫エリア内のチップを全解除
+  // この品目の入庫チップだけ更新（他品目・グローバルに影響しない）
   const container = el.closest('.recv-machine-chips');
   if(container) container.querySelectorAll('.recv-chip').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-  // グローバル設備も更新（この入庫操作だけでなく以降の操作にも反映）
-  currentMachine = name;
-  localStorage.setItem('inv_machine', name);
-  _updateMachineBadge();
-  // 他の入庫チップ欄も同期
-  document.querySelectorAll('.recv-machine-chips').forEach(cont=>{
-    if(cont === container) return;
-    cont.querySelectorAll('.recv-chip').forEach(c=>{
-      const isNone = c.classList.contains('none-chip');
-      c.classList.toggle('selected', isNone ? !name : c.textContent===name);
-    });
-  });
-  // op-modal チップも同期
-  _renderOpMachineChips();
+  // per-item マップに記録（globalのcurrentMachineは変更しない）
+  _recvMachineMap[itemId] = name;
 }
 
 // セッション中に記録されたTx IDセット（宣言はスクリプト先頭に移動済み）
