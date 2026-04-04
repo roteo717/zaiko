@@ -97,7 +97,13 @@ input, select, textarea {
   border-radius: 8px;
   padding: 3px;
   gap: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex-shrink: 1;
+  min-width: 0;
 }
+.mode-tabs::-webkit-scrollbar { display: none; }
 .mode-tab {
   padding: 5px 12px;
   border-radius: 6px;
@@ -1129,99 +1135,217 @@ input, select, textarea {
     min-height: 32px;
   }
 }
-#admin-cards { display: none; }
+#admin-cards { display: block; }
+/* ===== 管理カード v9（最終調整・一瞬判断UI）===== */
 .admin-card {
   background: #fff;
-  border: 1px solid #f1f3f5;
-  border-radius: var(--r);
-  margin-bottom: 8px;
-  box-shadow: none;
+  border-radius: 10px;
+  margin-bottom: 10px;              /* ②縮小 12→10px */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   overflow: hidden;
-  transition: border-color 0.15s;
-}
-.admin-card:hover { border-color: #d8dce0; }
-.admin-card-header {
   display: flex;
-  align-items: center;
-  padding: 11px 14px;
-  gap: 8px;
   cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid #eceef3;
   user-select: none;
+  position: relative;
 }
-.admin-card-body { display: none; padding: 0 12px 12px; }
-.admin-card.expanded .admin-card-body { display: block; }
-.admin-card.expanded .expand-icon { transform: rotate(180deg); }
-/* ===== 工程：横スクロール（統一UI改善）===== */
-.acard-processes {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 6px;
-  margin-bottom: 8px;
-  padding-bottom: 4px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border2) transparent;
-}
-.acard-proc {
+.admin-card:active { transform: scale(0.982); box-shadow: 0 0 2px rgba(0,0,0,0.04); }
+.admin-card:hover  { box-shadow: 0 3px 10px rgba(0,0,0,0.09); border-color: #d8dbe8; }
+
+/* ⑥ 左ステータスライン（4px・視認性UP）*/
+.acv2-line { width: 4px; flex-shrink: 0; }
+.acv2-line.ng   { background: var(--red); }
+.acv2-line.warn { background: var(--amber); }
+.acv2-line.ok   { background: var(--green); }
+.acv2-line.none { background: #dde0ee; }
+
+/* ② カード本体 padding縮小 */
+.acv2-body {
+  flex: 1;
+  padding: 12px 14px 10px 12px;     /* 16→12px */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  gap: 5px;                         /* 7→5px */
+  min-width: 0;
+}
+
+/* 品名行：品名 + 品番コード横並び */
+.acv2-header-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.acv2-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+.acv2-code {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 5px 4px;
-  width: 58px;
-  height: 52px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
   flex-shrink: 0;
 }
-.acard-proc.deburr { background: var(--amber-bg); border-color: var(--amber-bd); }
-.acard-proc.done-p { background: var(--done-bg); border-color: var(--done-bd); }
-.acard-proc-label { font-size: 9px; color: var(--text3); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 54px; text-align: center; }
-.acard-proc-val { font-size: 16px; font-weight: 700; font-family: var(--mono); color: var(--text); }
-.acard-proc.deburr .acard-proc-val { color: var(--amber); }
-.acard-proc.done-p .acard-proc-val { color: var(--done); }
-.acard-proc-inactive .acard-proc-val { color: var(--text3); font-size: 13px; }
-/* ===== サブ情報：1行コンパクト表示（統一UI改善）===== */
-.acard-stats {
+
+/* ① 在庫行：数値＋変動を同一行に明示 */
+.acv2-stock-row {
   display: flex;
-  gap: 0;
-  margin-bottom: 8px;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.acv2-stock {
+  font-size: 38px;
+  font-weight: 900;
+  font-family: var(--mono);
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -1.5px;
+  flex-shrink: 0;
+}
+/* ⑦ 在庫ゼロ：グレー表示 */
+.acv2-stock.zero {
+  color: #c0c0c0;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+.acv2-unit {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-left: 1px;
+  padding-bottom: 3px;
+}
+.acv2-stock.zero .acv2-unit { color: #c0c0c0; font-size: 13px; font-weight: 400; }
+
+/* ⑦ 在庫なしラベル */
+.acv2-zero-label {
+  font-size: 12px;
+  color: #bbb;
+  font-weight: 500;
+  padding-bottom: 4px;
+  letter-spacing: 0.2px;
+  align-self: flex-end;
+}
+
+/* ① 変動バッジ：「↑ +N（本日入庫）」形式 */
+.acv2-delta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-bottom: 3px;
+  gap: 1px;
+}
+.acv2-delta-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--green);
+  font-family: var(--mono);
+  line-height: 1;
+  white-space: nowrap;
+}
+.acv2-delta-lbl {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text3);
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+/* ステータス行 */
+.acv2-status {
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1;
+}
+.acv2-status.ng   { color: var(--red); }
+.acv2-status.warn { color: var(--amber); }
+.acv2-status.ok   { color: var(--green); }
+.acv2-status.none { color: var(--text3); font-weight: 400; font-size: 11px; }
+
+/* ⑤ 工程チップ：「工程」文字なし・番号のみ */
+.acv2-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.acv2-chip {
+  font-size: 11px;
+  font-family: var(--mono);
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  overflow: hidden;
+  border-radius: 4px;
+  padding: 1px 7px;
+  color: var(--text2);
+  white-space: nowrap;
+  line-height: 1.5;
 }
-.acard-stat {
-  flex: 1;
+.acv2-chip-label {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin-right: 2px;
+  align-self: center;
+}
+
+/* 設備詳細（タップ展開）*/
+.acv2-machine-section {
+  display: none;
+  border-top: 1px dashed var(--border);
+  margin-top: 4px;
+  padding-top: 8px;
+}
+.admin-card.expanded .acv2-machine-section { display: block; }
+
+/* フッター：編集ボタン右下 */
+.acv2-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 2px;
+  padding-top: 4px;
+}
+
+/* ④ 編集ボタン：アイコンのみ・極力目立たない */
+.acv2-edit-btn {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 5px 6px;
-  border-right: 1px solid var(--border);
-}
-.acard-stat:last-child { border-right: none; }
-.acard-stat-label { font-size: 9px; color: var(--text3); white-space: nowrap; }
-.acard-stat-val { font-size: 13px; font-weight: 700; font-family: var(--mono); }
-.acard-stat-val.red { color: var(--red); }
-.acard-stat-val.teal { color: var(--teal); }
-.acard-stat-val.blue { color: var(--accent); }
-.acard-edit-btn {
-  width: 100%;
-  padding: 9px;
-  background: var(--bg3);
+  background: transparent;
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
+  border-radius: 6px;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--text2);
+  color: var(--text3);
   cursor: pointer;
-  font-family: var(--font);
   transition: all 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
-.acard-edit-btn:hover { color: var(--accent); border-color: var(--accent); }
+.acv2-edit-btn:hover  { background: var(--bg3); border-color: var(--border2); color: var(--text2); }
+.acv2-edit-btn:active { transform: scale(0.90); }
 
 /* ===== ADMIN MODE (action-area is defined above) ===== */
 .admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; }
@@ -1843,8 +1967,6 @@ input[type=number] { -moz-appearance: textfield; }
   /* Admin */
   .action-area { padding: 10px 12px; }
   .admin-search { max-width: 100%; width: 100%; min-width: unset; }
-  #admin-table-wrapper { display: none; }
-  #admin-cards { display: block; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .process-config-grid { grid-template-columns: 1fr; }
 }
@@ -3001,6 +3123,422 @@ input[type=number] { -moz-appearance: textfield; }
 .empty-state .empty-msg  { font-weight: 600; margin-bottom: 4px; color: var(--text2); }
 .empty-state .empty-sub  { font-size: 12px; }
 
+/* ================================================================
+   v10: 現場カード（操作特化）
+   ================================================================ */
+
+/* カード基盤 */
+.fc {
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border: 1px solid var(--border);
+  -webkit-tap-highlight-color: transparent;
+}
+.fc.status-ng   { background: #fff5f6; border-left: 4px solid var(--red); }
+.fc.status-warn { background: #fffbf0; border-left: 4px solid var(--amber); }
+.fc.status-ok   { background: #f4fdf8; border-left: 4px solid var(--green); }
+
+/* ヘッダー（品名+品番+ステータス）*/
+.fc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 6px;
+}
+.fc-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fc-code {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 数値エリア（仕掛品主役 + 完成品補助）*/
+.fc-nums {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 2px 14px 10px;
+}
+.fc-wip-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.fc-wip-label {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+.fc-wip-val {
+  font-family: var(--mono);
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.fc-wip-val.zero { color: #ccc; font-size: 30px; font-weight: 400; }
+.fc-done-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-left: 4px;
+}
+.fc-done-label {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+.fc-done-val {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text3);
+  line-height: 1;
+}
+.fc-done-val.zero { color: #ddd; font-weight: 400; font-size: 18px; }
+
+/* 不足バッジ（仕掛品の下）*/
+.fc-shortage {
+  margin: 0 14px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--red);
+  background: var(--red-bg);
+  border: 1px solid var(--red-bd);
+  border-radius: 6px;
+  padding: 3px 10px;
+}
+
+/* 操作ボタン行 */
+.fc-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+.fc-btn-receive {
+  flex: 1;
+  height: 52px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 3px 10px rgba(79,126,255,0.25);
+  transition: all 0.12s;
+}
+.fc-btn-receive:active { transform: scale(0.97); background: var(--accent2); }
+
+.fc-btn-detail {
+  width: 52px;
+  height: 52px;
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.12s;
+}
+.fc-btn-detail:active { background: var(--bg4); }
+.fc-expanded .fc-btn-detail { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* 工程サマリー（補助・小さめ）*/
+.fc-proc-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 14px 8px;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+.fc-proc-label {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 展開ボディ（詳細操作エリア）*/
+.fc-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.32s ease, padding 0.32s ease;
+  padding: 0 14px;
+  border-top: 0px solid var(--border);
+}
+.fc-expanded .fc-body {
+  max-height: 2400px;
+  padding: 4px 14px 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ================================================================
+   v10: 管理カード（可視化特化）強化
+   ================================================================ */
+
+/* 管理カード全体 */
+.admin-card.avc {
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 0.2s;
+}
+.admin-card.avc:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.10); }
+
+/* ステータスライン */
+.avc-line {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  border-radius: 0;
+}
+.avc-line.ng   { background: var(--red); }
+.avc-line.warn { background: var(--amber); }
+.avc-line.ok   { background: var(--green); }
+.avc-line.none { background: var(--border2); }
+
+/* 背景色 */
+.admin-card.avc.status-ng   { background: #fff5f6; }
+.admin-card.avc.status-warn { background: #fffbf0; }
+.admin-card.avc.status-ok   { background: #f4fdf8; }
+.admin-card.avc              { background: #fff; }
+
+/* ボディ */
+.avc-body {
+  padding: 12px 14px 10px 20px;
+}
+
+/* ヘッダー行 */
+.avc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.avc-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.avc-code {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 在庫主役ブロック */
+.avc-stock-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.avc-stock-val {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+.avc-stock-val.zero { color: #ccc; font-size: 28px; font-weight: 400; }
+.avc-stock-unit {
+  font-size: 13px;
+  color: var(--text3);
+  font-weight: 400;
+  margin-left: 1px;
+}
+
+/* 在庫内訳（仕掛・完成）*/
+.avc-breakdown {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.avc-bd-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.avc-bd-label {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+.avc-bd-val {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text2);
+  line-height: 1;
+}
+.avc-bd-val.done { color: var(--done); }
+.avc-bd-val.zero { color: #ccc; font-weight: 400; font-size: 14px; }
+
+/* 本日入庫 */
+.avc-today {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  background: #edfaf6;
+  border: 1px solid #7dd9b8;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-bottom: 7px;
+}
+
+/* ステータスバッジ */
+.avc-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+.avc-status.ng   { color: var(--red); }
+.avc-status.warn { color: var(--amber); }
+.avc-status.ok   { color: var(--green); }
+.avc-status.none { color: var(--text3); font-weight: 400; }
+
+/* 不足数量バッジ */
+.avc-shortage-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--red);
+  background: var(--red-bg);
+  border: 1px solid var(--red-bd);
+  border-radius: 5px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
+/* 工程チップ行 */
+.avc-chips {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.avc-chip-label {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 1px;
+}
+.avc-chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+/* フッター（編集ボタン）*/
+.avc-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  gap: 8px;
+}
+.avc-edit-btn {
+  padding: 5px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.avc-edit-btn:hover  { background: var(--accent); color: #fff; border-color: var(--accent); }
+.avc-edit-btn:active { transform: scale(0.95); }
+
+/* 展開エリア（設備サマリー等）*/
+.avc-expand {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.admin-card.avc.expanded .avc-expand {
+  max-height: 400px;
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
@@ -3013,6 +3551,8 @@ input[type=number] { -moz-appearance: textfield; }
     <button class="mode-tab active" onclick="switchMode('field')">📱 現場</button>
     <button class="mode-tab" onclick="switchMode('admin')">🖥 管理</button>
     <button type="button" class="mode-tab" onclick="handleAction('出荷スケジュール')">🚢 出荷</button>
+    <button type="button" class="mode-tab" id="hdr-nippo-btn" onclick="switchMode('admin');setTimeout(()=>{showNippo();},80)">📄 日報</button>
+    <button type="button" class="mode-tab" onclick="switchMode('admin');setTimeout(()=>{showHistory();},80)">📋 履歴</button>
   </div>
   <div class="header-right" style="display:flex;align-items:center;gap:6px;">
     <div class="machine-badge" id="machine-badge" onclick="openMachineModal()" title="使用設備を変更">
@@ -3033,14 +3573,8 @@ input[type=number] { -moz-appearance: textfield; }
       <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterItems(this.value)" id="field-search-input">
       <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-field')" title="QRコードで検索">📷 QR</button>
     </div>
-    <div class="action-buttons">
-      <button class="btn-action-primary" onclick="switchMode('admin');setTimeout(openItemForm,100)">＋ 品目登録</button>
-      <button class="btn-action-nippo" id="field-nippo-btn" onclick="switchMode('admin');setTimeout(showNippo,100)">📄 日報</button>
-      <button class="btn-action-sub" onclick="switchMode('admin');setTimeout(openAdjustModal,100)">📝 調整</button>
-      <button class="btn-action-sub" onclick="switchMode('admin');setTimeout(showHistory,100)">📋 履歴</button>
-    </div>
+
   </div>
-  <div id="ship-alert-wrap"></div>
   <div class="filter-toggle-row">
     <button class="filter-toggle-btn active-all" id="ftbtn-all"  onclick="setStatusFilter('all')">すべて</button>
     <button class="filter-toggle-btn"            id="ftbtn-ng"   onclick="setStatusFilter('ng')">■ 不足のみ</button>
@@ -3059,30 +3593,14 @@ input[type=number] { -moz-appearance: textfield; }
       <input class="search-input admin-search" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
       <button type="button" class="qr-btn" onclick="openQrScanner('search-admin')" title="QRコードで検索">📷 QR</button>
     </div>
-    <!-- ボタン群: 主操作→優先操作→補助操作 -->
+    <!-- ボタン群: 主操作→補助操作 -->
     <div class="action-buttons">
       <button class="btn-action-primary" onclick="openItemForm()">＋ 品目登録</button>
-      <button class="btn-action-nippo" onclick="showNippo()" id="nippo-toggle-btn">📄 日報</button>
       <button class="btn-action-sub" onclick="openAdjustModal()">📝 調整</button>
-      <button class="btn-action-sub" onclick="showHistory()">📋 履歴</button>
     </div>
   </div>
-  <div class="table-wrapper" id="admin-table-wrapper">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th onclick="sortAdmin('code')">品番↕</th>
-          <th onclick="sortAdmin('name')">品名↕</th>
-          <th>メーカー</th>
-          <th style="text-align:left;min-width:160px">工程</th>
-          <th onclick="sortAdmin('done')" style="text-align:right;background:#f0f4ff;color:var(--accent)">在庫合計↕</th>
-          <th style="text-align:right;background:#fff5f6;color:var(--red)">不足</th>
-          <th style="background:var(--bg3);border-left:2px solid var(--border2);color:var(--text2)">操作</th>
-        </tr>
-      </thead>
-      <tbody id="admin-tbody"></tbody>
-    </table>
-  </div>
+  <!-- テーブルレイアウト廃止 → カードレイアウトに統一 (v8) -->
+  <div class="section-title" style="margin-top:14px">品目一覧 <span id="admin-item-count" style="background:var(--bg4);border-radius:10px;padding:1px 8px;font-size:10px;color:var(--text3);font-weight:600;margin-left:4px"></span></div>
   <div id="admin-cards"></div>
   <div id="history-panel-admin" class="history-panel" style="display:none">
     <div class="history-header">📋 操作履歴（最新50件）</div>
@@ -3872,7 +4390,7 @@ function switchMode(mode){
 function renderField(){
   // 展開状態を保存
   const expanded=new Set();
-  document.querySelectorAll('.item-card.expanded').forEach(el=>expanded.add(el.id));
+  document.querySelectorAll('.item-card.expanded, .fc.fc-expanded').forEach(el=>expanded.add(el.id));
 
   // テキストフィルタ
   let list=db.items.filter(it=>matchesFilter(it,fieldFilter));
@@ -3900,7 +4418,7 @@ function renderField(){
     okCount   ? `<span class="status-badge ok">● OK：${okCount}件</span>` : '',
   ].filter(Boolean).join('');
 
-  gid('item-count-label').innerHTML=`品目一覧 <span style="background:var(--bg4);border-radius:10px;padding:1px 8px;font-size:10px;color:var(--text3);font-weight:600;margin-left:4px">${list.length}</span>${badgesHtml?`<span class="status-badge-row">${badgesHtml}</span>`:''}`;
+  gid('item-count-label').innerHTML=`品目一覧 <span style="background:var(--bg4);border-radius:10px;padding:1px 8px;font-size:10px;color:var(--text3);font-weight:600;margin-left:4px">${list.length}</span>`;
 
   if(list.length===0){
     gid('field-items').innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-msg">${fieldStatusFilter!=='all'?'該当する品目はありません':'品目が登録されていません'}</div><div class="empty-sub">${fieldStatusFilter!=='all'?'フィルターを解除してください':'管理画面から品目を追加してください'}</div></div>`;
@@ -3916,9 +4434,13 @@ function renderField(){
   });
 
   // 展開状態を復元
-  expanded.forEach(id=>{ const el=gid(id); if(el) el.classList.add('expanded'); });
+  expanded.forEach(id=>{
+    const el=gid(id);
+    if(!el) return;
+    el.classList.add('expanded');
+    el.classList.add('fc-expanded'); // 現場カード対応
+  });
   // 出荷アラートを更新
-  renderShipmentAlert();
   // 入力途中の状態を復元
   _restoreReceiveQtys();
   // グループ初回説明
@@ -4108,139 +4630,94 @@ function renderItemCard(item){
   const total=getTotalStock(item);
   const doneCount=item.processCounts[7]||0;
   const wipCount=item.processCounts.slice(0,7).reduce((a,b)=>a+b,0);
-  const todayRecv=getTodayReceived(item.id);
   const isZero = total===0;
   const lastM = getLastMachineForItem(item.id);
   const status=getItemStatus(item);
   const statusCls=status?` status-${status}`:'';
 
-  // ステータスラベル
-  const statusLabelMap={'ng':'■ 不足','warn':'▲ 注意','ok':'● OK'};
-  const statusLabelHtml=status
-    ?`<span class="status-label ${status}">${statusLabelMap[status]}</span>`
-    :'';
-
-  // 不足数計算
+  // 不足数
   let shortageQty=0;
   const ships=(db.shipments||[]).filter(s=>s.itemId===item.id&&!s.shipped);
-  if(ships.length){
-    ships.forEach(s=>{const chk=checkShipmentStock(item,s);shortageQty=Math.max(shortageQty,chk.shortage);});
-  }
-  // 不足バッジ: 不足時のみ表示
-  const shortageHtml=shortageQty>0
-    ?`<span class="item-shortage-badge">不足 ${shortageQty.toLocaleString()}個</span>`
-    :'';
+  if(ships.length) ships.forEach(s=>{const chk=checkShipmentStock(item,s);shortageQty=Math.max(shortageQty,chk.shortage);});
 
-  // 工程サマリー: ①79 ②1 ③10 形式。ゼロは非表示。通常工程のみ（バリ取り・完成除外）
+  // 工程サマリーチップ（通常工程のみ・ゼロ非表示）
   const procChips=[];
   displayList.forEach(entry=>{
     if(entry.isGroup){
       const cnt=entry.groupActives.reduce((s,a)=>s+item.processCounts[a.idx],0);
-      if(cnt===0) return; // ゼロ非表示
-      const lbl=`${GRP_LABELS[entry.group.start-1]}〜${GRP_LABELS[entry.group.end-1]}`;
-      procChips.push(`<span class="process-chip">${lbl}&thinsp;${cnt}</span>`);
+      if(cnt===0) return;
+      const lbl=GRP_LABELS[entry.group.start-1]+'〜'+GRP_LABELS[entry.group.end-1];
+      procChips.push('<span class="process-chip">'+lbl+' '+cnt+'</span>');
     } else {
       const p=entry.process;
-      if(p.type==='deburr'||p.type==='done') return; // バリ取り・完成は非表示
+      if(p.type==='deburr'||p.type==='done') return;
       const cnt=item.processCounts[p.idx];
-      if(cnt===0) return; // ゼロ非表示
-      procChips.push(`<span class="process-chip">${PNAMES[p.idx]}&thinsp;${cnt}</span>`);
+      if(cnt===0) return;
+      procChips.push('<span class="process-chip">'+PNAMES[p.idx]+' '+cnt+'</span>');
     }
   });
+  const procRowHtml=procChips.length
+    ?'<div class="fc-proc-row"><span class="fc-proc-label">工程：</span>'+procChips.join('')+'</div>':'';
 
-  // 仕掛合計（工程①〜バリ取り前まで）
-  const procTotal=item.processCounts.slice(0,7).reduce((a,b)=>a+b,0);
+  // ステータスアイコン
+  const statusIconMap={ng:'🔴',warn:'🟡',ok:'🟢'};
+  const statusIcon=status?statusIconMap[status]:'';
 
-  let processSummaryHtml='';
-  if(procChips.length){
-    processSummaryHtml=`<div class="process-summary-row"><span class="process-summary-label">工程：</span>${procChips.join('')}</div>`;
-  } else if(procTotal===0){
-    // 全工程ゼロ → 何も表示しない（空データ非表示）
-    processSummaryHtml='';
-  }
+  const wipHtml='<span class="fc-wip-val'+(wipCount===0?' zero':'')+'">'+wipCount.toLocaleString()+'</span>';
+  const doneHtml='<span class="fc-done-val'+(doneCount===0?' zero':'')+'">'+doneCount.toLocaleString()+'</span>';
 
-  const qtyValueCls = isZero ? 'zero-val' : '';
+  return '<div class="fc'+statusCls+'" id="card-'+item.id+'">'
+  +'<div class="fc-head">'
+  +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
+  +'<span class="fc-code">'+escH(item.code)+'</span>'
+  +(statusIcon?'<span style="font-size:15px;flex-shrink:0">'+statusIcon+'</span>':'')
+  +(lastM?'<span class="card-machine-badge" style="font-size:9px;color:var(--text3);flex-shrink:0">🔧'+escH(lastM)+'</span>':'')
+  +'</div>'
+  +'<div class="fc-nums">'
+    +'<div class="fc-wip-block"><span class="fc-wip-label">仕掛品</span>'+wipHtml+'</div>'
+    +'<div class="fc-done-block"><span class="fc-done-label">完成品</span>'+doneHtml+'</div>'
+  +'</div>'
+  +(shortageQty>0?'<div class="fc-shortage">⚠ 不足 '+shortageQty.toLocaleString()+'個</div>':'')
+  +procRowHtml
+  +'<div class="fc-actions">'
+    +'<button class="fc-btn-receive" onclick="event.stopPropagation();_fcReceive(\''+item.id+'\')">＋ 入庫</button>'
+    +'<button class="fc-btn-detail" onclick="toggleCard(\''+item.id+'\')" title="詳細・工程操作">⚙</button>'
+  +'</div>'
+  +'<div class="fc-body">'
+    +'<div class="receive-row"><div class="receive-header"><div class="receive-header-left"><span class="receive-header-title">📦 入庫（スタート）</span><span class="receive-header-stock">現在在庫：'+getTotalStock(item)+'個</span></div><button class="btn-receive-toggle" id="recv-toggle-'+item.id+'" onclick="toggleReceive(\''+item.id+'\')">入庫する</button></div>'
+    +'<div class="stock-input" id="stock-input-'+item.id+'"><div class="stock-input-label">入庫数</div>'
+    +'<input class="qty-display" id="rq-'+item.id+'" type="number" min="1" value="0" inputmode="numeric">'
+    +'<div class="qty-section-label qty-section-label--plus">増やす</div>'
+    +'<div class="btn-row-plus"><button class="qty-btn" onclick="addRQ(\''+item.id+'\',1)">+1</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',10)">+10</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',50)">+50</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',100)">+100</button></div>'
+    +'<div class="qty-section-label qty-section-label--minus">減らす</div>'
+    +'<div class="btn-row-minus"><button class="qty-btn" onclick="addRQ(\''+item.id+'\',-1)">-1</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',-10)">-10</button><button class="qty-btn" onclick="addRQ(\''+item.id+'\',-50)">-50</button></div>'
+    +'<hr class="stock-input-divider">'
+    +'<div class="recv-machine-row"><span class="recv-machine-label">🔧 設備</span><div class="recv-machine-chips" id="recv-mc-'+item.id+'">'+_buildRecvChipsHtml(item.id)+'</div></div>'
+    +'<button class="btn-receive" onclick="handleAction(\'入庫\',{itemId:\''+item.id+'\'})">入庫</button></div></div>'
+    +'<div class="process-section-label">⚙ 工程フロー</div>'
+    +'<div class="process-grid">'+displayList.map((entry,di)=>entry.isGroup?renderGroupBlock(item,entry,di,displayList):renderPBlock(item,entry.process,di,displayList)).join('')+'</div>'
+        +'<div class="item-footer">'
+    +(doneCount>0?'<div class="footer-stat"><span class="footer-stat-label">完成品</span><span class="footer-stat-value done-c">'+doneCount.toLocaleString()+'個</span></div>':'')
+    +(wipCount>0?'<div class="footer-stat"><span class="footer-stat-label">仕掛品</span><span class="footer-stat-value">'+wipCount.toLocaleString()+'個</span></div>':'')
+    +'</div>'
+  +'</div>'
+  +'</div>';
+}
 
-  return `
-<div class="item-card${statusCls}" id="card-${item.id}">
-  <div class="item-card-header" onclick="toggleCard('${item.id}')">
-
-    <!-- 左カラム: 品番・品名・工程サマリー -->
-    <div class="item-info-col">
-      <div class="item-name">${escH(item.name)}${item.maker?`<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">${escH(item.maker)}</span>`:''}</div>
-      <div class="item-sub-row">
-        <span class="item-code">${escH(item.code)}</span>
-        <span class="item-unit">${escH(item.unit||'個')}</span>
-        ${lastM?`<span class="card-machine-badge" title="本日最終使用設備">🔧 ${escH(lastM)}</span>`:''}
-      </div>
-      ${processSummaryHtml}
-    </div>
-
-    <!-- 右カラム: 在庫合計（主役）+ 不足 -->
-    <div class="item-qty-col">
-      <span class="item-qty-label">在庫合計</span>
-      <span class="item-qty-value ${qtyValueCls}">${isZero?'0':total.toLocaleString()}</span>
-      ${shortageHtml}
-    </div>
-
-    <!-- ステータスラベル -->
-    ${statusLabelHtml}
-
-    <!-- 編集ボタン -->
-    <button class="btn-edit-card" onclick="event.stopPropagation();switchMode('admin');setTimeout(()=>openEditItem('${item.id}'),120)" title="編集">✏</button>
-
-    <!-- 展開アイコン -->
-    <span class="expand-icon">▼</span>
-  </div>
-
-  <!-- 展開エリア: 入庫・工程フロー・出荷予定・フッター統計 -->
-  <div class="item-card-body">
-    <div class="receive-row">
-      <div class="receive-header">
-        <div class="receive-header-left">
-          <span class="receive-header-title">📦 入庫（スタート）</span>
-          <span class="receive-header-stock">現在在庫：${getTotalStock(item)}個</span>
-        </div>
-        <button class="btn-receive-toggle" id="recv-toggle-${item.id}" onclick="toggleReceive('${item.id}')">入庫する</button>
-      </div>
-      <div class="stock-input" id="stock-input-${item.id}">
-        <div class="stock-input-label">入庫数</div>
-        <input class="qty-display" id="rq-${item.id}" type="number" min="1" value="0" inputmode="numeric">
-        <div class="qty-section-label qty-section-label--plus">増やす</div>
-        <div class="btn-row-plus">
-          <button class="qty-btn" onclick="addRQ('${item.id}',1)">+1</button>
-          <button class="qty-btn" onclick="addRQ('${item.id}',10)">+10</button>
-          <button class="qty-btn" onclick="addRQ('${item.id}',50)">+50</button>
-          <button class="qty-btn" onclick="addRQ('${item.id}',100)">+100</button>
-        </div>
-        <div class="qty-section-label qty-section-label--minus">減らす</div>
-        <div class="btn-row-minus">
-          <button class="qty-btn" onclick="addRQ('${item.id}',-1)">-1</button>
-          <button class="qty-btn" onclick="addRQ('${item.id}',-10)">-10</button>
-          <button class="qty-btn" onclick="addRQ('${item.id}',-50)">-50</button>
-        </div>
-        <hr class="stock-input-divider">
-        <div class="recv-machine-row">
-          <span class="recv-machine-label">🔧 設備</span>
-          <div class="recv-machine-chips" id="recv-mc-${item.id}">${_buildRecvChipsHtml(item.id)}</div>
-        </div>
-        <button class="btn-receive" onclick="handleAction('入庫',{itemId:'${item.id}'})">入庫</button>
-      </div>
-    </div>
-    <div class="process-section-label">⚙ 工程フロー</div>
-    <div class="process-grid">${displayList.map((entry,di)=>
-      entry.isGroup
-        ? renderGroupBlock(item,entry,di,displayList)
-        : renderPBlock(item,entry.process,di,displayList)
-    ).join('')}</div>
-    ${renderItemShipments(item)}
-    <div class="item-footer">
-      ${doneCount>0?`<div class="footer-stat"><span class="footer-stat-label">完成品</span><span class="footer-stat-value done-c">${doneCount.toLocaleString()}個</span></div>`:''}
-      ${wipCount>0?`<div class="footer-stat"><span class="footer-stat-label">仕掛品</span><span class="footer-stat-value">${wipCount.toLocaleString()}個</span></div>`:''}
-      ${todayRecv>0?`<div class="footer-stat"><span class="footer-stat-label">本日入庫</span><span class="footer-stat-value teal">${todayRecv.toLocaleString()}個</span></div>`:''}
-    </div>
-  </div>
-</div>`;
+function _fcReceive(itemId){
+  const card=gid('card-'+itemId);
+  if(!card) return;
+  card.classList.add('expanded','fc-expanded');
+  setTimeout(()=>{
+    const inp=gid('stock-input-'+itemId);
+    const btn=gid('recv-toggle-'+itemId);
+    if(inp&&!inp.classList.contains('active')){
+      inp.classList.add('active');
+      if(btn){ btn.textContent='閉じる'; btn.classList.add('open'); }
+    }
+    card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },50);
+  autoSaveState();
 }
 
 function renderPBlock(item,p,di,displayList){
@@ -4275,7 +4752,13 @@ function renderPBlock(item,p,di,displayList){
   return `<div class="${blockCls}">${labelHtml}${nameHtml}${stockLabelHtml}<div class="process-count${count===0?' zero':''}">${formatQty(count)}</div>${actions}</div>`;
 }
 
-function toggleCard(id){ gid('card-'+id).classList.toggle('expanded'); autoSaveState(); }
+function toggleCard(id){
+  const el=gid('card-'+id);
+  if(!el) return;
+  el.classList.toggle('expanded');
+  el.classList.toggle('fc-expanded');
+  autoSaveState();
+}
 
 function toggleReceive(id){
   const input = gid('stock-input-'+id);
@@ -4861,7 +5344,7 @@ function cancelAll(){
 }
 
 // ADMIN
-function renderAdmin(){ renderAdminStats(); renderAdminTable(); renderAdminCards(); if(gid('nippo-panel').classList.contains('open')){_buildNippoFilters();renderNippo();} }
+function renderAdmin(){ renderAdminStats(); renderAdminCards(); if(gid('nippo-panel').classList.contains('open')){_buildNippoFilters();renderNippo();} }
 function renderAdminStats(){ const el=gid('admin-stats'); if(!el) return;
   const tS=db.items.reduce((s,i)=>s+getTotalStock(i),0);
   const tD=db.items.reduce((s,i)=>s+i.doneCount,0);
@@ -4926,73 +5409,133 @@ function renderAdminTable(){
     </tr>`;
   }).join('');
 }
-function filterAdmin(v){ adminFilter=v.trim(); renderAdminTable(); renderAdminCards(); }
-function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminTable(); renderAdminCards(); }
+function filterAdmin(v){ adminFilter=v.trim(); renderAdminCards(); }
+function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminCards(); }
 
 function renderAdminCards(){
   let items=db.items.filter(it=>matchesFilter(it,adminFilter));
+
+  // 優先度ソート: 不足→注意→正常→データなし
+  const _rank={ng:0,warn:1,ok:2,'':3};
+  items=[...items].sort((a,b)=>(_rank[getItemStatus(a)]??3)-(_rank[getItemStatus(b)]??3));
+
+  // 件数ラベル更新
+  const cntEl=gid('admin-item-count');
+  if(cntEl){
+    const ngC=items.filter(it=>getItemStatus(it)==='ng').length;
+    const warnC=items.filter(it=>getItemStatus(it)==='warn').length;
+    const okC=items.filter(it=>getItemStatus(it)==='ok').length;
+    const bgs=[
+      ngC   ?`<span class="status-badge ng">■ 不足：${ngC}件</span>`:'',
+      warnC ?`<span class="status-badge warn">▲ 注意：${warnC}件</span>`:'',
+      okC   ?`<span class="status-badge ok">● OK：${okC}件</span>`:'',
+    ].filter(Boolean).join('');
+    cntEl.innerHTML=items.length+'件'+(bgs?` <span class="status-badge-row">${bgs}</span>`:'');
+  }
+
+  if(!items.length){
+    gid('admin-cards').innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-msg">品目が見つかりません</div><div class="empty-sub">検索条件を変更してください</div></div>';
+    return;
+  }
+
   gid('admin-cards').innerHTML=items.map(item=>{
-    const total=getTotalStock(item);
-    const procs=item.processConfig.map((c,i)=>{
-      if(!c.active) return '';
-      const cls=c.type==='deburr'?' deburr':c.type==='done'?' done-p':'';
-      const label=c.type==='deburr'?`バリ取り`:c.type==='done'?`完成`:PNAMES[i];
-      return `<div class="acard-proc${cls}">
-        <div class="acard-proc-label">${label}</div>
-        <div class="acard-proc-val">${formatQty(item.processCounts[i])}</div>
-      </div>`;
+    const total  = getTotalStock(item);
+    const doneCount = item.processCounts[7]||0;
+    const wipCount  = item.processCounts.slice(0,7).reduce((a,b)=>a+b,0);
+    const status = getItemStatus(item);
+    const bgCls  = status ? ' status-'+status : '';
+    const lineCls= status||'none';
+    const todayRecv=getTodayReceived(item.id);
+
+    // 不足数
+    const ships=(db.shipments||[]).filter(s=>s.itemId===item.id&&!s.shipped);
+    const ngCount=ships.filter(s=>checkShipmentStock(item,s).shortage>0).length;
+    let shortageQty=0;
+    ships.forEach(s=>{const chk=checkShipmentStock(item,s);shortageQty=Math.max(shortageQty,chk.shortage);});
+
+    // ステータス表示
+    let statusHtml='';
+    if(status==='ng'){
+      statusHtml='<div class="avc-status ng">🔴 不足&thinsp;'+ngCount+'件'
+        +(shortageQty>0?' <span class="avc-shortage-badge">−'+shortageQty.toLocaleString()+'個</span>':'')+'</div>';
+    } else if(status==='warn'){
+      statusHtml='<div class="avc-status warn">🟡 注意（仕掛品あり）</div>';
+    } else if(status==='ok'){
+      statusHtml='<div class="avc-status ok">🟢 正常</div>';
+    } else {
+      statusHtml='<div class="avc-status none">— データなし</div>';
+    }
+
+    // 在庫（主役）
+    const stockHtml=total>0
+      ?'<span class="avc-stock-val">'+total.toLocaleString()+'<span class="avc-stock-unit">個</span></span>'
+      :'<span class="avc-stock-val zero">0<span class="avc-stock-unit">個</span></span>';
+
+    // 在庫内訳: 仕掛品 + 完成品
+    const wipHtml ='<div class="avc-bd-item"><span class="avc-bd-label">仕掛品</span><span class="avc-bd-val'+(wipCount===0?' zero':'')+'">'+wipCount.toLocaleString()+'個</span></div>';
+    const doneHtml2='<div class="avc-bd-item"><span class="avc-bd-label">完成品</span><span class="avc-bd-val done'+(doneCount===0?' zero':'')+'">'+doneCount.toLocaleString()+'個</span></div>';
+
+    // 本日入庫
+    const todayHtml=todayRecv>0
+      ?'<div class="avc-today">↑ +'+todayRecv.toLocaleString()+' 本日入庫</div>':'';
+
+    // 工程チップ（補助）
+    const chips=item.processConfig.map((c,i)=>{
+      if(!c.active||c.type==='deburr'||c.type==='done') return '';
+      const cnt=item.processCounts[i]; if(cnt===0) return '';
+      return '<span class="avc-chip">'+PNAMES[i]+'\u2009'+cnt.toLocaleString()+'</span>';
+    }).filter(Boolean);
+    const chipsHtml=chips.length
+      ?'<div class="avc-chips"><span class="avc-chip-label">工程</span>'+chips.join('')+'</div>':'';
+
+    // 設備サマリー（展開エリア）
+    const todayMachineMap=getTodayMachineMap(item.id);
+    const machineRows=Object.entries(todayMachineMap).map(([m,entry])=>{
+      const totalQty=entry.ops.reduce((s,o)=>s+o.qty,0);
+      const hasDefect=entry.ops.some(o=>o.type==='不良');
+      const stCls=hasDefect?'ng':'ok'; const stLabel=hasDefect?'NG':'OK';
+      const procLabel=fmtProcs(entry.procs);
+      return '<div class="acard-machine-row'+(m?'':' no-machine')+'">'
+        +'<span class="acard-machine-label">'+escH(m||'—')+'</span>'
+        +'<span class="acard-machine-sep">｜</span>'
+        +'<span class="acard-machine-detail">'+totalQty.toLocaleString()+'個'+(procLabel?'（'+escH(procLabel)+'）':'')+'</span>'
+        +'<span class="acard-machine-status '+stCls+'">'+stLabel+'</span>'
+        +'</div>';
     }).join('');
-    // 今日の設備別サマリー計算
-    const todayMachineMap = getTodayMachineMap(item.id);
-    const machineRows = Object.entries(todayMachineMap).map(([m,entry])=>{
-      const mLabel    = m||'—';
-      const mCls      = m ? '' : ' no-machine';
-      const ops       = entry.ops;
-      const totalQty  = ops.reduce((s,o)=>s+o.qty,0);
-      const hasDefect = ops.some(o=>o.type==='不良');
-      const stCls     = hasDefect ? 'ng' : 'ok';
-      const stLabel   = hasDefect ? 'NG' : 'OK';
-      const procLabel = fmtProcs(entry.procs);
-      const procHtml  = procLabel ? `<span class="acard-machine-proc">（${escH(procLabel)}）</span>` : '';
-      return `<div class="acard-machine-row${mCls}">
-        <span class="acard-machine-label">${escH(mLabel)}</span>
-        <span class="acard-machine-sep">｜</span>
-        <span class="acard-machine-detail">${escH(item.name)}（${escH(item.code)}）${totalQty.toLocaleString()}個${procHtml}</span>
-        <span class="acard-machine-status ${stCls}">${stLabel}</span>
-      </div>`;
-    }).join('');
-    const machineSection = machineRows
-      ? `<div style="margin-bottom:6px"><div style="font-size:9px;color:var(--text3);font-weight:600;margin-bottom:4px;letter-spacing:0.4px">🔧 本日使用設備</div>${machineRows}</div>`
-      : '';
-    return `<div class="admin-card" id="acard-${item.id}">
-      <div class="admin-card-header" onclick="toggleAdminCard('${item.id}')">
-        <span class="item-code">${escH(item.code)}</span>
-        <span class="item-name" style="flex:1">${escH(item.name)}${item.maker?`<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">${escH(item.maker)}</span>`:''}</span>
-        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent)">${formatQty(total)}</span>
-        <span class="expand-icon">▼</span>
-      </div>
-      <div class="admin-card-body">
-        ${machineSection}
-        <div class="acard-processes">${procs}</div>
-        <div class="acard-stats">
-          <div class="acard-stat">
-            <div class="acard-stat-label">完成</div>
-            <div class="acard-stat-val">${formatQty(item.doneCount)}</div>
-          </div>
-          <div class="acard-stat">
-            <div class="acard-stat-label">不良</div>
-            <div class="acard-stat-val red">${formatQty(item.defectiveCount)}</div>
-          </div>
-          <div class="acard-stat">
-            <div class="acard-stat-label">出荷済</div>
-            <div class="acard-stat-val teal">${formatQty(item.shippedCount)}</div>
-          </div>
-        </div>
-        <button class="acard-edit-btn" onclick="openItemFormEdit('${item.id}')">✏️ 編集</button>
-      </div>
-    </div>`;
+    const machineSection=machineRows
+      ?'<div class="acv2-machine-section"><div style="font-size:9px;color:var(--text3);font-weight:600;margin-bottom:5px;letter-spacing:0.4px">🔧 本日使用設備</div>'+machineRows+'</div>':'';
+
+    return '<div class="admin-card avc'+bgCls+'" id="acard-'+item.id+'" onclick="toggleAdminCard(\''+item.id+'\')">'
+      +'<div class="avc-line '+lineCls+'"></div>'
+      +'<div class="avc-body">'
+        // ヘッダー
+        +'<div class="avc-header">'
+          +'<span class="avc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
+          +'<span class="avc-code">'+escH(item.code)+'</span>'
+        +'</div>'
+        // 在庫主役
+        +'<div class="avc-stock-row">'+stockHtml+'</div>'
+        // 内訳
+        +'<div class="avc-breakdown">'+wipHtml+doneHtml2+'</div>'
+        // 本日入庫
+        +todayHtml
+        // ステータス
+        +statusHtml
+        // 工程チップ
+        +chipsHtml
+        // 展開エリア（設備）
+        +'<div class="avc-expand">'+machineSection+'</div>'
+        // 出荷予定（現場から移管）
+        +'<div class="avc-shipments">'+renderItemShipments(item)+'</div>'
+        // フッター（編集）
+        +'<div class="avc-footer">'
+          +'<button class="avc-edit-btn" onclick="event.stopPropagation();openItemFormEdit(\''+item.id+'\')" title="編集">✏ 編集</button>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
   }).join('');
 }
+
 function toggleAdminCard(id){ gid('acard-'+id).classList.toggle('expanded'); }
 
 function showHistory(){
@@ -6039,8 +6582,29 @@ function markShipped(idx){
 }
 
 function deleteShip(idx){
-  if(!confirm('この出荷予定を削除しますか？'))return;
+  // confirm()はモバイルでブロックされるため、モーダル内確認に変更
+  const wrap=document.getElementById('modal-wrap');
+  if(!wrap) return;
+  const existing=wrap.querySelector('.modal');
+  if(!existing) return;
+  // 確認ボタンエリアを差し替え
+  const foot=existing.querySelector('div[style*="display:flex"][style*="gap:8px"]');
+  if(foot){
+    foot.innerHTML=`
+      <div style="width:100%;background:#fff3f3;border:1.5px solid #fca5a5;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#dc2626">
+          <span style="font-size:18px">🗑️</span> この出荷予定を削除しますか？
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-cancel" onclick="showDetail(${idx})" style="flex:1">キャンセル</button>
+          <button onclick="_confirmDeleteShip(${idx})" style="flex:1;padding:10px;background:#dc2626;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">削除する</button>
+        </div>
+      </div>`;
+  }
+}
+function _confirmDeleteShip(idx){
   SHIPS.splice(idx,1);shipCloseModal();shipRender();
+  toast('出荷予定を削除しました','success');
 }
 
 /* ========== DRAWER ========== */
@@ -6114,14 +6678,20 @@ function saveShip(){
   const qty=parseInt(document.getElementById('ep-qty').value);
   const dest=document.getElementById('ep-dest').value.trim();
   const note=document.getElementById('ep-note').value.trim();
-  if(!dateVal||!cat||!name||!qty||!dest){alert('必須項目をすべて入力してください');return;}
-  const avail=getAvailable(catMap[cat].prodId);
-  if(avail<qty&&!confirm(`⚠ 完成品在庫が不足しています。\n引当可能：${avail}個 / 要求：${qty}個\n\n仕掛品からの出荷は実行できません。\n予定として登録しますか？`))return;
-  const parts=dateVal.split('-').map(Number);
   const idx=+document.getElementById('ep-idx').value;
-  const prodId=catMap[cat]?.prodId||null;
-  if(idx>=0)SHIPS[idx]={...SHIPS[idx],d:parts,cat,prodId,name,code,item,qty,dest,note,shipped:false};
-  else SHIPS.push({d:parts,cat,prodId,name,code,item,qty,dest,note,shipped:false});
+  // cat が空の場合: 編集元データから補完、それもなければ先頭CATを使用
+  const resolvedCat=cat||(idx>=0&&SHIPS[idx]?.cat)||CATS[0]?.id||'';
+  if(resolvedCat) document.getElementById('ep-cat').value=resolvedCat;
+  const finalCat=resolvedCat;
+  if(!dateVal||!name||!qty||!dest){toast('必須項目をすべて入力してください','error');return;}
+  const prodId=catMap[finalCat]?.prodId||null;
+  // 編集時は自分の既存予約分を戻して正しく計算
+  const origQty=idx>=0?SHIPS[idx].qty:0;
+  const avail=prodId?getAvailable(prodId)+origQty:0;
+  if(prodId&&avail<qty){toast(`⚠ 完成品在庫が不足（引当可能：${avail}個 / 要求：${qty}個）。予定として登録しました。`,'warn');}
+  const parts=dateVal.split('-').map(Number);
+  if(idx>=0)SHIPS[idx]={...SHIPS[idx],d:parts,cat:finalCat,prodId,name,code,item,qty,dest,note,shipped:false};
+  else SHIPS.push({d:parts,cat:finalCat,prodId,name,code,item,qty,dest,note,shipped:false});
   SHIPS.sort((a,b)=>a.d[0]-b.d[0]||a.d[1]-b.d[1]||a.d[2]-b.d[2]);
   closePanel();shipRender();
 }
