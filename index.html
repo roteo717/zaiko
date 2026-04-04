@@ -49,6 +49,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 .app { display: flex; flex-direction: column; min-height: 100vh; }
@@ -57,11 +58,11 @@ body {
 .header {
   background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  padding: 0 16px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
-  height: 52px;
-  gap: 10px;
+  height: 44px;
+  gap: 8px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -123,33 +124,113 @@ body {
 /* ===== FIELD MODE ===== */
 .field-mode { padding: 12px; max-width: 1200px; margin: 0 auto; width: 100%; }
 .field-search { margin-bottom: 10px; }
+
+/* ===== 検索バー（QR内蔵・絶対配置方式）===== */
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-wrapper .search-input,
+.search-bar .search-input,
 .search-input {
   width: 100%;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 10px 14px;
+  padding: 11px 80px 11px 14px; /* 右にQRボタン分の余白 */
   color: var(--text);
   font-size: 14px;
   font-family: var(--font);
   outline: none;
   transition: border-color 0.15s;
+  box-sizing: border-box;
 }
+.search-wrapper .search-input:focus,
+.search-bar .search-input:focus,
 .search-input:focus { border-color: var(--accent); }
 .search-input::placeholder { color: var(--text3); }
-.section-title { font-size: 11px; color: var(--text3); font-weight: 500; margin-bottom: 8px; }
+
+/* QRボタン: inputの内側右端にぴったり貼り付け（一体型アドオン）*/
+.btn-qr-inline {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  bottom: 1px;
+  width: 68px;
+  min-width: 68px;
+  background: #eef2ff;
+  border: none;
+  border-left: 1px solid #c8d4ff;
+  border-radius: 0 calc(var(--r) - 1px) calc(var(--r) - 1px) 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--accent);
+  transition: color 0.12s, background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 2;
+  white-space: nowrap;
+}
+/* 左側区切り線: 削除 */
+.btn-qr-inline:hover {
+  color: #fff;
+  background: var(--accent);
+  border-left-color: var(--accent);
+}
+/* focus時: inputのborderがアクセントカラーになるのに連動 */
+.search-wrapper .search-input:focus ~ .btn-qr-inline,
+.search-bar .search-input:focus ~ .btn-qr-inline {
+  background: var(--accent);
+  color: #fff;
+  border-left-color: var(--accent);
+}
+.btn-qr-inline:active {
+  color: #fff;
+  background: var(--accent2);
+  opacity: 0.9;
+}
+
+/* search-bar は後方互換のため残す */
+.search-bar {
+  position: relative;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .search-wrapper .search-input,
+  .search-bar .search-input {
+    font-size: 16px; /* iOS ズーム防止 */
+    padding-right: 80px;
+  }
+  .btn-qr-inline {
+    width: 72px;
+    min-width: 72px;
+    font-size: 12px;
+  }
+}
+.section-title { font-size: 11px; color: var(--text3); font-weight: 500; margin-bottom: 8px; margin-top: 15px; }
+
+/* フィールドモード専用: action-area上マージン不要 */
+.field-action-area { margin-bottom: 0; }
+.field-mode #ship-alert-wrap:not(:empty) { margin-top: 10px; }
 
 /* ===== ITEM CARD ===== */
 .item-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: #fff;
+  border: 1px solid #f1f3f5;
   border-radius: var(--r);
   margin-bottom: 10px;
   overflow: visible;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: none;
   transition: border-color 0.15s;
 }
-.item-card:hover { border-color: var(--border2); }
+.item-card:hover { border-color: #d8dce0; }
 
 .item-card-header {
   display: flex;
@@ -158,6 +239,7 @@ body {
   gap: 8px;
   cursor: pointer;
   user-select: none;
+  min-height: 48px;
 }
 .item-code {
   font-family: var(--mono);
@@ -190,6 +272,7 @@ body {
 .summary-badge { display: flex; flex-direction: column; align-items: flex-end; }
 .summary-label { font-size: 9px; color: var(--text3); white-space: nowrap; }
 .summary-value { font-size: 13px; font-weight: 700; font-family: var(--mono); white-space: nowrap; }
+.summary-value.zero-val { color: #ccc; font-weight: 400; font-size: 12px; }
 .summary-value.danger  { color: var(--red); }
 .summary-value.shipped { color: var(--teal); }
 .summary-value.total   { color: var(--accent); }
@@ -211,9 +294,9 @@ body {
   gap: 8px;
   margin-bottom: 20px;
   padding: 12px;
-  background: #f8f9ff;
+  background: #f9faff;
   border-radius: 12px;
-  border: 1px solid #dbe3ff;
+  border: 1px solid #e8ecff;
 }
 .receive-section-label {
   font-size: 11px;
@@ -629,7 +712,7 @@ body {
   justify-content: center;
   padding: 6px 0;
 }
-.process-count.zero { color: var(--text3); }
+.process-count.zero { color: #ccc; }
 
 .process-actions { display: flex; flex-direction: column; gap: 4px; margin-top: auto; }
 .process-actions-row { display: flex; gap: 4px; }
@@ -723,19 +806,163 @@ body {
 .footer-stat-value.teal  { color: var(--teal); }
 .footer-stat-value.done-c { color: var(--done); }
 
-/* Admin button groups */
-.admin-btn-group { display: flex; gap: 8px; }
+/* action-area内のsearch-input */
+.action-area .search-input {
+  background: #fff;
+  border-color: #dde4ff;
+}
+.action-area .search-input:focus {
+  background: #fff;
+  border-color: var(--accent);
+}
 
-/* Admin mobile cards */
+/* ===== QRボタン（テキスト付き・フローティング型）===== */
+.qr-btn {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--text2);
+  background: #eef2ff;
+  border: 1px solid #c8d4ff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  line-height: 1;
+}
+.qr-btn:hover  { background: var(--accent); color: #fff; border-color: var(--accent); }
+.qr-btn:active { background: var(--accent2); color: #fff; transform: translateY(-50%) scale(0.94); }
+
+/* ===== ADMIN MODE ===== */
+.admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+/* ① 操作エリア: テーブル一覧と完全に分離されたカード */
+.action-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+  background: #f8f9ff;
+  border: 1px solid #dde4ff;
+  border-radius: var(--r);
+  padding: 12px 14px;
+}
+/* 操作ゾーンラベル: 削除 */
+
+/* ② ボタン行: 並び順 = 品目登録 → 日報 → 調整 → 履歴 */
+.action-buttons {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ④ 役割別ボタンデザイン */
+/* 主操作: 品目登録（青・目立たせる）*/
+.btn-action-primary {
+  height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+  transition: background 0.1s, transform 0.08s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-action-primary:hover  { background: #6b94ff; }
+.btn-action-primary:active { background: var(--accent2); transform: scale(0.95); }
+
+/* 優先操作: 日報（オレンジ・今日やる）*/
+.btn-action-nippo {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fff8ec;
+  color: var(--amber);
+  border: 1.5px solid #f5c46a;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-action-nippo:hover  { background: var(--amber); color: #fff; border-color: var(--amber); }
+.btn-action-nippo:active { transform: scale(0.95); opacity: 0.9; }
+.btn-action-nippo.active-nippo { background: var(--amber); color: #fff; border-color: var(--amber); }
+
+/* 補助操作: 調整・履歴（グレー・控えめ）*/
+.btn-action-sub {
+  height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #fff;
+  color: var(--text3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font);
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.btn-action-sub:hover  { color: var(--text2); border-color: var(--border2); background: var(--bg3); }
+.btn-action-sub:active { transform: scale(0.95); background: var(--bg4); }
+
+/* ⑦ スマホ対応 */
+@media (max-width: 640px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .action-buttons .btn-action-primary,
+  .action-buttons .btn-action-nippo,
+  .action-buttons .btn-action-sub {
+    width: 100%;
+    height: 44px;
+    font-size: 14px;
+    text-align: center;
+    justify-content: center;
+  }
+  .qr-btn {
+    min-width: 44px;
+    min-height: 32px;
+  }
+}
 #admin-cards { display: none; }
 .admin-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: #fff;
+  border: 1px solid #f1f3f5;
   border-radius: var(--r);
   margin-bottom: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: none;
   overflow: hidden;
+  transition: border-color 0.15s;
 }
+.admin-card:hover { border-color: #d8dce0; }
 .admin-card-header {
   display: flex;
   align-items: center;
@@ -819,61 +1046,26 @@ body {
 }
 .acard-edit-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-/* ===== ADMIN MODE ===== */
+/* ===== ADMIN MODE (action-area is defined above) ===== */
 .admin-mode { padding: 12px; max-width: 1400px; margin: 0 auto; width: 100%; }
-.admin-toolbar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.admin-search { flex: 1; min-width: 160px; max-width: 260px; }
-.btn-primary {
-  padding: 8px 14px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--r);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  font-family: var(--font);
-  transition: background 0.1s;
-}
-.btn-primary:hover { background: #6b94ff; }
-.btn-secondary {
-  padding: 8px 14px;
-  background: var(--bg2);
-  color: var(--text2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  font-family: var(--font);
-  transition: all 0.1s;
-}
-.btn-secondary:hover { color: var(--text); border-color: var(--border2); }
+.admin-search { flex: 1; min-width: 160px; max-width: 100%; }
 
 /* Stats */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
-  margin-bottom: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
 }
 .stat-card {
   background: var(--bg2);
-  border: 1px solid var(--border);
+  border: 1px solid #f1f3f5;
   border-radius: var(--r);
-  padding: 11px 13px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  padding: 8px 12px;
+  box-shadow: none;
 }
-.stat-card-label { font-size: 10px; color: var(--text3); margin-bottom: 2px; font-weight: 500; }
-.stat-card-value { font-size: 21px; font-weight: 700; font-family: var(--mono); }
+.stat-card-label { font-size: 9px; color: var(--text3); margin-bottom: 1px; font-weight: 600; letter-spacing: 0.3px; }
+.stat-card-value { font-size: 19px; font-weight: 700; font-family: var(--mono); }
 .stat-card-value.blue   { color: var(--accent); }
 .stat-card-value.teal   { color: var(--teal); }
 .stat-card-value.red    { color: var(--red); }
@@ -883,10 +1075,10 @@ body {
 /* Table */
 .table-wrapper {
   background: var(--bg2);
-  border: 1px solid var(--border);
+  border: 1px solid #f1f3f5;
   border-radius: var(--r);
   overflow: auto;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   -webkit-overflow-scrolling: touch;
 }
 .data-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 720px; }
@@ -911,14 +1103,19 @@ body {
   white-space: nowrap;
 }
 .data-table tr:last-child td { border-bottom: none; }
-.data-table tr:hover td { background: #f8f9fe; }
+.data-table tr:hover td { background: #f4f6ff; }
+.data-table tr:hover td:last-child { background: #edf0ff; }
 .data-table .mono { font-family: var(--mono); }
 .data-table .num  { text-align: right; font-family: var(--mono); }
-.num-zero { color: var(--text3); }
-.num-red  { color: var(--red);  font-weight: 600; }
-.num-teal { color: var(--teal); font-weight: 600; }
-.num-blue { color: var(--accent); font-weight: 600; }
-.num-done { color: var(--done); font-weight: 600; }
+/* ゼロ: 薄く・小さく */
+.num-zero { color: var(--text3); font-weight: 400; opacity: 0.55; }
+/* 非ゼロ: 色と太さで存在感 */
+.num-red  { color: var(--red);  font-weight: 700; }
+.num-teal { color: var(--teal); font-weight: 700; }
+.num-blue { color: var(--accent); font-weight: 700; }
+.num-done { color: var(--done); font-weight: 700; }
+/* 重要数値: 少し大きく */
+.num-key  { font-size: 13px; }
 
 .process-cell {
   display: inline-block;
@@ -929,24 +1126,35 @@ body {
   background: var(--bg3);
   font-family: var(--mono);
   font-size: 11px;
+  font-weight: 600;
   border: 1px solid var(--border);
 }
 .process-cell.deburr    { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
 .process-cell.done-cell { background: var(--done-bg);  color: var(--done);  border-color: var(--done-bd); }
+/* ゼロのプロセスセル: 存在感を消す */
+.process-cell.zero {
+  color: var(--text3);
+  background: transparent;
+  border-color: var(--border);
+  opacity: 0.4;
+  font-weight: 400;
+  font-size: 10px;
+}
 
 .action-btn {
-  padding: 4px 9px;
-  border-radius: 4px;
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   background: var(--bg3);
   color: var(--text2);
   border: 1px solid var(--border);
-  transition: all 0.1s;
+  transition: all 0.12s;
   font-family: var(--font);
 }
-.action-btn:hover { color: var(--accent); border-color: var(--accent); }
+.action-btn:hover { color: var(--accent); border-color: var(--accent); background: #eef2ff; }
+.action-btn:active { transform: scale(0.94); background: #dde5ff; }
 
 /* ===== MODAL ===== */
 .modal-overlay {
@@ -1345,11 +1553,8 @@ input[type=number] { -moz-appearance: textfield; }
   .footer-stat-label { font-size: 10px; }
 
   /* Admin */
-  .admin-toolbar { flex-direction: column; gap: 8px; }
+  .action-area { padding: 10px 12px; }
   .admin-search { max-width: 100%; width: 100%; min-width: unset; }
-  .admin-btn-group { width: 100%; }
-  .admin-btn-group .btn-primary,
-  .admin-btn-group .btn-secondary { flex: 1; text-align: center; padding: 9px 8px; font-size: 12px; }
   #admin-table-wrapper { display: none; }
   #admin-cards { display: block; }
   .stats-row { grid-template-columns: 1fr 1fr; }
@@ -1361,6 +1566,35 @@ input[type=number] { -moz-appearance: textfield; }
   .process-count { font-size: 20px; }
   .btn-move, .btn-defect, .btn-qc, .btn-ship { font-size: 9px; }
   .deburr-label, .done-label { font-size: 8px; }
+}
+
+/* ===== PC表示（768px以上）===== */
+@media screen and (min-width: 768px) {
+  .field-mode, .admin-mode { padding: 16px; }
+  .process-grid { gap: 10px; }
+  .item-card-header { gap: 10px; }
+}
+
+/* ===== スマホ表示（767px以下）===== */
+@media screen and (max-width: 767px) {
+  .field-mode, .admin-mode { padding: 8px; }
+  #reportArea { padding: 5px; }
+  .item-name { font-size: 14px; }
+  .header { flex-wrap: nowrap; }
+}
+
+/* ===== 印刷・PDF共通 ===== */
+@media print {
+  .header, .action-area, .field-search,
+  .btn-receive-toggle, .process-actions,
+  #toast-container, #ship-schedule-modal { display: none !important; }
+  body { background: #fff !important; overflow: visible; }
+  .field-mode, .admin-mode { max-width: 210mm; padding: 8mm; margin: 0 auto; }
+  .item-card { break-inside: avoid; page-break-inside: avoid;
+    box-shadow: none; border: 1px solid #ccc; margin-bottom: 6mm; }
+  .item-card-body { display: block !important; }
+  .process-grid { overflow-x: visible; flex-wrap: wrap; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 /* ===== 出荷連携UI ===== */
@@ -1845,13 +2079,25 @@ input[type=number] { -moz-appearance: textfield; }
   break-before:      avoid;
 }
 /* PDF出力エリア: A4幅に固定してキャプチャ時のレイアウト崩れを防ぐ */
+/* 通常表示: 画面いっぱいに広がる */
 #reportArea {
-  width:     210mm;
-  max-width: 210mm;
-  padding:   10px;
+  width: 100%;
+  max-width: 100%;
+  padding: 10px;
   box-sizing: border-box;
-  overflow:  hidden;
 }
+/* PDF出力モード: A4幅に固定 */
+.pdf-mode #reportArea {
+  width: 210mm;
+  max-width: 210mm;
+  overflow: hidden;
+}
+.pdf-mode * { transform: none !important; }
+.pdf-mode .card { break-inside: avoid; }
+.pdf-mode .row { display: block !important; }
+.pdf-mode .header { flex-direction: column !important; align-items: flex-start !important; }
+.pdf-mode .row { display: block !important; }
+.pdf-mode .header { flex-direction: column !important; align-items: flex-start !important; }
 
 /* 設備グループヘッダー */
 .nippo-machine-group {
@@ -2202,8 +2448,78 @@ input[type=number] { -moz-appearance: textfield; }
   font-weight: 600;
 }
 
+
+/* ===== QRスキャナー ===== */
+.btn-qr-scan {
+  padding: 3px 10px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.1s;
+  position: relative;
+  z-index: 10;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+/* ===== UI最終改善: 追加ポリッシュルール ===== */
+
+/* 検索＋操作エリアの整合 */
+.field-mode .action-area,
+.admin-mode .action-area {
+  margin-bottom: 15px;
+}
+
+/* セクション間スペース統一 */
+.field-mode .section-title {
+  margin-top: 15px;
+  margin-bottom: 8px;
+}
+
+/* 工程ブロック: ゼロの場合は数値を小さく薄く */
+.process-count.zero {
+  color: #ccc;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* ボタン押下フィードバック: すべてのbtnクラスに適用 */
+.btn-action-primary:active,
+.btn-action-nippo:active,
+.btn-action-sub:active,
+.btn-receive-toggle:active,
+.btn-receive:active,
+.qty-btn:active {
+  transform: scale(0.95);
+}
+
+/* スマホ: action-buttons縦並び強化 */
+@media (max-width: 640px) {
+  .field-mode .action-area,
+  .admin-mode .action-area {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .item-card-header {
+    padding: 12px 14px;
+    min-height: 52px;
+  }
+  /* 工程ブロックのタップ領域 */
+  .btn-move, .btn-next, .btn-defect, .btn-qc, .btn-ship {
+    min-height: 44px;
+  }
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 </head>
 <body>
 <div class="app" id="app">
@@ -2227,8 +2543,18 @@ input[type=number] { -moz-appearance: textfield; }
 </header>
 
 <div id="field-mode" class="field-mode">
-  <div class="field-search">
-    <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterItems(this.value)">
+  <!-- 操作エリア: 検索＋QR → +品目登録 → 日報 → 調整 履歴 -->
+  <div class="action-area field-action-area">
+    <div class="search-wrapper">
+      <input class="search-input" type="search" placeholder="品名・品番で検索..." oninput="filterItems(this.value)" id="field-search-input">
+      <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-field')" title="QRコードで検索">📷 QR</button>
+    </div>
+    <div class="action-buttons">
+      <button class="btn-action-primary" onclick="switchMode('admin');setTimeout(openItemForm,100)">＋ 品目登録</button>
+      <button class="btn-action-nippo" id="field-nippo-btn" onclick="switchMode('admin');setTimeout(showNippo,100)">📄 日報</button>
+      <button class="btn-action-sub" onclick="switchMode('admin');setTimeout(openAdjustModal,100)">📝 調整</button>
+      <button class="btn-action-sub" onclick="switchMode('admin');setTimeout(showHistory,100)">📋 履歴</button>
+    </div>
   </div>
   <div id="ship-alert-wrap"></div>
   <div class="section-title" id="item-count-label">品目一覧</div>
@@ -2236,17 +2562,20 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 
 <div id="admin-mode" class="admin-mode" style="display:none">
-  <div class="stats-row" id="admin-stats" style="display:none"></div>
-  <div class="admin-toolbar">
-    <input class="search-input admin-search" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
-    <div class="admin-btn-group">
-      <button class="btn-secondary" onclick="exportCSV()">⬇ CSV</button>
-      <button class="btn-primary" onclick="openItemForm()">＋ 品目登録</button>
+
+  <!-- ① 操作エリア: 検索→品目登録→日報→調整→履歴 の順 -->
+  <div class="action-area">
+    <!-- 検索＋QR（一体化）-->
+    <div class="search-wrapper">
+      <input class="search-input admin-search" type="search" placeholder="品名・品番で検索..." oninput="filterAdmin(this.value)">
+      <button type="button" class="qr-btn" onclick="openQrScanner('search-admin')" title="QRコードで検索">📷 QR</button>
     </div>
-    <div class="admin-btn-group admin-btn-group-sub">
-      <button class="btn-secondary" onclick="openAdjustModal()">📝 調整</button>
-      <button class="btn-secondary" onclick="showHistory()">📋 履歴</button>
-      <button class="btn-secondary" onclick="showNippo()" id="nippo-toggle-btn" style="background:var(--amber-bg);color:var(--amber);border-color:var(--amber-bd)">📄 日報</button>
+    <!-- ボタン群: 主操作→優先操作→補助操作 -->
+    <div class="action-buttons">
+      <button class="btn-action-primary" onclick="openItemForm()">＋ 品目登録</button>
+      <button class="btn-action-nippo" onclick="showNippo()" id="nippo-toggle-btn">📄 日報</button>
+      <button class="btn-action-sub" onclick="openAdjustModal()">📝 調整</button>
+      <button class="btn-action-sub" onclick="showHistory()">📋 履歴</button>
     </div>
   </div>
   <div class="table-wrapper" id="admin-table-wrapper">
@@ -2257,11 +2586,11 @@ input[type=number] { -moz-appearance: textfield; }
           <th onclick="sortAdmin('name')">品名↕</th>
           <th>メーカー</th>
           <th style="text-align:center">工程①</th><th style="text-align:center">工程②</th><th style="text-align:center">工程③</th><th style="text-align:center">工程④</th><th style="text-align:center">工程⑤</th><th style="text-align:center">工程⑥</th><th style="text-align:center;background:var(--amber-bg);color:var(--amber)">バリ取り</th><th style="text-align:center;background:var(--done-bg);color:var(--done)">完成品</th>
-          <th onclick="sortAdmin('done')" style="text-align:right">完成↕</th>
-          <th onclick="sortAdmin('defective')" style="text-align:right">不良↕</th>
-          <th onclick="sortAdmin('shipped')" style="text-align:right">出荷↕</th>
-          <th style="text-align:right">在庫合計</th>
-          <th>操作</th>
+          <th onclick="sortAdmin('done')" style="text-align:right;background:#f0faf6;color:var(--done)">完成↕</th>
+          <th onclick="sortAdmin('defective')" style="text-align:right;background:#fff5f6;color:var(--red)">不良↕</th>
+          <th onclick="sortAdmin('shipped')" style="text-align:right;background:#f0faf9;color:var(--teal)">出荷↕</th>
+          <th style="text-align:right;background:#f0f4ff;color:var(--accent)">在庫合計</th>
+          <th style="background:var(--bg3);border-left:2px solid var(--border2);color:var(--text2)">操作</th>
         </tr>
       </thead>
       <tbody id="admin-tbody"></tbody>
@@ -2366,6 +2695,34 @@ input[type=number] { -moz-appearance: textfield; }
 </div>
 
 <!-- ITEM FORM MODAL -->
+<!-- QR読取モーダル -->
+<div class="modal-overlay" id="qr-scan-modal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title">
+      <div class="modal-icon" style="background:#e8effe;font-size:16px">📷</div>
+      <span>QRコード読取</span>
+    </div>
+    <div style="position:relative;background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:12px">
+      <video id="qr-video" style="width:100%;display:block;border-radius:var(--r)" playsinline muted></video>
+      <canvas id="qr-canvas" style="display:none"></canvas>
+      <!-- スキャン枠 -->
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+        <div style="width:200px;height:200px;border:3px solid var(--accent);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.45)"></div>
+      </div>
+    </div>
+    <div id="qr-status" style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px;min-height:18px">
+      カメラを起動中...
+    </div>
+    <div id="qr-result-box" style="display:none;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px">✅ 読取成功</div>
+      <div id="qr-result-text" style="font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono)"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeQrScanner()">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="item-form-modal">
   <div class="modal">
     <div class="modal-title">
@@ -2373,7 +2730,10 @@ input[type=number] { -moz-appearance: textfield; }
       <span id="form-modal-title">品目登録</span>
     </div>
     <div class="form-group">
-      <label class="form-label">品番</label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <label class="form-label" style="margin-bottom:0">品番</label>
+        <button type="button" class="btn-qr-scan" onclick="openQrScanner()">📷 QR読取</button>
+      </div>
       <input class="form-input" id="form-code" placeholder="例: A-001" type="text">
     </div>
     <div class="form-group">
@@ -3184,12 +3544,21 @@ function matchesFilter(item, keyword){
 function renderItemCard(item){
   const displayList=buildDisplayActives(item);
   const total=getTotalStock(item);
+  const doneCount=item.processCounts[7]||0;
+  const totalCls = total===0 ? 'style="color:#ccc;font-weight:400;font-size:13px"' : 'style="color:var(--accent);font-size:18px;font-weight:700"';
   return `
 <div class="item-card" id="card-${item.id}">
   <div class="item-card-header" onclick="toggleCard('${item.id}')">
     <span class="item-code">${escH(item.code)}</span>
     <span class="item-name" style="flex:1">${escH(item.name)}${item.maker?`<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:6px">${escH(item.maker)}</span>`:''}</span>
     ${(()=>{ const lastM=getLastMachineForItem(item.id); return lastM?`<span class="card-machine-badge" title="本日最終使用設備">${escH(lastM)}</span>`:''; })()}
+    <span class="item-summary">
+      <span class="summary-badge">
+        <span class="summary-label">在庫合計</span>
+        <span class="summary-value" ${totalCls}>${total}個</span>
+      </span>
+      ${doneCount>0?`<span class="summary-badge"><span class="summary-label">完成品</span><span class="summary-value" style="color:var(--done);font-size:15px;font-weight:700">${doneCount}個</span></span>`:''}
+    </span>
     <span class="expand-icon">▼</span>
   </div>
   <div class="item-card-body">
@@ -3810,7 +4179,7 @@ function cancelAll(){
 
 // ADMIN
 function renderAdmin(){ renderAdminStats(); renderAdminTable(); renderAdminCards(); if(gid('nippo-panel').classList.contains('open')){_buildNippoFilters();renderNippo();} }
-function renderAdminStats(){
+function renderAdminStats(){ const el=gid('admin-stats'); if(!el) return;
   const tS=db.items.reduce((s,i)=>s+getTotalStock(i),0);
   const tD=db.items.reduce((s,i)=>s+i.doneCount,0);
   const tSh=db.items.reduce((s,i)=>s+i.shippedCount,0);
@@ -3836,18 +4205,20 @@ function renderAdminTable(){
   gid('admin-tbody').innerHTML=items.map(item=>{
     const total=getTotalStock(item);
     const cols=item.processConfig.map((c,i)=>{
-      if(!c.active) return `<td style="text-align:center"><span class="process-cell num-zero">—</span></td>`;
+      if(!c.active) return `<td style="text-align:center"><span class="process-cell zero">—</span></td>`;
       const cls=c.type==='deburr'?' deburr':c.type==='done'?' done-cell':'';
-      return `<td style="text-align:center"><span class="process-cell${cls}">${formatQty(item.processCounts[i])}</span></td>`;
+      const count=item.processCounts[i];
+      const zeroCls=count===0?' zero':'';
+      return `<td style="text-align:center"><span class="process-cell${cls}${zeroCls}">${count>0?formatQty(count):'—'}</span></td>`;
     }).join('');
     return `<tr>
       <td class="mono">${escH(item.code)}</td><td>${escH(item.name)}</td><td style="color:var(--text2)">${escH(item.maker||'')}</td>
       ${cols}
-      <td class="num num-done">${formatQty(item.doneCount)}</td>
-      <td class="num ${item.defectiveCount>0?'num-red':''}">${formatQty(item.defectiveCount)}</td>
-      <td class="num num-teal">${formatQty(item.shippedCount)}</td>
-      <td class="num num-blue">${formatQty(total)}</td>
-      <td><button class="action-btn" onclick="openItemFormEdit('${item.id}')">編集</button></td>
+      <td class="num ${item.doneCount>0?'num-done num-key':'num-zero'}">${item.doneCount>0?formatQty(item.doneCount):'—'}</td>
+      <td class="num ${item.defectiveCount>0?'num-red num-key':'num-zero'}">${item.defectiveCount>0?formatQty(item.defectiveCount):'—'}</td>
+      <td class="num ${item.shippedCount>0?'num-teal num-key':'num-zero'}">${item.shippedCount>0?formatQty(item.shippedCount):'—'}</td>
+      <td class="num ${total>0?'num-blue num-key':'num-zero'}">${total>0?formatQty(total):'—'}</td>
+      <td style="border-left:2px solid var(--border2)"><button class="action-btn" onclick="openItemFormEdit('${item.id}')">編集</button></td>
     </tr>`;
   }).join('');
 }
@@ -4101,7 +4472,7 @@ function showNippo(){
   const panel  = gid('nippo-panel');
   const btn    = gid('nippo-toggle-btn');
   const isOpen = panel.classList.toggle('open');
-  if(btn) btn.style.fontWeight = isOpen ? '800' : '';
+  if(btn) btn.classList.toggle('active-nippo', isOpen);
   if(isOpen){
     if(!_nippoPicking){
       const picker=gid('nippo-date-picker');
@@ -5540,6 +5911,227 @@ function onInputChange(){
     }
   });
 })();
+
+
+// ===== QRコードスキャナー =====
+let _qrStream = null;
+let _qrAnimFrame = null;
+let _qrTarget = null; // どのフィールドへ入力するか
+
+function openQrScanner(target = 'item-form'){
+  _qrTarget = target;
+  gid('qr-result-box').style.display = 'none';
+  gid('qr-status').textContent = 'カメラを起動中...';
+  gid('qr-scan-modal').classList.add('open');
+  _startQrCamera();
+}
+
+function closeQrScanner(){
+  _stopQrCamera();
+  gid('qr-scan-modal').classList.remove('open');
+}
+
+function _startQrCamera(){
+  const video = gid('qr-video');
+
+  // 段階的フォールバック: 厳しい制約から緩い制約へ順番に試す
+  const constraintsList = [
+    { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+    { video: { facingMode: { exact: 'environment' } } },
+    { video: { facingMode: 'user' } },
+    { video: true }  // 最後の手段: 制約なし
+  ];
+
+  function tryNext(idx){
+    if(idx >= constraintsList.length){
+      gid('qr-status').textContent = '⚠ カメラが見つかりません。デバイスのカメラを確認してください。';
+      return;
+    }
+    navigator.mediaDevices.getUserMedia(constraintsList[idx])
+      .then(stream => {
+        _qrStream = stream;
+        video.srcObject = stream;
+        video.play();
+        video.addEventListener('loadeddata', () => {
+          gid('qr-status').textContent = 'QRコードをカメラに向けてください';
+          _scanQrFrame();
+        }, { once: true });
+      })
+      .catch(err => {
+        console.warn(`カメラ制約 ${idx} 失敗:`, err.name, err.message);
+        if(err.name === 'NotAllowedError'){
+          gid('qr-status').textContent = '⚠ カメラの許可が必要です。ブラウザのアドレスバーから許可してください。';
+        } else if(err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError'){
+          tryNext(idx + 1); // 次の制約で再試行
+        } else if(err.name === 'NotReadableError' || err.name === 'TrackStartError'){
+          gid('qr-status').textContent = '⚠ カメラが他のアプリで使用中です。カメラを解放してから再度お試しください。';
+        } else if(err.name === 'OverconstrainedError'){
+          tryNext(idx + 1); // 制約を緩めて再試行
+        } else {
+          tryNext(idx + 1);
+        }
+      });
+  }
+
+  // getUserMedia 非対応ブラウザチェック
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    gid('qr-status').textContent = '⚠ このブラウザはカメラに対応していません。Chrome または Safari をお使いください。';
+    return;
+  }
+
+  tryNext(0);
+}
+
+function _stopQrCamera(){
+  cancelAnimationFrame(_qrAnimFrame);
+  _qrAnimFrame = null;
+  if(_qrStream){
+    _qrStream.getTracks().forEach(t => t.stop());
+    _qrStream = null;
+  }
+  const video = gid('qr-video');
+  video.srcObject = null;
+}
+
+function _scanQrFrame(){
+  const video = gid('qr-video');
+  const canvas = gid('qr-canvas');
+  if(!video || video.readyState < 2){
+    _qrAnimFrame = requestAnimationFrame(_scanQrFrame);
+    return;
+  }
+  const w = video.videoWidth, h = video.videoHeight;
+  if(!w || !h){ _qrAnimFrame = requestAnimationFrame(_scanQrFrame); return; }
+
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, w, h);
+  const imageData = ctx.getImageData(0, 0, w, h);
+
+  const code = jsQR(imageData.data, w, h, { inversionAttempts: 'dontInvert' });
+  if(code){
+    _onQrDetected(code.data);
+    return; // スキャン成功 → ループ停止
+  }
+  _qrAnimFrame = requestAnimationFrame(_scanQrFrame);
+}
+
+function _onQrDetected(text){
+  // 成功フィードバック（振動 + 表示）
+  if(navigator.vibrate) navigator.vibrate(100);
+
+  // 結果表示
+  gid('qr-result-text').textContent = text;
+  gid('qr-result-box').style.display = 'block';
+  gid('qr-status').textContent = '✅ 読取完了！';
+
+  // --- フィールドへ入力 ---
+  if(_qrTarget === 'item-form'){
+    _fillItemFormFromQr(text);
+  } else if(_qrTarget === 'ship-form'){
+    _fillShipFormFromQr(text);
+  } else if(_qrTarget === 'search-field'){
+    _fillSearchFromQr(text, 'field');
+  } else if(_qrTarget === 'search-admin'){
+    _fillSearchFromQr(text, 'admin');
+  }
+
+  // 0.8秒後にカメラを閉じる
+  setTimeout(() => closeQrScanner(), 800);
+}
+
+function _fillItemFormFromQr(text){
+  // QR形式: "品番" or "品番|品名" or "品番,品名" or JSON{"code":"","name":""}
+  let code = '', name = '';
+
+  try {
+    const json = JSON.parse(text);
+    code = json.code || json.productCode || text;
+    name = json.name || json.productName || '';
+  } catch(e) {
+    // JSON以外: 区切り文字で分割
+    const sep = text.includes('|') ? '|' : text.includes(',') ? ',' : null;
+    if(sep){
+      const parts = text.split(sep);
+      code = parts[0].trim();
+      name = parts[1] ? parts[1].trim() : '';
+    } else {
+      code = text.trim();
+    }
+  }
+
+  // 品番入力
+  const codeEl = gid('form-code');
+  if(codeEl) codeEl.value = code;
+
+  // 品名: DBに一致する品目があれば自動補完
+  if(!name){
+    const match = db.items.find(i => i.code === code);
+    if(match) name = match.name;
+  }
+  const nameEl = gid('form-name');
+  if(nameEl && name) nameEl.value = name;
+
+  // メーカーも自動補完
+  if(code){
+    const match = db.items.find(i => i.code === code);
+    if(match){
+      const makerEl = gid('form-maker');
+      if(makerEl && match.maker) makerEl.value = match.maker;
+    }
+  }
+
+  toast(`QR読取: ${code}${name ? ' / ' + name : ''}`, 'success');
+}
+
+function _fillSearchFromQr(text, mode){
+  // QRの品番で検索フィルターを自動適用
+  let code = text.trim();
+  try {
+    const json = JSON.parse(text);
+    code = json.code || json.productCode || text;
+  } catch(e) {
+    const sep = text.includes('|') ? '|' : text.includes(',') ? ',' : null;
+    if(sep) code = text.split(sep)[0].trim();
+  }
+  if(mode === 'field'){
+    const el = gid('field-search-input') || document.querySelector('#field-mode .search-input');
+    if(el){
+      el.value = code;
+      el.dispatchEvent(new Event('input')); // 検索自動実行
+      filterItems(code);
+    }
+  } else {
+    const el = document.querySelector('.admin-search');
+    if(el){
+      el.value = code;
+      el.dispatchEvent(new Event('input')); // 検索自動実行
+      filterAdmin(code);
+    }
+  }
+  toast(`QR検索: ${code}`, 'success');
+}
+
+function _fillShipFormFromQr(text){
+  // 出荷パネル用（ep-code, ep-name）
+  let code = '', name = '';
+  try {
+    const json = JSON.parse(text);
+    code = json.code || text;
+    name = json.name || '';
+  } catch(e) {
+    const sep = text.includes('|') ? '|' : text.includes(',') ? ',' : null;
+    if(sep){ const p = text.split(sep); code = p[0].trim(); name = p[1]?.trim()||''; }
+    else code = text.trim();
+  }
+  const codeEl = gid('ep-code'); if(codeEl) codeEl.value = code;
+  const nameEl = gid('ep-name');
+  if(nameEl){
+    if(!name){ const m = db.items.find(i=>i.code===code); if(m) name=m.name; }
+    if(name) nameEl.value = name;
+  }
+  toast(`QR読取: ${code}${name?' / '+name:''}`, 'success');
+}
 
 </script>
 </body>
