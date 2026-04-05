@@ -634,52 +634,54 @@ input, select, textarea {
   text-overflow: ellipsis;
 }
 
-/* ===== まとめ工程ブロック ===== */
-.process-block.group-block {
-  flex: 0 0 168px;
-  border-color: #b8a4e8;
-  background: #f5f0ff;
-  padding-top: 8px;
+/* ===== 一括移動グループ ===== */
+.batch-area {
+  margin-top: 4px;
 }
-.group-range-label {
-  display: block;
-  background: var(--purple);
-  color: #fff;
-  font-size: 9px;
+.proc-group-batch {
+  background: #fafbff;
+  border: 1px dashed #d6dcff;
+  border-radius: 12px;
+  padding: 10px 10px 10px;
+}
+.proc-group-batch .proc-group-hd {
+  color: #999;
+}
+.proc-group-hd-dot.batch {
+  background: #b0bcf0;
+}
+/* 一括移動ボタン */
+.proc-btn-batch {
+  background: #fff;
+  border: 1px solid #d6dcff;
+  color: #666;
+  width: 100%;
+  flex-direction: row;
+  gap: 10px;
+  padding: 10px 14px;
+  justify-content: space-between;
+  min-height: 44px;
+  border-radius: 8px;
+}
+.proc-btn-batch .proc-btn-name {
+  font-size: 12px;
+  color: #777;
+  font-weight: 600;
+}
+.proc-btn-batch .proc-btn-cnt {
+  color: #666;
+  font-size: 18px;
   font-weight: 700;
-  text-align: center;
-  padding: 2px 0;
-  border-radius: 3px;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: -0.5px;
 }
-.group-block .process-name {
-  color: var(--purple);
-  font-weight: 700;
-  font-size: 13px;
+.proc-btn-batch .proc-btn-cnt.zero { color: #ccc; font-size: 16px; font-weight: 400; }
+.proc-btn-batch:hover:not(:disabled) {
+  background: #eef2ff;
+  border-color: #b0bcf0;
+  border-style: solid;
 }
-.group-block .process-count {
-  color: var(--purple);
-  flex: 1;
-}
-.group-desc {
-  font-size: 9px;
-  color: var(--purple);
-  opacity: 0.7;
-  text-align: center;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-  margin-bottom: 2px;
-}
-.group-block .btn-next {
-  background: var(--purple) !important;
-  border-color: var(--purple) !important;
-}
-.group-block .btn-next:hover:not(:disabled) {
-  background: #9b7fd4 !important;
-}
+.proc-btn-batch:active:not(:disabled) { transform: scale(0.97); }
+.proc-btn-batch:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
 /* まとめ工程設定UI */
 .group-config-row {
   display: flex;
@@ -812,10 +814,10 @@ input, select, textarea {
 /* ===== グループ説明ヒント ===== */
 .group-proc-hint {
   font-size: 9px;
-  color: var(--purple);
+  color: #999;
   text-align: center;
-  font-weight: 600;
-  background: rgba(124,92,191,0.07);
+  font-weight: 500;
+  background: transparent;
   border-radius: 4px;
   padding: 2px 4px;
   margin-bottom: 2px;
@@ -3366,7 +3368,7 @@ input[type=number] { -moz-appearance: textfield; }
 }
 .fc-expanded .fc-body {
   max-height: 2400px;
-  padding: 4px 14px 14px;
+  padding: 12px 14px 14px;
   border-top: 1px solid var(--border);
 }
 
@@ -4517,19 +4519,17 @@ function renderGroupBlock(item, entry, di, displayList){
   const count = groupActives.reduce((s,a) => s + item.processCounts[a.idx], 0);
   const hasNext = di < displayList.length - 1;
   const displayName = `${GRP_LABELS[group.start-1]}〜${GRP_LABELS[group.end-1]}`;
-  const actions = `<div class="process-actions">
-    <div class="process-actions-row">
-      <button class="btn btn-move btn-next btn-ship-full"
-        ${hasNext&&count>0?'':'disabled'}
-        onclick="handleAction('まとめ移動',{itemId:'${item.id}',groupStart:${group.start},groupEnd:${group.end}})">次へ →</button>
+  return `<div class="proc-group proc-group-batch">
+    <div class="proc-group-hd">
+      <span class="proc-group-hd-dot batch"></span>
+      一括移動（${displayName}）
     </div>
-  </div>`;
-  return `<div class="process-block group-block" title="工程${GRP_LABELS[group.start-1]}〜${GRP_LABELS[group.end-1]}の在庫をまとめて次の工程へ移動できます">
-    <span class="group-range-label">まとめ工程（${displayName}）</span>
-    <div class="group-proc-hint">工程${displayName}を一括処理</div>
-    <div class="process-stock-label">工程在庫合計</div>
-    <div class="process-count${count===0?' zero':''}">${formatQty(count)}</div>
-    ${actions}
+    <button class="proc-btn proc-btn-batch"
+      ${hasNext&&count>0?'':'disabled'}
+      onclick="handleAction('まとめ移動',{itemId:'${item.id}',groupStart:${group.start},groupEnd:${group.end}})">
+      <span class="proc-btn-name">工程${displayName} をまとめて移動</span>
+      <span class="proc-btn-cnt${count===0?' zero':''}">${formatQty(count)}</span>
+    </button>
   </div>`;
 }
 
@@ -4926,7 +4926,7 @@ function renderItemCard(item){
         +(canMove?'<span class="proc-btn-move-hint">→</span>':'')
         +'</button>';
     }).join('');
-    kakouGridHtml = '<div class="proc-group-arrow proc-group-arrow-first">加工</div>'
+    kakouGridHtml = '<div class="proc-group-arrow">▼ 加工</div>'
       +'<div class="proc-group proc-group-kakou">'
       +'<div class="proc-kakou-grid">'+btns+'</div>'
       +'</div>';
@@ -4988,7 +4988,7 @@ function renderItemCard(item){
         +shiageHtml
         +kanseHtml
       +'</div>'
-      +(groupBlocks ? '<div class="process-section-label" style="margin-top:10px">まとめ工程</div><div class="process-grid">'+groupBlocks+'</div>' : '')
+      +(groupBlocks ? '<div class="batch-area">'+groupBlocks+'</div>' : '')
     +'</div>';
 
   return '<div class="fc'+statusCls+'" id="card-'+item.id+'">'
@@ -4999,8 +4999,6 @@ function renderItemCard(item){
       +(statusIcon?'<span style="font-size:15px;flex-shrink:0">'+statusIcon+'</span>':'')
       +(lastM?'<span class="card-machine-badge" style="font-size:9px;color:var(--text3);flex-shrink:0">🔧'+escH(lastM)+'</span>':'')
     +'</div>'
-    // 工程フロー（最上部）
-    +'<div class="fc-procflow">'+pfChips.join('')+'</div>'
     // 仕掛/完成/不足 1行
     +statsRowHtml
     // 操作エリア（⚙ 展開トグルのみ）
@@ -8674,14 +8672,6 @@ function resetAllData(){
   flex: 1;
   height: 1px;
   background: var(--border);
-}
-/* 最初のラベル（加工）は上罫線なし */
-.proc-group-arrow-first {
-  color: var(--accent2);
-}
-.proc-group-arrow-first::before,
-.proc-group-arrow-first::after {
-  display: none;
 }
 /* 仕上げ・完成ラベルの色 */
 .proc-group-arrow:not(.proc-group-arrow-first) {
