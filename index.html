@@ -3396,7 +3396,7 @@ input[type=number] { -moz-appearance: textfield; }
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 5px;
-  border-radius: 0;
+  border-radius: 9px 0 0 9px;
 }
 .avc-line.ng   { background: var(--red); }
 .avc-line.warn { background: var(--amber); }
@@ -5882,16 +5882,16 @@ function renderAdminCards(){
     const machineSection=machineRows
       ?'<div class="acv2-machine-section"><div style="font-size:9px;color:var(--text3);font-weight:600;margin-bottom:5px;letter-spacing:0.4px">🔧 本日使用設備</div>'+machineRows+'</div>':'';
 
-    // 出荷情報（折り畳み）
+    // 出荷情報（折り畳み）- 常時表示
     const shipHtml=renderItemShipments(item);
-    const shipSection=shipHtml
-      ?'<div class="avc-fold" id="afold-ship-'+item.id+(status==='ng'?' open':'')+'">'
-          +'<button class="avc-fold-toggle" onclick="event.stopPropagation();_toggleFold(this)">'
-            +(status==='ng'?'🔴 出荷':'出荷')+'<span class="ftgl-icon">▼</span>'
-          +'</button>'
-          +'<div class="avc-fold-body">'+shipHtml+'</div>'
-        +'</div>'
-      :'';
+    const shipBodyHtml=shipHtml||'<div style="font-size:11px;color:var(--text3);padding:4px 0 2px">出荷予定なし</div>';
+    const shipSection=
+      '<div class="avc-fold" id="afold-ship-'+item.id+(status==='ng'?' open':'')+'">'
+        +'<button class="avc-fold-toggle" onclick="event.stopPropagation();_toggleFold(this)">'
+          +(status==='ng'?'🔴 出荷':'出荷')+'<span class="ftgl-icon">▼</span>'
+        +'</button>'
+        +'<div class="avc-fold-body">'+shipBodyHtml+'</div>'
+      +'</div>';
 
     return '<div class="admin-card avc'+bgCls+'" id="acard-'+item.id+'" onclick="toggleAdminCard(\''+item.id+'\')">'
       +'<div class="avc-line '+lineCls+'"></div>'
