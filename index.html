@@ -1136,7 +1136,6 @@ input, select, textarea {
   border-radius: 10px;
   margin-bottom: 10px;              /* ②縮小 12→10px */
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  overflow: hidden;
   display: flex;
   cursor: pointer;
   transition: transform 0.12s, box-shadow 0.15s;
@@ -1149,7 +1148,7 @@ input, select, textarea {
 .admin-card:hover  { box-shadow: 0 3px 10px rgba(0,0,0,0.09); border-color: #d8dbe8; }
 
 /* ⑥ 左ステータスライン（4px・視認性UP）*/
-.acv2-line { width: 4px; flex-shrink: 0; }
+.acv2-line { width: 4px; flex-shrink: 0; border-radius: 9px 0 0 9px; }
 .acv2-line.ng   { background: var(--red); }
 .acv2-line.warn { background: var(--amber); }
 .acv2-line.ok   { background: var(--green); }
@@ -4997,7 +4996,6 @@ function renderItemCard(item){
       +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
       +'<span class="fc-code">'+escH(item.code)+'</span>'
       +(statusIcon?'<span style="font-size:15px;flex-shrink:0">'+statusIcon+'</span>':'')
-      +(lastM?'<span class="card-machine-badge" style="font-size:9px;color:var(--text3);flex-shrink:0">🔧'+escH(lastM)+'</span>':'')
     +'</div>'
     // 仕掛/完成/不足 1行
     +statsRowHtml
