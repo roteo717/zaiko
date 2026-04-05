@@ -2048,6 +2048,8 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner .tab-btn.active {color:#1a6b45;border-bottom-color:#1a6b45}
 .ship-inner .tab-btn:hover:not(.active) {color:#555}
 .ship-inner .main {max-width:1100px;margin:0 auto;padding:16px 12px calc(80px + env(safe-area-inset-bottom, 0px))}
+@media screen and (max-width:767px){.ship-inner .main{padding-left:8px;padding-right:8px}}
+@media (max-width:480px){.ship-inner .main{padding-left:10px;padding-right:10px}}
 .ship-inner .toolbar {display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .ship-inner .page-title {font-size:17px;font-weight:700;color:#1a1a1a}
 .ship-inner .nav-group {display:flex;align-items:center;gap:6px;margin-left:auto}
@@ -2182,6 +2184,9 @@ input[type=number] { -moz-appearance: textfield; }
   .ship-inner .modal-bg.slist-bg {align-items:flex-end}
   .ship-inner .slist-wrap {width:100%;border-radius:16px 16px 0 0;padding:16px 16px 36px;max-height:72vh}
 }
+.ship-inner .add-inline-btn {display:flex;align-items:center;gap:5px;padding:5px 13px 5px 10px;border:1.5px solid #1a6b45;border-radius:6px;background:#1a6b45;color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;letter-spacing:0.2px;transition:background 0.15s,transform 0.1s;-webkit-tap-highlight-color:transparent}
+.ship-inner .add-inline-btn:hover {background:#155836}
+.ship-inner .add-inline-btn:active {transform:scale(0.97)}
 .ship-inner .fab {position:fixed;bottom:28px;right:24px;width:52px;height:52px;border-radius:50%;background:#1a6b45;color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(26,107,69,.4);display:flex;align-items:center;justify-content:center;z-index:100}
 .ship-inner .fab:hover {background:#155836;transform:scale(1.06)}
 @media print{.ship-inner .app-header .header-actions, .ship-inner .fab, .ship-inner .edit-panel, .ship-inner .tab-bar {display:none!important}.ship-inner {background:#fff}.ship-inner .main {padding:10px}}
@@ -2890,7 +2895,8 @@ input[type=number] { -moz-appearance: textfield; }
 
 /* 検索＋操作エリアの整合 */
 .field-mode .action-area,
-.admin-mode .action-area {
+.admin-mode .action-area,
+#ship-mode .action-area {
   margin-bottom: 12px;
   border-radius: 12px;
   background: #f8f9ff;
@@ -2929,7 +2935,8 @@ input[type=number] { -moz-appearance: textfield; }
 /* スマホ: action-buttons縦並び強化 */
 @media (max-width: 640px) {
   .field-mode .action-area,
-  .admin-mode .action-area {
+  .admin-mode .action-area,
+  #ship-mode .action-area {
     padding: 12px;
     gap: 10px;
   }
@@ -4126,15 +4133,11 @@ input[type=number] { -moz-appearance: textfield; }
 
 <div id="tab-cal">
   <div class="main">
-    <div class="action-area" style="margin-bottom:12px">
+    <div class="action-area">
       <div class="search-wrapper">
         <input class="search-input" id="search-input" type="search" placeholder="品名・品番で検索" oninput="onSearch(this.value)" autocomplete="off">
-        <button type="button" class="btn-qr-inline" id="search-clear" style="display:none" onclick="clearSearch()" title="クリア">
-          <svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+        <button type="button" class="btn-qr-inline" id="search-clear" style="display:none" onclick="clearSearch()" title="クリア"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-ship')" title="QRコードで検索"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx="0.5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
     </div>
     <div class="toolbar">
@@ -4144,6 +4147,10 @@ input[type=number] { -moz-appearance: textfield; }
         <button class="nbtn" onclick="prevMonth()">&#8249;</button>
         <div class="month-label" id="mlabel"></div>
         <button class="nbtn" onclick="nextMonth()">&#8250;</button>
+        <button class="add-inline-btn" onclick="openAdd()">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          追加
+        </button>
       </div>
     </div>
     <div id="search-results" style="display:none;margin-bottom:14px"></div>
@@ -4182,7 +4189,7 @@ input[type=number] { -moz-appearance: textfield; }
   </div>
 </div>
 
-<button class="fab"  id="fab" onclick="openAdd()">＋</button>
+
 <div id="modal-wrap"></div>
 
 <div class="edit-panel" id="edit-panel">
@@ -4387,7 +4394,21 @@ function saveUserName(){
   toast(`作業者を「${name}」に設定しました`,'success');
 }
 
-function gid(id){ return document.getElementById(id); }
+function gid(id){
+  const el = document.getElementById(id);
+  if(el) return el;
+  const stub = new Proxy({}, {
+    get(t,k){
+      if(k==='style'||k==='dataset') return new Proxy({},{get:()=>undefined,set:()=>true});
+      if(k==='classList') return {add:()=>{},remove:()=>{},toggle:()=>{},contains:()=>false};
+      if(['addEventListener','removeEventListener','focus','blur','click','scrollIntoView'].includes(k)) return ()=>{};
+      if(['innerHTML','textContent','value','placeholder'].includes(k)) return '';
+      return undefined;
+    },
+    set:()=>true
+  });
+  return stub;
+}
 function genId(){ return '_'+Math.random().toString(36).slice(2,9); }
 function nowStr(){ return new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
 function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -7082,13 +7103,15 @@ let shipSearchQuery='';
 const DOWS=['日','月','火','水','木','金','土'];
 function onSearch(val){
   shipSearchQuery=val.trim();
-  document.getElementById('search-clear').style.display=shipSearchQuery?'':'none';
+  const _sc=document.getElementById('search-clear'); if(_sc) _sc.style.display=shipSearchQuery?'':'none';
+  const _ca=document.getElementById('cal-area');
+  const _sr=document.getElementById('search-results');
   if(shipSearchQuery){
-    document.getElementById('cal-area').style.display='none';
+    if(_ca) _ca.style.display='none';
     renderSearchResults();
   } else {
-    document.getElementById('cal-area').style.display='';
-    document.getElementById('search-results').style.display='none';
+    if(_ca) _ca.style.display='';
+    if(_sr) _sr.style.display='none';
   }
 }
 function clearSearch(){
@@ -7610,6 +7633,8 @@ function _onQrDetected(text){
     _fillSearchFromQr(text, 'field');
   } else if(_qrTarget === 'search-admin'){
     _fillSearchFromQr(text, 'admin');
+  } else if(_qrTarget === 'search-ship'){
+    _fillSearchFromQr(text, 'ship');
   }
 
   // 0.8秒後にカメラを閉じる
@@ -7674,8 +7699,14 @@ function _fillSearchFromQr(text, mode){
     const el = gid('field-search-input') || document.querySelector('#field-mode .search-input');
     if(el){
       el.value = code;
-      el.dispatchEvent(new Event('input')); // 検索自動実行
+      el.dispatchEvent(new Event('input'));
       filterItems(code);
+    }
+  } else if(mode === 'ship'){
+    const el = gid('search-input');
+    if(el){
+      el.value = code;
+      onSearch(code);
     }
   } else {
     const el = document.querySelector('.admin-search');
