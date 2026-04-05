@@ -1101,7 +1101,28 @@ input, select, textarea {
     min-height: 32px;
   }
 }
-#admin-cards { display: block; }
+/* ===== PC 2カラム (min-width: 768px) ===== */
+@media (min-width: 768px) {
+  #admin-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+  #admin-cards .admin-card { margin-bottom: 0; }
+  #field-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 10px;
+    align-items: start;
+  }
+  #field-items .fc { margin-bottom: 0; }
+}
+@media (max-width: 767px) {
+  #admin-cards { display: block; }
+  #field-items { display: block; }
+}
+#admin-cards { }
 /* ===== 管理カード v9（最終調整・一瞬判断UI）===== */
 .admin-card {
   background: #fff;
@@ -2026,7 +2047,7 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner .tab-btn {padding:12px 20px;font-size:13px;font-weight:600;color:#999;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .ship-inner .tab-btn.active {color:#1a6b45;border-bottom-color:#1a6b45}
 .ship-inner .tab-btn:hover:not(.active) {color:#555}
-.ship-inner .main {max-width:1100px;margin:0 auto;padding:16px 12px 80px}
+.ship-inner .main {max-width:1100px;margin:0 auto;padding:16px 12px calc(80px + env(safe-area-inset-bottom, 0px))}
 .ship-inner .toolbar {display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .ship-inner .page-title {font-size:17px;font-weight:700;color:#1a1a1a}
 .ship-inner .nav-group {display:flex;align-items:center;gap:6px;margin-left:auto}
@@ -2164,13 +2185,7 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner .fab {position:fixed;bottom:28px;right:24px;width:52px;height:52px;border-radius:50%;background:#1a6b45;color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(26,107,69,.4);display:flex;align-items:center;justify-content:center;z-index:100}
 .ship-inner .fab:hover {background:#155836;transform:scale(1.06)}
 @media print{.ship-inner .app-header .header-actions, .ship-inner .fab, .ship-inner .edit-panel, .ship-inner .tab-bar {display:none!important}.ship-inner {background:#fff}.ship-inner .main {padding:10px}}
-.ship-inner .search-wrap {position:relative;margin-bottom:14px}
-.ship-inner .search-input {width:100%;padding:9px 36px 9px 14px;border:1px solid #d0d0d0;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:#111;outline:none;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.ship-inner .search-input:focus {border-color:#1a6b45;box-shadow:0 0 0 3px rgba(26,107,69,.12)}
-.ship-inner .search-icon {position:absolute;left:11px;top:0;bottom:0;display:flex;align-items:center;pointer-events:none;line-height:1}
-.ship-inner .search-icon svg {display:block;width:16px;height:16px;color:#aaa}
-.ship-inner .search-clear {position:absolute;right:10px;top:0;bottom:0;display:flex;align-items:center;background:none;border:none;cursor:pointer;font-size:16px;color:#aaa;padding:0 4px;line-height:1}
-.ship-inner .search-clear:hover {color:#555}
+/* 出荷タブ: 共通 .search-wrapper を使用（デザイン統一）*/
 .ship-inner .sresult-list {background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
 .ship-inner .sresult-hdr {padding:10px 16px;background:#f7f9f8;border-bottom:1px solid #e8eee9;font-size:12px;font-weight:700;color:#666}
 .ship-inner .sresult-item {display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer}
@@ -2181,7 +2196,7 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner .sresult-qty {font-size:12px;color:#888;font-weight:600;white-space:nowrap}
 .ship-inner .sresult-st {width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .ship-inner .sresult-empty {padding:32px 16px;text-align:center;color:#aaa;font-size:13px}
-@media(max-width:640px){.ship-inner .search-input {font-size:16px}}
+
 
 .ship-inner /* ===== 統合UI: 不足一覧 ===== */
 .shortage-row {display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background .1s}
@@ -3580,6 +3595,139 @@ input[type=number] { -moz-appearance: textfield; }
   max-height: 400px;
 }
 
+/* ===== 仕掛/完成/不足 1行インライン表示 ===== */
+.avc-inline-stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 6px;
+  flex-wrap: nowrap;
+}
+.avc-istat {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+.avc-istat-lbl {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.avc-istat-val {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.avc-istat-val.done  { color: var(--done); }
+.avc-istat-val.red   { color: var(--red); }
+.avc-istat-val.zero  { color: #ccc; font-weight: 400; font-size: 12px; }
+.avc-istat-sep {
+  color: var(--border2);
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 8px;
+  padding-bottom: 0;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* ===== 折り畳み汎用セクション（出荷・工程）===== */
+.avc-fold {
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+.avc-fold-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 2px 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: none;
+  border: none;
+  width: 100%;
+  font-family: var(--font);
+  min-height: 36px;
+}
+.avc-fold-toggle:hover { color: var(--text2); }
+.avc-fold-toggle .ftgl-icon {
+  font-size: 10px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  color: var(--border2);
+}
+.avc-fold.open .ftgl-icon { transform: rotate(180deg); }
+.avc-fold-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease, padding 0.2s;
+  padding-bottom: 0;
+}
+.avc-fold.open .avc-fold-body {
+  max-height: 800px;
+  padding-bottom: 6px;
+}
+
+/* ===== fc: 仕掛/完成/不足 1行 ===== */
+.fc-stats-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px 8px;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  flex-wrap: nowrap;
+}
+.fc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.fc-stat-lbl {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.fc-stat-main {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+.fc-stat-main.zero { color: #ccc; font-size: 28px; font-weight: 400; }
+.fc-stat-sub {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.fc-stat-sub.done { color: var(--done); }
+.fc-stat-sub.red  { color: var(--red); }
+.fc-stat-sub.zero { color: #ccc; font-weight: 400; font-size: 12px; }
+.fc-stat-sep {
+  color: var(--border2);
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 8px;
+  align-self: center;
+  padding-top: 6px;
+  flex-shrink: 0;
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
@@ -3619,7 +3767,7 @@ input[type=number] { -moz-appearance: textfield; }
   <!-- 操作エリア: 検索＋QR → +品目登録 → 日報 → 調整 履歴 -->
   <div class="action-area field-action-area">
     <div class="search-wrapper">
-      <input class="search-input" type="search" placeholder="商品名・ヨミ・バーコードで検索" oninput="filterItems(this.value)" id="field-search-input" autocomplete="off">
+      <input class="search-input" type="search" placeholder="品名・品番で検索" oninput="filterItems(this.value)" id="field-search-input" autocomplete="off">
       <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-field')" title="QRコードで検索"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx="0.5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
 
@@ -3639,7 +3787,7 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="action-area">
     <!-- 検索＋QR（一体化）-->
     <div class="search-wrapper">
-      <input class="search-input admin-search" type="search" placeholder="商品名・ヨミ・バーコードで検索" oninput="filterAdmin(this.value)" autocomplete="off">
+      <input class="search-input admin-search" type="search" placeholder="品名・品番で検索" oninput="filterAdmin(this.value)" autocomplete="off">
       <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-admin')" title="QRコードで検索"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx="0.5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
   </div>
@@ -3831,11 +3979,11 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="modal">
     <div class="modal-title">
       <div class="modal-icon" style="background:#f0ecff;font-size:16px">📝</div>
-      在庫調整（管理者）
+      <span id="adjust-modal-title">在庫調整（管理者）</span>
     </div>
     <div class="form-group">
       <label class="form-label">品目</label>
-      <select class="form-select" id="adj-item" onchange="updateAdjProcess()"></select>
+      <select class="form-select" id="adj-item" onchange="updateAdjProcess();updateAdjTitle()"></select>
     </div>
     <div class="form-group">
       <label class="form-label">対象工程</label>
@@ -3976,25 +4124,27 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="ship-inner" id="ship-inner">
 <span class="sync-badge" id="sync-badge" style="display:none"></span>
 
-<div class="tab-bar">
-  <button class="tab-btn active" id="tbtn-cal" onclick="switchTab('cal')">📅 出荷予定</button>
-  <button class="tab-btn" id="tbtn-shortage" onclick="switchTab('shortage')">🔴 不足一覧</button>
-</div>
-
 <div id="tab-cal">
   <div class="main">
+    <div class="action-area" style="margin-bottom:12px">
+      <div class="search-wrapper">
+        <input class="search-input" id="search-input" type="search" placeholder="品名・品番で検索" oninput="onSearch(this.value)" autocomplete="off">
+        <button type="button" class="btn-qr-inline" id="search-clear" style="display:none" onclick="clearSearch()" title="クリア">
+          <svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
     <div class="toolbar">
-      <div class="page-title">月間出荷予定表</div>
+      <div class="page-title">出荷スケジュール</div>
       <div class="nav-group">
         <button class="today-btn" onclick="goToday()">今月</button>
         <button class="nbtn" onclick="prevMonth()">&#8249;</button>
         <div class="month-label" id="mlabel"></div>
         <button class="nbtn" onclick="nextMonth()">&#8250;</button>
       </div>
-    </div>
-    <div class="search-wrap">
-      <input class="search-input" id="search-input" type="text" placeholder="品名・品番で検索" oninput="onSearch(this.value)">
-      <button class="search-clear" id="search-clear" style="display:none" onclick="clearSearch()">✕</button>
     </div>
     <div id="search-results" style="display:none;margin-bottom:14px"></div>
     <div id="cal-area">
@@ -4007,30 +4157,27 @@ input[type=number] { -moz-appearance: textfield; }
       <div class="grid" id="grid"></div>
     </div>
     </div>
-
-  </div>
-</div>
-
-<div id="tab-shortage" style="display:none">
-  <div class="main">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-      <div style="font-size:17px;font-weight:700;color:#1a1a1a">🔴 不足一覧（7日以内）</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <select id="shortage-range" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
-          <option value="3">3日以内</option>
-          <option value="7" selected>7日以内</option>
-          <option value="14">14日以内</option>
-          <option value="30">30日以内</option>
-        </select>
-        <select id="shortage-filter" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
-          <option value="all">すべて</option>
-          <option value="ng">不足のみ</option>
-          <option value="cond">条件OK含む</option>
-        </select>
+    <!-- 不足一覧：折り畳みセクション -->
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div style="font-size:15px;font-weight:700;color:#1a1a1a">🔴 不足一覧</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="shortage-range" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
+            <option value="3">3日以内</option>
+            <option value="7" selected>7日以内</option>
+            <option value="14">14日以内</option>
+            <option value="30">30日以内</option>
+          </select>
+          <select id="shortage-filter" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
+            <option value="all">すべて</option>
+            <option value="ng">不足のみ</option>
+            <option value="cond">条件OK含む</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden" id="shortage-list">
-      <div style="text-align:center;padding:40px;color:#aaa">読み込み中...</div>
+      <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden" id="shortage-list">
+        <div style="text-align:center;padding:40px;color:#aaa">読み込み中...</div>
+      </div>
     </div>
   </div>
 </div>
@@ -4709,9 +4856,32 @@ function renderItemCard(item){
     }
   });
 
-  // ── ③ 在庫（仕掛品主役）──
-  const wipHtml='<span class="fc-wip-val'+(wipCount===0?' zero':'')+'">'+wipCount.toLocaleString()+'</span>';
-  const doneHtml='<span class="fc-done-val'+(doneCount===0?' zero':'')+'">'+doneCount.toLocaleString()+'</span>';
+  // ── ③ 在庫（仕掛品主役 + 完成 + 不足を1行）──
+  const mainValCls  = wipCount===0 ? ' zero' : '';
+  const doneSubCls  = doneCount===0 ? ' zero' : ' done';
+  const shortSubCls = shortageQty>0 ? ' red'  : ' zero';
+  const shortSubVal = shortageQty>0 ? '−'+shortageQty.toLocaleString() : '0';
+
+  const statsRowHtml=''
+    +'<div class="fc-stats-row">'
+      // 仕掛品（主役・最大）
+      +'<div class="fc-stat">'
+        +'<span class="fc-stat-lbl">仕掛</span>'
+        +'<span class="fc-stat-main'+mainValCls+'">'+wipCount.toLocaleString()+'</span>'
+      +'</div>'
+      +'<span class="fc-stat-sep">/</span>'
+      // 完成品
+      +'<div class="fc-stat">'
+        +'<span class="fc-stat-lbl">完成</span>'
+        +'<span class="fc-stat-sub'+doneSubCls+'">'+doneCount.toLocaleString()+'</span>'
+      +'</div>'
+      +'<span class="fc-stat-sep">/</span>'
+      // 不足
+      +'<div class="fc-stat">'
+        +'<span class="fc-stat-lbl">不足</span>'
+        +'<span class="fc-stat-sub'+shortSubCls+'">'+shortSubVal+'</span>'
+      +'</div>'
+    +'</div>';
 
   // ── ④ インライン入庫フォーム（展開式）──
   const inlineRecvHtml=''
@@ -4755,15 +4925,10 @@ function renderItemCard(item){
       +(statusIcon?'<span style="font-size:15px;flex-shrink:0">'+statusIcon+'</span>':'')
       +(lastM?'<span class="card-machine-badge" style="font-size:9px;color:var(--text3);flex-shrink:0">🔧'+escH(lastM)+'</span>':'')
     +'</div>'
-    // 工程フロー（最上部・主役）
+    // 工程フロー（最上部）
     +'<div class="fc-procflow">'+pfChips.join('')+'</div>'
-    // 在庫情報
-    +'<div class="fc-nums">'
-      +'<div class="fc-wip-block"><span class="fc-wip-label">仕掛品</span>'+wipHtml+'</div>'
-      +'<div class="fc-done-block"><span class="fc-done-label">完成品</span>'+doneHtml+'</div>'
-    +'</div>'
-    // 不足バッジ
-    +(shortageQty>0?'<div class="fc-shortage">⚠ 不足 '+shortageQty.toLocaleString()+'個</div>':'')
+    // 仕掛/完成/不足 1行
+    +statsRowHtml
     // 操作エリア
     +'<div class="fc-actions">'
       +'<button class="fc-btn-receive" id="recv-btn-'+item.id+'" onclick="event.stopPropagation();_fcToggleRecv(\''+item.id+'\')">＋ 入庫</button>'
@@ -5002,7 +5167,7 @@ function openOp(itemId,processIdx,opType){
 
   if(opType==='move-next'){
     const nexts=actives.slice(pi+1);
-    gid('op-title').textContent='次工程へ移動';
+    gid('op-title').textContent=`次工程へ移動（${item.name}）`;
     gid('op-icon').textContent='→'; gid('op-icon').className='modal-icon move';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）`;
     gid('op-desc').style.display='';
@@ -5014,7 +5179,7 @@ function openOp(itemId,processIdx,opType){
     gid('op-confirm-btn').className='btn-confirm'; gid('op-confirm-btn').textContent='移動する';
   } else if(opType==='move-back'){
     const prevs=actives.slice(0,pi).reverse();
-    gid('op-title').textContent='前工程へ戻す';
+    gid('op-title').textContent=`前工程へ戻す（${item.name}）`;
     gid('op-icon').textContent='←'; gid('op-icon').className='modal-icon move';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）`;
     gid('op-desc').style.display='none';
@@ -5026,14 +5191,14 @@ function openOp(itemId,processIdx,opType){
     gid('op-confirm-btn').className='btn-confirm'; gid('op-confirm-btn').textContent='戻す';
   } else if(opType==='defect'){
     gid('op-desc').style.display='none';
-    gid('op-title').textContent='不良処理';
+    gid('op-title').textContent=`不良処理（${item.name}）`;
     gid('op-icon').textContent='⚠'; gid('op-icon').className='modal-icon defect';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）<br>不良置き場へ移動します。戻し不可です。`;
     gid('op-to-process-group').style.display='none';
     gid('op-confirm-btn').className='btn-confirm danger'; gid('op-confirm-btn').textContent='不良確定';
   } else if(opType==='ship'){
     gid('op-desc').style.display='none';
-    gid('op-title').textContent='出荷処理';
+    gid('op-title').textContent=`出荷処理（${item.name}）`;
     gid('op-icon').textContent='🚚'; gid('op-icon').className='modal-icon ship';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）<br>在庫から減算し出荷済に加算します。`;
     gid('op-to-process-group').style.display='none';
@@ -5495,6 +5660,12 @@ function renderAdminTable(){
 function filterAdmin(v){ adminFilter=v.trim(); renderAdminCards(); }
 function sortAdmin(key){ if(adminSortKey===key) adminSortDir*=-1; else{adminSortKey=key;adminSortDir=1;} renderAdminCards(); }
 
+function _toggleFold(el){
+  // el = the toggle button; parent is .avc-fold
+  const section = el.closest('.avc-fold');
+  if(section) section.classList.toggle('open');
+}
+
 function renderAdminCards(){
   let items=db.items.filter(it=>matchesFilter(it,adminFilter));
 
@@ -5539,37 +5710,52 @@ function renderAdminCards(){
     // ステータス表示
     let statusHtml='';
     if(status==='ng'){
-      statusHtml='<div class="avc-status ng">🔴 不足&thinsp;'+ngCount+'件'
-        +(shortageQty>0?' <span class="avc-shortage-badge">−'+shortageQty.toLocaleString()+'個</span>':'')+'</div>';
+      statusHtml='<div class="avc-status ng">🔴 不足&thinsp;'+ngCount+'件</div>';
     } else if(status==='warn'){
-      statusHtml='<div class="avc-status warn">🟡 注意（仕掛品あり）</div>';
+      statusHtml='<div class="avc-status warn">🟡 注意</div>';
     } else if(status==='ok'){
       statusHtml='<div class="avc-status ok">🟢 正常</div>';
     } else {
       statusHtml='<div class="avc-status none">— データなし</div>';
     }
 
-    // 在庫（主役）
+    // 在庫（主役・最大数字）
     const stockHtml=total>0
       ?'<span class="avc-stock-val">'+total.toLocaleString()+'<span class="avc-stock-unit">個</span></span>'
       :'<span class="avc-stock-val zero">0<span class="avc-stock-unit">個</span></span>';
 
-    // 在庫内訳: 仕掛品 + 完成品
-    const wipHtml ='<div class="avc-bd-item"><span class="avc-bd-label">仕掛品</span><span class="avc-bd-val'+(wipCount===0?' zero':'')+'">'+wipCount.toLocaleString()+'個</span></div>';
-    const doneHtml2='<div class="avc-bd-item"><span class="avc-bd-label">完成品</span><span class="avc-bd-val done'+(doneCount===0?' zero':'')+'">'+doneCount.toLocaleString()+'個</span></div>';
+    // ─── 仕掛/完成/不足 を1行で表示 ───
+    const wipValCls  = wipCount===0  ? ' zero' : '';
+    const doneValCls = doneCount===0 ? ' zero' : ' done';
+    const shortValCls= shortageQty>0 ? ' red'  : ' zero';
+    const shortVal   = shortageQty>0 ? '−'+shortageQty.toLocaleString() : '0';
+    const inlineStats=
+      '<div class="avc-inline-stats">'
+        +'<div class="avc-istat"><span class="avc-istat-lbl">仕掛</span><span class="avc-istat-val'+wipValCls+'">'+wipCount.toLocaleString()+'</span></div>'
+        +'<span class="avc-istat-sep">/</span>'
+        +'<div class="avc-istat"><span class="avc-istat-lbl">完成</span><span class="avc-istat-val'+doneValCls+'">'+doneCount.toLocaleString()+'</span></div>'
+        +'<span class="avc-istat-sep">/</span>'
+        +'<div class="avc-istat"><span class="avc-istat-lbl">不足</span><span class="avc-istat-val'+shortValCls+'">'+shortVal+'</span></div>'
+      +'</div>';
 
     // 本日入庫
     const todayHtml=todayRecv>0
       ?'<div class="avc-today">↑ +'+todayRecv.toLocaleString()+' 本日入庫</div>':'';
 
-    // 工程チップ（補助）
+    // 工程チップ（折り畳み）
     const chips=item.processConfig.map((c,i)=>{
       if(!c.active||c.type==='deburr'||c.type==='done') return '';
       const cnt=item.processCounts[i]; if(cnt===0) return '';
       return '<span class="avc-chip">'+PNAMES[i]+'\u2009'+cnt.toLocaleString()+'</span>';
     }).filter(Boolean);
-    const chipsHtml=chips.length
-      ?'<div class="avc-chips"><span class="avc-chip-label">工程</span>'+chips.join('')+'</div>':'';
+    const chipsInner=chips.length
+      ?'<div class="avc-chips" style="padding-bottom:4px"><span class="avc-chip-label">工程</span>'+chips.join('')+'</div>'
+      :'<div style="font-size:11px;color:var(--text3);padding-bottom:4px">工程在庫なし</div>';
+    const chipsSection=
+      '<div class="avc-fold" id="afold-proc-'+item.id+'">'
+        +'<button class="avc-fold-toggle" onclick="event.stopPropagation();_toggleFold(this)">工程<span class="ftgl-icon">▼</span></button>'
+        +'<div class="avc-fold-body">'+chipsInner+'</div>'
+      +'</div>';
 
     // 設備サマリー（展開エリア）
     const todayMachineMap=getTodayMachineMap(item.id);
@@ -5588,6 +5774,17 @@ function renderAdminCards(){
     const machineSection=machineRows
       ?'<div class="acv2-machine-section"><div style="font-size:9px;color:var(--text3);font-weight:600;margin-bottom:5px;letter-spacing:0.4px">🔧 本日使用設備</div>'+machineRows+'</div>':'';
 
+    // 出荷情報（折り畳み）
+    const shipHtml=renderItemShipments(item);
+    const shipSection=shipHtml
+      ?'<div class="avc-fold" id="afold-ship-'+item.id+(status==='ng'?' open':'')+'">'
+          +'<button class="avc-fold-toggle" onclick="event.stopPropagation();_toggleFold(this)">'
+            +(status==='ng'?'🔴 出荷':'出荷')+'<span class="ftgl-icon">▼</span>'
+          +'</button>'
+          +'<div class="avc-fold-body">'+shipHtml+'</div>'
+        +'</div>'
+      :'';
+
     return '<div class="admin-card avc'+bgCls+'" id="acard-'+item.id+'" onclick="toggleAdminCard(\''+item.id+'\')">'
       +'<div class="avc-line '+lineCls+'"></div>'
       +'<div class="avc-body">'
@@ -5596,20 +5793,20 @@ function renderAdminCards(){
           +'<span class="avc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
           +'<span class="avc-code">'+escH(item.code)+'</span>'
         +'</div>'
-        // 在庫主役
+        // 在庫主役（最も大きく）
         +'<div class="avc-stock-row">'+stockHtml+'</div>'
-        // 内訳
-        +'<div class="avc-breakdown">'+wipHtml+doneHtml2+'</div>'
+        // 仕掛/完成/不足を1行
+        +inlineStats
         // 本日入庫
         +todayHtml
         // ステータス
         +statusHtml
-        // 工程チップ
-        +chipsHtml
+        // 工程（折り畳み）
+        +chipsSection
         // 展開エリア（設備）
         +'<div class="avc-expand">'+machineSection+'</div>'
-        // 出荷予定（現場から移管）
-        +'<div class="avc-shipments">'+renderItemShipments(item)+'</div>'
+        // 出荷予定（折り畳み）
+        +shipSection
         // フッター（編集）
         +'<div class="avc-footer">'
           +'<button class="avc-edit-btn" onclick="event.stopPropagation();openItemFormEdit(\''+item.id+'\')" title="編集">✏ 編集</button>'
@@ -6165,8 +6362,14 @@ function saveItem(){
 function openAdjustModal(){
   gid('adj-item').innerHTML=db.items.map(i=>`<option value="${i.id}">${escH(i.code)} ${escH(i.name)}</option>`).join('');
   updateAdjProcess();
+  updateAdjTitle();
   gid('adj-reason').value='';
   gid('adjust-modal').classList.add('open');
+}
+function updateAdjTitle(){
+  const item=db.items.find(i=>i.id===gid('adj-item').value);
+  const titleEl=gid('adjust-modal-title');
+  if(titleEl) titleEl.textContent=item?`在庫調整（${item.name}）`:'在庫調整（管理者）';
 }
 function updateAdjProcess(){
   const item=db.items.find(i=>i.id===gid('adj-item').value); if(!item) return;
@@ -7049,15 +7252,10 @@ window.addEventListener('storage',e=>{
   }
 });
 
-// tab 切り替え
+// tab 切り替え（後方互換のため残す）
 let shipActiveTab='cal';
 function switchTab(tab){
   shipActiveTab=tab;
-  document.getElementById('tab-cal').style.display=tab==='cal'?'':'none';
-  document.getElementById('tab-shortage').style.display=tab==='shortage'?'':'none';
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  if(tab==='cal') document.getElementById('tbtn-cal').classList.add('active');
-  else document.getElementById('tbtn-shortage').classList.add('active');
   if(tab==='shortage') renderShortage();
 }
 
@@ -7113,8 +7311,6 @@ function renderShortage(){
   }).join('');
 }
 
-// shipRender() called from openShipScheduleModal
-
 // ===== 出荷スケジュール初期化 =====
 function shipInit(){
   // shipCur が未設定なら今月にリセット
@@ -7122,10 +7318,9 @@ function shipInit(){
   if(!shipCur) shipCur = new Date(now.getFullYear(), now.getMonth(), 1);
   rebuildCatSelect();
   shipRender();
+  renderShortage();
 }
 
-
-// ===== 自動保存モジュール =====
 const DAILY_STATE_KEY = 'dailyReportState';
 
 // 現在のUI状態を収集
@@ -7742,19 +7937,44 @@ function exportData(){
 }
 
 function clearHistory(){
-  if(!confirm('操作履歴をすべて削除しますか？（在庫データは保持されます）')) return;
-  db.transactions = [];
-  saveDb();
-  toast('操作履歴をクリアしました','success');
+  gid('danger-modal-title').textContent = '🗑 操作履歴をクリア';
+  gid('danger-modal-desc').textContent = '操作履歴をすべて削除します。在庫データは保持されます。この操作は取り消せません。';
+  gid('danger-modal-confirm').onclick = function(){
+    db.transactions = [];
+    saveDb();
+    closeModal('danger-modal');
+    toast('操作履歴をクリアしました','success');
+  };
+  gid('danger-modal').classList.add('open');
 }
 
 function resetAllData(){
-  if(!confirm('⚠ 全データをリセットしますか？\nこの操作は取り消せません。')) return;
-  localStorage.clear();
-  location.reload();
+  gid('danger-modal-title').textContent = '⚠ 全データをリセット';
+  gid('danger-modal-desc').textContent = '在庫データ・操作履歴・設定をすべて削除します。この操作は絶対に取り消せません。';
+  gid('danger-modal-confirm').onclick = function(){
+    closeModal('danger-modal');
+    localStorage.clear();
+    location.reload();
+  };
+  gid('danger-modal').classList.add('open');
 }
 
 </script>
+
+<!-- DANGER CONFIRM MODAL -->
+<div class="modal-overlay" id="danger-modal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-title">
+      <div class="modal-icon" style="background:var(--red-bg);font-size:16px">⚠</div>
+      <span id="danger-modal-title" style="color:var(--red)">確認</span>
+    </div>
+    <div id="danger-modal-desc" style="font-size:13px;color:var(--text2);background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:16px;line-height:1.6"></div>
+    <div class="modal-actions" style="flex-direction:column;gap:8px">
+      <button id="danger-modal-confirm" class="btn-confirm danger" style="width:100%;padding:14px;font-size:15px">実行する</button>
+      <button class="btn-cancel" style="width:100%;text-align:center;padding:11px" onclick="closeModal('danger-modal')">キャンセル</button>
+    </div>
+  </div>
+</div>
 
 <!-- SETTINGS MODAL -->
 <style>
@@ -8040,14 +8260,16 @@ function resetAllData(){
 
       <!-- データ管理 -->
       <div class="stt-section-label">データ管理</div>
-      <div class="stt-group">
+      <div class="stt-group" style="border:1px solid var(--red-bd)">
         <div class="stt-row danger" onclick="clearHistory()">
           <span class="stt-row-label">🗑 操作履歴をクリア</span>
+          <span style="font-size:11px;color:var(--red-bd);margin-right:4px">在庫データは保持</span>
           <span class="stt-row-chevron" style="color:var(--red-bd)">›</span>
         </div>
-        <div class="stt-row danger" onclick="resetAllData()">
-          <span class="stt-row-label">⚠ 全データをリセット</span>
-          <span class="stt-row-chevron" style="color:var(--red-bd)">›</span>
+        <div class="stt-row danger" onclick="resetAllData()" style="background:var(--red-bg)">
+          <span class="stt-row-label" style="font-weight:700">⚠ 全データをリセット</span>
+          <span style="font-size:11px;color:var(--red);font-weight:700;margin-right:4px">取消不可</span>
+          <span class="stt-row-chevron" style="color:var(--red)">›</span>
         </div>
       </div>
 
