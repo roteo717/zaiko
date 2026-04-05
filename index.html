@@ -2193,10 +2193,10 @@ input[type=number] { -moz-appearance: textfield; }
 
 
 /* ===== 出荷スケジュール 埋め込みCSS ===== */
-.ship-inner { display: block; }
+.ship-inner { display: block; overflow-x: hidden; }
 .ship-inner .tab-bar { position: sticky; top: 0; z-index: 40; }
 
-.ship-inner {box-sizing:border-box;margin:0;padding:0}
+.ship-inner {box-sizing:border-box;margin:0;padding:0;max-width:100%;overflow-x:hidden}
 .ship-inner {font-family:'Hiragino Sans','Yu Gothic UI','Meiryo',sans-serif;font-size:13px;background:#f4f6f5;color:#1a1a1a}
 .ship-inner .app-header {background:#1a6b45;color:#fff;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.15);position:sticky;top:0;z-index:50}
 .ship-inner .app-logo {font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
@@ -3063,6 +3063,14 @@ input[type=number] { -moz-appearance: textfield; }
   margin-bottom: 12px;
   border-radius: 12px;
   background: #f8f9ff;
+}
+
+/* ship-mode の検索バーはボックス不要 */
+#ship-mode .action-area {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-bottom: 10px;
 }
 
 /* セクション間スペース統一 */
@@ -7604,8 +7612,6 @@ function selectDay(y,m,d){
   shipSelectedDate=new Date(y,m,d);
   if(shipPeriod==='week') renderWeekCal(); else renderMonthCal();
   renderDayDetail();
-  const sec=document.getElementById('day-detail-section');
-  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 /* ── 期間範囲取得 ── */
