@@ -2034,6 +2034,9 @@ input[type=number] { -moz-appearance: textfield; }
 /* 出荷カード */
 .ship-item-card{border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1.5px solid transparent;-webkit-tap-highlight-color:transparent;position:relative}
 .ship-item-card.danger{background:#ffe5e5;border-color:#ffb3b3}
+.ship-item-card.danger-high{background:#ffd0d0;border-color:#f87171;border-width:2px}
+.ship-item-card.danger-mid{background:#ffe5e5;border-color:#ffb3b3}
+.ship-item-card.danger-low{background:#fff3f3;border-color:#fecaca}
 .ship-item-card.warning{background:#fff5cc;border-color:#ffe066}
 .ship-item-card.safe{background:#eefaf0;border-color:#99e6b3}
 .ship-item-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
@@ -4372,7 +4375,7 @@ input[type=number] { -moz-appearance: textfield; }
         <button class="ship-filter-chip active" id="sfchip-ng" onclick="setShipFilter('ng')">🔴 不足のみ</button>
         <button class="ship-filter-chip" id="sfchip-3d" onclick="setShipFilter('3d')">⚡ 3日以内</button>
       </div>
-      <button class="ship-filter-chip" id="sfchip-all" style="flex-shrink:0;padding:6px 12px" onclick="setShipFilter('all')">全件</button>
+      <button id="sfchip-all" onclick="setShipFilter('all')" style="flex-shrink:0;padding:4px 10px;border-radius:6px;border:none;background:transparent;font-size:11px;color:var(--text3);cursor:pointer;font-family:var(--font);text-decoration:underline;-webkit-tap-highlight-color:transparent">全件</button>
     </div>
 
     <!-- ⑤ 選択日／期間の詳細一覧 -->
@@ -7288,17 +7291,31 @@ function renderSearchResults(){
     const futureStock=p?getFutureStock(prodId,targetDate):0;
     const st=s.shipped?'ok':getShipStatus(s);
     const shortage=futureStock-s.qty;
+    const absShortage=Math.abs(shortage);
     const stColor={ok:'#16a34a',cond:'#ca8a04',ng:'#dc2626'}[st];
-    const shortageLabel=st==='ng'?` <span style="font-size:10px;color:#dc2626;font-weight:700">(${shortage})</span>`:
-      st==='cond'?` <span style="font-size:10px;color:#ca8a04;font-weight:700">条件OK</span>`:'';
     const d=new Date(s.d[0],s.d[1]-1,s.d[2]);
-    const dateStr=`${s.d[0]}/${String(s.d[1]).padStart(2,'0')}/${String(s.d[2]).padStart(2,'0')}（${DOWS[d.getDay()]}）`;
-    return`<div class="sresult-item" style="gap:8px">
-      <div class="sresult-st" style="background:${stColor}"></div>
-      <div class="sresult-date">${dateStr}</div>
-      <div class="sresult-name">${p?p.name+' ':''}<span style="font-weight:400;color:#555">${s.item||''}</span>${shortageLabel}</div>
-      <div class="sresult-qty">${s.qty.toLocaleString()}個</div>
-      <button onclick="openEditFromSearch(${i})" style="flex-shrink:0;padding:3px 10px;border-radius:5px;border:1px solid #ccc;background:#fff;cursor:pointer;font-size:11px;font-family:inherit;color:#444">編集</button>
+    const dow=['日','月','火','水','木','金','土'][d.getDay()];
+    const dateStr=`${s.d[1]}/${s.d[2]}（${dow}）`;
+    const diff=Math.round((targetDate-new Date(new Date().setHours(0,0,0,0)))/86400000);
+    const dayTag=diff===0?'今日':diff===1?'明日':diff+'日後';
+    const dayColor=diff<=3?'#e53e3e':diff<=7?'#d97706':'#888';
+    const shortageHtml=st==='ng'
+      ?`<span style="font-size:12px;font-weight:800;color:#dc2626">不足 ${absShortage.toLocaleString()}</span>`
+      :st==='cond'
+        ?`<span style="font-size:12px;font-weight:700;color:#ca8a04">条件付きOK</span>`
+        :`<span style="font-size:12px;font-weight:700;color:#16a34a">在庫OK</span>`;
+    return`<div class="sresult-item" style="cursor:pointer;gap:0;flex-direction:column;padding:10px 14px;border-left:3px solid ${stColor}" onclick="showDetail(${i})">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:700;color:${dayColor}">${dateStr}</span>
+        <span style="font-size:11px;font-weight:600;color:${dayColor};background:${diff<=3?'#fff0f0':diff<=7?'#fff8ec':'#f1f5f9'};padding:1px 7px;border-radius:10px">${dayTag}</span>
+        <span style="margin-left:auto;font-size:11px;color:#888;font-weight:600">${s.shipped?'✅ 出荷済':''}</span>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#111;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p?escSH(p.name):''}<span style="font-weight:400;color:#555;font-size:12px"> ${escSH(s.name||s.item||'')}</span>${s.code||p?.code?` <span style="font-family:monospace;font-size:10px;color:#888;background:#f1f5f9;padding:1px 5px;border-radius:3px">${escSH(s.code||p?.code||'')}</span>`:''}</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:2px">
+        ${shortageHtml}
+        <span style="font-size:11px;color:#666">出荷 ${s.qty.toLocaleString()}個</span>
+        <span style="margin-left:auto;font-size:10px;color:${stColor};font-weight:700">タップで詳細 ›</span>
+      </div>
     </div>`;
   }).join('');
   el.innerHTML=`<div class="sresult-list">
@@ -7505,11 +7522,12 @@ function goToday(){ shipPeriod==='week'?goThisWeek():goThisMonth(); }
 /* ── フィルター ── */
 function setShipFilter(f){
   shipFilter=f;
-  ['ng','3d','all'].forEach(k=>{
+  ['ng','3d'].forEach(k=>{
     const el=document.getElementById('sfchip-'+k); if(!el) return;
     el.className='ship-filter-chip';
-    if(k===f) el.className+=f==='ng'?' active':f==='3d'?' active-warn':' active-all';
+    if(k===f) el.className+=f==='ng'?' active':' active-warn';
   });
+  // 全件ボタンは常にスタイル変えない（サブ扱い）
   renderDayDetail();
 }
 
@@ -7658,15 +7676,28 @@ function renderDayDetail(){
   if(filtered.length===0){
     el.innerHTML=allItems.length===0
       ?`<div class="ship-empty-day"><div class="ship-empty-day-icon">📅</div><div>この期間の出荷予定はありません</div></div>`
-      :`<div class="ship-empty-day"><div class="ship-empty-day-icon">✅</div><div>条件に一致する出荷なし</div><div style="font-size:11px;color:var(--text3);margin-top:4px">「全件」で全${allItems.length}件表示</div></div>`;
+      :`<div class="ship-empty-day"><div class="ship-empty-day-icon">✅</div><div>条件に一致する出荷なし</div><div style="font-size:11px;color:var(--text3);margin-top:4px"><button onclick="setShipFilter('all')" style="border:none;background:transparent;color:var(--accent);font-size:11px;cursor:pointer;font-family:inherit;text-decoration:underline">全${allItems.length}件を表示</button></div></div>`;
     return;
   }
-  filtered.sort((a,b)=>a.shortage-b.shortage||a.diff-b.diff);
+  filtered.sort((a,b)=>{
+    const dateDiff=a.d-b.d;
+    if(dateDiff!==0) return dateDiff;
+    const shortageDiff=a.shortage-b.shortage; // 不足大（負が大きい）→先
+    if(shortageDiff!==0) return shortageDiff;
+    return b.s.qty-a.s.qty; // 出荷数多い順
+  });
   el.innerHTML=filtered.map(({s,i,p,futureStock,shortage,st,d,diff})=>{
-    const cardCls=st==='ng'?'danger':st==='cond'?'warning':'safe';
+    const absShortage=Math.abs(shortage);
+    let cardCls;
+    if(st==='ng'){
+      cardCls=absShortage>500?'danger-high':absShortage>100?'danger-mid':'danger-low';
+    } else {
+      cardCls=st==='cond'?'warning':'safe';
+    }
     const shortLabel=st==='ng'?'不足':st==='cond'?'注意（不足）':'在庫';
-    const shortVal=st==='safe'?futureStock.toLocaleString():Math.abs(shortage).toLocaleString();
+    const shortVal=st==='safe'?futureStock.toLocaleString():absShortage.toLocaleString();
     const dayTag=diff===0?'今日':diff===1?'明日':diff+'日後';
+    const dayColor=diff<=3?'#e53e3e':diff<=7?'#d97706':'#888';
     const dateStr=`${s.d[1]}/${s.d[2]}（${DOW_NAMES[d.getDay()]}）`;
     return `<div class="ship-item-card ${cardCls}" onclick="showShipDetail(${i})">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
@@ -7684,8 +7715,8 @@ function renderDayDetail(){
           <span class="ship-card-ship-val">${s.qty.toLocaleString()}</span>
         </div>
         <div class="ship-card-ship-block" style="margin-left:4px">
-          <span class="ship-card-ship-label" style="color:${diff<=0?'#e53e3e':'inherit'}">${diff<=0?'⚠':'📅'} 期日</span>
-          <span class="ship-card-ship-val" style="font-size:14px;color:${diff<=0?'#e53e3e':diff<=3?'#d97706':'var(--text2)'}">${dayTag}</span>
+          <span class="ship-card-ship-label" style="color:${diff<=3?'#e53e3e':diff<=7?'#d97706':'#888'}">${diff<=0?'⚠':'📅'} 期日</span>
+          <span class="ship-card-ship-val" style="font-size:14px;color:${dayColor}">${dayTag}</span>
         </div>
       </div>
       <div class="ship-card-dest">${escSH(s.dest||'')}</div>
