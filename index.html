@@ -41,6 +41,9 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+}
+
 body {
   font-family: var(--font);
   background: var(--bg);
@@ -49,7 +52,6 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
-  overflow-x: hidden;
 }
 
 /* ===== iOS ズーム防止: input/select/textarea は必ず16px ===== */
@@ -58,7 +60,7 @@ input, select, textarea {
   -webkit-text-size-adjust: 100%;
 }
 
-.app { display: flex; flex-direction: column; min-height: 100vh; }
+.app { display: flex; flex-direction: column; min-height: 100vh; overflow-x: clip; }
 
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
@@ -571,9 +573,9 @@ input, select, textarea {
   overflow-x: auto;
   padding-bottom: 8px;
   margin-bottom: 12px;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--border2) transparent;
+  touch-action: pan-x;
 }
 
 .process-block {
@@ -3158,8 +3160,8 @@ input[type=number] { -moz-appearance: textfield; }
   gap: 4px;
   padding: 0 14px 10px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  touch-action: pan-x;
 }
 .fc-procflow::-webkit-scrollbar { display: none; }
 .fc-pf-chip {
@@ -3740,9 +3742,6 @@ input[type=number] { -moz-appearance: textfield; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 </head>
 <body>
-<div class="app" id="app">
-<div id="machine-badge" style="display:none"><span id="current-machine-label"></span></div>
-
 <nav class="bottom-nav">
   <button class="nav-tab active" onclick="switchMode('field')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -3769,6 +3768,8 @@ input[type=number] { -moz-appearance: textfield; }
     <span class="nav-tab-label">設定</span>
   </button>
 </nav>
+<div class="app" id="app">
+<div id="machine-badge" style="display:none"><span id="current-machine-label"></span></div>
 
 <div id="field-mode" class="field-mode">
   <!-- 操作エリア: 検索＋QR → +品目登録 → 日報 → 調整 履歴 -->
@@ -4934,7 +4935,6 @@ function renderItemCard(item){
       +'<div class="process-grid">'+displayList.map((entry,di)=>entry.isGroup?renderGroupBlock(item,entry,di,displayList):renderPBlock(item,entry.process,di,displayList)).join('')+'</div>'
       +'<div class="item-footer">'
         +(doneCount>0?'<div class="footer-stat"><span class="footer-stat-label">完成品</span><span class="footer-stat-value done-c">'+doneCount.toLocaleString()+'個</span></div>':'')
-        +(wipCount>0?'<div class="footer-stat"><span class="footer-stat-label">仕掛品</span><span class="footer-stat-value">'+wipCount.toLocaleString()+'個</span></div>':'')
       +'</div>'
     +'</div>';
 
