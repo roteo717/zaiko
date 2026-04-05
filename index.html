@@ -75,6 +75,9 @@ input, select, textarea {
   z-index: 100;
   box-shadow: 0 -1px 6px rgba(0,0,0,0.06);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 .nav-tab {
   flex: 1;
@@ -4933,9 +4936,7 @@ function renderItemCard(item){
     +'<div class="fc-body">'
       +'<div class="process-section-label">⚙ 工程フロー</div>'
       +'<div class="process-grid">'+displayList.map((entry,di)=>entry.isGroup?renderGroupBlock(item,entry,di,displayList):renderPBlock(item,entry.process,di,displayList)).join('')+'</div>'
-      +'<div class="item-footer">'
-        +(doneCount>0?'<div class="footer-stat"><span class="footer-stat-label">完成品</span><span class="footer-stat-value done-c">'+doneCount.toLocaleString()+'個</span></div>':'')
-      +'</div>'
+
     +'</div>';
 
   return '<div class="fc'+statusCls+'" id="card-'+item.id+'">'
