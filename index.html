@@ -2001,6 +2001,160 @@ input[type=number] { -moz-appearance: textfield; }
 }
 
 /* ===== 出荷連携UI ===== */
+/* ========== 出荷判断UI v2 ========== */
+/* 週カレンダー */
+.ship-week-nav{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 6px;gap:6px}
+.ship-week-label{font-size:13px;font-weight:700;color:var(--text);flex:1;text-align:center}
+.ship-week-btn{width:36px;height:36px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text2);transition:all .12s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.ship-week-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ship-week-btn:active{transform:scale(.94)}
+.ship-week-today-btn{padding:0 12px;height:36px;border:1.5px solid var(--accent);border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:var(--accent);transition:all .12s;white-space:nowrap;flex-shrink:0;font-family:var(--font)}
+.ship-week-today-btn:hover{background:var(--accent);color:#fff}
+.ship-week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 0 10px}
+.ship-day-cell{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 10px;border-radius:10px;cursor:pointer;transition:all .15s;border:2px solid transparent;-webkit-tap-highlight-color:transparent;min-height:72px;position:relative}
+.ship-day-cell:hover{background:var(--bg3)}
+.ship-day-cell.selected{background:#eef2ff;border-color:var(--accent)}
+.ship-day-cell.is-today .ship-day-num{background:var(--accent);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:800}
+.ship-day-cell.is-today.selected .ship-day-num{background:var(--accent2)}
+.ship-dow{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.3px}
+.ship-dow.sun{color:#e53e3e}
+.ship-dow.sat{color:#3182ce}
+.ship-day-num{font-size:15px;font-weight:700;color:var(--text);line-height:1}
+.ship-day-cell.other-month .ship-day-num{color:#ccc}
+.ship-day-cell.sun-day .ship-day-num{color:#e53e3e}
+.ship-day-cell.sat-day .ship-day-num{color:#3182ce}
+.ship-day-status{display:flex;flex-direction:column;gap:1px;width:100%;padding:0 2px}
+.ship-day-dot{font-size:9px;line-height:1.4;text-align:center;font-weight:700;white-space:nowrap;letter-spacing:-.3px}
+/* 日付詳細セクション */
+.ship-detail-header{display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px;gap:8px;flex-wrap:wrap}
+.ship-detail-date{font-size:16px;font-weight:800;color:var(--text)}
+.ship-detail-summary{font-size:12px;font-weight:700;color:var(--red);background:var(--red-bg);padding:3px 10px;border-radius:20px;border:1px solid var(--red-bd)}
+.ship-detail-summary.safe{color:var(--green);background:var(--green-bg);border-color:var(--green-bd)}
+.ship-detail-summary.warn{color:var(--amber);background:var(--amber-bg);border-color:var(--amber-bd)}
+/* 出荷カード */
+.ship-item-card{border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1.5px solid transparent;-webkit-tap-highlight-color:transparent;position:relative}
+.ship-item-card.danger{background:#ffe5e5;border-color:#ffb3b3}
+.ship-item-card.warning{background:#fff5cc;border-color:#ffe066}
+.ship-item-card.safe{background:#eefaf0;border-color:#99e6b3}
+.ship-item-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
+.ship-item-card:active{transform:scale(.98)}
+.ship-card-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ship-card-code{font-family:var(--mono);font-size:11px;color:var(--text3);background:rgba(255,255,255,.7);padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:8px}
+.ship-card-nums{display:flex;align-items:baseline;gap:16px}
+.ship-card-shortage-block{display:flex;flex-direction:column;gap:0}
+.ship-card-shortage-label{font-size:10px;font-weight:700;color:#c0392b;letter-spacing:.3px}
+.ship-card-shortage-val{font-family:var(--mono);font-size:32px;font-weight:900;color:#c0392b;line-height:1;letter-spacing:-1px}
+.ship-item-card.warning .ship-card-shortage-label{color:#a16207}
+.ship-item-card.warning .ship-card-shortage-val{color:#a16207}
+.ship-item-card.safe .ship-card-shortage-label{color:var(--green);opacity:.7;font-size:9px}
+.ship-item-card.safe .ship-card-shortage-val{color:var(--green);font-size:20px;font-weight:700}
+.ship-card-ship-block{display:flex;flex-direction:column;gap:0}
+.ship-card-ship-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.3px}
+.ship-card-ship-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text2);line-height:1}
+.ship-card-dest{font-size:11px;color:var(--text3);margin-top:6px}
+/* フィルターチップ */
+.ship-filter-row{display:flex;gap:6px;padding:0 0 10px;flex-wrap:wrap}
+.ship-filter-chip{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:700;color:var(--text3);cursor:pointer;transition:all .12s;font-family:var(--font);-webkit-tap-highlight-color:transparent}
+.ship-filter-chip:hover{border-color:var(--accent);color:var(--accent)}
+.ship-filter-chip.active{background:var(--red-bg);border-color:var(--red-bd);color:var(--red)}
+.ship-filter-chip.active-warn{background:var(--amber-bg);border-color:var(--amber-bd);color:var(--amber)}
+.ship-filter-chip.active-all{background:var(--bg3);border-color:var(--border2);color:var(--text2)}
+/* 詳細モーダル */
+.ship-modal-bg{position:fixed;inset:0;background:rgba(20,24,40,.45);z-index:400;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:480px){.ship-modal-bg{align-items:center;padding:16px}}
+.ship-modal-box{background:#fff;border-radius:16px 16px 0 0;padding:0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.18)}
+@media(min-width:480px){.ship-modal-box{border-radius:16px}}
+.ship-modal-handle{width:36px;height:4px;border-radius:2px;background:#d0d3de;margin:10px auto 0}
+.ship-modal-head{padding:14px 18px 10px;display:flex;justify-content:space-between;align-items:center}
+.ship-modal-title{font-size:17px;font-weight:800;color:var(--text)}
+.ship-modal-close{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;font-size:18px;color:var(--text2);display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.ship-modal-close:hover{background:var(--bg4)}
+.ship-modal-block{padding:12px 18px;border-top:1px solid var(--border)}
+.ship-modal-block:first-of-type{border-top:none}
+.ship-modal-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
+.ship-modal-lbl{font-size:11px;color:var(--text3);font-weight:600}
+.ship-modal-val{font-size:15px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.ship-modal-big-val{font-family:var(--mono);font-size:40px;font-weight:900;line-height:1;letter-spacing:-2px}
+.ship-modal-big-val.danger{color:#c0392b}
+.ship-modal-big-val.warn{color:var(--amber)}
+.ship-modal-big-val.safe{color:var(--green)}
+.ship-modal-status-block{padding:12px 18px;border-top:1px solid var(--border)}
+.ship-modal-status-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
+.ship-modal-stock-row{display:flex;gap:12px}
+.ship-modal-stock-item{flex:1;text-align:center;padding:10px 8px;border-radius:8px;background:var(--bg3)}
+.ship-modal-stock-lbl{font-size:10px;color:var(--text3);font-weight:600;margin-bottom:3px}
+.ship-modal-stock-num{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--text)}
+.ship-modal-stock-num.done{color:var(--green)}
+.ship-modal-stock-num.wip{color:var(--amber)}
+.ship-modal-shortage-badge{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;font-size:15px;font-weight:800;margin:8px 0 0}
+.ship-modal-shortage-badge.danger{background:#ffe5e5;color:#c0392b;border:1.5px solid #ffb3b3}
+.ship-modal-shortage-badge.warn{background:#fff5cc;color:var(--amber);border:1.5px solid #ffe066}
+.ship-modal-shortage-badge.safe{background:#eefaf0;color:var(--green);border:1.5px solid #99e6b3}
+.ship-modal-actions{display:flex;gap:8px;padding:12px 18px 20px;border-top:1px solid var(--border)}
+.ship-modal-btn-primary{flex:2;padding:14px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent;transition:all .12s}
+.ship-modal-btn-primary:hover{background:var(--accent2)}
+.ship-modal-btn-primary:active{transform:scale(.97)}
+.ship-modal-btn-sub{flex:1;padding:14px;border-radius:10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent;transition:all .12s}
+.ship-modal-btn-sub:hover{background:var(--bg4);border-color:var(--border2)}
+.ship-modal-btn-sub:active{transform:scale(.97)}
+/* 空状態 */
+.ship-empty-day{padding:32px 16px;text-align:center;color:var(--text3);font-size:13px}
+.ship-empty-day-icon{font-size:32px;margin-bottom:8px}
+/* 検索結果 */
+.ship-inner .sresult-list{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
+.ship-inner .sresult-hdr{padding:10px 16px;background:#f7f9f8;border-bottom:1px solid #e8eee9;font-size:12px;font-weight:700;color:#666}
+.ship-inner .sresult-item{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.ship-inner .sresult-item:last-child{border-bottom:none}
+.ship-inner .sresult-item:hover{background:#f9fafb}
+.ship-inner .sresult-date{font-size:11px;color:#aaa;min-width:90px;flex-shrink:0}
+.ship-inner .sresult-name{font-size:13px;font-weight:700;color:#111;flex:1;min-width:0}
+.ship-inner .sresult-qty{font-size:12px;color:#888;font-weight:600;white-space:nowrap}
+.ship-inner .sresult-st{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ship-inner .sresult-empty{padding:32px 16px;text-align:center;color:#aaa;font-size:13px}
+.ship-inner .sync-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8);margin-left:8px}
+.ship-inner .sync-badge.live{background:rgba(26,200,130,.3);color:#a7f3d0}
+/* 編集パネル */
+.ship-inner .edit-panel{position:fixed;right:0;top:0;height:100%;width:340px;max-width:96vw;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);z-index:500;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease}
+.ship-inner .edit-panel.open{transform:translateX(0)}
+.ship-inner .ep-hdr{padding:16px 18px;border-bottom:1px solid #e8e8e8;display:flex;justify-content:space-between;align-items:center;background:var(--accent);color:#fff}
+.ship-inner .ep-title{font-size:14px;font-weight:700}
+.ship-inner .ep-close{background:rgba(255,255,255,.2);border:none;border-radius:6px;color:#fff;cursor:pointer;padding:4px 10px;font-size:14px}
+.ship-inner .ep-body{flex:1;overflow-y:auto;padding:16px 18px}
+.ship-inner .ep-foot{padding:14px 18px;border-top:1px solid #e8e8e8;display:flex;gap:8px}
+.ship-inner label{display:block;font-size:11px;font-weight:700;color:#666;margin-bottom:4px;margin-top:12px;letter-spacing:.3px}
+.ship-inner label:first-child{margin-top:0}
+.ship-inner input[type=text],.ship-inner input[type=number],.ship-inner input[type=date],.ship-inner select{width:100%;padding:8px 10px;border:1px solid #d0d0d0;border-radius:7px;font-size:13px;font-family:inherit;background:#fff;color:#111;outline:none}
+.ship-inner input:focus,.ship-inner select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,126,255,.12)}
+.ship-inner .btn{flex:1;padding:9px;border-radius:8px;border:none;font-size:13px;font-family:inherit;cursor:pointer;font-weight:700}
+.ship-inner .btn-primary{background:var(--accent);color:#fff}
+.ship-inner .btn-primary:hover{background:var(--accent2)}
+.ship-inner .btn-del{background:#fef2f2;color:#c0392b;border:1px solid #fca5a5}
+.ship-inner .btn-del:hover{background:#fee2e2}
+.ship-inner .btn-cancel{background:#f3f4f6;color:#444;border:1px solid #e0e0e0}
+.ship-inner .btn-cancel:hover{background:#e5e7eb}
+.ship-inner .add-inline-btn{display:flex;align-items:center;gap:5px;padding:5px 13px 5px 10px;border:1.5px solid var(--accent);border-radius:6px;background:var(--accent);color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;letter-spacing:.2px;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent}
+.ship-inner .add-inline-btn:hover{background:var(--accent2)}
+.ship-inner .add-inline-btn:active{transform:scale(.97)}
+/* 期間切替 */
+.period-switch{display:flex;gap:6px}
+.period-switch button{flex:1;padding:10px;border-radius:10px;background:#f1f3f7;border:none;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .15s;-webkit-tap-highlight-color:transparent}
+.period-switch button:hover{background:#e4e8f2}
+.period-switch button.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(79,126,255,.28)}
+/* 月カレンダー */
+.mcal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:6px 0 4px}
+.mcal-dow{font-size:10px;font-weight:700;color:var(--text3);text-align:center;letter-spacing:.3px}
+.mcal-dow.sun{color:#e53e3e}.mcal-dow.sat{color:#3182ce}
+.mcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.mcal-cell{min-height:56px;border-radius:8px;padding:4px 3px 3px;cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;align-items:center;gap:2px}
+.mcal-cell:hover{background:var(--bg3)}
+.mcal-cell.other{opacity:.3;pointer-events:none}
+.mcal-cell.today .mcal-dnum{background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800}
+.mcal-cell.selected{background:#eef2ff;outline:2px solid var(--accent)}
+.mcal-cell.sun-c .mcal-dnum{color:#e53e3e}
+.mcal-cell.sat-c .mcal-dnum{color:#3182ce}
+.mcal-dnum{font-size:12px;font-weight:700;color:var(--text);line-height:1;width:22px;text-align:center}
+.mcal-dots{display:flex;flex-direction:column;gap:1px;width:100%;align-items:center}
+.mcal-dot{font-size:8px;line-height:1.3;font-weight:700;white-space:nowrap}
 .ship-alert-panel{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r);padding:10px 14px;margin-bottom:10px}
 .ship-alert-panel.ship-alert-ok{background:var(--green-bg);border-color:var(--green-bd)}
 .ship-alert-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
@@ -3124,16 +3278,15 @@ input[type=number] { -moz-appearance: textfield; }
   border: 1px solid var(--border);
   -webkit-tap-highlight-color: transparent;
 }
-.fc.status-ng   { background: #fff5f6; border-left: 4px solid var(--red); }
-.fc.status-warn { background: #fffbf0; border-left: 4px solid var(--amber); }
-.fc.status-ok   { background: #f4fdf8; border-left: 4px solid var(--green); }
+/* 現場画面: 出荷状態による色分けは管理画面のみ */
+.fc.status-ng, .fc.status-warn, .fc.status-ok { background: #fff; border-left: none; }
 
 /* ① ヘッダー（品名・品番・設備・⚙）*/
 .fc-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 14px 6px;
+  padding: 14px 14px 8px;
 }
 .fc-name {
   font-size: 15px;
@@ -3292,7 +3445,7 @@ input[type=number] { -moz-appearance: textfield; }
 .fc-actions {
   display: flex;
   gap: 8px;
-  padding: 0 12px 12px;
+  padding: 0 12px 14px;
 }
 /* 入庫ボタン（大・主役）*/
 .fc-btn-receive {
@@ -3342,12 +3495,12 @@ input[type=number] { -moz-appearance: textfield; }
 .fc-expanded .fc-btn-detail { background: var(--accent); color: #fff; border-color: var(--accent); }
 
 
-/* 工程操作トグルボタン（横幅いっぱい）*/
+/* 工程操作トグルボタン（横幅いっぱい・タップしやすく）*/
 .fc-btn-toggle-op {
   flex: 1;
   width: auto;
-  height: 44px;
-  font-size: 13px;
+  height: 52px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.2px;
 }
@@ -3684,7 +3837,43 @@ input[type=number] { -moz-appearance: textfield; }
   padding-bottom: 6px;
 }
 
-/* ===== fc: 仕掛/完成/不足 1行 ===== */
+/* ===== fc: 現場特化 仕掛/完成 最小表示 ===== */
+.fc-stock-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 14px 10px;
+}
+.fc-stock-item {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.fc-stock-lbl {
+  font-size: 10px;
+  color: #888;
+  font-weight: 500;
+}
+.fc-stock-val {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.fc-stock-val.zero {
+  color: #ccc;
+  font-weight: 400;
+}
+.fc-stock-sep {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  align-self: center;
+}
+
+/* ===== fc: 仕掛/完成/不足 1行 (旧・後方互換) ===== */
 .fc-stats-row {
   display: flex;
   align-items: center;
@@ -3776,11 +3965,6 @@ input[type=number] { -moz-appearance: textfield; }
       <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-field')" title="QRコードで検索"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx="0.5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
 
-  </div>
-  <div class="filter-toggle-row">
-    <button class="filter-toggle-btn active-all" id="ftbtn-all"  onclick="setStatusFilter('all')">すべて</button>
-    <button class="filter-toggle-btn"            id="ftbtn-ng"   onclick="setStatusFilter('ng')">■ 不足のみ</button>
-    <button class="filter-toggle-btn"            id="ftbtn-warn" onclick="setStatusFilter('warn')">▲ 注意のみ</button>
   </div>
   <div class="section-title" id="item-count-label">品目一覧</div>
   <div id="field-items"></div>
@@ -4130,59 +4314,74 @@ input[type=number] { -moz-appearance: textfield; }
 <span class="sync-badge" id="sync-badge" style="display:none"></span>
 
 <div id="tab-cal">
-  <div class="main">
-    <div class="action-area">
+  <div class="main" style="padding:12px;max-width:640px;margin:0 auto;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
+
+    <!-- ① 検索 -->
+    <div class="action-area" style="margin-bottom:10px">
       <div class="search-wrapper">
         <input class="search-input" id="search-input" type="search" placeholder="品名・品番で検索" oninput="onSearch(this.value)" autocomplete="off">
-        <button type="button" class="btn-qr-inline" id="search-clear" style="display:none" onclick="clearSearch()" title="クリア"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-        <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-ship')" title="QRコードで検索"><svg class="qr-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx="0.5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-      </div>
-    </div>
-    <div class="toolbar">
-      <div class="page-title">出荷スケジュール</div>
-      <div class="nav-group">
-        <button class="today-btn" onclick="goToday()">今月</button>
-        <button class="nbtn" onclick="prevMonth()">&#8249;</button>
-        <div class="month-label" id="mlabel"></div>
-        <button class="nbtn" onclick="nextMonth()">&#8250;</button>
-        <button class="add-inline-btn" onclick="openAdd()">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-          追加
-        </button>
+        <button type="button" class="btn-qr-inline" id="search-clear" style="display:none" onclick="clearSearch()" title="クリア"><svg class="qr-icon" viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <button type="button" class="btn-qr-inline" onclick="openQrScanner('search-ship')" title="QRコード"><svg class="qr-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="4" height="4" rx=".5" fill="currentColor"/><line x1="20" y1="14" x2="20" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
     </div>
     <div id="search-results" style="display:none;margin-bottom:14px"></div>
-    <div id="cal-area">
-    <div class="cal-card">
-      <div class="dow-row">
-        <div class="dow sun">日</div><div class="dow">月</div><div class="dow">火</div>
-        <div class="dow">水</div><div class="dow">木</div><div class="dow">金</div>
-        <div class="dow sat">土</div>
+
+    <!-- ② 期間切替 + 追加ボタン -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div class="period-switch" style="flex:1">
+        <button class="active" id="pswitch-week" onclick="setPeriod('week')">1週間</button>
+        <button id="pswitch-month" onclick="setPeriod('month')">1ヶ月</button>
       </div>
-      <div class="grid" id="grid"></div>
+      <button class="add-inline-btn" onclick="openAdd()" style="flex-shrink:0">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        追加
+      </button>
     </div>
+
+    <!-- ③-A 週カレンダー -->
+    <div id="view-week" style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:6px 10px 4px;margin-bottom:12px">
+      <div class="ship-week-nav">
+        <button class="ship-week-btn" onclick="prevPeriod()">‹</button>
+        <span class="ship-week-label" id="week-label"></span>
+        <button class="ship-week-today-btn" id="period-today-btn" onclick="goThisWeek()">今週</button>
+        <button class="ship-week-btn" onclick="nextPeriod()">›</button>
+      </div>
+      <div class="ship-week-grid" id="week-grid"></div>
     </div>
-    <!-- 不足一覧：折り畳みセクション -->
-    <div style="margin-top:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-        <div style="font-size:15px;font-weight:700;color:#1a1a1a">🔴 不足一覧</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select id="shortage-range" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
-            <option value="3">3日以内</option>
-            <option value="7" selected>7日以内</option>
-            <option value="14">14日以内</option>
-            <option value="30">30日以内</option>
-          </select>
-          <select id="shortage-filter" onchange="renderShortage()" style="padding:5px 10px;border:1px solid #ccc;border-radius:6px;font-size:12px;font-family:inherit">
-            <option value="all">すべて</option>
-            <option value="ng">不足のみ</option>
-            <option value="cond">条件OK含む</option>
-          </select>
-        </div>
+
+    <!-- ③-B 月カレンダー（非表示切替） -->
+    <div id="view-month" style="display:none;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:6px 10px 10px;margin-bottom:12px">
+      <div class="ship-week-nav">
+        <button class="ship-week-btn" onclick="prevPeriod()">‹</button>
+        <span class="ship-week-label" id="month-label"></span>
+        <button class="ship-week-today-btn" id="period-today-btn-m" onclick="goThisMonth()">今月</button>
+        <button class="ship-week-btn" onclick="nextPeriod()">›</button>
       </div>
-      <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden" id="shortage-list">
-        <div style="text-align:center;padding:40px;color:#aaa">読み込み中...</div>
+      <!-- 曜日ヘッダー -->
+      <div class="mcal-dow-row">
+        <div class="mcal-dow sun">日</div><div class="mcal-dow">月</div><div class="mcal-dow">火</div>
+        <div class="mcal-dow">水</div><div class="mcal-dow">木</div><div class="mcal-dow">金</div>
+        <div class="mcal-dow sat">土</div>
       </div>
+      <div class="mcal-grid" id="month-grid"></div>
+    </div>
+
+    <!-- ④ フィルター + 一覧ヘッダー -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <div class="ship-filter-row" style="flex:1;padding:0;margin:0;gap:6px">
+        <button class="ship-filter-chip active" id="sfchip-ng" onclick="setShipFilter('ng')">🔴 不足のみ</button>
+        <button class="ship-filter-chip" id="sfchip-3d" onclick="setShipFilter('3d')">⚡ 3日以内</button>
+      </div>
+      <button class="ship-filter-chip" id="sfchip-all" style="flex-shrink:0;padding:6px 12px" onclick="setShipFilter('all')">全件</button>
+    </div>
+
+    <!-- ⑤ 選択日／期間の詳細一覧 -->
+    <div id="day-detail-section">
+      <div class="ship-detail-header">
+        <div class="ship-detail-date" id="detail-date-label">—</div>
+        <div id="detail-summary-badge"></div>
+      </div>
+      <div id="day-detail-list"></div>
     </div>
   </div>
 </div>
@@ -4605,7 +4804,7 @@ function renderField(){
   // テキストフィルタ
   let list=db.items.filter(it=>matchesFilter(it,fieldFilter));
 
-  // ステータス集計（フィルタ前）
+  // ステータス集計（内部ロジック維持）
   let ngCount=0,warnCount=0,okCount=0;
   list.forEach(it=>{
     const s=getItemStatus(it);
@@ -4614,19 +4813,13 @@ function renderField(){
     else if(s==='ok') okCount++;
   });
 
-  // ステータスフィルタ適用
+  // ステータスフィルタ適用（内部ロジック維持）
   if(fieldStatusFilter==='ng')   list=list.filter(it=>getItemStatus(it)==='ng');
   else if(fieldStatusFilter==='warn') list=list.filter(it=>getItemStatus(it)==='warn');
 
-  // ステータスソート: ng → warn → ok → ''
+  // ソート
   const statusOrder={'ng':0,'warn':1,'ok':2,'':3};
   list.sort((a,b)=>statusOrder[getItemStatus(a)]-(statusOrder[getItemStatus(b)]));
-
-  const badgesHtml=[
-    ngCount   ? `<span class="status-badge ng">■ 不足：${ngCount}件</span>` : '',
-    warnCount ? `<span class="status-badge warn">▲ 注意：${warnCount}件</span>` : '',
-    okCount   ? `<span class="status-badge ok">● OK：${okCount}件</span>` : '',
-  ].filter(Boolean).join('');
 
   gid('item-count-label').innerHTML=`品目一覧 <span style="background:var(--bg4);border-radius:10px;padding:1px 8px;font-size:10px;color:var(--text3);font-weight:600;margin-left:4px">${list.length}</span>`;
 
@@ -4845,18 +5038,9 @@ function renderItemCard(item){
   const wipCount=item.processCounts.slice(0,7).reduce((a,b)=>a+b,0);
   const lastM=getLastMachineForItem(item.id);
   const status=getItemStatus(item);
-  const statusCls=status?' status-'+status:'';
+  // 現場画面: 状態アイコン・ステータス色は非表示（操作特化モード）
 
-  // 不足数
-  let shortageQty=0;
-  const ships=(db.shipments||[]).filter(s=>s.itemId===item.id&&!s.shipped);
-  if(ships.length) ships.forEach(s=>{const chk=checkShipmentStock(item,s);shortageQty=Math.max(shortageQty,chk.shortage);});
-
-  // ── ① ステータスアイコン ──
-  const statusIconMap={ng:'🔴',warn:'🟡',ok:'🟢'};
-  const statusIcon=status?statusIconMap[status]:'';
-
-  // ── ② 工程フロー（最上部・全工程表示・0はグレー）──
+  // ── ② 工程フロー（上部チップ・非表示化済み）──
   const pfChips=[];
   displayList.forEach((entry,di)=>{
     if(di>0) pfChips.push('<span class="fc-pf-arrow">›</span>');
@@ -4876,30 +5060,17 @@ function renderItemCard(item){
     }
   });
 
-  // ── ③ 在庫（仕掛品主役 + 完成 + 不足を1行）──
-  const mainValCls  = wipCount===0 ? ' zero' : '';
-  const doneSubCls  = doneCount===0 ? ' zero' : ' done';
-  const shortSubCls = shortageQty>0 ? ' red'  : ' zero';
-  const shortSubVal = shortageQty>0 ? '−'+shortageQty.toLocaleString() : '0';
-
+  // ── ③ 在庫（仕掛 / 完成 のみ表示・操作特化）──
   const statsRowHtml=''
-    +'<div class="fc-stats-row">'
-      // 仕掛品（主役・最大）
-      +'<div class="fc-stat">'
-        +'<span class="fc-stat-lbl">仕掛</span>'
-        +'<span class="fc-stat-main'+mainValCls+'">'+wipCount.toLocaleString()+'</span>'
+    +'<div class="fc-stock-row">'
+      +'<div class="fc-stock-item">'
+        +'<span class="fc-stock-lbl">仕掛</span>'
+        +'<span class="fc-stock-val'+(wipCount===0?' zero':'')+'">'+wipCount.toLocaleString()+'</span>'
       +'</div>'
-      +'<span class="fc-stat-sep">/</span>'
-      // 完成品
-      +'<div class="fc-stat">'
-        +'<span class="fc-stat-lbl">完成</span>'
-        +'<span class="fc-stat-sub'+doneSubCls+'">'+doneCount.toLocaleString()+'</span>'
-      +'</div>'
-      +'<span class="fc-stat-sep">/</span>'
-      // 不足
-      +'<div class="fc-stat">'
-        +'<span class="fc-stat-lbl">不足</span>'
-        +'<span class="fc-stat-sub'+shortSubCls+'">'+shortSubVal+'</span>'
+      +'<span class="fc-stock-sep">/</span>'
+      +'<div class="fc-stock-item">'
+        +'<span class="fc-stock-lbl">完成</span>'
+        +'<span class="fc-stock-val'+(doneCount===0?' zero':'')+'">'+doneCount.toLocaleString()+'</span>'
       +'</div>'
     +'</div>';
 
@@ -4990,12 +5161,11 @@ function renderItemCard(item){
       +(groupBlocks ? '<div class="batch-area">'+groupBlocks+'</div>' : '')
     +'</div>';
 
-  return '<div class="fc'+statusCls+'" id="card-'+item.id+'">'
+  return '<div class="fc" id="card-'+item.id+'">'
     // ヘッダー
     +'<div class="fc-head">'
       +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
       +'<span class="fc-code">'+escH(item.code)+'</span>'
-      +(statusIcon?'<span style="font-size:15px;flex-shrink:0">'+statusIcon+'</span>':'')
     +'</div>'
     // 仕掛/完成/不足 1行
     +statsRowHtml
@@ -6727,47 +6897,8 @@ let shipCur=new Date(2026,3,1);
 function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
 const STATUS_META={ng:{icon:'🔴',label:'不足',cls:'ng'},cond:{icon:'🟡',label:'条件OK',cls:'cond'},ok:{icon:'🟢',label:'OK',cls:'ok'}};
 
-/* ========== CALENDAR ========== */
-function renderCal(){
-  const y=shipCur.getFullYear(),m=shipCur.getMonth();
-  document.getElementById('mlabel').textContent=y+'年'+(m+1)+'月';
-  const byDay={};
-  SHIPS.forEach((s,i)=>{if(s.d[0]===y&&s.d[1]===(m+1)){(byDay[s.d[2]]=byDay[s.d[2]]||[]).push(i)}});
-  const sd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),pd=new Date(y,m,0).getDate();
-  const total=Math.ceil((sd+dim)/7)*7;
-  let html='';
-  for(let i=0;i<total;i++){
-    let day,oth=false;
-    if(i<sd){day=pd-sd+i+1;oth=true;}
-    else if(i>=sd+dim){day=i-sd-dim+1;oth=true;}
-    else day=i-sd+1;
-    const dow=i%7,isT=!oth&&sameDay(new Date(y,m,day),shipToday);
-    const di=(!oth&&byDay[day])||[];
-    const nc=dow===0?'sun-c':dow===6?'sat-c':'';
-    html+=`<div class="cell${oth?' other':''}${isT?' today-cell':''}"><div class="day-num ${nc}">${day}</div>`;
-    if(!oth&&di.length>0){
-      const counts={ng:0,cond:0,ok:0};
-      const dayStatuses=getDayStatuses(di);
-      di.forEach(idx=>{
-        const s=SHIPS[idx];
-        counts[s.shipped?'ok':(dayStatuses[idx]||'ok')]++;
-      });
-      ['ng','cond','ok'].forEach(st=>{
-        if(counts[st]>0){
-          const meta=STATUS_META[st];
-          html+=`<div class="srow ${meta.cls}" data-y="${y}" data-m="${m+1}" data-d="${day}" data-st="${st}"><span class="srow-icon">${meta.icon}</span><span class="srow-label">${meta.label}</span><span class="srow-count"> ${counts[st]}件</span></div>`;
-        }
-      });
-    }
-    html+='</div>';
-  }
-  document.getElementById('grid').innerHTML=html;
-  document.getElementById('grid').addEventListener('click',e=>{
-    const row=e.target.closest('.srow');
-    if(row)showStatusList(+row.dataset.y,+row.dataset.m,+row.dataset.d,row.dataset.st);
-  },{once:false});
-
-}
+/* renderCal - replaced by renderWeekCal */
+function renderCal(){ renderWeekCal(); renderDayDetail(); }
 
 /* ========== INVENTORY ========== */
 function renderInv(){
@@ -6799,90 +6930,13 @@ function renderInv(){
   document.getElementById('prod-grid').innerHTML=html;
 }
 
-function shipRender(){syncStockFromInventory();renderCal();}
+function shipRender_old_stub(){syncStockFromInventory();}
 
-/* ========== MODALS ========== */
-function showDetail(idx){
-  const s=SHIPS[idx];
-  const prodId=getShipProdId(s);
-  const p=prodId?prodMap[prodId]:null;
-  const d=new Date(s.d[0],s.d[1]-1,s.d[2]);
-  const dows=['日','月','火','水','木','金','土'];
-  const wip=p?getWip(p):0;
-  const wc=p?p.process.map((q,i)=>`<span class="wip-chip">${SL[i]}：${q}</span>`).join(''):'';
-  const futureStock=p?getFutureStock(prodId,d):0;
-  const shortage=futureStock-s.qty;
-  const stOk=futureStock>=s.qty, stCond=!stOk&&p&&(futureStock+wip>=s.qty);
-  const st=stOk
-    ?`<div class="stock-status ok">✓ 出荷可能（出荷日時点在庫 ${futureStock.toLocaleString()} 個）</div>`
-    :stCond
-    ?`<div class="stock-status warn" style="background:#fef9c3;color:#a16207">🟡 完成品不足（仕掛品考慮で対応可）　不足数: ${Math.abs(shortage).toLocaleString()}個</div>`
-    :`<div class="stock-status warn">🔴 不足（${shortage.toLocaleString()}）個（仕掛品含めても不足）</div>`;
-  document.getElementById('modal-wrap').innerHTML=`
-    <div class="modal-bg" id="mbg">
-      <div class="modal">
-        <div class="modal-head">
-          <div><div class="modal-title">${s.name||s.item}${s.code?` <span style="font-weight:400;font-size:12px;color:#888">${s.code}</span>`:''}</div></div>
-          <button class="modal-close" onclick="shipCloseModal()">✕</button>
-        </div>
-        <div class="mrow"><span class="mkey">出荷日</span><span class="mval">${s.d[0]}年${s.d[1]}月${s.d[2]}日（${dows[d.getDay()]}）</span></div>
-        <div class="mrow"><span class="mkey">数量</span><span class="mval">${s.qty.toLocaleString()} 個</span></div>
-        <div class="mrow"><span class="mkey">出荷先</span><span class="mval">${s.dest}</span></div>
-        <div class="mrow"><span class="mkey">ステータス</span><span class="mval" style="color:${s.shipped?'#1a6b45':'#888'}">${s.shipped?'✓ 出荷済':'未出荷'}</span></div>
-        <div class="mrow"><span class="mkey">完成品在庫</span><span class="mval" style="color:#1a6b45">${p?p.stock.toLocaleString():'-'} 個<span style="font-size:10px;color:#aaa;font-weight:400;margin-left:6px">（出荷日時点: ${futureStock.toLocaleString()}個）</span></span></div>
-        <div class="mrow"><span class="mkey">仕掛品（WIP）</span><div><span class="mval" style="color:#d97706">${wip.toLocaleString()} 個</span><div class="wip-chips">${wc}</div></div></div>
-        ${s.note?`<div class="mrow"><span class="mkey">備考</span><span class="mval">${s.note}</span></div>`:''}
-        ${st}
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <button class="btn btn-cancel" onclick="shipCloseModal();openEdit(${idx})">編集</button>
-          <button class="btn btn-del" onclick="deleteShip(${idx})">削除</button>
-        </div>
-      </div>
-    </div>`;
-  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')shipCloseModal()});
-}
+/* ========== MODALS (legacy - replaced by showShipDetail above) ========== */
+function showDetail_legacy(idx){showDetail(idx);}
 
-/* ========== STATUS LIST MODAL ========== */
-function showStatusList(y,m,d,st){
-  const meta=STATUS_META[st];
-  const allDay=SHIPS.map((s,i)=>({s,i})).filter(({s})=>s.d[0]===y&&s.d[1]===m&&s.d[2]===d);
-  const dayStatuses=allDay.length?getDayStatuses(allDay.map(({i})=>i)):{};
-  const items=allDay.filter(({s,i})=>{
-    const sst=s.shipped?'ok':(dayStatuses[i]||getShipStatus(s));
-    return sst===st;
-  });
-  const dows=['日','月','火','水','木','金','土'];
-  const dateLabel=`${y}年${m}月${d}日（${dows[new Date(y,m-1,d).getDay()]}）`;
-  const targetDate=new Date(y,m-1,d);
-  const stockMap=getDayStockMap(targetDate);
-  const rows=items.length?items.map(({s,i})=>{
-    const prodId=getShipProdId(s);
-    const p=prodId?prodMap[prodId]:null;
-    const stock=stockMap[prodId]!==undefined?stockMap[prodId]:p?.stock||0;
-    const shortage=getShortage(s,stock);
-    stockMap[prodId]=(stockMap[prodId]||0)-s.qty;
-    const shortageLabel=shortage<0?` <span style="font-size:10px;color:#dc2626;font-weight:700">(${shortage})</span>`:'';
-    return`<div class="slist-item" onclick="shipCloseModal();showDetail(${i})">
-      <span class="slist-icon">${meta.icon}</span>
-      <span class="slist-name">${p?p.name:'?'}　${s.item}${shortageLabel}</span>
-      <span class="slist-sub">${s.qty.toLocaleString()}個</span>
-    </div>`;
-  }).join(''):`<div class="slist-empty">該当データなし</div>`;
-  document.getElementById('modal-wrap').innerHTML=`
-    <div class="modal-bg slist-bg" id="mbg">
-      <div class="slist-wrap">
-        <div class="slist-hdr">
-          <div>
-            <div style="font-size:11px;color:#aaa;margin-bottom:3px">${dateLabel}</div>
-            <div class="slist-title">${meta.icon} ${meta.label}（${items.length}件）</div>
-          </div>
-          <button class="modal-close" onclick="shipCloseModal()">✕</button>
-        </div>
-        ${rows}
-      </div>
-    </div>`;
-  document.getElementById('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')shipCloseModal()});
-}
+/* ========== STATUS LIST MODAL (legacy) ========== */
+function showStatusList_legacy(y,m,d,st){selectDay(y,m-1,d);}
 
 function showDayList(y,m,d){
   const items=SHIPS.map((s,i)=>({s,i})).filter(({s})=>s.d[0]===y&&s.d[1]===m&&s.d[2]===d);
@@ -7191,13 +7245,16 @@ const DOWS=['日','月','火','水','木','金','土'];
 function onSearch(val){
   shipSearchQuery=val.trim();
   const _sc=document.getElementById('search-clear'); if(_sc) _sc.style.display=shipSearchQuery?'':'none';
-  const _ca=document.getElementById('cal-area');
+  const _wg=document.getElementById('week-grid')?.closest('div[style*="background:#fff"]');
+  const _dd=document.getElementById('day-detail-section');
   const _sr=document.getElementById('search-results');
   if(shipSearchQuery){
-    if(_ca) _ca.style.display='none';
+    if(_wg) _wg.style.display='none';
+    if(_dd) _dd.style.display='none';
     renderSearchResults();
   } else {
-    if(_ca) _ca.style.display='';
+    if(_wg) _wg.style.display='';
+    if(_dd) _dd.style.display='';
     if(_sr) _sr.style.display='none';
   }
 }
@@ -7255,9 +7312,7 @@ function openPanel(){document.getElementById('edit-panel').classList.add('open')
 function closePanel(){document.getElementById('edit-panel').classList.remove('open');document.getElementById('panel-bg').style.display='none'}
 function shipCloseModal(){document.getElementById('modal-wrap').innerHTML=''}
 function toDateStr(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`}
-function prevMonth(){shipCur=new Date(shipCur.getFullYear(),shipCur.getMonth()-1,1);renderCal()}
-function nextMonth(){shipCur=new Date(shipCur.getFullYear(),shipCur.getMonth()+1,1);renderCal()}
-function goToday(){shipCur=new Date(shipToday.getFullYear(),shipToday.getMonth(),1);renderCal()}
+// prevMonth/nextMonth/goToday are now defined above as week navigation aliases
 document.addEventListener('change',e=>{if(['ep-cat','ep-qty'].includes(e.target.id))updateStockInfo()});
 document.addEventListener('input',e=>{if(e.target.id==='ep-qty')updateStockInfo()});
 
@@ -7357,8 +7412,8 @@ function saveShipDb(idx, stockDelta, prodId){
 window.addEventListener('storage',e=>{
   if(e.key===UNIFIED_KEY){
     syncStockFromInventory();
-    renderCal();
-    if(shipActiveTab==='shortage') renderShortage();
+    renderWeekCal();
+    renderDayDetail();
   }
 });
 
@@ -7369,67 +7424,327 @@ function switchTab(tab){
   if(tab==='shortage') renderShortage();
 }
 
-// 不足一覧レンダリング
-const DOWS_S=['日','月','火','水','木','金','土'];
-function renderShortage(){
-  const el=document.getElementById('shortage-list'); if(!el) return;
-  syncStockFromInventory();
-  const rangeDays=parseInt((document.getElementById('shortage-range')||{value:'7'}).value)||7;
-  const filterMode=(document.getElementById('shortage-filter')||{value:'all'}).value;
+// ===== 出荷スケジュール初期化 =====
+let shipWeekStart   = null;
+let shipSelectedDate = null;
+let shipFilter      = 'ng';     // 'ng' | '3d' | 'all'
+let shipPeriod      = 'week';   // 'week' | 'month'
+let shipMonthCur    = null;
+
+function getMonday(d){
+  const dt=new Date(d); dt.setHours(0,0,0,0);
+  const day=dt.getDay();
+  dt.setDate(dt.getDate()+(day===0?-6:1-day));
+  return dt;
+}
+
+function shipInit(){
   const now=new Date(); now.setHours(0,0,0,0);
-  const inN=new Date(now.getTime()+rangeDays*86400000);
-  const items=[];
+  if(!shipWeekStart)   shipWeekStart  = getMonday(now);
+  if(!shipMonthCur)    shipMonthCur   = new Date(now.getFullYear(),now.getMonth(),1);
+  if(!shipSelectedDate) shipSelectedDate = new Date(now);
+  rebuildCatSelect();
+  syncStockFromInventory();
+  _applyPeriodUI();
+  renderWeekCal();
+  renderMonthCal();
+  renderDayDetail();
+}
+function shipRender(){ syncStockFromInventory(); renderWeekCal(); renderMonthCal(); renderDayDetail(); }
+
+/* ── 期間切替 ── */
+function setPeriod(p){
+  shipPeriod=p;
+  _applyPeriodUI();
+  renderDayDetail();
+}
+function _applyPeriodUI(){
+  const isW=shipPeriod==='week';
+  const vw=document.getElementById('view-week');
+  const vm=document.getElementById('view-month');
+  if(vw) vw.style.display=isW?'':'none';
+  if(vm) vm.style.display=isW?'none':'';
+  const pw=document.getElementById('pswitch-week');
+  const pm=document.getElementById('pswitch-month');
+  if(pw) pw.className=isW?'active':'';
+  if(pm) pm.className=isW?'':'active';
+}
+
+/* ── ナビゲーション ── */
+function prevPeriod(){ shipPeriod==='week'?prevWeek():prevMonth(); }
+function nextPeriod(){ shipPeriod==='week'?nextWeek():nextMonth(); }
+function prevWeek(){
+  shipWeekStart=new Date(shipWeekStart.getTime()-7*86400000);
+  renderWeekCal(); renderDayDetail();
+}
+function nextWeek(){
+  shipWeekStart=new Date(shipWeekStart.getTime()+7*86400000);
+  renderWeekCal(); renderDayDetail();
+}
+function goThisWeek(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  shipWeekStart=getMonday(now); shipSelectedDate=new Date(now);
+  renderWeekCal(); renderDayDetail();
+}
+function prevMonth(){
+  shipMonthCur=new Date(shipMonthCur.getFullYear(),shipMonthCur.getMonth()-1,1);
+  renderMonthCal(); renderDayDetail();
+}
+function nextMonth(){
+  shipMonthCur=new Date(shipMonthCur.getFullYear(),shipMonthCur.getMonth()+1,1);
+  renderMonthCal(); renderDayDetail();
+}
+function goThisMonth(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  shipMonthCur=new Date(now.getFullYear(),now.getMonth(),1);
+  shipSelectedDate=new Date(now);
+  renderMonthCal(); renderDayDetail();
+}
+function goToday(){ shipPeriod==='week'?goThisWeek():goThisMonth(); }
+
+/* ── フィルター ── */
+function setShipFilter(f){
+  shipFilter=f;
+  ['ng','3d','all'].forEach(k=>{
+    const el=document.getElementById('sfchip-'+k); if(!el) return;
+    el.className='ship-filter-chip';
+    if(k===f) el.className+=f==='ng'?' active':f==='3d'?' active-warn':' active-all';
+  });
+  renderDayDetail();
+}
+
+/* ── ドット生成ヘルパー ── */
+function _buildDots(d){
+  const di=[];
+  SHIPS.forEach((s,idx)=>{ const sd=new Date(s.d[0],s.d[1]-1,s.d[2]); if(sameDay(sd,d)) di.push(idx); });
+  if(!di.length) return '';
+  const dayStatuses=getDayStatuses(di);
+  const counts={ng:0,cond:0,ok:0};
+  di.forEach(idx=>{ const s=SHIPS[idx]; counts[s.shipped?'ok':(dayStatuses[idx]||'ok')]++; });
+  let h='';
+  if(counts.ng)   h+=`<div class="ship-day-dot mcal-dot" style="color:#dc2626">🔴${counts.ng}</div>`;
+  if(counts.cond) h+=`<div class="ship-day-dot mcal-dot" style="color:#d97706">🟡${counts.cond}</div>`;
+  if(counts.ok)   h+=`<div class="ship-day-dot mcal-dot" style="color:#16a34a">🟢${counts.ok}</div>`;
+  return h;
+}
+
+/* ── 週カレンダー描画 ── */
+const DOWS_W=['月','火','水','木','金','土','日'];
+function renderWeekCal(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const weekEnd=new Date(shipWeekStart.getTime()+6*86400000);
+  const fmt=d=>`${d.getMonth()+1}/${d.getDate()}`;
+  const lbl=document.getElementById('week-label');
+  if(lbl) lbl.textContent=`${shipWeekStart.getFullYear()}年 ${fmt(shipWeekStart)} – ${fmt(weekEnd)}`;
+  const grid=document.getElementById('week-grid'); if(!grid) return;
+  let html='';
+  for(let i=0;i<7;i++){
+    const d=new Date(shipWeekStart.getTime()+i*86400000);
+    const isToday=sameDay(d,now), isSelected=shipSelectedDate&&sameDay(d,shipSelectedDate);
+    const isSat=i===5,isSun=i===6;
+    html+=`<div class="ship-day-cell${isToday?' is-today':''}${isSelected?' selected':''}${isSun?' sun-day':''}${isSat?' sat-day':''}"
+      onclick="selectDay(${d.getFullYear()},${d.getMonth()},${d.getDate()})">
+      <span class="ship-dow${isSun?' sun':isSat?' sat':''}">${DOWS_W[i]}</span>
+      <span class="ship-day-num">${d.getDate()}</span>
+      <div class="ship-day-status">${_buildDots(d)}</div>
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+
+/* ── 月カレンダー描画 ── */
+function renderMonthCal(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const y=shipMonthCur.getFullYear(),m=shipMonthCur.getMonth();
+  const lbl=document.getElementById('month-label');
+  if(lbl) lbl.textContent=`${y}年${m+1}月`;
+  const grid=document.getElementById('month-grid'); if(!grid) return;
+  const startDow=new Date(y,m,1).getDay();
+  const dim=new Date(y,m+1,0).getDate();
+  const pd=new Date(y,m,0).getDate();
+  const total=Math.ceil((startDow+dim)/7)*7;
+  let html='';
+  for(let i=0;i<total;i++){
+    let day,other=false; const dow=i%7;
+    if(i<startDow){day=pd-startDow+i+1;other=true;}
+    else if(i>=startDow+dim){day=i-startDow-dim+1;other=true;}
+    else day=i-startDow+1;
+    const d=other?null:new Date(y,m,day);
+    const isToday=d&&sameDay(d,now), isSelected=d&&shipSelectedDate&&sameDay(d,shipSelectedDate);
+    const isSun=dow===0,isSat=dow===6;
+    const cls=['mcal-cell',other?'other':'',isToday?'today':'',isSelected?'selected':'',isSun?'sun-c':'',isSat?'sat-c':''].filter(Boolean).join(' ');
+    html+=`<div class="${cls}"${d?` onclick="selectDay(${y},${m},${day})"`:''}>
+      <span class="mcal-dnum">${day}</span>
+      <div class="mcal-dots">${d?_buildDots(d):''}</div>
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+
+/* ── 日付選択 ── */
+function selectDay(y,m,d){
+  shipSelectedDate=new Date(y,m,d);
+  if(shipPeriod==='week') renderWeekCal(); else renderMonthCal();
+  renderDayDetail();
+  const sec=document.getElementById('day-detail-section');
+  if(sec) sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── 期間範囲取得 ── */
+function _getPeriodRange(){
+  if(shipPeriod==='week'){
+    const from=new Date(shipWeekStart);
+    const to=new Date(shipWeekStart.getTime()+6*86400000);
+    return{from,to};
+  } else {
+    const y=shipMonthCur.getFullYear(),m=shipMonthCur.getMonth();
+    return{from:new Date(y,m,1),to:new Date(y,m+1,0)};
+  }
+}
+
+/* ── 詳細一覧描画 ── */
+const DOW_NAMES=['日','月','火','水','木','金','土'];
+
+function renderDayDetail(){
+  const{from,to}=_getPeriodRange();
+  // タイトル
+  const lbl=document.getElementById('detail-date-label');
+  if(lbl){
+    if(shipPeriod==='week'){
+      const fmt=d=>`${d.getMonth()+1}/${d.getDate()}`;
+      if(shipSelectedDate&&shipSelectedDate>=from&&shipSelectedDate<=to)
+        lbl.textContent=`${shipSelectedDate.getMonth()+1}/${shipSelectedDate.getDate()}（${DOW_NAMES[shipSelectedDate.getDay()]}）`;
+      else lbl.textContent=`${fmt(from)} – ${fmt(to)}`;
+    } else {
+      lbl.textContent=`${shipMonthCur.getFullYear()}年${shipMonthCur.getMonth()+1}月`;
+    }
+  }
+  // データ収集
+  const now=new Date(); now.setHours(0,0,0,0);
+  const allItems=[];
   SHIPS.forEach((s,i)=>{
     if(s.shipped) return;
     const d=new Date(s.d[0],s.d[1]-1,s.d[2]); d.setHours(0,0,0,0);
-    if(d<now||d>inN) return;
+    if(d<from||d>to) return;
+    // 週表示で日付選択中 → 選択日のみ
+    if(shipPeriod==='week'&&shipSelectedDate&&shipSelectedDate>=from&&shipSelectedDate<=to){
+      if(!sameDay(d,shipSelectedDate)) return;
+    }
     const prodId=getShipProdId(s);
     const p=prodId?prodMap[prodId]:null; if(!p) return;
     const futureStock=getFutureStock(prodId,d);
     const shortage=futureStock-s.qty;
     const wip=getWip(p);
-    const stClass=shortage>=0?'ok':wip+futureStock>=s.qty?'cond':'ng';
-    if(filterMode==='ng'&&stClass!=='ng') return;
-    if(filterMode==='cond'&&stClass==='ok') return;
+    const st=shortage>=0?'ok':wip+futureStock>=s.qty?'cond':'ng';
     const diff=Math.round((d-now)/86400000);
-    items.push({s,i,p,futureStock,shortage,wip,date:d,stClass,diff});
+    allItems.push({s,i,p,futureStock,shortage,wip,st,d,diff});
   });
-  items.sort((a,b)=>a.shortage-b.shortage||a.diff-b.diff);
-  if(!items.length){
-    el.innerHTML=`<div style="text-align:center;padding:40px;color:#888;font-size:14px">✓ ${rangeDays}日以内の対象なし</div>`;
+  // フィルター
+  const in3=new Date(now.getTime()+3*86400000);
+  let filtered=allItems;
+  if(shipFilter==='ng')      filtered=allItems.filter(x=>x.st==='ng');
+  else if(shipFilter==='3d') filtered=allItems.filter(x=>x.d<=in3);
+  // バッジ
+  const badge=document.getElementById('detail-summary-badge');
+  const ngCnt=allItems.filter(x=>x.st==='ng').length;
+  const condCnt=allItems.filter(x=>x.st==='cond').length;
+  if(badge){
+    if(ngCnt>0)        badge.innerHTML=`<span class="ship-detail-summary">🔴 不足 ${ngCnt}件</span>`;
+    else if(condCnt>0) badge.innerHTML=`<span class="ship-detail-summary warn">🟡 注意 ${condCnt}件</span>`;
+    else if(allItems.length>0) badge.innerHTML=`<span class="ship-detail-summary safe">🟢 全${allItems.length}件OK</span>`;
+    else badge.innerHTML='';
+  }
+  const el=document.getElementById('day-detail-list'); if(!el) return;
+  if(filtered.length===0){
+    el.innerHTML=allItems.length===0
+      ?`<div class="ship-empty-day"><div class="ship-empty-day-icon">📅</div><div>この期間の出荷予定はありません</div></div>`
+      :`<div class="ship-empty-day"><div class="ship-empty-day-icon">✅</div><div>条件に一致する出荷なし</div><div style="font-size:11px;color:var(--text3);margin-top:4px">「全件」で全${allItems.length}件表示</div></div>`;
     return;
   }
-  el.innerHTML=items.map(({s,i,p,futureStock,shortage,stClass,diff})=>{
-    const dayLabel=diff===0?'今日':diff===1?'明日':diff+'日後';
-    // 工程逆算: 在庫不足の場合、いつまでに製造開始すべきか
-    const processCnt=p.process.filter(v=>v>0).length||3;
-    const startBy=new Date(items[0].date.getTime()-(processCnt+1)*86400000);
-    const calcMsg=shortage<0?`⏰ ${startBy.getMonth()+1}/${startBy.getDate()}までに製造開始が必要`:'';
-    return `<div class="shortage-row ${stClass}" onclick="shipCloseModal();showDetail(${i})">
-      <div class="shortage-day ${stClass}">${dayLabel}</div>
-      <div class="shortage-info">
-        <div class="shortage-name">${escSH(p.name)}${s.item?' <span style="font-weight:400;color:#666;font-size:11px">'+escSH(s.item)+'</span>':''}</div>
-        <div class="shortage-dest">${escSH(s.dest||'')} / ${s.d[0]}/${s.d[1]}/${s.d[2]}（${DOWS_S[items[0].date.getDay()]}）</div>
-        ${calcMsg?`<div class="shortage-calc">${calcMsg}</div>`:''}
+  filtered.sort((a,b)=>a.shortage-b.shortage||a.diff-b.diff);
+  el.innerHTML=filtered.map(({s,i,p,futureStock,shortage,st,d,diff})=>{
+    const cardCls=st==='ng'?'danger':st==='cond'?'warning':'safe';
+    const shortLabel=st==='ng'?'不足':st==='cond'?'注意（不足）':'在庫';
+    const shortVal=st==='safe'?futureStock.toLocaleString():Math.abs(shortage).toLocaleString();
+    const dayTag=diff===0?'今日':diff===1?'明日':diff+'日後';
+    const dateStr=`${s.d[1]}/${s.d[2]}（${DOW_NAMES[d.getDay()]}）`;
+    return `<div class="ship-item-card ${cardCls}" onclick="showShipDetail(${i})">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div class="ship-card-name" style="flex:1">${escSH(p.name)}${s.name&&s.name!==p.name?` <span style="font-weight:400;font-size:11px;color:var(--text3)">${escSH(s.name||s.item||'')}</span>`:''}</div>
+        <span style="font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0;margin-left:8px">${dateStr}</span>
       </div>
-      <div class="shortage-nums">
-        <div class="shortage-qty">出荷 ${s.qty.toLocaleString()}個</div>
-        <div class="shortage-avail ${stClass}">在庫 ${futureStock.toLocaleString()}個</div>
-        ${shortage<0?`<div class="shortage-miss">不足 ${Math.abs(shortage).toLocaleString()}個</div>`:''}
+      ${s.code||p.code?`<span class="ship-card-code">${escSH(s.code||p.code||'')}</span>`:''}
+      <div class="ship-card-nums">
+        <div class="ship-card-shortage-block">
+          <span class="ship-card-shortage-label">${shortLabel}</span>
+          <span class="ship-card-shortage-val">${shortVal}</span>
+        </div>
+        <div class="ship-card-ship-block">
+          <span class="ship-card-ship-label">出荷数</span>
+          <span class="ship-card-ship-val">${s.qty.toLocaleString()}</span>
+        </div>
+        <div class="ship-card-ship-block" style="margin-left:4px">
+          <span class="ship-card-ship-label" style="color:${diff<=0?'#e53e3e':'inherit'}">${diff<=0?'⚠':'📅'} 期日</span>
+          <span class="ship-card-ship-val" style="font-size:14px;color:${diff<=0?'#e53e3e':diff<=3?'#d97706':'var(--text2)'}">${dayTag}</span>
+        </div>
       </div>
+      <div class="ship-card-dest">${escSH(s.dest||'')}</div>
     </div>`;
   }).join('');
 }
 
-// ===== 出荷スケジュール初期化 =====
-function shipInit(){
-  // shipCur が未設定なら今月にリセット
-  const now = new Date();
-  if(!shipCur) shipCur = new Date(now.getFullYear(), now.getMonth(), 1);
-  rebuildCatSelect();
-  shipRender();
-  renderShortage();
+/* ── 詳細モーダル ── */
+function showShipDetail(idx){ showDetail(idx); }
+function showDetail(idx){
+  const s=SHIPS[idx];
+  const prodId=getShipProdId(s);
+  const p=prodId?prodMap[prodId]:null;
+  const d=new Date(s.d[0],s.d[1]-1,s.d[2]);
+  const wip=p?getWip(p):0;
+  const wc=p?p.process.map((q,i)=>`<span style="background:#fff7ed;border:1px solid #fed7aa;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;color:#d97706;margin-right:3px">${SL[i]}：${q}</span>`).join(''):'';
+  const futureStock=p?getFutureStock(prodId,d):0;
+  const shortage=futureStock-s.qty;
+  const stOk=futureStock>=s.qty,stCond=!stOk&&p&&(futureStock+wip>=s.qty);
+  const st=stOk?'safe':stCond?'warn':'danger';
+  const stIcon=stOk?'🟢':stCond?'🟡':'🔴';
+  const stText=stOk?`出荷可能（在庫 ${futureStock.toLocaleString()}個）`:stCond?`完成品不足（仕掛品込みで対応可）　不足 ${Math.abs(shortage).toLocaleString()}個`:`不足　${Math.abs(shortage).toLocaleString()}個（仕掛品含めても不足）`;
+  const title=s.name||s.item||(p?p.name:'');
+  document.getElementById('modal-wrap').innerHTML=`
+    <div class="ship-modal-bg" id="mbg" onclick="if(event.target.id==='mbg')shipCloseModal()">
+      <div class="ship-modal-box">
+        <div class="ship-modal-handle"></div>
+        <div class="ship-modal-head">
+          <div class="ship-modal-title">${escSH(title)}</div>
+          <button class="ship-modal-close" onclick="shipCloseModal()">✕</button>
+        </div>
+        <div class="ship-modal-block">
+          <div class="ship-modal-row"><span class="ship-modal-lbl">出荷日</span><span class="ship-modal-val">${s.d[0]}/${s.d[1]}/${s.d[2]}（${DOW_NAMES[d.getDay()]}）</span></div>
+          <div class="ship-modal-row"><span class="ship-modal-lbl">出荷数</span><span class="ship-modal-val" style="font-size:22px;color:var(--accent)">${s.qty.toLocaleString()}</span></div>
+          ${s.dest?`<div class="ship-modal-row"><span class="ship-modal-lbl">出荷先</span><span class="ship-modal-val" style="font-size:13px">${escSH(s.dest)}</span></div>`:''}
+        </div>
+        <div class="ship-modal-block">
+          <div class="ship-modal-status-label">在庫状況</div>
+          <div class="ship-modal-stock-row">
+            <div class="ship-modal-stock-item"><div class="ship-modal-stock-lbl">完成品</div><div class="ship-modal-stock-num done">${p?p.stock.toLocaleString():'-'}</div></div>
+            <div class="ship-modal-stock-item"><div class="ship-modal-stock-lbl">仕掛品</div><div class="ship-modal-stock-num wip">${wip.toLocaleString()}</div></div>
+            <div class="ship-modal-stock-item"><div class="ship-modal-stock-lbl">出荷日在庫</div><div class="ship-modal-stock-num" style="color:${stOk?'var(--green)':'#c0392b'}">${futureStock.toLocaleString()}</div></div>
+          </div>
+          ${wc?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:3px">${wc}</div>`:''}
+        </div>
+        <div class="ship-modal-block">
+          <div class="ship-modal-shortage-badge ${st}">${stIcon} ${escSH(stText)}</div>
+        </div>
+        <div class="ship-modal-actions">
+          <button class="ship-modal-btn-primary" onclick="shipCloseModal();openEdit(${idx})">編集</button>
+        </div>
+      </div>
+    </div>`;
 }
+
+/* ── 後方互換 ── */
+function showStatusList(y,m,d,st){ selectDay(y,m-1,d); }
+const DOWS_S=['日','月','火','水','木','金','土'];
+function renderShortage(){ renderDayDetail(); }
 
 const DAILY_STATE_KEY = 'dailyReportState';
 
@@ -8492,8 +8807,8 @@ function resetAllData(){
 /* 加工グリッド 3×2 */
 .proc-kakou-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
 
 /* 共通ボタン */
@@ -8502,13 +8817,13 @@ function resetAllData(){
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  border-radius: 9px;
+  gap: 4px;
+  border-radius: 10px;
   border: 1.5px solid transparent;
   cursor: pointer;
   font-family: var(--font);
-  padding: 10px 6px;
-  min-height: 58px;
+  padding: 14px 8px;
+  min-height: 72px;
   transition: all 0.12s;
   -webkit-tap-highlight-color: transparent;
   position: relative;
@@ -8518,19 +8833,19 @@ function resetAllData(){
 .proc-btn:active:not(:disabled) { transform: scale(0.95); }
 
 .proc-btn-name {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   white-space: nowrap;
   line-height: 1;
 }
 .proc-btn-cnt {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 900;
   font-family: var(--mono);
   line-height: 1;
   letter-spacing: -1px;
 }
-.proc-btn-cnt.zero { color: #ccc; font-size: 18px; font-weight: 400; }
+.proc-btn-cnt.zero { color: #ccc; font-size: 20px; font-weight: 400; }
 
 /* 加工ボタン */
 .proc-btn-kakou {
@@ -8570,12 +8885,12 @@ function resetAllData(){
   width: 100%;
   flex-direction: row;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 16px 18px;
   justify-content: space-between;
-  min-height: 48px;
+  min-height: 64px;
 }
-.proc-btn-deburr .proc-btn-name { font-size: 13px; color: var(--amber); }
-.proc-btn-deburr .proc-btn-cnt  { color: var(--amber); font-size: 24px; }
+.proc-btn-deburr .proc-btn-name { font-size: 14px; font-weight: 700; color: var(--amber); }
+.proc-btn-deburr .proc-btn-cnt  { color: var(--amber); font-size: 28px; }
 .proc-btn-deburr.has-stock {
   background: #fff8ec;
   box-shadow: 0 2px 8px rgba(200,121,10,0.15);
@@ -8592,9 +8907,9 @@ function resetAllData(){
   width: 100%;
   flex-direction: row;
   gap: 10px;
-  padding: 14px 16px;
+  padding: 16px 18px;
   justify-content: space-between;
-  min-height: 56px;
+  min-height: 64px;
 }
 .proc-btn-done-inner {
   display: flex;
@@ -8628,19 +8943,19 @@ function resetAllData(){
   align-items: center;
   justify-content: center;
   gap: 5px;
-  margin-top: 8px;
-  padding: 10px 18px;
+  margin-top: 10px;
+  padding: 14px 18px;
   background: transparent;
   border: 1.5px solid var(--green-bd);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--done);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   font-family: var(--font);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: all 0.12s;
-  align-self: flex-start;
+  width: 100%;
 }
 .proc-btn-recv-small:hover:not(:disabled) {
   background: var(--done);
