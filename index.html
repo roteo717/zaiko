@@ -5504,10 +5504,10 @@ input[type=number] { -moz-appearance: textfield; }
 
 <!-- ADJUST MODAL -->
 <div class="modal-overlay" id="adjust-modal">
-  <div class="modal" style="max-width:420px;padding:0;overflow:hidden;border-radius:16px">
+  <div class="modal" style="max-width:420px;padding:0;overflow:hidden;border-radius:16px;display:flex;flex-direction:column;max-height:92vh">
 
-    <!-- ① ヘッダー：白ベース -->
-    <div style="background:#fff;border-bottom:1px solid #e5e7eb;padding:18px 20px 14px">
+    <!-- ① ヘッダー：白ベース（固定） -->
+    <div style="background:#fff;border-bottom:1px solid #e5e7eb;padding:18px 20px 14px;flex-shrink:0">
       <div style="font-size:11px;color:#9ca3af;letter-spacing:.5px;margin-bottom:3px">在庫調整</div>
       <div id="adj-header-name" style="font-size:17px;font-weight:700;color:#111;margin-bottom:6px">—</div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -5517,7 +5517,8 @@ input[type=number] { -moz-appearance: textfield; }
       <select id="adj-item" style="margin-top:10px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;color:#111;border-radius:8px;padding:6px 8px;font-size:13px;outline:none;box-sizing:border-box" onchange="updateAdjProcess();updateAdjTitle()"></select>
     </div>
 
-    <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+    <!-- スクロール可能なコンテンツ -->
+    <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;display:flex;flex-direction:column;gap:16px">
 
       <!-- ② 調整入力：主役 -->
       <div style="background:#f9fafb;border-radius:12px;padding:16px;text-align:center">
@@ -5551,7 +5552,7 @@ input[type=number] { -moz-appearance: textfield; }
       </div>
 
       <!-- ⑤ ボタン -->
-      <div style="display:flex;gap:10px">
+      <div style="display:flex;gap:10px;padding-bottom:4px">
         <button onclick="closeModal('adjust-modal')"
           style="flex:1;border:none;background:#f3f4f6;color:#374151;border-radius:12px;padding:13px 0;font-size:14px;font-weight:600;cursor:pointer">キャンセル</button>
         <button onclick="confirmAdjust()"
