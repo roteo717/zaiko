@@ -2750,6 +2750,17 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner .fab:hover {background:#155836;transform:scale(1.06)}
 @media print{.ship-inner .app-header .header-actions, .ship-inner .fab, .ship-inner .edit-panel, .ship-inner .tab-bar {display:none!important}.ship-inner {background:#fff}.ship-inner .main {padding:10px}}
 /* 出荷タブ: 共通 .search-wrapper を使用（デザイン統一）*/
+.ship-inner .search-input {
+  padding: 11px 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 14px !important;
+  background: transparent !important;
+  box-sizing: content-box !important;
+}
+@media (max-width: 768px) {
+  .ship-inner .search-input { font-size: 16px !important; }
+}
 .ship-inner .sresult-list {background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow:hidden}
 .ship-inner .sresult-hdr {padding:10px 16px;background:#f7f9f8;border-bottom:1px solid #e8eee9;font-size:12px;font-weight:700;color:#666}
 .ship-inner .sresult-item {display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer}
