@@ -42,6 +42,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -52,6 +54,9 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 /* ===== iOS ズーム防止: input/select/textarea は必ず16px ===== */
@@ -60,7 +65,7 @@ input, select, textarea {
   -webkit-text-size-adjust: 100%;
 }
 
-.app { display: flex; flex-direction: column; min-height: 100vh; overflow-x: clip; }
+.app { display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; width: 100%; max-width: 100vw; }
 
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
@@ -641,52 +646,91 @@ input[type=search] { -webkit-appearance: none; }
 
 /* ===== 一括移動グループ ===== */
 .batch-area {
-  margin-top: 4px;
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
 }
-.proc-group-batch {
-  background: #fafbff;
-  border: 1px dashed #d6dcff;
-  border-radius: 12px;
-  padding: 10px 10px 10px;
+
+/* ── まとめ工程カード: proc-btn と同スタイル ── */
+.batch-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 10px;
+  border: 1.5px solid #c4b8f5;
+  background: #f3f0ff;
+  cursor: pointer;
+  font-family: var(--font);
+  padding: 14px 8px;
+  min-height: 72px;
+  flex: 0 0 152px;
+  transition: all 0.12s;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
 }
-.proc-group-batch .proc-group-hd {
-  color: #999;
+.batch-card.has-stock {
+  background: #ede8ff;
+  border-color: var(--purple);
+  box-shadow: 0 2px 6px rgba(124,92,191,0.15);
 }
-.proc-group-hd-dot.batch {
-  background: #b0bcf0;
+.batch-card:hover:not(.batch-card-disabled) {
+  background: var(--purple);
+  border-color: var(--purple);
 }
-/* 一括移動ボタン */
-.proc-btn-batch {
-  background: #fff;
-  border: 1px solid #d6dcff;
-  color: #666;
-  width: 100%;
-  flex-direction: row;
-  gap: 10px;
-  padding: 10px 14px;
-  justify-content: space-between;
-  min-height: 44px;
-  border-radius: 8px;
+.batch-card:hover:not(.batch-card-disabled) .batch-card-label,
+.batch-card:hover:not(.batch-card-disabled) .batch-card-dest,
+.batch-card:hover:not(.batch-card-disabled) .batch-card-range,
+.batch-card:hover:not(.batch-card-disabled) .batch-card-count,
+.batch-card:hover:not(.batch-card-disabled) .batch-card-arrow { color: #fff; }
+.batch-card:active:not(.batch-card-disabled) { transform: scale(0.95); }
+.batch-card.batch-card-disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
 }
-.proc-btn-batch .proc-btn-name {
+.batch-card-label {
   font-size: 12px;
-  color: #777;
-  font-weight: 600;
-}
-.proc-btn-batch .proc-btn-cnt {
-  color: #666;
-  font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  color: var(--purple);
+  line-height: 1;
+  white-space: nowrap;
 }
-.proc-btn-batch .proc-btn-cnt.zero { color: #ccc; font-size: 16px; font-weight: 400; }
-.proc-btn-batch:hover:not(:disabled) {
-  background: #eef2ff;
-  border-color: #b0bcf0;
-  border-style: solid;
+.batch-card.has-stock .batch-card-label { color: var(--purple); }
+.batch-card-dest {
+  font-size: 10px;
+  color: #9b86d4;
+  font-weight: 500;
+  white-space: nowrap;
+  display: block;
+  margin-top: 1px;
 }
-.proc-btn-batch:active:not(:disabled) { transform: scale(0.97); }
-.proc-btn-batch:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+.batch-card-range { display: none; }
+.batch-card-count {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--purple);
+  line-height: 1;
+  letter-spacing: -1px;
+  white-space: nowrap;
+}
+.batch-card-count.zero { color: #ccc; font-size: 20px; font-weight: 400; }
+.batch-card-arrow {
+  position: absolute;
+  bottom: 3px;
+  right: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--purple);
+  opacity: 0.5;
+}
+.batch-card-bottom {
+  display: contents;
+}
 /* まとめ工程設定UI */
 .group-config-row {
   display: flex;
@@ -2167,6 +2211,7 @@ input[type=number] { -moz-appearance: textfield; }
 
   /* Process block */
   .process-block { flex: 0 0 138px; }
+  .batch-card { flex: 0 0 138px; }
   .process-count { font-size: 22px; }
   .btn-move, .btn-defect, .btn-qc, .btn-ship { font-size: 10px; padding: 6px 3px; }
 
@@ -2184,6 +2229,7 @@ input[type=number] { -moz-appearance: textfield; }
 
 @media (max-width: 360px) {
   .process-block { flex: 0 0 126px; }
+  .batch-card { flex: 0 0 126px; }
   .process-count { font-size: 20px; }
   .btn-move, .btn-defect, .btn-qc, .btn-ship { font-size: 9px; }
   .deburr-label, .done-label { font-size: 8px; }
@@ -3912,7 +3958,7 @@ input[type=number] { -moz-appearance: textfield; }
   border-top: 0px solid var(--border);
 }
 .fc-expanded .fc-body {
-  max-height: 2400px;
+  max-height: 3600px;
   padding: 12px 14px 14px;
   border-top: 1px solid var(--border);
 }
@@ -5349,58 +5395,7 @@ input[type=number] { -moz-appearance: textfield; }
     <div class="history-list" id="history-list-admin"></div>
   </div>
 
-  <!-- 日報パネル -->
-  <div id="nippo-panel" class="nippo-panel">
-    <div class="nippo-header">
-      <div class="nippo-header-title">📄 日報一覧</div>
-      <div class="nippo-filters">
-        <input type="date" class="nippo-date-input" id="nippo-date-picker" onchange="onNippoDateChange()">
-        <button class="nippo-today-btn" onclick="onNippoToday()">今日</button>
-        <select class="nippo-filter-select" id="nippo-machine-filter" onchange="renderNippo()">
-          <option value="">全設備</option>
-        </select>
-        <select class="nippo-filter-select" id="nippo-user-filter" onchange="renderNippo()">
-          <option value="">全作業者</option>
-        </select>
-        <select class="nippo-filter-select" id="nippo-type-filter" onchange="renderNippo()">
-          <option value="">全操作</option>
-          <option value="入庫">入庫</option>
-          <option value="移動">移動</option>
-          <option value="出荷">出荷</option>
-          <option value="不良">不良</option>
-        </select>
-        <button class="nippo-pdf-btn" id="nippo-pdf-btn" onclick="exportNippoPdf()">⬇ PDF</button>
-      </div>
-    </div>
-    <div id="reportArea">
-      <div class="pdf-print-title" id="pdf-print-title">
-        <div class="pdf-print-title-row">
-          <span class="pdf-title-main">📄 日報一覧</span>
-          <span class="pdf-title-sub" id="pdf-title-generated">出力：</span>
-        </div>
-        <div class="pdf-print-meta">
-          <div class="pdf-meta-item">
-            <span class="pdf-meta-label">日付</span>
-            <span class="pdf-meta-value" id="pdf-meta-date">—</span>
-          </div>
-          <div class="pdf-meta-item">
-            <span class="pdf-meta-label">作業者</span>
-            <span class="pdf-meta-value" id="pdf-meta-user">—</span>
-          </div>
-          <div class="pdf-meta-item">
-            <span class="pdf-meta-label">件数</span>
-            <span class="pdf-meta-value" id="pdf-meta-count">—</span>
-          </div>
-          <div class="pdf-meta-item">
-            <span class="pdf-meta-label">合計数量</span>
-            <span class="pdf-meta-value" id="pdf-meta-qty">—</span>
-          </div>
-        </div>
-      </div>
-      <div class="nippo-list" id="nippo-list"></div>
-      <div class="nippo-summary-bar" id="nippo-summary-bar"></div>
-    </div>
-  </div>
+  <!-- 日報パネル非表示 -->
 
 </div>
 
@@ -6086,15 +6081,14 @@ function buildDisplayActives(item){
   const displayList = [];
   const covered = new Set();
 
-  // 各グループについて、アクティブな工程を収集
+  // 各グループについて、アクティブな工程を収集（0件でもグループとして追加）
   for(const g of groups){
     const si = g.start - 1; // 0-indexed
     const ei = g.end - 1;
     const ga = actives.filter(a => a.idx >= si && a.idx <= ei);
-    if(ga.length > 0){
-      ga.forEach(a => covered.add(a.idx));
-      displayList.push({ isGroup:true, group:g, groupActives:ga });
-    }
+    // アクティブ工程がなくてもグループ設定があれば表示する
+    ga.forEach(a => covered.add(a.idx));
+    displayList.push({ isGroup:true, group:g, groupActives:ga });
   }
   // グループ外のアクティブ工程を個別エントリとして追加
   for(const p of actives){
@@ -6104,31 +6098,48 @@ function buildDisplayActives(item){
   }
   // 先頭のインデックス順にソート
   displayList.sort((a,b)=>{
-    const ai = a.isGroup ? a.groupActives[0].idx : a.process.idx;
-    const bi = b.isGroup ? b.groupActives[0].idx : b.process.idx;
+    const ai = a.isGroup ? (a.group.start - 1) : a.process.idx;
+    const bi = b.isGroup ? (b.group.start - 1) : b.process.idx;
     return ai - bi;
   });
   return displayList;
 }
 
-// まとめ工程ブロックのレンダリング
+// まとめ工程ブロックのレンダリング（新デザイン: 2行カード形式）
 function renderGroupBlock(item, entry, di, displayList){
   const { group, groupActives } = entry;
   const count = groupActives.reduce((s,a) => s + item.processCounts[a.idx], 0);
-  const hasNext = di < displayList.length - 1;
-  const displayName = `${GRP_LABELS[group.start-1]}〜${GRP_LABELS[group.end-1]}`;
-  return `<div class="proc-group proc-group-batch">
-    <div class="proc-group-hd">
-      <span class="proc-group-hd-dot batch"></span>
-      一括移動（${displayName}）
-    </div>
-    <button class="proc-btn proc-btn-batch"
-      ${hasNext&&count>0?'':'disabled'}
-      onclick="handleAction('まとめ移動',{itemId:'${item.id}',groupStart:${group.start},groupEnd:${group.end}})">
-      <span class="proc-btn-name">工程${displayName} をまとめて移動</span>
-      <span class="proc-btn-cnt${count===0?' zero':''}">${formatQty(count)}</span>
-    </button>
-  </div>`;
+
+  // 次工程を特定（グループ終端より後の最初のアクティブ工程）
+  const allActives = getActives(item);
+  const ei = group.end - 1; // 0-indexed
+  const nextProc = allActives.find(a => a.idx > ei);
+  const canMove = count > 0 && !!nextProc;
+
+  // 表示名: 工程①〜⑤ 形式
+  const startLabel = GRP_LABELS[group.start-1] || group.start;
+  const endLabel   = GRP_LABELS[group.end-1]   || group.end;
+  const rangeLabel = '工程' + startLabel + '〜' + endLabel;
+
+  // 遷移先ラベル
+  var destLabel = '';
+  if(nextProc){
+    var cfg = item.processConfig ? item.processConfig[nextProc.idx] : null;
+    var ntype = cfg ? cfg.type : null;
+    var nname = ntype==='deburr' ? 'バリ取り' : ntype==='done' ? '完成品' : PNAMES[nextProc.idx];
+    destLabel = '→ ' + nname;
+  }
+
+  var onclickStr = canMove
+    ? "handleAction('まとめ移動',{itemId:'" + item.id + "',groupStart:" + group.start + ",groupEnd:" + group.end + "})"
+    : 'void(0)';
+
+  return '<div class="batch-card' + (canMove ? ' has-stock' : '') + (canMove ? '' : ' batch-card-disabled') + '" onclick="' + onclickStr + '">'
+    + '<span class="batch-card-label">' + rangeLabel + '</span>'
+    + '<span class="batch-card-count' + (count === 0 ? ' zero' : '') + '">' + formatQty(count) + '</span>'
+    + (destLabel ? '<span class="batch-card-dest">' + destLabel + '</span>' : '')
+    + (canMove ? '<span class="batch-card-arrow">→</span>' : '')
+  + '</div>';
 }
 
 // まとめ工程の「次へ」操作
@@ -6506,9 +6517,17 @@ function renderItemCard(item){
         +(canMove?'<span class="proc-btn-move-hint">→</span>':'')
         +'</button>';
     }).join('');
+
+    // まとめ工程カードを工程グリッドの下に追加
+    const groupBlocks = displayList
+      .filter(e => e.isGroup)
+      .map((entry, di) => renderGroupBlock(item, entry, di, displayList))
+      .join('');
+
     kakouGridHtml = '<div class="proc-group-arrow">▼ 加工</div>'
       +'<div class="proc-group proc-group-kakou">'
       +'<div class="proc-kakou-grid">'+btns+'</div>'
+      +(groupBlocks ? '<div class="batch-area" style="margin-top:8px">'+groupBlocks+'</div>' : '')
       +'</div>';
   }
 
@@ -6550,12 +6569,6 @@ function renderItemCard(item){
       +'</div>';
   }
 
-  // グループブロック（まとめ工程）は旧スタイルで補完表示
-  const groupBlocks = displayList
-    .filter(e => e.isGroup)
-    .map((entry, di) => renderGroupBlock(item, entry, di, displayList))
-    .join('');
-
   const recvBtnHtml = '<button class="fc-btn-recv-top" onclick="event.stopPropagation();openRecvSheet(\''+item.id+'\')" >＋ 入庫</button>';
 
   const detailBodyHtml=''
@@ -6566,7 +6579,6 @@ function renderItemCard(item){
         +shiageHtml
         +kanseHtml
       +'</div>'
-      +(groupBlocks ? '<div class="batch-area">'+groupBlocks+'</div>' : '')
     +'</div>';
 
   return '<div class="fc'+(status?' status-'+status:'')+'" id="card-'+item.id+'">'
@@ -6575,14 +6587,13 @@ function renderItemCard(item){
       +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
       +'<span class="fc-code">'+escH(item.code)+'</span>'
     +'</div>'
-    // 主役数量 / 内訳 / ステータス / セパレータ
+    // 主役数量 / 内訳 / セパレータ
     +statsRowHtml
     // 操作エリア
     +'<div class="fc-actions">'
       +'<button class="fc-btn-detail fc-btn-toggle-op" onclick="event.stopPropagation();toggleCard(\''+item.id+'\')" title="工程詳細">✏ 作業を入力</button>'
     +'</div>'
-
-    // 工程詳細ボディ
+    // 工程詳細ボディ（まとめ工程含む）
     +detailBodyHtml
   +'</div>';
 }
@@ -7303,7 +7314,7 @@ function cancelAll(){
 }
 
 // ADMIN
-function renderAdmin(){ renderAdminStats(); renderAdminCards(); if(gid('nippo-panel').classList.contains('open')){_buildNippoFilters();renderNippo();} }
+function renderAdmin(){ renderAdminStats(); renderAdminCards(); }
 function renderAdminStats(){ const el=gid('admin-stats'); if(!el) return;
   const tS=db.items.reduce((s,i)=>s+getTotalStock(i),0);
   const tD=db.items.reduce((s,i)=>s+i.doneCount,0);
@@ -8038,7 +8049,7 @@ function renderFormGroups(){
   }
   el.innerHTML = formGroups.map((g,i)=>`
     <div class="group-config-row">
-      <span class="group-config-name">${GRP_LABELS[g.start-1]}〜${GRP_LABELS[g.end-1]}</span>
+      <span class="group-config-name">工程${g.start}〜${g.end}</span>
       <button class="group-config-del" onclick="removeProcessGroup(${i})">削除</button>
     </div>`).join('');
 }
@@ -9478,7 +9489,7 @@ function _maybeShowGroupIntro(){
     <div class="group-intro-title">「まとめ工程」とは？</div>
     <div class="group-intro-body">
       <strong>複数の工程をひとつにまとめて</strong>扱う機能です。<br><br>
-      例えば「工程①〜③をまとめた場合」、3つの工程の在庫合計が1つのブロックに表示され、<strong>まとめて次の工程へ移動</strong>できます。<br><br>
+      例えば「工程1〜4をまとめた場合」、4つの工程の在庫合計が1枚のカードに表示され、<strong>まとめて次の工程へ移動</strong>できます。<br><br>
       管理画面の品目編集でまとめ工程を設定できます。
     </div>
     <button class="group-intro-ok" onclick="closeGroupIntro()">わかりました</button>
@@ -11122,6 +11133,52 @@ function resetAllData(){
   color: var(--text3);
   font-family: var(--mono);
   white-space: nowrap;
+}
+
+/* ===== スマホ: 横スクロール完全防止 ===== */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  /* 横はみ出しやすい要素を制限 */
+  .field-mode,
+  .admin-mode,
+  #ship-mode,
+  #settings-mode {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  /* テーブル・横スクロールエリアは内側だけスクロール */
+  .data-table-wrap,
+  .process-grid,
+  .fc-procflow,
+  .acv2-machine-section,
+  .ship-inner {
+    overflow-x: auto !important;
+    max-width: 100% !important;
+  }
+  /* モーダルが画面外に出ないよう */
+  .modal {
+    max-width: calc(100vw - 24px) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  /* カード類 */
+  .fc,
+  .admin-card,
+  .item-card,
+  .sn-machine-card {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
 }
 </style>
 
