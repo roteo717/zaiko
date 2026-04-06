@@ -1782,6 +1782,7 @@ input, select, textarea {
 .btn-cancel:hover { color: var(--text); border-color: var(--border2); }
 
 /* History */
+/* ===== HISTORY PANEL — TIMELINE CARD REDESIGN ===== */
 .history-panel {
   margin-top: 12px;
   background: var(--bg2);
@@ -1798,34 +1799,246 @@ input, select, textarea {
   background: var(--bg3);
   display: flex; align-items: center; gap: 6px;
 }
-.history-list { max-height: 260px; overflow-y: auto; }
-.history-item {
+
+/* Filter row */
+.history-filter-bar {
+  display: flex;
+  gap: 5px;
+  padding: 8px 12px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.history-filter-bar::-webkit-scrollbar { display: none; }
+.hfb-btn {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--bg2);
+  color: var(--text2);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.hfb-btn.active       { background: var(--accent); color: #fff; border-color: var(--accent); }
+.hfb-btn.active-move  { background: var(--accent); color: #fff; border-color: var(--accent); }
+.hfb-btn.active-recv  { background: var(--green);  color: #fff; border-color: var(--green); }
+.hfb-btn.active-defect{ background: var(--red);    color: #fff; border-color: var(--red); }
+
+/* Timeline list */
+.history-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 12px 0 4px;
+  -webkit-overflow-scrolling: touch;
+}
+.history-list.full-height { max-height: none; }
+
+/* Time group header */
+.htl-group {
+  position: relative;
+  padding: 0 14px;
+}
+.htl-group-label {
   display: flex;
   align-items: center;
-  padding: 7px 14px;
   gap: 8px;
-  border-bottom: 1px solid var(--border);
-  font-size: 11px;
-  min-width: 0;
+  margin-bottom: 8px;
+  margin-top: 4px;
 }
-.history-item:last-child { border-bottom: none; }
-.history-type {
-  padding: 2px 6px;
-  border-radius: 4px;
+.htl-group-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.htl-group-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Timeline entry */
+.htl-entry {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  position: relative;
+  animation: htlFadeIn 0.2s ease both;
+}
+@keyframes htlFadeIn {
+  from { opacity:0; transform:translateY(4px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Vertical line column */
+.htl-line-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16px;
+  flex-shrink: 0;
+  padding-top: 14px;
+}
+.htl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  background: var(--bg2);
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+.htl-dot.move    { border-color: var(--accent); background: #e8effe; }
+.htl-dot.receive { border-color: var(--green);  background: var(--green-bg); }
+.htl-dot.defect  { border-color: var(--red);    background: var(--red-bg); }
+.htl-dot.ship    { border-color: var(--teal);   background: #e8f6f4; }
+.htl-dot.adjust  { border-color: var(--purple); background: #f0ecff; }
+.htl-vline {
+  width: 1.5px;
+  flex: 1;
+  min-height: 8px;
+  background: var(--border);
+  margin-top: 3px;
+}
+
+/* Card */
+.htl-card {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  border-left-width: 3px;
+  padding: 9px 11px;
+  min-width: 0;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.htl-card:active { box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+.htl-card.move    { border-left-color: var(--accent); }
+.htl-card.receive { border-left-color: var(--green); }
+.htl-card.defect  { border-left-color: var(--red); }
+.htl-card.ship    { border-left-color: var(--teal); }
+.htl-card.adjust  { border-left-color: var(--purple); }
+
+/* Card top row */
+.htl-card-top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.htl-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 20px;
   font-size: 9px;
   font-weight: 700;
-  min-width: 38px;
-  text-align: center;
   flex-shrink: 0;
 }
-.type-move    { background: #e8effe; color: var(--accent); }
-.type-receive { background: var(--green-bg); color: var(--green); }
-.type-ship    { background: #e8f6f4; color: var(--teal); }
-.type-defect  { background: var(--red-bg); color: var(--red); }
-.type-adjust  { background: #f0ecff; color: var(--purple); }
-.history-desc { flex: 1; color: var(--text2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.history-qty  { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text); flex-shrink: 0; }
-.history-time { color: var(--text3); font-size: 9px; flex-shrink: 0; }
+.htl-type-badge.move    { background: #e8effe; color: var(--accent); }
+.htl-type-badge.receive { background: var(--green-bg); color: var(--green); }
+.htl-type-badge.defect  { background: var(--red-bg); color: var(--red); }
+.htl-type-badge.ship    { background: #e8f6f4; color: var(--teal); }
+.htl-type-badge.adjust  { background: #f0ecff; color: var(--purple); }
+.htl-machine-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--bg4);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.htl-machine-pill.none { display: none; }
+
+/* Card body */
+.htl-item-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.htl-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.htl-qty {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.htl-route {
+  font-size: 11px;
+  color: var(--text2);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Card footer (accordion detail) */
+.htl-card-detail {
+  display: none;
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--text3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.htl-card-detail.hidden { display: none !important; }
+.htl-meta-line { display: flex; gap: 6px; }
+.htl-meta-label { color: var(--text3); min-width: 36px; }
+.htl-meta-val   { color: var(--text2); font-weight: 500; }
+
+/* Collapsed card toggle chevron */
+.htl-chevron {
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.htl-card.open .htl-chevron { transform: rotate(180deg); }
+
+/* Legacy aliases kept for non-history parts */
+.history-item { display: none; }
+.history-type { display: none; }
+.history-desc { display: none; }
+.history-qty  { display: none; }
+.history-time { display: none; }
+.type-move    {} .type-receive {} .type-ship {} .type-defect {} .type-adjust {}
 
 /* Item form */
 .process-config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
@@ -2003,65 +2216,252 @@ input[type=number] { -moz-appearance: textfield; }
 /* ===== 出荷連携UI ===== */
 /* ========== 出荷判断UI v2 ========== */
 /* 週カレンダー */
-.ship-week-nav{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 6px;gap:6px}
-.ship-week-label{font-size:13px;font-weight:700;color:var(--text);flex:1;text-align:center}
-.ship-week-btn{width:36px;height:36px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text2);transition:all .12s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-.ship-week-btn:hover{border-color:var(--accent);color:var(--accent)}
-.ship-week-btn:active{transform:scale(.94)}
-.ship-week-today-btn{padding:0 12px;height:36px;border:1.5px solid var(--accent);border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:var(--accent);transition:all .12s;white-space:nowrap;flex-shrink:0;font-family:var(--font)}
-.ship-week-today-btn:hover{background:var(--accent);color:#fff}
-.ship-week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 0 10px}
-.ship-day-cell{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 10px;border-radius:10px;cursor:pointer;transition:all .15s;border:2px solid transparent;-webkit-tap-highlight-color:transparent;min-height:72px;position:relative}
-.ship-day-cell:hover{background:var(--bg3)}
-.ship-day-cell.selected{background:#eef2ff;border-color:var(--accent)}
-.ship-day-cell.is-today .ship-day-num{background:var(--accent);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:800}
-.ship-day-cell.is-today.selected .ship-day-num{background:var(--accent2)}
-.ship-dow{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.3px}
-.ship-dow.sun{color:#e53e3e}
-.ship-dow.sat{color:#3182ce}
-.ship-day-num{font-size:15px;font-weight:700;color:var(--text);line-height:1}
-.ship-day-cell.other-month .ship-day-num{color:#ccc}
-.ship-day-cell.sun-day .ship-day-num{color:#e53e3e}
-.ship-day-cell.sat-day .ship-day-num{color:#3182ce}
-.ship-day-status{display:flex;flex-direction:column;gap:1px;width:100%;padding:0 2px}
-.ship-day-dot{font-size:9px;line-height:1.4;text-align:center;font-weight:700;white-space:nowrap;letter-spacing:-.3px}
-/* 日付詳細セクション */
-.ship-detail-header{display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px;gap:8px;flex-wrap:wrap}
-.ship-detail-date{font-size:16px;font-weight:800;color:var(--text)}
-.ship-detail-summary{font-size:12px;font-weight:700;color:var(--red);background:var(--red-bg);padding:3px 10px;border-radius:20px;border:1px solid var(--red-bd)}
-.ship-detail-summary.safe{color:var(--green);background:var(--green-bg);border-color:var(--green-bd)}
-.ship-detail-summary.warn{color:var(--amber);background:var(--amber-bg);border-color:var(--amber-bd)}
-/* 出荷カード */
-.ship-item-card{border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:all .15s;border:1.5px solid transparent;-webkit-tap-highlight-color:transparent;position:relative}
-.ship-item-card.danger{background:#ffe5e5;border-color:#ffb3b3}
-.ship-item-card.danger-high{background:#ffd0d0;border-color:#f87171;border-width:2px}
-.ship-item-card.danger-mid{background:#ffe5e5;border-color:#ffb3b3}
-.ship-item-card.danger-low{background:#fff3f3;border-color:#fecaca}
-.ship-item-card.warning{background:#fff5cc;border-color:#ffe066}
-.ship-item-card.safe{background:#eefaf0;border-color:#99e6b3}
-.ship-item-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
-.ship-item-card:active{transform:scale(.98)}
-.ship-card-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ship-card-code{font-family:var(--mono);font-size:11px;color:var(--text3);background:rgba(255,255,255,.7);padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:8px}
-.ship-card-nums{display:flex;align-items:baseline;gap:16px}
-.ship-card-shortage-block{display:flex;flex-direction:column;gap:0}
-.ship-card-shortage-label{font-size:10px;font-weight:700;color:#c0392b;letter-spacing:.3px}
-.ship-card-shortage-val{font-family:var(--mono);font-size:32px;font-weight:900;color:#c0392b;line-height:1;letter-spacing:-1px}
-.ship-item-card.warning .ship-card-shortage-label{color:#a16207}
-.ship-item-card.warning .ship-card-shortage-val{color:#a16207}
-.ship-item-card.safe .ship-card-shortage-label{color:var(--green);opacity:.7;font-size:9px}
-.ship-item-card.safe .ship-card-shortage-val{color:var(--green);font-size:20px;font-weight:700}
-.ship-card-ship-block{display:flex;flex-direction:column;gap:0}
-.ship-card-ship-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.3px}
-.ship-card-ship-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text2);line-height:1}
-.ship-card-dest{font-size:11px;color:var(--text3);margin-top:6px}
-/* フィルターチップ */
-.ship-filter-row{display:flex;gap:6px;padding:0 0 10px;flex-wrap:wrap}
-.ship-filter-chip{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:700;color:var(--text3);cursor:pointer;transition:all .12s;font-family:var(--font);-webkit-tap-highlight-color:transparent}
-.ship-filter-chip:hover{border-color:var(--accent);color:var(--accent)}
-.ship-filter-chip.active{background:var(--red-bg);border-color:var(--red-bd);color:var(--red)}
-.ship-filter-chip.active-warn{background:var(--amber-bg);border-color:var(--amber-bd);color:var(--amber)}
-.ship-filter-chip.active-all{background:var(--bg3);border-color:var(--border2);color:var(--text2)}
+/* ===== SHIP SCHEDULE — REDESIGN ===== */
+
+/* ── 期間切替スライダー ── */
+.period-switch {
+  display: flex;
+  background: var(--bg4);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 0;
+  position: relative;
+}
+.period-switch button {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font);
+  color: var(--text3);
+  transition: all .2s cubic-bezier(.4,0,.2,1);
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 1;
+}
+.period-switch button.active {
+  background: #fff;
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(79,126,255,.18), 0 1px 3px rgba(0,0,0,.08);
+}
+
+/* ── カレンダー共通 ── */
+.ship-week-nav { display:flex;align-items:center;justify-content:space-between;padding:8px 4px 6px;gap:6px }
+.ship-week-label { font-size:13px;font-weight:700;color:var(--text);flex:1;text-align:center }
+.ship-week-btn { width:36px;height:36px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text2);transition:all .12s;flex-shrink:0;-webkit-tap-highlight-color:transparent }
+.ship-week-btn:hover { border-color:var(--accent);color:var(--accent) }
+.ship-week-btn:active { transform:scale(.94) }
+.ship-week-today-btn { padding:0 12px;height:36px;border:1.5px solid var(--accent);border-radius:8px;background:#fff;cursor:pointer;font-size:12px;font-weight:700;color:var(--accent);transition:all .12s;white-space:nowrap;flex-shrink:0;font-family:var(--font) }
+.ship-week-today-btn:hover { background:var(--accent);color:#fff }
+
+/* ── 週カレンダーセル ── */
+.ship-week-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 0 8px }
+.ship-day-cell {
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 2px 8px;border-radius:10px;cursor:pointer;
+  transition:all .15s;border:2px solid transparent;
+  -webkit-tap-highlight-color:transparent;min-height:70px;position:relative;
+  background: transparent;
+}
+.ship-day-cell:hover { background:var(--bg3) }
+.ship-day-cell.selected {
+  background: linear-gradient(145deg, #eef2ff 0%, #e4ecff 100%);
+  border-color: var(--accent);
+  box-shadow: 0 3px 10px rgba(79,126,255,.18);
+}
+.ship-day-cell.is-today .ship-day-num {
+  background:var(--accent);color:#fff;border-radius:50%;
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:800;
+}
+.ship-day-cell.is-today.selected .ship-day-num { background:var(--accent2) }
+.ship-dow { font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.3px }
+.ship-dow.sun { color:#e53e3e }
+.ship-dow.sat { color:#3182ce }
+.ship-day-num { font-size:15px;font-weight:700;color:var(--text);line-height:1 }
+.ship-day-cell.other-month .ship-day-num { color:#ccc }
+.ship-day-cell.sun-day .ship-day-num { color:#e53e3e }
+.ship-day-cell.sat-day .ship-day-num { color:#3182ce }
+.ship-day-status { display:flex;flex-direction:column;gap:1px;width:100%;padding:0 2px }
+.ship-day-dot { font-size:9px;line-height:1.4;text-align:center;font-weight:700;white-space:nowrap;letter-spacing:-.3px }
+
+/* ── 選択日ステータスバー（カレンダー直下） ── */
+.ship-date-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  gap: 10px;
+}
+.ship-date-status-label {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
+.ship-date-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.ship-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.ship-status-pill.ng   { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd); }
+.ship-status-pill.warn { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+.ship-status-pill.safe { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+.ship-status-pill.empty{ background: var(--bg3);      color: var(--text3); border: 1px solid var(--border); }
+
+/* ── フィルターチップ（強化版） ── */
+.ship-filter-row { display:flex;gap:6px;padding:0 0 10px;flex-wrap:wrap }
+.ship-filter-chip {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: var(--font);
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ship-filter-chip:hover { border-color: var(--accent);color:var(--accent) }
+.ship-filter-chip.active {
+  background: var(--red-bg);
+  border-color: var(--red);
+  color: var(--red);
+  box-shadow: 0 1px 4px rgba(217,41,63,.12);
+}
+.ship-filter-chip.active-warn {
+  background: var(--amber-bg);
+  border-color: var(--amber-bd);
+  color: var(--amber);
+}
+.ship-filter-chip.active-all {
+  background: var(--bg3);
+  border-color: var(--border2);
+  color: var(--text2);
+}
+
+/* ── 出荷カード（強化版） ── */
+.ship-item-card {
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all .15s;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  border-left: 4px solid transparent;
+}
+/* 緊急度グラデーション */
+.ship-item-card.danger-high {
+  background: linear-gradient(135deg, #ffe0e0 0%, #ffd0d0 100%);
+  border-left-color: #e53e3e;
+  box-shadow: 0 3px 12px rgba(229,62,62,.15);
+}
+.ship-item-card.danger-mid {
+  background: linear-gradient(135deg, #fff0f0 0%, #ffe5e5 100%);
+  border-left-color: var(--red);
+  box-shadow: 0 2px 8px rgba(217,41,63,.1);
+}
+.ship-item-card.danger-low {
+  background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%);
+  border-left-color: #f87171;
+  box-shadow: 0 2px 6px rgba(248,113,113,.1);
+}
+.ship-item-card.warning {
+  background: linear-gradient(135deg, #fffbeb 0%, #fff3cc 100%);
+  border-left-color: var(--amber);
+  box-shadow: 0 2px 8px rgba(200,121,10,.1);
+}
+.ship-item-card.safe {
+  background: linear-gradient(135deg, #f0fdf4 0%, #eefaf0 100%);
+  border-left-color: var(--green);
+  box-shadow: 0 2px 6px rgba(26,158,98,.08);
+}
+.ship-item-card:hover  { transform:translateY(-2px); filter:brightness(1.01); }
+.ship-item-card:active { transform:scale(.99) }
+
+.ship-card-name { font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
+.ship-card-code { font-family:var(--mono);font-size:11px;color:var(--text3);background:rgba(255,255,255,.7);padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:8px }
+.ship-card-nums { display:flex;align-items:baseline;gap:16px }
+.ship-card-shortage-block { display:flex;flex-direction:column;gap:0 }
+.ship-card-shortage-label { font-size:10px;font-weight:700;color:#c0392b;letter-spacing:.3px }
+.ship-card-shortage-val { font-family:var(--mono);font-size:28px;font-weight:900;color:#c0392b;line-height:1;letter-spacing:-1px }
+.ship-item-card.warning .ship-card-shortage-label { color:#a16207 }
+.ship-item-card.warning .ship-card-shortage-val { color:#a16207 }
+.ship-item-card.safe .ship-card-shortage-label { color:var(--green);opacity:.7;font-size:9px }
+.ship-item-card.safe .ship-card-shortage-val { color:var(--green);font-size:20px;font-weight:700 }
+.ship-card-ship-block { display:flex;flex-direction:column;gap:0 }
+.ship-card-ship-label { font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.3px }
+.ship-card-ship-val { font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text2);line-height:1 }
+.ship-card-dest { font-size:11px;color:var(--text3);margin-top:6px }
+
+/* ── 日付詳細ヘッダー（旧） ── */
+.ship-detail-header { display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px;gap:8px;flex-wrap:wrap }
+.ship-detail-date { font-size:16px;font-weight:800;color:var(--text) }
+.ship-detail-summary { font-size:12px;font-weight:700;color:var(--red);background:var(--red-bg);padding:3px 10px;border-radius:20px;border:1px solid var(--red-bd) }
+.ship-detail-summary.safe { color:var(--green);background:var(--green-bg);border-color:var(--green-bd) }
+.ship-detail-summary.warn { color:var(--amber);background:var(--amber-bg);border-color:var(--amber-bd) }
+
+/* ── 空状態（神化） ── */
+.ship-empty-day {
+  padding: 40px 20px;
+  text-align: center;
+}
+.ship-empty-day-icon { font-size: 42px; margin-bottom: 12px; line-height: 1; }
+.ship-empty-title { font-size: 15px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
+.ship-empty-sub { font-size: 12px; color: var(--text3); line-height: 1.6; }
+
+/* ── FAB（右下固定 追加ボタン） ── */
+.ship-fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 14px);
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font);
+  box-shadow: 0 4px 16px rgba(79,126,255,.45), 0 2px 6px rgba(0,0,0,.12);
+  transition: all .18s cubic-bezier(.34,1.56,.64,1);
+  z-index: 90;
+  -webkit-tap-highlight-color: transparent;
+}
+.ship-fab:hover  { transform: scale(1.08); box-shadow: 0 6px 22px rgba(79,126,255,.55); }
+.ship-fab:active { transform: scale(.95); }
+.ship-fab-plus { font-size: 22px; line-height: 1; font-weight: 300; }
+.ship-fab-label { font-size: 9px; font-weight: 700; line-height: 1; letter-spacing: .3px; }
 /* 詳細モーダル */
 .ship-modal-bg{position:fixed;inset:0;background:rgba(20,24,40,.45);z-index:400;display:flex;align-items:flex-end;justify-content:center}
 @media(min-width:480px){.ship-modal-bg{align-items:center;padding:16px}}
@@ -2138,11 +2538,7 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner .add-inline-btn{display:flex;align-items:center;gap:5px;padding:5px 13px 5px 10px;border:1.5px solid var(--accent);border-radius:6px;background:var(--accent);color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;letter-spacing:.2px;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent}
 .ship-inner .add-inline-btn:hover{background:var(--accent2)}
 .ship-inner .add-inline-btn:active{transform:scale(.97)}
-/* 期間切替 */
-.period-switch{display:flex;gap:6px}
-.period-switch button{flex:1;padding:10px;border-radius:10px;background:#f1f3f7;border:none;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .15s;-webkit-tap-highlight-color:transparent}
-.period-switch button:hover{background:#e4e8f2}
-.period-switch button.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(79,126,255,.28)}
+/* 期間切替 — 新デザインは上部の .period-switch ブロックで定義済み */
 /* 月カレンダー */
 .mcal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:6px 0 4px}
 .mcal-dow{font-size:10px;font-weight:700;color:var(--text3);text-align:center;letter-spacing:.3px}
@@ -2484,8 +2880,7 @@ input[type=number] { -moz-appearance: textfield; }
 .machine-preset-btn:hover  { border-color: var(--amber); color: var(--amber); background: var(--amber-bg); }
 .machine-preset-btn.active { background: var(--amber); color: #fff; border-color: var(--amber); }
 
-/* ===== history-item に設備列追加 ===== */
-.history-item { gap: 6px; }
+/* history-item legacy — superseded by timeline cards */
 
 
 /* ===== 日報パネル ===== */
@@ -2880,31 +3275,7 @@ input[type=number] { -moz-appearance: textfield; }
 }
 .acard-machine-row.no-machine .acard-machine-label { color: var(--text3); }
 
-/* 履歴パネルヘッダー拡張 */
-.history-header-ext {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.history-filter-row {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-.history-filter-select {
-  padding: 3px 7px;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background: var(--bg2);
-  color: var(--text);
-  font-size: 10px;
-  font-family: var(--font);
-  outline: none;
-  cursor: pointer;
-}
+/* 履歴パネルヘッダー拡張 — 旧フィルター廃止、history-filter-bar に統合 */
 
 
 /* ===== 入庫エリア内 設備チップ ===== */
@@ -3281,19 +3652,19 @@ input[type=number] { -moz-appearance: textfield; }
   border: 1px solid var(--border);
   -webkit-tap-highlight-color: transparent;
 }
-/* 現場画面: 出荷状態による色分けは管理画面のみ */
-.fc.status-ng, .fc.status-warn, .fc.status-ok { background: #fff; border-left: none; }
+/* 現場画面: ステータス左ラインなし */
+.fc.status-ng, .fc.status-warn, .fc.status-ok { border-left: none; }
 
 /* ① ヘッダー（品名・品番・設備・⚙）*/
 .fc-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 14px 8px;
+  padding: 14px 16px 10px;
 }
 .fc-name {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text);
   flex: 1;
   min-width: 0;
@@ -3303,12 +3674,12 @@ input[type=number] { -moz-appearance: textfield; }
 }
 .fc-code {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text3);
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 4px;
-  padding: 1px 6px;
+  padding: 2px 7px;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -3506,11 +3877,14 @@ input[type=number] { -moz-appearance: textfield; }
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.2px;
+  background: #4F7DF3;
+  color: #fff;
+  border-color: #4F7DF3;
 }
 .fc-expanded .fc-btn-toggle-op {
-  background: var(--accent);
+  background: #4F7DF3;
   color: #fff;
-  border-color: var(--accent);
+  border-color: #4F7DF3;
 }
 
 /* ⑥ 展開ボディ（工程フロー詳細）*/
@@ -3875,6 +4249,90 @@ input[type=number] { -moz-appearance: textfield; }
   line-height: 1;
   align-self: center;
 }
+
+/* ===== 新レイアウト: 主役数量ブロック ===== */
+.fc-main-qty-block {
+  padding: 4px 16px 2px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.fc-main-qty-num {
+  font-family: var(--mono);
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.fc-main-qty-num.zero { color: #ccc; font-size: 32px; font-weight: 400; }
+.fc-main-qty-unit {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+/* ===== 内訳行（仕掛/完成）===== */
+.fc-breakdown {
+  padding: 2px 16px 6px;
+  font-size: 13px;
+  color: #667085;
+  font-weight: 400;
+}
+.fc-breakdown-val { font-weight: 600; color: #344054; }
+
+/* ===== ステータス行 ===== */
+.fc-status-row {
+  padding: 2px 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.fc-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.fc-status-dot.ng   { background: var(--red);   }
+.fc-status-dot.warn { background: var(--amber); }
+.fc-status-dot.ok   { background: var(--green); }
+.fc-status-dot.none { background: #ccc; }
+.fc-status-text.ng   { color: var(--red);   }
+.fc-status-text.warn { color: var(--amber); }
+.fc-status-text.ok   { color: var(--green); }
+.fc-status-text.none { color: var(--text3); font-size: 12px; }
+
+/* ===== セパレータ ===== */
+.fc-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 16px 12px;
+}
+
+/* ===== 編集ボタン ===== */
+.fc-btn-edit {
+  height: 52px;
+  padding: 0 18px;
+  background: #fff;
+  color: #344054;
+  border: 1px solid #D0D5DD;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s, border-color 0.12s;
+}
+.fc-btn-edit:hover  { background: var(--bg3); border-color: var(--border2); }
+.fc-btn-edit:active { transform: scale(0.97); }
 
 /* ===== fc: 仕掛/完成/不足 1行 (旧・後方互換) ===== */
 .fc-stats-row {
@@ -4863,7 +5321,15 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="section-title" style="margin-top:14px">品目一覧 <span id="admin-item-count" style="background:var(--bg4);border-radius:10px;padding:1px 8px;font-size:10px;color:var(--text3);font-weight:600;margin-left:4px"></span></div>
   <div id="admin-cards"></div>
   <div id="history-panel-admin" class="history-panel" style="display:none">
-    <div class="history-header">📋 操作履歴（最新50件）</div>
+    <div class="history-header">📋 操作履歴（最新100件）</div>
+    <div class="history-filter-bar" id="hist-filter-admin">
+      <button class="hfb-btn active" onclick="setHistAdminFilter('all',this)">すべて</button>
+      <button class="hfb-btn" onclick="setHistAdminFilter('移動',this)">➡ 移動</button>
+      <button class="hfb-btn" onclick="setHistAdminFilter('入庫',this)">＋ 入庫</button>
+      <button class="hfb-btn" onclick="setHistAdminFilter('不良',this)">⚠ 不良</button>
+      <button class="hfb-btn" onclick="setHistAdminFilter('出荷',this)">↑ 出荷</button>
+      <button class="hfb-btn" onclick="setHistAdminFilter('修正',this)">✎ 修正</button>
+    </div>
     <div class="history-list" id="history-list-admin"></div>
   </div>
 
@@ -4927,7 +5393,10 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="modal">
     <div class="modal-title">
       <div class="modal-icon" id="op-icon"></div>
-      <span id="op-title">操作</span>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <span id="op-category-label" style="font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--text3);text-transform:uppercase"></span>
+        <span id="op-title">操作</span>
+      </div>
     </div>
     <div class="modal-info" id="op-info"></div>
     <p id="op-desc" style="display:none;font-size:13px;margin-bottom:12px;color:var(--text2)">移動する数量を入力し、次の工程を選択してください</p>
@@ -5035,33 +5504,67 @@ input[type=number] { -moz-appearance: textfield; }
 
 <!-- ADJUST MODAL -->
 <div class="modal-overlay" id="adjust-modal">
-  <div class="modal">
-    <div class="modal-title">
-      <div class="modal-icon" style="background:#f0ecff;font-size:16px">📝</div>
-      <span id="adjust-modal-title">在庫調整（管理者）</span>
+  <div class="modal" style="max-width:420px;padding:0;overflow:hidden;border-radius:16px">
+
+    <!-- ① ヘッダー：白ベース -->
+    <div style="background:#fff;border-bottom:1px solid #e5e7eb;padding:18px 20px 14px">
+      <div style="font-size:11px;color:#9ca3af;letter-spacing:.5px;margin-bottom:3px">在庫調整</div>
+      <div id="adj-header-name" style="font-size:17px;font-weight:700;color:#111;margin-bottom:6px">—</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="background:#f3f4f6;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;color:#374151" id="adj-header-status">—</div>
+      </div>
+      <!-- 品目セレクト -->
+      <select id="adj-item" style="margin-top:10px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;color:#111;border-radius:8px;padding:6px 8px;font-size:13px;outline:none;box-sizing:border-box" onchange="updateAdjProcess();updateAdjTitle()"></select>
     </div>
-    <div class="form-group">
-      <label class="form-label">品目</label>
-      <select class="form-select" id="adj-item" onchange="updateAdjProcess();updateAdjTitle()"></select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">対象工程</label>
-      <select class="form-select" id="adj-process"></select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">調整後数量</label>
-      <input class="form-input" id="adj-qty" type="number" min="0" value="0" inputmode="numeric">
-    </div>
-    <div class="form-group">
-      <label class="form-label">理由</label>
-      <input class="form-input" id="adj-reason" placeholder="棚卸し差異など" type="text">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('adjust-modal')">キャンセル</button>
-      <button class="btn-confirm" style="background:var(--purple)" onclick="confirmAdjust()">調整実行</button>
+
+    <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
+
+      <!-- ② 調整入力：主役 -->
+      <div style="background:#f9fafb;border-radius:12px;padding:16px;text-align:center">
+        <div style="font-size:11px;color:#6b7280;font-weight:600;letter-spacing:.5px;margin-bottom:8px">調整後数量</div>
+        <input id="adj-qty" type="number" min="0" inputmode="numeric"
+          style="width:100%;border:2px solid #e5e7eb;border-radius:10px;font-size:28px;font-weight:700;text-align:center;padding:10px 0;background:#fff;color:#111;outline:none;box-sizing:border-box;transition:border-color .15s"
+          oninput="updateAdjDiff()"
+          onfocus="this.style.borderColor='#4f46e5';this.style.boxShadow='0 0 0 2px rgba(79,70,229,0.1)'"
+          onblur="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
+        <div id="adj-diff" style="margin-top:8px;font-size:13px;font-weight:600;min-height:18px;color:#9ca3af"></div>
+      </div>
+
+      <!-- ③ 対象工程 -->
+      <div>
+        <div style="font-size:11px;color:#6b7280;font-weight:600;margin-bottom:6px">対象工程</div>
+        <select id="adj-process" style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:9px 10px;font-size:14px;background:#fff;color:#111;outline:none;box-sizing:border-box" onchange="updateAdjQtyFromProcess()"></select>
+      </div>
+
+      <!-- ④ 理由 -->
+      <div>
+        <div style="font-size:11px;color:#6b7280;font-weight:600;margin-bottom:8px">理由（任意）</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px" id="adj-reason-chips">
+          <button type="button" onclick="selectAdjReason(this,'棚卸差異')" class="adj-chip">棚卸差異</button>
+          <button type="button" onclick="selectAdjReason(this,'不良調整')" class="adj-chip">不良調整</button>
+          <button type="button" onclick="selectAdjReason(this,'その他')" class="adj-chip">その他</button>
+        </div>
+        <input id="adj-reason" type="text" placeholder="メモ（任意）"
+          style="width:100%;border:1.5px solid #e5e7eb;border-radius:9px;padding:9px 10px;font-size:13px;background:#fff;color:#111;outline:none;box-sizing:border-box;transition:border-color .15s"
+          onfocus="this.style.borderColor='#4f46e5';this.style.boxShadow='0 0 0 2px rgba(79,70,229,0.1)'"
+          onblur="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'">
+      </div>
+
+      <!-- ⑤ ボタン -->
+      <div style="display:flex;gap:10px">
+        <button onclick="closeModal('adjust-modal')"
+          style="flex:1;border:none;background:#f3f4f6;color:#374151;border-radius:12px;padding:13px 0;font-size:14px;font-weight:600;cursor:pointer">キャンセル</button>
+        <button onclick="confirmAdjust()"
+          style="flex:2;border:none;background:#4f46e5;color:#fff;border-radius:12px;padding:13px 0;font-size:15px;font-weight:700;cursor:pointer">調整する</button>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+.adj-chip{border:1px solid #e5e7eb;background:#fff;color:#374151;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.adj-chip.active{border-color:#4f46e5;background:rgba(79,70,229,0.06);color:#4f46e5}
+</style>
 
 
 <!-- MACHINE SELECT MODAL -->
@@ -5107,7 +5610,10 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="modal">
     <div class="modal-title">
       <div class="modal-icon" style="background:#edfaf3;font-size:16px">✅</div>
-      <span>品質確認</span>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <span style="font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--text3)">品質</span>
+        <span>不良数を入力する</span>
+      </div>
     </div>
     <div class="modal-info" id="qc-info"></div>
     <p id="qc-desc" style="font-size:13px;margin-bottom:14px;color:var(--text2)">残った製品の品質を確認してください</p>
@@ -5157,7 +5663,10 @@ input[type=number] { -moz-appearance: textfield; }
   <div class="modal" style="background:var(--bg2);box-shadow:0 8px 32px rgba(0,0,0,0.18)">
     <div class="modal-title">
       <div class="modal-icon" style="background:#e8effe;font-size:16px">✅</div>
-      <span>処理内容の確認</span>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <span style="font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--text3)">確認</span>
+        <span>内容を確認する</span>
+      </div>
     </div>
     <div id="confirm-content" style="margin-bottom:16px"></div>
     <div class="modal-actions" style="flex-direction:column;gap:8px">
@@ -5186,20 +5695,16 @@ input[type=number] { -moz-appearance: textfield; }
     </div>
     <div id="search-results" style="display:none;margin-bottom:14px"></div>
 
-    <!-- ② 期間切替 + 追加ボタン -->
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-      <div class="period-switch" style="flex:1">
-        <button class="active" id="pswitch-week" onclick="setPeriod('week')">1週間</button>
-        <button id="pswitch-month" onclick="setPeriod('month')">1ヶ月</button>
+    <!-- ② 期間切替（スライダー風） -->
+    <div style="margin-bottom:12px">
+      <div class="period-switch">
+        <button class="active" id="pswitch-week" onclick="setPeriod('week')">📅 1週間</button>
+        <button id="pswitch-month" onclick="setPeriod('month')">🗓 1ヶ月</button>
       </div>
-      <button class="add-inline-btn" onclick="openAdd()" style="flex-shrink:0">
-        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-        追加
-      </button>
     </div>
 
     <!-- ③-A 週カレンダー -->
-    <div id="view-week" style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:6px 10px 4px;margin-bottom:12px">
+    <div id="view-week" style="background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:6px 10px 4px;margin-bottom:10px">
       <div class="ship-week-nav">
         <button class="ship-week-btn" onclick="prevPeriod()">‹</button>
         <span class="ship-week-label" id="week-label"></span>
@@ -5209,15 +5714,14 @@ input[type=number] { -moz-appearance: textfield; }
       <div class="ship-week-grid" id="week-grid"></div>
     </div>
 
-    <!-- ③-B 月カレンダー（非表示切替） -->
-    <div id="view-month" style="display:none;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);padding:6px 10px 10px;margin-bottom:12px">
+    <!-- ③-B 月カレンダー -->
+    <div id="view-month" style="display:none;background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);padding:6px 10px 10px;margin-bottom:10px">
       <div class="ship-week-nav">
         <button class="ship-week-btn" onclick="prevPeriod()">‹</button>
         <span class="ship-week-label" id="month-label"></span>
         <button class="ship-week-today-btn" id="period-today-btn-m" onclick="goThisMonth()">今月</button>
         <button class="ship-week-btn" onclick="nextPeriod()">›</button>
       </div>
-      <!-- 曜日ヘッダー -->
       <div class="mcal-dow-row">
         <div class="mcal-dow sun">日</div><div class="mcal-dow">月</div><div class="mcal-dow">火</div>
         <div class="mcal-dow">水</div><div class="mcal-dow">木</div><div class="mcal-dow">金</div>
@@ -5226,25 +5730,32 @@ input[type=number] { -moz-appearance: textfield; }
       <div class="mcal-grid" id="month-grid"></div>
     </div>
 
-    <!-- ④ フィルター + 一覧ヘッダー -->
+    <!-- ④ 選択日ステータスバー（カレンダー直下） -->
+    <div class="ship-date-status-bar" id="ship-date-status-bar">
+      <div class="ship-date-status-label" id="detail-date-label">—</div>
+      <div class="ship-date-status-badge" id="detail-summary-badge"></div>
+    </div>
+
+    <!-- ⑤ フィルター -->
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
       <div class="ship-filter-row" style="flex:1;padding:0;margin:0;gap:6px">
         <button class="ship-filter-chip active" id="sfchip-ng" onclick="setShipFilter('ng')">🔴 不足のみ</button>
         <button class="ship-filter-chip" id="sfchip-3d" onclick="setShipFilter('3d')">⚡ 3日以内</button>
       </div>
-      <button id="sfchip-all" onclick="setShipFilter('all')" style="flex-shrink:0;padding:4px 10px;border-radius:6px;border:none;background:transparent;font-size:11px;color:var(--text3);cursor:pointer;font-family:var(--font);text-decoration:underline;-webkit-tap-highlight-color:transparent">全件</button>
+      <button id="sfchip-all" onclick="setShipFilter('all')" style="flex-shrink:0;padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent">全件</button>
     </div>
 
-    <!-- ⑤ 選択日／期間の詳細一覧 -->
+    <!-- ⑥ カード一覧 -->
     <div id="day-detail-section">
-      <div class="ship-detail-header">
-        <div class="ship-detail-date" id="detail-date-label">—</div>
-        <div id="detail-summary-badge"></div>
-      </div>
       <div id="day-detail-list"></div>
     </div>
 </div>
 
+<!-- FAB 追加ボタン -->
+<button class="ship-fab" onclick="openAdd()" id="ship-fab-btn">
+  <span class="ship-fab-plus">＋</span>
+  <span class="ship-fab-label">追加</span>
+</button>
 
 <div id="modal-wrap"></div>
 
@@ -5628,7 +6139,8 @@ function openGroupOp(itemId, groupStart, groupEnd){
   opQty.value = 0;
   opQty.max = groupCount;
   _syncSwipeNum('op-qty');
-  gid('op-title').textContent = '次工程へ移動（まとめ）';
+  gid('op-title').textContent = '次工程に移動する';
+  gid('op-category-label').textContent = '移動';
   gid('op-icon').textContent = '→';
   gid('op-icon').className = 'modal-icon move';
   gid('op-info').innerHTML = `<strong>${escH(item.name)}</strong>（${displayName}：在庫合計 <strong>${groupCount}</strong>${escH(item.unit)}）`;
@@ -5937,19 +6449,23 @@ function renderItemCard(item){
     }
   });
 
-  // ── ③ 在庫（仕掛 / 完成 のみ表示・操作特化）──
+  // ── ③ 新レイアウト: 主役数量 / 内訳 / ステータス ──
+  const statusCls = status || 'none';
+  const statusLabel = status==='ng' ? '不足' : status==='warn' ? '注意' : status==='ok' ? '正常' : '在庫なし';
+
   const statsRowHtml=''
-    +'<div class="fc-stock-row">'
-      +'<div class="fc-stock-item">'
-        +'<span class="fc-stock-lbl">仕掛</span>'
-        +'<span class="fc-stock-val'+(wipCount===0?' zero':'')+'">'+wipCount.toLocaleString()+'</span>'
-      +'</div>'
-      +'<span class="fc-stock-sep">/</span>'
-      +'<div class="fc-stock-item">'
-        +'<span class="fc-stock-lbl">完成</span>'
-        +'<span class="fc-stock-val'+(doneCount===0?' zero':'')+'">'+doneCount.toLocaleString()+'</span>'
-      +'</div>'
-    +'</div>';
+    // 主役：合計数量（デカく）
+    +'<div class="fc-main-qty-block">'
+      +'<span class="fc-main-qty-num'+(total===0?' zero':'')+'">'+total.toLocaleString()+'</span>'
+      +'<span class="fc-main-qty-unit">'+escH(item.unit||'個')+'</span>'
+    +'</div>'
+    // 内訳：仕掛 / 完成
+    +'<div class="fc-breakdown">'
+      +'仕掛 <span class="fc-breakdown-val">'+wipCount.toLocaleString()+'</span>'
+      +' / 完成 <span class="fc-breakdown-val">'+doneCount.toLocaleString()+'</span>'
+    +'</div>'
+    // セパレータ
+    +'<div class="fc-divider"></div>';
 
   // ── ④ 工程詳細ボディ（⚙タップで展開）── 新グループUI
   const allActivesForBody = getActives(item);
@@ -6014,11 +6530,6 @@ function renderItemCard(item){
       +'</div>'
       +'<span class="proc-btn-cnt'+(cnt===0?' zero':'')+'">'+cnt+'</span>'
       +'</button>'
-      +'<button class="proc-btn-recv-small" '
-      +(doneCntForBody>0?'':'disabled ')
-      +'onclick="event.stopPropagation();openRecvSheet(\''+item.id+'\')">'
-      +'＋ 入庫'
-      +'</button>'
       +'</div>';
   }
 
@@ -6028,8 +6539,11 @@ function renderItemCard(item){
     .map((entry, di) => renderGroupBlock(item, entry, di, displayList))
     .join('');
 
+  const recvBtnHtml = '<button class="fc-btn-recv-top" onclick="event.stopPropagation();openRecvSheet(\''+item.id+'\')" >＋ 入庫</button>';
+
   const detailBodyHtml=''
     +'<div class="fc-body">'
+      +recvBtnHtml
       +'<div class="proc-groups-wrap">'
         +kakouGridHtml
         +shiageHtml
@@ -6038,17 +6552,17 @@ function renderItemCard(item){
       +(groupBlocks ? '<div class="batch-area">'+groupBlocks+'</div>' : '')
     +'</div>';
 
-  return '<div class="fc" id="card-'+item.id+'">'
+  return '<div class="fc'+(status?' status-'+status:'')+'" id="card-'+item.id+'">'
     // ヘッダー
     +'<div class="fc-head">'
       +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
       +'<span class="fc-code">'+escH(item.code)+'</span>'
     +'</div>'
-    // 仕掛/完成/不足 1行
+    // 主役数量 / 内訳 / ステータス / セパレータ
     +statsRowHtml
-    // 操作エリア（⚙ 展開トグルのみ）
+    // 操作エリア
     +'<div class="fc-actions">'
-      +'<button class="fc-btn-detail fc-btn-toggle-op" onclick="event.stopPropagation();toggleCard(\''+item.id+'\')" title="工程詳細">⚙ 工程操作</button>'
+      +'<button class="fc-btn-detail fc-btn-toggle-op" onclick="event.stopPropagation();toggleCard(\''+item.id+'\')" title="工程詳細">✏ 作業を入力</button>'
     +'</div>'
 
     // 工程詳細ボディ
@@ -6065,7 +6579,16 @@ function openRecvSheet(itemId){
   _recvSheetItemId = itemId;
 
   // タイトル
-  gid('recv-sheet-title').textContent = item.name;
+  gid('recv-sheet-title').textContent = '数量を入力する';
+  // 品目名を表示（既存の要素があれば更新、なければ追加）
+  let _rsSub = gid('recv-sheet-item-name');
+  if(!_rsSub){
+    _rsSub = document.createElement('span');
+    _rsSub.id = 'recv-sheet-item-name';
+    _rsSub.style.cssText = 'font-size:12px;color:var(--text3);font-weight:400;margin-left:6px';
+    gid('recv-sheet-title').parentNode.insertBefore(_rsSub, gid('recv-sheet-title').nextSibling);
+  }
+  _rsSub.textContent = item.name;
 
   // 数量リセット
   const qtyInp = gid('recv-sheet-qty');
@@ -6325,7 +6848,8 @@ function openOp(itemId,processIdx,opType){
     const destName = nexts[0]
       ? PNAMES[nexts[0].idx]+(destCfg?.type==='deburr'?' (バリ取り)':destCfg?.type==='done'?' (完成)':'')
       : '次工程';
-    gid('op-title').textContent=`${destName}へ移動`;
+    gid('op-title').textContent=`${destName}に移動する`;
+    gid('op-category-label').textContent='移動';
     gid('op-icon').textContent='→'; gid('op-icon').className='modal-icon move';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）`;
     gid('op-desc').style.display='';
@@ -6337,7 +6861,8 @@ function openOp(itemId,processIdx,opType){
     gid('op-confirm-btn').className='btn-confirm'; gid('op-confirm-btn').textContent='移動する';
   } else if(opType==='move-back'){
     const prevs=actives.slice(0,pi).reverse();
-    gid('op-title').textContent=`前工程へ戻す（${item.name}）`;
+    gid('op-title').textContent=`前工程に戻す`;
+    gid('op-category-label').textContent='移動';
     gid('op-icon').textContent='←'; gid('op-icon').className='modal-icon move';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）`;
     gid('op-desc').style.display='none';
@@ -6349,20 +6874,25 @@ function openOp(itemId,processIdx,opType){
     gid('op-confirm-btn').className='btn-confirm'; gid('op-confirm-btn').textContent='戻す';
   } else if(opType==='defect'){
     gid('op-desc').style.display='none';
-    gid('op-title').textContent=`不良処理（${item.name}）`;
+    gid('op-title').textContent=`不良数を入力する`;
+    gid('op-category-label').textContent='品質';
     gid('op-icon').textContent='⚠'; gid('op-icon').className='modal-icon defect';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）<br>不良置き場へ移動します。戻し不可です。`;
     gid('op-to-process-group').style.display='none';
     gid('op-confirm-btn').className='btn-confirm danger'; gid('op-confirm-btn').textContent='不良確定';
   } else if(opType==='ship'){
     gid('op-desc').style.display='none';
-    gid('op-title').textContent=`出荷処理（${item.name}）`;
+    gid('op-title').textContent=`出荷する`;
+    gid('op-category-label').textContent='出荷';
     gid('op-icon').textContent='🚚'; gid('op-icon').className='modal-icon ship';
     gid('op-info').innerHTML=`<strong>${item.name}</strong>（${pname}：在庫 <strong>${count}</strong>${item.unit}）<br>在庫から減算し出荷済に加算します。`;
     gid('op-to-process-group').style.display='none';
     gid('op-confirm-btn').className='btn-confirm teal'; gid('op-confirm-btn').textContent='出荷確定';
   }
   _renderOpMachineChips();
+  // バリ取り・完成品は設備選択不要のため非表示
+  const _isDeburrOrDone = cfg?.type==='deburr' || cfg?.type==='done';
+  gid('op-machine-row').style.display = _isDeburrOrDone ? 'none' : '';
   gid('op-modal').classList.add('open');
   updateOpConfirmState();
 }
@@ -6817,7 +7347,6 @@ function renderAdminTable(){
       <td class="admin-proc-cell">${procCell}</td>
       <td class="num ${total>0?'admin-total-val':'num-zero'}">${total>0?total.toLocaleString()+'<span class="admin-unit">個</span>':''}</td>
       ${shortageCell}
-      <td style="border-left:2px solid var(--border2);text-align:center"><button class="action-btn-v2" onclick="openItemFormEdit('${item.id}')">✏ 編集</button></td>
     </tr>`;
   }).join('');
 }
@@ -6971,10 +7500,6 @@ function renderAdminCards(){
         +'<div class="avc-expand">'+machineSection+'</div>'
         // 出荷予定（折り畳み）
         +shipSection
-        // フッター（編集）
-        +'<div class="avc-footer">'
-          +'<button class="avc-edit-btn" onclick="event.stopPropagation();openItemFormEdit(\''+item.id+'\')" title="編集">✏ 編集</button>'
-        +'</div>'
       +'</div>'
     +'</div>';
   }).join('');
@@ -6982,33 +7507,118 @@ function renderAdminCards(){
 
 function toggleAdminCard(id){ gid('acard-'+id).classList.toggle('expanded'); }
 
-function showHistory(){
-  const panel=gid('history-panel-admin');
-  panel.style.display=panel.style.display==='none'?'':'none';
-  if(panel.style.display!=='none'){
-    const typeMap={入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
-    gid('history-list-admin').innerHTML=db.transactions.slice(0,50).map(tx=>{
-      const item=db.items.find(i=>i.id===tx.itemId);
-      const itemName=item?item.name:'不明';
-      // 状態テキスト（/ 以降）
+// ===== 共通：タイムラインHTML生成 =====
+function _buildTimelineHtml(transactions, filterType){
+  const typeMap={入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
+  const typeIcon={移動:'➡',入庫:'＋',出荷:'↑',不良:'⚠',修正:'✎'};
+  let txs = transactions.slice(0,100);
+  if(filterType && filterType!=='all') txs = txs.filter(tx=>tx.type===filterType);
+  if(!txs.length) return '<div style="padding:24px 14px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
+
+  // 時刻でグループ化（HH:MM単位）
+  const groups = [];
+  let lastKey = null;
+  txs.forEach(tx=>{
+    const timeKey = tx.timestamp ? tx.timestamp.slice(0,5) : '';
+    if(timeKey !== lastKey){ groups.push({timeKey, items:[]}); lastKey=timeKey; }
+    groups[groups.length-1].items.push(tx);
+  });
+
+  return groups.map((g,gi)=>{
+    const entries = g.items.map((tx,ti)=>{
+      const item = db.items.find(i=>i.id===tx.itemId);
+      const itemName = item ? item.name : '不明';
       let stateText='';
-      if(tx.type==='移動') stateText=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
+      if(tx.type==='移動')      stateText=`${PNAMES[tx.fromProcess]||'?'} → ${PNAMES[tx.toProcess]||'?'}`;
       else if(tx.type==='入庫') stateText=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
       else if(tx.type==='出荷') stateText=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
       else if(tx.type==='不良') stateText=`${PNAMES[tx.fromProcess]||'?'}から不良`;
       else if(tx.type==='修正') stateText=`${PNAMES[tx.fromProcess]||'?'} 調整${tx.note?'('+tx.note+')':''}`;
-      // 表示形式: 設備名｜品名　数量 / 状態
-      const machineName = tx.machine||'';
-      const machineCls  = machineName ? '' : ' none';
-      const machineLabel= machineName || '—';
-      return `<div class="history-item">
-        <span class="history-machine${machineCls}">${escH(machineLabel)}</span>
-        <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
-        <span class="history-desc">${escH(itemName)}　${tx.quantity}個 / ${escH(stateText)}</span>
-        <span class="history-user" style="color:var(--text3);font-size:9px;flex-shrink:0;white-space:nowrap">${escH(tx.userId||'')}</span>
-        <span class="history-time">${tx.timestamp}</span>
+      const cls = typeMap[tx.type]||'move';
+      const icon = typeIcon[tx.type]||'→';
+      const machine = tx.machine||'';
+      const machinePillCls = machine ? '' : ' none';
+      const isLast = ti === g.items.length-1;
+      const uid = `htlcard-${gi}-${ti}`;
+      return `<div class="htl-entry">
+        <div class="htl-line-col">
+          <div class="htl-dot ${cls}"></div>
+          ${!isLast ? '<div class="htl-vline"></div>' : ''}
+        </div>
+        <div class="htl-card ${cls}" id="${uid}" onclick="toggleHtlCard('${uid}')">
+          <div class="htl-card-top">
+            <span class="htl-type-badge ${cls}">${icon} ${escH(tx.type)}</span>
+            <span class="htl-machine-pill${machinePillCls}">${escH(machine)}</span>
+            <span class="htl-chevron">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+          <div class="htl-item-name">${escH(itemName)}</div>
+          <div class="htl-detail-row">
+            <span class="htl-qty">${tx.quantity}個</span>
+            <span class="htl-route">${escH(stateText)}</span>
+          </div>
+          <div class="htl-card-detail hidden">
+            <div class="htl-meta-line"><span class="htl-meta-label">作業者</span><span class="htl-meta-val">${escH(tx.userId||'—')}</span></div>
+            <div class="htl-meta-line"><span class="htl-meta-label">設備</span><span class="htl-meta-val">${escH(machine||'—')}</span></div>
+            <div class="htl-meta-line"><span class="htl-meta-label">時刻</span><span class="htl-meta-val">${escH(tx.timestamp||'')}</span></div>
+          </div>
+        </div>
       </div>`;
-    }).join('')||'<div style="padding:14px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
+    }).join('');
+
+    return `<div class="htl-group">
+      <div class="htl-group-label">
+        <span class="htl-group-time">${escH(g.timeKey)}</span>
+        <div class="htl-group-line"></div>
+      </div>
+      ${entries}
+    </div>`;
+  }).join('');
+}
+
+function toggleHtlCard(uid){
+  const card = gid(uid); if(!card) return;
+  const detail = card.querySelector('.htl-card-detail');
+  if(!detail) return;
+  const open = card.classList.toggle('open');
+  detail.classList.toggle('hidden', !open);
+}
+
+// フィルター状態
+let _histAdminFilter = 'all';
+let _histSttFilter   = 'all';
+
+function _renderHistAdminList(){
+  gid('history-list-admin').innerHTML = _buildTimelineHtml(db.transactions, _histAdminFilter);
+}
+
+function _renderHistSttList(){
+  const el = gid('sn-history-list'); if(!el) return;
+  el.innerHTML = _buildTimelineHtml(db.transactions, _histSttFilter);
+}
+
+function setHistAdminFilter(type, btn){
+  _histAdminFilter = type;
+  document.querySelectorAll('#hist-filter-admin .hfb-btn').forEach(b=>b.className='hfb-btn');
+  if(btn){ btn.className='hfb-btn active'; }
+  _renderHistAdminList();
+}
+
+function setHistSttFilter(type, btn){
+  _histSttFilter = type;
+  document.querySelectorAll('#hist-filter-stt .hfb-btn').forEach(b=>b.className='hfb-btn');
+  if(btn){ btn.className='hfb-btn active'; }
+  _renderHistSttList();
+}
+
+function showHistory(){
+  const panel=gid('history-panel-admin');
+  panel.style.display=panel.style.display==='none'?'':'none';
+  if(panel.style.display!=='none'){
+    _histAdminFilter='all';
+    document.querySelectorAll('#hist-filter-admin .hfb-btn').forEach((b,i)=>{b.className='hfb-btn'+(i===0?' active':'');});
+    _renderHistAdminList();
   }
 }
 
@@ -7441,28 +8051,52 @@ function initFormPC(){
         <button class="type-btn" id="pc-process-${i}" onclick="setPC(${i},'process')">通常</button>
       </div>
     </div>`).join('');
-  // バリ取り・完成品は常に固定
-  const fixedSlots = `
-    <div class="process-config-item" style="border-color:var(--amber-bd);background:var(--amber-bg)">
+  // バリ取り：なし / 有効（他工程と同じルール）
+  const deburrSlot = `
+    <div class="process-config-item" id="pc-deburr-item">
       <div class="process-config-label" style="color:var(--amber)">⑦ バリ取り</div>
-      <div style="font-size:10px;color:var(--amber);font-weight:600;padding:4px 0">常時有効（固定）</div>
-    </div>
+      <div class="process-toggle">
+        <button class="type-btn" id="pc-deburr-off" onclick="setPC(6,'off')">なし</button>
+        <button class="type-btn" id="pc-deburr-on" onclick="setPC(6,'deburr')">有効</button>
+      </div>
+    </div>`;
+  const doneSlot = `
     <div class="process-config-item" style="border-color:var(--done-bd);background:var(--done-bg)">
       <div class="process-config-label" style="color:var(--done)">⑧ 完成品</div>
       <div style="font-size:10px;color:var(--done);font-weight:600;padding:4px 0">常時有効（固定）</div>
     </div>`;
-  gid('process-config-grid').innerHTML = configSlots + fixedSlots;
-  // formPC 初期化: ①-⑥ リセット、⑦⑧ 固定
+  gid('process-config-grid').innerHTML = configSlots + deburrSlot + doneSlot;
+  // formPC 初期化: ①-⑥ リセット、⑦ 有効デフォルト、⑧ 固定
   for(let i=0;i<6;i++){ formPC[i].active=false; formPC[i].type='process'; updatePCUI(i); }
-  formPC[6]={type:'deburr',active:true};
+  formPC[6]={type:'deburr',active:true}; updatePCUI(6);
   formPC[7]={type:'done',active:true};
   // formGroups リセット
   formGroups = [];
   renderFormGroups();
 }
-function setPC(i,type){ formPC[i].type=type==='off'?'process':type; formPC[i].active=type!=='off'; updatePCUI(i); }
+function setPC(i,type){
+  if(i===6){
+    formPC[6].active = type!=='off';
+    formPC[6].type = type==='off'?'deburr':type; // typeはdeburr固定
+    updatePCUI(6);
+    return;
+  }
+  formPC[i].type=type==='off'?'process':type; formPC[i].active=type!=='off'; updatePCUI(i);
+}
 function updatePCUI(i){
-  if(i>=6) return; // バリ取り・完成品は固定のため更新不要
+  if(i===6){
+    const active=formPC[6].active;
+    const offBtn=gid('pc-deburr-off'), onBtn=gid('pc-deburr-on');
+    if(!offBtn||!onBtn) return;
+    offBtn.className='type-btn'; onBtn.className='type-btn';
+    if(!active) offBtn.classList.add('active-off');
+    else onBtn.classList.add('active-process');
+    // バリ取りブロックの枠色を active 状態に応じて変更
+    const item=gid('pc-deburr-item');
+    if(item){ item.style.borderColor=active?'var(--amber-bd)':''; item.style.background=active?'var(--amber-bg)':''; }
+    return;
+  }
+  if(i>=7) return;
   const c=formPC[i];
   ['off','process'].forEach(t=>{
     const btn=gid(`pc-${t}-${i}`); if(!btn) return;
@@ -7488,11 +8122,12 @@ function openItemFormEdit(itemId){
   gid('form-code').value=item.code; gid('form-name').value=item.name; gid('form-unit').value=item.unit; gid('form-maker').value=item.maker||'';
   initFormPC();
   item.processConfig.forEach((c,i)=>{
-    if(i>=6) return; // バリ取り・完成品は固定のため編集不可
+    if(i>=6) return; // ⑦以降は別途処理
     formPC[i].active=c.active; formPC[i].type='process'; updatePCUI(i);
   });
-  // バリ取り・完成品は常に固定
-  formPC[6]={type:'deburr',active:true};
+  // バリ取り：保存済みのactive状態を反映
+  const deburrCfg=item.processConfig[6];
+  formPC[6]={type:'deburr',active:deburrCfg?deburrCfg.active:true}; updatePCUI(6);
   formPC[7]={type:'done',active:true};
   // まとめ工程設定を読み込む
   formGroups = (item.processGroups||[]).map(g=>({...g}));
@@ -7504,7 +8139,7 @@ function saveItem(){
   if(!code||!name){ toast('品番と品名は必須です','error'); return; }
   if(!formPC.some(c=>c.active)){ toast('1つ以上の工程を設定してください','error'); return; }
   const config=formPC.map((c,i)=>{
-    if(i===6) return {type:'deburr',active:true};
+    if(i===6) return {type:'deburr',active:formPC[6].active};
     if(i===7) return {type:'done',active:true};
     return {type:c.type,active:c.active};
   });
@@ -7528,18 +8163,58 @@ function openAdjustModal(){
   updateAdjProcess();
   updateAdjTitle();
   gid('adj-reason').value='';
+  document.querySelectorAll('.adj-chip').forEach(c=>c.classList.remove('active'));
   gid('adjust-modal').classList.add('open');
 }
 function updateAdjTitle(){
   const item=db.items.find(i=>i.id===gid('adj-item').value);
-  const titleEl=gid('adjust-modal-title');
-  if(titleEl) titleEl.textContent=item?`在庫調整（${item.name}）`:'在庫調整（管理者）';
+  const nameEl=gid('adj-header-name');
+  if(nameEl) nameEl.textContent=item?`${item.name}（${item.code}）`:'—';
+  updateAdjHeaderStatus();
+}
+function updateAdjHeaderStatus(){
+  const item=db.items.find(i=>i.id===gid('adj-item').value); if(!item) return;
+  const procIdx=parseInt(gid('adj-process').value);
+  const el=gid('adj-header-status');
+  if(el){
+    const label=PNAMES[procIdx]||'';
+    const cnt=item.processCounts[procIdx]||0;
+    el.textContent=`${label}：${cnt}個`;
+  }
 }
 function updateAdjProcess(){
   const item=db.items.find(i=>i.id===gid('adj-item').value); if(!item) return;
   const actives=getActives(item);
-  gid('adj-process').innerHTML=actives.map(p=>`<option value="${p.idx}">${PNAMES[p.idx]}${p.type==='deburr'?' [バリ取]':p.type==='done'?' [完成]':''}（現在：${item.processCounts[p.idx]}）</option>`).join('');
-  gid('adj-qty').value=item.processCounts[actives[0]?.idx||0]||0;
+  gid('adj-process').innerHTML=actives.map(p=>`<option value="${p.idx}">${PNAMES[p.idx]}${p.type==='deburr'?' [バリ取]':p.type==='done'?' [完成]':''}（${item.processCounts[p.idx]}）</option>`).join('');
+  const cur=item.processCounts[actives[0]?.idx||0]||0;
+  gid('adj-qty').value=cur;
+  updateAdjHeaderStatus();
+  updateAdjDiff();
+}
+function updateAdjQtyFromProcess(){
+  const item=db.items.find(i=>i.id===gid('adj-item').value); if(!item) return;
+  const procIdx=parseInt(gid('adj-process').value);
+  gid('adj-qty').value=item.processCounts[procIdx]||0;
+  updateAdjHeaderStatus();
+  updateAdjDiff();
+}
+function updateAdjDiff(){
+  const item=db.items.find(i=>i.id===gid('adj-item').value); if(!item) return;
+  const procIdx=parseInt(gid('adj-process').value);
+  const cur=item.processCounts[procIdx]||0;
+  const next=parseInt(gid('adj-qty').value);
+  const el=gid('adj-diff');
+  if(!el) return;
+  if(isNaN(next)){ el.textContent=''; return; }
+  const diff=next-cur;
+  if(diff===0){ el.style.color='#9ca3af'; el.textContent=`現在 ${cur} → ${next}（変更なし）`; }
+  else if(diff>0){ el.style.color='#16a34a'; el.textContent=`現在 ${cur} → ${next}（+${diff}）`; }
+  else{ el.style.color='#dc2626'; el.textContent=`現在 ${cur} → ${next}（${diff}）`; }
+}
+function selectAdjReason(el, text){
+  document.querySelectorAll('.adj-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  gid('adj-reason').value=text;
 }
 function confirmAdjust(){
   const item=db.items.find(i=>i.id===gid('adj-item').value);
@@ -8553,16 +9228,16 @@ function renderDayDetail(){
   const ngCnt=allItems.filter(x=>x.st==='ng').length;
   const condCnt=allItems.filter(x=>x.st==='cond').length;
   if(badge){
-    if(ngCnt>0)        badge.innerHTML=`<span class="ship-detail-summary">🔴 不足 ${ngCnt}件</span>`;
-    else if(condCnt>0) badge.innerHTML=`<span class="ship-detail-summary warn">🟡 注意 ${condCnt}件</span>`;
-    else if(allItems.length>0) badge.innerHTML=`<span class="ship-detail-summary safe">🟢 全${allItems.length}件OK</span>`;
-    else badge.innerHTML='';
+    if(ngCnt>0)        badge.innerHTML=`<span class="ship-status-pill ng">🔴 不足 ${ngCnt}件</span>`;
+    else if(condCnt>0) badge.innerHTML=`<span class="ship-status-pill warn">🟡 注意 ${condCnt}件</span>`;
+    else if(allItems.length>0) badge.innerHTML=`<span class="ship-status-pill safe">🟢 全${allItems.length}件OK</span>`;
+    else badge.innerHTML=`<span class="ship-status-pill empty">出荷なし</span>`;
   }
   const el=document.getElementById('day-detail-list'); if(!el) return;
   if(filtered.length===0){
     el.innerHTML=allItems.length===0
-      ?`<div class="ship-empty-day"><div class="ship-empty-day-icon">📅</div><div>この期間の出荷予定はありません</div></div>`
-      :`<div class="ship-empty-day"><div class="ship-empty-day-icon">✅</div><div>条件に一致する出荷なし</div><div style="font-size:11px;color:var(--text3);margin-top:4px"><button onclick="setShipFilter('all')" style="border:none;background:transparent;color:var(--accent);font-size:11px;cursor:pointer;font-family:inherit;text-decoration:underline">全${allItems.length}件を表示</button></div></div>`;
+      ?`<div class="ship-empty-day"><div class="ship-empty-day-icon">📦</div><div class="ship-empty-title">出荷予定なし</div><div class="ship-empty-sub">この期間の出荷スケジュールはありません。<br>今は対応不要です。</div></div>`
+      :`<div class="ship-empty-day"><div class="ship-empty-day-icon">✅</div><div class="ship-empty-title">条件に一致する出荷なし</div><div class="ship-empty-sub"><button onclick="setShipFilter('all')" style="border:none;background:transparent;color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:underline">全${allItems.length}件を表示する</button></div></div>`;
     return;
   }
   filtered.sort((a,b)=>{
@@ -9044,21 +9719,58 @@ function openSettings(){
 function _renderSettingsMachines(){
   const el = gid('settings-machine-list');
   el.innerHTML = _machinePresets.map((m,i)=>
-    `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600;color:var(--text2)">
-      ${escH(m)}
-      <button onclick="_removeMachinePreset(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:0;line-height:1;margin-left:2px">✕</button>
+    `<span class="stt-drag-chip" data-idx="${i}">
+      <span class="stt-drag-handle" title="ドラッグで並び替え">⠿</span>
+      <span class="stt-drag-label">${escH(m)}</span>
+      <button onclick="_removeMachinePreset(${i})" class="stt-drag-remove">✕</button>
     </span>`
   ).join('');
+  _initSortable(el, _machinePresets, _saveAndSyncMachinePresets);
 }
 
 function _renderSettingsUsers(){
   const el = gid('settings-user-list');
   el.innerHTML = _userPresets.map((u,i)=>
-    `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600;color:var(--text2)">
-      ${escH(u)}
-      <button onclick="_removeUserPreset(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:0;line-height:1;margin-left:2px">✕</button>
+    `<span class="stt-drag-chip" data-idx="${i}">
+      <span class="stt-drag-handle" title="ドラッグで並び替え">⠿</span>
+      <span class="stt-drag-label">${escH(u)}</span>
+      <button onclick="_removeUserPreset(${i})" class="stt-drag-remove">✕</button>
     </span>`
   ).join('');
+  _initSortable(el, _userPresets, _saveAndSyncUserPresets);
+}
+
+function _initSortable(el, arr, onSave){
+  if(!window.Sortable) return;
+  if(el._sortable) el._sortable.destroy();
+  el._sortable = Sortable.create(el, {
+    animation: 200,
+    delay: 220,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 5,
+    ghostClass: 'stt-drag-ghost',
+    chosenClass: 'stt-drag-chosen',
+    dragClass: 'stt-drag-dragging',
+    handle: '.stt-drag-handle',
+    onEnd(evt){
+      const moved = arr.splice(evt.oldIndex, 1)[0];
+      arr.splice(evt.newIndex, 0, moved);
+      onSave();
+    }
+  });
+}
+
+function _saveAndSyncMachinePresets(){
+  localStorage.setItem('inv_machine_presets', JSON.stringify(_machinePresets));
+  MACHINE_PRESETS.length = 0; _machinePresets.forEach(m => MACHINE_PRESETS.push(m));
+  _renderSettingsMachines();
+  _renderOpMachineChips();
+}
+
+function _saveAndSyncUserPresets(){
+  localStorage.setItem('inv_user_presets', JSON.stringify(_userPresets));
+  USER_PRESETS.length = 0; _userPresets.forEach(u => USER_PRESETS.push(u));
+  _renderSettingsUsers();
 }
 
 function addMachinePreset(){
@@ -9067,12 +9779,12 @@ function addMachinePreset(){
   if(_machinePresets.includes(v)){ toast('すでに登録されています','warn'); return; }
   _machinePresets.push(v);
   gid('settings-machine-input').value = '';
-  _renderSettingsMachines();
+  _saveAndSyncMachinePresets();
 }
 
 function _removeMachinePreset(i){
   _machinePresets.splice(i,1);
-  _renderSettingsMachines();
+  _saveAndSyncMachinePresets();
 }
 
 function addUserPreset(){
@@ -9081,12 +9793,12 @@ function addUserPreset(){
   if(_userPresets.includes(v)){ toast('すでに登録されています','warn'); return; }
   _userPresets.push(v);
   gid('settings-user-input').value = '';
-  _renderSettingsUsers();
+  _saveAndSyncUserPresets();
 }
 
 function _removeUserPreset(i){
   _userPresets.splice(i,1);
-  _renderSettingsUsers();
+  _saveAndSyncUserPresets();
 }
 
 // ===== 設定パネル内 日報サブページ =====
@@ -9156,37 +9868,88 @@ function renderSnNippo(){
   if(machineFilter) txs = txs.filter(tx=>(tx.machine||'—')===machineFilter);
   if(userFilter)    txs = txs.filter(tx=>tx.userId===userFilter);
   if(typeFilter)    txs = txs.filter(tx=>tx.type===typeFilter);
+
   const summaryBar = gid('sn-summary-bar');
+
   if(!txs.length){
     el.innerHTML = '<div class="nippo-empty">操作履歴がありません</div>';
     if(summaryBar) summaryBar.innerHTML = '';
     return;
   }
+
+  // ── サマリーダッシュボード ──
   if(summaryBar){
     const ag={};
-    txs.forEach(tx=>{const m=tx.machine||'—';if(!ag[m])ag[m]=0;ag[m]+=tx.quantity;});
+    txs.forEach(tx=>{ const m=tx.machine||'—'; if(!ag[m])ag[m]=0; ag[m]+=tx.quantity; });
     const as=Object.keys(ag).sort((a,b)=>a==='—'?1:b==='—'?-1:a.localeCompare(b,'ja'));
     const tq=txs.reduce((s,tx)=>s+tx.quantity,0);
-    summaryBar.innerHTML=`<span style="font-weight:700;color:var(--text2)">合計 ${tq}個 / ${txs.length}件</span>`+
-      as.map(m=>`<span class="nippo-summary-item"><span class="nippo-summary-machine">${escH(m)}</span><span class="nippo-summary-cnt">${ag[m]}個</span></span>`).join('');
+    summaryBar.innerHTML=`
+      <div class="sn-summary-title">■ 本日の実績</div>
+      <div class="sn-summary-cards">
+        <div class="sn-summary-card total">
+          <span class="sn-summary-card-label">合計</span>
+          <span class="sn-summary-card-val">${tq}個</span>
+          <span class="sn-summary-card-sub">${txs.length}件の操作</span>
+        </div>
+        ${as.map(m=>`
+          <div class="sn-summary-card machine">
+            <span class="sn-summary-card-label">🔧 ${escH(m==='—'?'設備未設定':m)}</span>
+            <span class="sn-summary-card-val">${ag[m]}個</span>
+          </div>`).join('')}
+      </div>`;
   }
+
+  // ── 設備カード ──
   const grouped={};
-  txs.forEach(tx=>{const m=tx.machine||'—';if(!grouped[m])grouped[m]=[];grouped[m].push(tx);});
+  txs.forEach(tx=>{ const m=tx.machine||'—'; if(!grouped[m])grouped[m]=[]; grouped[m].push(tx); });
   const sm=Object.keys(grouped).sort((a,b)=>a==='—'?1:b==='—'?-1:a.localeCompare(b,'ja'));
+
+  const typeKey = t => TYPE_MAP_NIPPO[t]||'move';
+  const typeLabel = t => ({入庫:'入庫',移動:'移動',出荷:'出荷',不良:'不良',修正:'修正'}[t]||t);
+
   el.innerHTML=sm.map(machine=>{
-    const mTxs=grouped[machine],total=mTxs.reduce((s,tx)=>s+tx.quantity,0),isMachine=machine!=='—',tagCls=isMachine?'':' none';
+    const mTxs=grouped[machine];
+    const total=mTxs.reduce((s,tx)=>s+tx.quantity,0);
+    const isNone=machine==='—';
+    const headCls=isNone?' no-machine':'';
+    const headIcon=isNone?'— 設備未設定':`🔧 ${escH(machine)}`;
+
     const rows=mTxs.map(tx=>{
-      const item=db.items.find(i=>i.id===tx.itemId),itemName=item?item.name:'不明';
-      let st='';
-      if(tx.type==='移動')st=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
-      else if(tx.type==='入庫')st=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
-      else if(tx.type==='出荷')st=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
-      else if(tx.type==='不良')st=`${PNAMES[tx.fromProcess]||'?'}から不良`;
-      else if(tx.type==='修正')st=`調整${tx.note?'('+tx.note+')':''}`;
-      return `<div class="nippo-row"><span class="nippo-machine-tag${tagCls}">${escH(machine)}</span><span class="nippo-sep">｜</span><span class="nippo-item-name">${escH(itemName)}</span><span class="nippo-qty">${tx.quantity}個</span><span class="nippo-sep">/</span><span class="nippo-status">${escH(st)}</span><span class="nippo-type-tag type-${TYPE_MAP_NIPPO[tx.type]||'move'}">${tx.type}</span><span class="nippo-user">${escH(tx.userId||'')}</span><span class="nippo-time">${tx.timestamp}</span></div>`;
+      const item=db.items.find(i=>i.id===tx.itemId);
+      const itemName=item?item.name:'不明';
+      let route='';
+      if(tx.type==='移動') route=`${PNAMES[tx.fromProcess]||'?'} ➡ ${PNAMES[tx.toProcess]||'?'}`;
+      else if(tx.type==='入庫') route=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
+      else if(tx.type==='出荷') route=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
+      else if(tx.type==='不良') route=`${PNAMES[tx.fromProcess]||'?'}から不良`;
+      else if(tx.type==='修正') route=`在庫調整${tx.note?'('+tx.note+')':''}`;
+      const tk=typeKey(tx.type);
+      const time=tx.timestamp?tx.timestamp.slice(-5):'';
+      return `<div class="sn-tl-row">
+        <span class="sn-tl-dot ${tk}"></span>
+        <div class="sn-tl-body">
+          <div class="sn-tl-top">
+            <span class="sn-tl-name">${escH(itemName)}</span>
+            <span class="sn-tl-qty">${tx.quantity}個</span>
+          </div>
+          <div class="sn-tl-bottom">
+            <span class="sn-tl-route">${escH(route)}</span>
+            <span class="sn-tl-badge ${tk}">${typeLabel(tx.type)}</span>
+            ${tx.userId?`<span class="sn-tl-user">👤 ${escH(tx.userId)}</span>`:''}
+            <span class="sn-tl-time">🕒 ${time}</span>
+          </div>
+        </div>
+      </div>`;
     }).join('');
-    const headTag=isMachine?`<span class="nippo-machine-name">🔧 ${escH(machine)}</span>`:`<span class="nippo-machine-name" style="color:var(--text3)">— 設備未設定</span>`;
-    return `<div class="nippo-machine-group no-break"><div class="nippo-machine-head">${headTag}<span class="nippo-machine-count">${mTxs.length}件</span><span class="nippo-machine-total">計 ${total}個</span></div>${rows}</div>`;
+
+    return `<div class="sn-machine-card no-break">
+      <div class="sn-machine-card-head${headCls}">
+        <span class="sn-machine-card-name">${headIcon}</span>
+        <span class="sn-machine-card-meta">${mTxs.length}件</span>
+        <span class="sn-machine-card-total">計 ${total}個</span>
+      </div>
+      <div class="sn-timeline">${rows}</div>
+    </div>`;
   }).join('');
 }
 
@@ -9204,7 +9967,9 @@ function exportSnNippoPdf(){
 function openSttHistory(){
   gid('stt-main-page').style.display = 'none';
   gid('stt-history-page').style.display = '';
-  _renderSttHistory();
+  _histSttFilter = 'all';
+  document.querySelectorAll('#hist-filter-stt .hfb-btn').forEach((b,i)=>{b.className='hfb-btn'+(i===0?' active':'');});
+  _renderHistSttList();
 }
 
 function closeSttHistory(){
@@ -9213,28 +9978,7 @@ function closeSttHistory(){
 }
 
 function _renderSttHistory(){
-  const el = gid('sn-history-list'); if(!el) return;
-  const typeMap={入庫:'receive',出荷:'ship',移動:'move',不良:'defect',修正:'adjust'};
-  el.innerHTML = db.transactions.slice(0,50).map(tx=>{
-    const item = db.items.find(i=>i.id===tx.itemId);
-    const itemName = item ? item.name : '不明';
-    let stateText='';
-    if(tx.type==='移動')      stateText=`${PNAMES[tx.fromProcess]||'?'}→${PNAMES[tx.toProcess]||'?'}`;
-    else if(tx.type==='入庫') stateText=`${PNAMES[tx.toProcess]||PNAMES[0]}へ入庫`;
-    else if(tx.type==='出荷') stateText=`${PNAMES[tx.fromProcess]||'?'}から出荷`;
-    else if(tx.type==='不良') stateText=`${PNAMES[tx.fromProcess]||'?'}から不良`;
-    else if(tx.type==='修正') stateText=`${PNAMES[tx.fromProcess]||'?'} 調整${tx.note?'('+tx.note+')':''}`;
-    const machineName = tx.machine||'';
-    const machineCls  = machineName ? '' : ' none';
-    const machineLabel= machineName || '—';
-    return `<div class="history-item">
-      <span class="history-machine${machineCls}">${escH(machineLabel)}</span>
-      <span class="history-type type-${typeMap[tx.type]||'move'}">${tx.type}</span>
-      <span class="history-desc">${escH(itemName)}　${tx.quantity}個 / ${escH(stateText)}</span>
-      <span class="history-user" style="color:var(--text3);font-size:9px;flex-shrink:0;white-space:nowrap">${escH(tx.userId||'')}</span>
-      <span class="history-time">${tx.timestamp}</span>
-    </div>`;
-  }).join('') || '<div style="padding:14px;color:var(--text3);text-align:center;font-size:12px">履歴がありません</div>';
+  _renderHistSttList();
 }
 
 function saveSettings(){
@@ -9301,11 +10045,13 @@ function resetAllData(){
 #user-modal, #item-form-modal, #adjust-modal { z-index: 300; }
 
 #settings-mode {
-  padding: 12px;
+  padding: 0;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
+  background: #f0f1f7;
+  min-height: 100vh;
 }
 .stt-header {
   text-align: center;
@@ -9340,42 +10086,186 @@ function resetAllData(){
   justify-content: center;
   font-weight: 700;
 }
-.stt-body { padding: 0 16px 24px; }
-.stt-section-label {
+.stt-body { padding: 0 14px 8px; }
+
+/* ===== SETTINGS REDESIGN ===== */
+
+/* Quick action buttons */
+.stt-quick-section {
+  padding: 16px 14px 0;
+}
+.stt-quick-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.stt-quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stt-quick-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 14px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: var(--font);
   font-size: 13px;
   font-weight: 700;
-  color: var(--teal);
-  letter-spacing: 0.3px;
-  padding: 18px 4px 8px;
+  color: var(--text);
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
+.stt-quick-btn:active { transform: scale(0.97); opacity: 0.85; }
+.stt-quick-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.stt-quick-icon.green  { background: var(--green-bg); }
+.stt-quick-icon.blue   { background: #e8effe; }
+
+/* Section block */
+.stt-section {
+  padding: 20px 14px 0;
+}
+.stt-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 2px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stt-section-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.stt-section-dot.blue   { background: var(--accent); }
+.stt-section-dot.purple { background: var(--purple); }
+.stt-section-dot.green  { background: var(--green); }
+.stt-section-dot.orange { background: var(--amber); }
+.stt-section-dot.gray   { background: var(--text3); }
+.stt-section-dot.red    { background: var(--red); }
+
 .stt-group {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
+.stt-group.danger-group {
+  border: 1.5px solid var(--red-bd);
+  background: var(--red-bg);
+}
+
+/* Row redesign */
 .stt-row {
   display: flex;
   align-items: center;
-  padding: 14px 16px;
+  padding: 0 14px 0 14px;
+  min-height: 58px;
   border-bottom: 1px solid #f0f1f6;
   cursor: pointer;
   gap: 12px;
-  font-size: 15px;
   color: var(--text);
-  font-weight: 400;
-  background: #fff;
-  transition: background 0.1s;
+  background: transparent;
+  transition: background 0.12s;
   -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
 }
 .stt-row:last-child { border-bottom: none; }
-.stt-row:active { background: #f5f6fa; }
-.stt-row-label { flex: 1; }
-.stt-row-chevron {
-  color: #c0c4d6;
+.stt-row:active { background: #f4f5fb; }
+.stt-row.danger:active { background: #fce8ea; }
+
+/* Row icon */
+.stt-row-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.stt-row-icon.gray   { background: var(--bg3); }
+.stt-row-icon.blue   { background: #e8effe; }
+.stt-row-icon.purple { background: #f0ecff; }
+.stt-row-icon.green  { background: var(--green-bg); }
+.stt-row-icon.orange { background: var(--amber-bg); }
+.stt-row-icon.teal   { background: #e8f6f4; }
+.stt-row-icon.red    { background: var(--red-bg); }
+
+/* Row text block */
+.stt-row-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.stt-row-label {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.stt-row-desc {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 400;
+  line-height: 1.3;
 }
 .stt-row.danger .stt-row-label { color: var(--red); }
+.stt-row.danger .stt-row-desc  { color: #e07080; }
+
+/* Current value badge */
+.stt-row-value {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+  flex-shrink: 0;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stt-row-chevron {
+  color: #c8cce0;
+  font-size: 18px;
+  font-weight: 300;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.stt-row.danger .stt-row-chevron { color: var(--red-bd); }
+
+/* Danger standalone card */
+.stt-danger-card {
+  background: var(--red-bg);
+  border: 1.5px solid var(--red-bd);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(217,41,63,0.08);
+}
+
 /* 展開サブパネル */
 .stt-sub {
   max-height: 0;
@@ -9454,6 +10344,61 @@ function resetAllData(){
   transition: opacity 0.1s;
 }
 .stt-save-btn:active { opacity: 0.85; }
+
+/* ===== ドラッグ並び替えチップ ===== */
+.stt-drag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  user-select: none;
+  touch-action: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.stt-drag-handle {
+  cursor: grab;
+  color: var(--text3);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+.stt-drag-handle:active { cursor: grabbing; }
+.stt-drag-label { white-space: nowrap; }
+.stt-drag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 12px;
+  padding: 0;
+  line-height: 1;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+.stt-drag-ghost {
+  opacity: 0.35;
+  border: 1.5px dashed var(--accent);
+}
+.stt-drag-chosen {
+  transform: scale(1.06);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  opacity: 0.92;
+  border-color: var(--accent);
+  background: var(--bg2);
+  cursor: grabbing;
+}
+.stt-drag-dragging {
+  transform: scale(1.06);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  cursor: grabbing;
+}
 
 /* ===== 入庫ボトムシート ===== */
 .recv-sheet-overlay {
@@ -9854,7 +10799,31 @@ function resetAllData(){
 .proc-btn-done:hover:not(:disabled) .proc-btn-name,
 .proc-btn-done:hover:not(:disabled) .proc-btn-cnt { color: #fff; }
 
-/* 入庫ボタン（完成グループ内・小） */
+/* 入庫ボタン（工程詳細の最上部）*/
+.fc-btn-recv-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 13px;
+  margin-bottom: 12px;
+  background: #F3FBF6;
+  color: #34C759;
+  border: 1.5px solid #34C759;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: none;
+  transition: background 0.12s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.fc-btn-recv-top:hover  { background: #E6F7EC; }
+.fc-btn-recv-top:active { transform: scale(0.97); background: #E6F7EC; }
+
+/* 入庫ボタン（完成グループ内・小）*/
 .proc-btn-recv-small {
   display: flex;
   align-items: center;
@@ -9939,17 +10908,203 @@ function resetAllData(){
   padding: 0 0 24px;
 }
 #stt-nippo-page .nippo-list {
-  padding: 0 4px;
+  padding: 12px 12px 0;
 }
+
+/* ===== 日報 新サマリーダッシュボード ===== */
 #stt-nippo-page .nippo-summary-bar {
-  padding: 8px 14px;
+  padding: 12px 12px 10px;
+  background: #fff;
   border-bottom: 1px solid var(--border);
-  background: var(--bg3);
-  font-size: 12px;
+}
+.sn-summary-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.sn-summary-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 6px;
+}
+.sn-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  min-width: 70px;
+}
+.sn-summary-card.total {
+  background: #eff4ff;
+  border: 1px solid #b8ccff;
+}
+.sn-summary-card.machine {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+.sn-summary-card-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text3);
+  white-space: nowrap;
+  letter-spacing: .3px;
+}
+.sn-summary-card.total .sn-summary-card-label { color: var(--accent); }
+.sn-summary-card-val {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+.sn-summary-card.total .sn-summary-card-val { color: var(--accent); }
+.sn-summary-card-sub {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 400;
+}
+
+/* ===== 日報 新設備カード ===== */
+.sn-machine-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.sn-machine-card-head {
+  display: flex;
   align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--amber-bg);
+  border-bottom: 1px solid var(--amber-bd);
+}
+.sn-machine-card-head.no-machine {
+  background: var(--bg3);
+  border-bottom-color: var(--border);
+}
+.sn-machine-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--amber);
+  flex: 1;
+}
+.sn-machine-card-head.no-machine .sn-machine-card-name { color: var(--text3); }
+.sn-machine-card-meta {
+  font-size: 11px;
+  color: var(--amber);
+  font-weight: 500;
+}
+.sn-machine-card-head.no-machine .sn-machine-card-meta { color: var(--text3); }
+.sn-machine-card-total {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--amber);
+}
+.sn-machine-card-head.no-machine .sn-machine-card-total { color: var(--text3); }
+
+/* ===== 日報 タイムライン行 ===== */
+.sn-timeline {
+  padding: 8px 14px 4px 14px;
+  position: relative;
+}
+.sn-timeline::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 12px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--border);
+  border-radius: 2px;
+}
+.sn-tl-row {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0 8px 0;
+  position: relative;
+  border-bottom: 1px solid var(--bg3);
+}
+.sn-tl-row:last-child { border-bottom: none; }
+.sn-tl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  position: relative;
+  z-index: 1;
+}
+.sn-tl-dot.move    { background: var(--accent); }
+.sn-tl-dot.receive { background: var(--green); }
+.sn-tl-dot.ship    { background: var(--teal); }
+.sn-tl-dot.defect  { background: var(--red); }
+.sn-tl-dot.adjust  { background: var(--purple); }
+.sn-tl-body { flex: 1; min-width: 0; }
+.sn-tl-top {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+.sn-tl-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sn-tl-qty {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.sn-tl-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sn-tl-route {
+  font-size: 11px;
+  color: var(--text2);
+  flex: 1;
+  min-width: 0;
+}
+.sn-tl-badge {
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sn-tl-badge.move    { background: #e8effe; color: var(--accent); }
+.sn-tl-badge.receive { background: var(--green-bg); color: var(--green); }
+.sn-tl-badge.ship    { background: #e8f6f4; color: var(--teal); }
+.sn-tl-badge.defect  { background: var(--red-bg); color: var(--red); }
+.sn-tl-badge.adjust  { background: #f0ecff; color: var(--purple); }
+.sn-tl-user {
+  font-size: 10px;
+  color: var(--text3);
+  white-space: nowrap;
+}
+.sn-tl-time {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: var(--mono);
+  white-space: nowrap;
 }
 </style>
 
@@ -9958,23 +11113,58 @@ function resetAllData(){
     <!-- ===== メインページ ===== -->
     <div id="stt-main-page">
 
-    <div class="stt-body">
+    <!-- ヘッダー -->
+    <div class="stt-header">
+      ⚙ 設定
+      <button class="stt-close" onclick="switchMode('admin')">✕</button>
+    </div>
 
-      <!-- アカウント -->
-      <div class="stt-section-label">アカウント</div>
+    <!-- ① クイック操作 -->
+    <div class="stt-quick-section">
+      <div class="stt-quick-title">クイック操作</div>
+      <div class="stt-quick-grid">
+        <button class="stt-quick-btn" onclick="openItemForm()">
+          <span class="stt-quick-icon green">📦</span>
+          <span>品目登録</span>
+        </button>
+        <button class="stt-quick-btn" onclick="openAdjustModal()">
+          <span class="stt-quick-icon blue">📝</span>
+          <span>在庫調整</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ② アカウント -->
+    <div class="stt-section">
+      <div class="stt-section-label">
+        <span class="stt-section-dot gray"></span>アカウント
+      </div>
       <div class="stt-group">
         <div class="stt-row" onclick="openUserModal()">
-          <span class="stt-row-label">ユーザー名</span>
-          <span style="font-size:14px;color:var(--text2);margin-right:4px" id="current-user">田中 一郎</span>
+          <span class="stt-row-icon gray">👤</span>
+          <div class="stt-row-body">
+            <span class="stt-row-label">ユーザー名</span>
+            <span class="stt-row-desc">現在のログインユーザー</span>
+          </div>
+          <span class="stt-row-value" id="current-user"></span>
           <span class="stt-row-chevron">›</span>
         </div>
       </div>
+    </div>
 
-      <!-- 現場設定 -->
-      <div class="stt-section-label">現場設定</div>
+    <!-- ③ 現場設定 -->
+    <div class="stt-section">
+      <div class="stt-section-label">
+        <span class="stt-section-dot blue"></span>現場設定
+      </div>
       <div class="stt-group">
+
         <div class="stt-row" onclick="_sttToggle('sub-machine')">
-          <span class="stt-row-label">🔧 設備プリセット</span>
+          <span class="stt-row-icon blue">🔧</span>
+          <div class="stt-row-body">
+            <span class="stt-row-label">設備プリセット</span>
+            <span class="stt-row-desc">MC・NC等の設備を登録</span>
+          </div>
           <span class="stt-row-chevron">›</span>
         </div>
         <div class="stt-sub" id="sub-machine">
@@ -9988,7 +11178,11 @@ function resetAllData(){
         </div>
 
         <div class="stt-row" onclick="_sttToggle('sub-user')">
-          <span class="stt-row-label">👤 作業者プリセット</span>
+          <span class="stt-row-icon purple">👷</span>
+          <div class="stt-row-body">
+            <span class="stt-row-label">作業者プリセット</span>
+            <span class="stt-row-desc">よく使う作業者名を登録</span>
+          </div>
           <span class="stt-row-chevron">›</span>
         </div>
         <div class="stt-sub" id="sub-user">
@@ -10000,50 +11194,55 @@ function resetAllData(){
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 品目管理 -->
-      <div class="stt-section-label">品目管理</div>
-      <div class="stt-group">
-        <div class="stt-row" onclick="openItemForm()">
-          <span class="stt-row-label">＋ 品目登録</span>
-          <span class="stt-row-chevron">›</span>
-        </div>
-        <div class="stt-row" onclick="openAdjustModal()">
-          <span class="stt-row-label">📝 在庫調整</span>
-          <span class="stt-row-chevron">›</span>
-        </div>
       </div>
+    </div>
 
-      <!-- レポート -->
-      <div class="stt-section-label">レポート</div>
+    <!-- ④ レポート -->
+    <div class="stt-section">
+      <div class="stt-section-label">
+        <span class="stt-section-dot orange"></span>レポート
+      </div>
       <div class="stt-group">
         <div class="stt-row" onclick="openSttNippo()">
-          <span class="stt-row-label">📄 日報</span>
+          <span class="stt-row-icon orange">📄</span>
+          <div class="stt-row-body">
+            <span class="stt-row-label">日報</span>
+            <span class="stt-row-desc">設備ごとの作業日報を確認</span>
+          </div>
           <span class="stt-row-chevron">›</span>
         </div>
         <div class="stt-row" onclick="openSttHistory()">
-          <span class="stt-row-label">📋 履歴</span>
+          <span class="stt-row-icon teal">📋</span>
+          <div class="stt-row-body">
+            <span class="stt-row-label">操作履歴</span>
+            <span class="stt-row-desc">全操作ログをタイムラインで確認</span>
+          </div>
+          <span class="stt-row-chevron">›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ データ管理（危険操作） -->
+    <div class="stt-section" style="padding-bottom: 20px;">
+      <div class="stt-section-label">
+        <span class="stt-section-dot red"></span>データ管理
+      </div>
+
+      <!-- 履歴クリア（やや危険） -->
+      <div class="stt-group danger-group" style="margin-bottom:10px">
+        <div class="stt-row danger" onclick="clearHistory()">
+          <span class="stt-row-icon red">🗑</span>
+          <div class="stt-row-body">
+            <span class="stt-row-label">操作履歴をクリア</span>
+            <span class="stt-row-desc">在庫データは保持されます</span>
+          </div>
           <span class="stt-row-chevron">›</span>
         </div>
       </div>
 
-      <!-- データ管理 -->
-      <div class="stt-section-label">データ管理</div>
-      <div class="stt-group" style="border:1px solid var(--red-bd)">
-        <div class="stt-row danger" onclick="clearHistory()">
-          <span class="stt-row-label">🗑 操作履歴をクリア</span>
-          <span style="font-size:11px;color:var(--red-bd);margin-right:4px">在庫データは保持</span>
-          <span class="stt-row-chevron" style="color:var(--red-bd)">›</span>
-        </div>
-        <div class="stt-row danger" onclick="resetAllData()" style="background:var(--red-bg)">
-          <span class="stt-row-label" style="font-weight:700">⚠ 全データをリセット</span>
-          <span style="font-size:11px;color:var(--red);font-weight:700;margin-right:4px">取消不可</span>
-          <span class="stt-row-chevron" style="color:var(--red)">›</span>
-        </div>
-      </div>
+    </div>
 
-    </div><!-- /stt-body -->
     </div><!-- /stt-main-page -->
 
     <!-- ===== 日報サブページ ===== -->
@@ -10078,8 +11277,16 @@ function resetAllData(){
         <button class="stt-back-btn" onclick="closeSttHistory()">‹</button>
         📋 操作履歴
       </div>
+      <div class="history-filter-bar" id="hist-filter-stt" style="border-bottom:1px solid var(--border);border-top:1px solid var(--border)">
+        <button class="hfb-btn active" onclick="setHistSttFilter('all',this)">すべて</button>
+        <button class="hfb-btn" onclick="setHistSttFilter('移動',this)">➡ 移動</button>
+        <button class="hfb-btn" onclick="setHistSttFilter('入庫',this)">＋ 入庫</button>
+        <button class="hfb-btn" onclick="setHistSttFilter('不良',this)">⚠ 不良</button>
+        <button class="hfb-btn" onclick="setHistSttFilter('出荷',this)">↑ 出荷</button>
+        <button class="hfb-btn" onclick="setHistSttFilter('修正',this)">✎ 修正</button>
+      </div>
       <div>
-        <div id="sn-history-list" class="history-list" style="max-height:none;padding:4px 0"></div>
+        <div id="sn-history-list" class="history-list full-height" style="padding:8px 0"></div>
       </div>
     </div><!-- /stt-history-page -->
 
@@ -10097,7 +11304,7 @@ function resetAllData(){
 <div id="recv-sheet">
   <div class="recv-sheet-handle"></div>
   <div class="recv-sheet-header">
-    <span class="recv-sheet-title" id="recv-sheet-title">入庫</span>
+    <span class="recv-sheet-title" id="recv-sheet-title">数量を入力する</span>
     <button class="recv-sheet-close" onclick="closeRecvSheet()">✕</button>
   </div>
   <div class="recv-sheet-body">
@@ -10112,6 +11319,16 @@ function resetAllData(){
     <button class="recv-sheet-submit" onclick="submitRecvSheet()">入庫する</button>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+// SortableJS ロード後に設定画面のリストを再描画
+document.addEventListener('DOMContentLoaded', function(){
+  if(window.Sortable){
+    _renderSettingsMachines();
+    _renderSettingsUsers();
+  }
+});
+</script>
 </body>
 
 <script>
