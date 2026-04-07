@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>工程管理システム</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
@@ -42,8 +42,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
-  overflow-x: hidden;
-  max-width: 100vw;
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
 }
 
 body {
@@ -54,9 +54,6 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
-  overflow-x: hidden;
-  max-width: 100vw;
-  box-sizing: border-box;
 }
 
 /* ===== iOS ズーム防止: input/select/textarea は必ず16px ===== */
@@ -65,7 +62,7 @@ input, select, textarea {
   -webkit-text-size-adjust: 100%;
 }
 
-.app { display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; width: 100%; max-width: 100vw; }
+.app { display: flex; flex-direction: column; min-height: 100vh; overflow-x: clip; }
 
 /* ===== BOTTOM NAV ===== */
 .bottom-nav {
@@ -646,34 +643,33 @@ input[type=search] { -webkit-appearance: none; }
 
 /* ===== 一括移動グループ ===== */
 .batch-area {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
+  margin-bottom: 10px;
 }
 
-/* ── まとめ工程カード: proc-btn と同スタイル ── */
+/* ── まとめ工程カード: 工程ボタンと同じスタイル・パープル系 ── */
 .batch-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   border-radius: 10px;
-  border: 1.5px solid #c4b8f5;
-  background: #f3f0ff;
+  border: 1.5px solid #c8b8e8;
   cursor: pointer;
   font-family: var(--font);
-  padding: 14px 8px;
+  padding: 14px 12px 12px;
   min-height: 72px;
-  flex: 0 0 152px;
   transition: all 0.12s;
   -webkit-tap-highlight-color: transparent;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  background: #fff;
+  margin-bottom: 0;
   text-align: center;
 }
 .batch-card.has-stock {
-  background: #ede8ff;
+  background: #f3eeff;
   border-color: var(--purple);
   box-shadow: 0 2px 6px rgba(124,92,191,0.15);
 }
@@ -682,33 +678,39 @@ input[type=search] { -webkit-appearance: none; }
   border-color: var(--purple);
 }
 .batch-card:hover:not(.batch-card-disabled) .batch-card-label,
-.batch-card:hover:not(.batch-card-disabled) .batch-card-dest,
 .batch-card:hover:not(.batch-card-disabled) .batch-card-range,
-.batch-card:hover:not(.batch-card-disabled) .batch-card-count,
-.batch-card:hover:not(.batch-card-disabled) .batch-card-arrow { color: #fff; }
+.batch-card:hover:not(.batch-card-disabled) .batch-card-count {
+  color: #fff;
+}
+.batch-card:hover:not(.batch-card-disabled) .batch-card-arrow { color: #fff; opacity: 0.8; }
 .batch-card:active:not(.batch-card-disabled) { transform: scale(0.95); }
 .batch-card.batch-card-disabled {
   opacity: 0.35;
   cursor: default;
   pointer-events: none;
 }
+
+/* ラベル（まとめ） */
 .batch-card-label {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
-  color: var(--purple);
+  color: #999;
+  letter-spacing: 0.3px;
   line-height: 1;
-  white-space: nowrap;
 }
 .batch-card.has-stock .batch-card-label { color: var(--purple); }
-.batch-card-dest {
-  font-size: 10px;
-  color: #9b86d4;
-  font-weight: 500;
+
+/* 工程名 */
+.batch-card-range {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
   white-space: nowrap;
-  display: block;
-  margin-top: 1px;
+  line-height: 1;
 }
-.batch-card-range { display: none; }
+.batch-card.has-stock .batch-card-range { color: #6040a8; }
+
+/* 数値 */
 .batch-card-count {
   font-family: var(--mono);
   font-size: 26px;
@@ -718,19 +720,27 @@ input[type=search] { -webkit-appearance: none; }
   letter-spacing: -1px;
   white-space: nowrap;
 }
-.batch-card-count.zero { color: #ccc; font-size: 20px; font-weight: 400; }
+.batch-card-count.zero {
+  color: #ccc;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+/* → ヒント（右下） */
 .batch-card-arrow {
   position: absolute;
-  bottom: 3px;
-  right: 5px;
+  bottom: 4px;
+  right: 6px;
   font-size: 9px;
   font-weight: 700;
   color: var(--purple);
   opacity: 0.5;
 }
-.batch-card-bottom {
-  display: contents;
-}
+
+/* 遷移先（非表示：不要）*/
+.batch-card-dest { display: none; }
+.batch-card-top  { display: none; }
+.batch-card-bottom { display: none; }
 /* まとめ工程設定UI */
 .group-config-row {
   display: flex;
@@ -2211,7 +2221,6 @@ input[type=number] { -moz-appearance: textfield; }
 
   /* Process block */
   .process-block { flex: 0 0 138px; }
-  .batch-card { flex: 0 0 138px; }
   .process-count { font-size: 22px; }
   .btn-move, .btn-defect, .btn-qc, .btn-ship { font-size: 10px; padding: 6px 3px; }
 
@@ -2229,7 +2238,6 @@ input[type=number] { -moz-appearance: textfield; }
 
 @media (max-width: 360px) {
   .process-block { flex: 0 0 126px; }
-  .batch-card { flex: 0 0 126px; }
   .process-count { font-size: 20px; }
   .btn-move, .btn-defect, .btn-qc, .btn-ship { font-size: 9px; }
   .deburr-label, .done-label { font-size: 8px; }
@@ -2245,9 +2253,14 @@ input[type=number] { -moz-appearance: textfield; }
 /* ===== スマホ表示（767px以下）===== */
 @media screen and (max-width: 767px) {
   .field-mode, .admin-mode { padding: 8px; }
+  #tab-cal { padding: 8px 8px 0 !important; }
   #reportArea { padding: 5px; }
   .item-name { font-size: 14px; }
   .header { flex-wrap: nowrap; }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  #tab-cal { padding: 12px 12px 0 !important; }
 }
 
 /* ===== 印刷・PDF共通 ===== */
@@ -2336,8 +2349,17 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-day-cell.other-month .ship-day-num { color:#ccc }
 .ship-day-cell.sun-day .ship-day-num { color:#e53e3e }
 .ship-day-cell.sat-day .ship-day-num { color:#3182ce }
-.ship-day-status { display:flex;flex-direction:column;gap:1px;width:100%;padding:0 2px }
-.ship-day-dot { font-size:9px;line-height:1.4;text-align:center;font-weight:700;white-space:nowrap;letter-spacing:-.3px }
+.ship-day-status { display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:2px 0 0 }
+/* シンプルドット：最高優先度1個だけ表示 */
+.ship-day-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ship-day-dot.dot-ng   { background: #e53e3e; }
+.ship-day-dot.dot-warn { background: var(--amber); }
+.ship-day-dot.dot-ok   { background: var(--green); }
 
 /* ── 選択日ステータスバー（カレンダー直下） ── */
 .ship-date-status-bar {
@@ -2376,10 +2398,10 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-status-pill.safe { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
 .ship-status-pill.empty{ background: var(--bg3);      color: var(--text3); border: 1px solid var(--border); }
 
-/* ── フィルターチップ（強化版） ── */
+/* ── フィルターチップ（件数バッジ付き） ── */
 .ship-filter-row { display:flex;gap:6px;padding:0 0 10px;flex-wrap:wrap }
 .ship-filter-chip {
-  padding: 7px 14px;
+  padding: 8px 14px;
   border-radius: 20px;
   border: 1.5px solid var(--border);
   background: #fff;
@@ -2392,81 +2414,178 @@ input[type=number] { -moz-appearance: textfield; }
   -webkit-tap-highlight-color: transparent;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
-.ship-filter-chip:hover { border-color: var(--accent);color:var(--accent) }
+.ship-filter-chip .sf-count {
+  background: rgba(0,0,0,0.07);
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 800;
+}
+.ship-filter-chip:hover { border-color: var(--accent); color: var(--accent); }
 .ship-filter-chip.active {
   background: var(--red-bg);
   border-color: var(--red);
   color: var(--red);
   box-shadow: 0 1px 4px rgba(217,41,63,.12);
 }
+.ship-filter-chip.active .sf-count { background: rgba(217,41,63,.12); }
 .ship-filter-chip.active-warn {
   background: var(--amber-bg);
   border-color: var(--amber-bd);
   color: var(--amber);
 }
+.ship-filter-chip.active-warn .sf-count { background: rgba(200,121,10,.1); }
+.ship-filter-chip.active-ok {
+  background: var(--green-bg);
+  border-color: var(--green-bd);
+  color: var(--green);
+}
+.ship-filter-chip.active-ok .sf-count { background: rgba(26,158,98,.1); }
 .ship-filter-chip.active-all {
   background: var(--bg3);
   border-color: var(--border2);
   color: var(--text2);
 }
 
-/* ── 出荷カード（強化版） ── */
+/* ── 出荷カード（神デザイン v3 - 縦レイアウト） ── */
 .ship-item-card {
-  border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
+  border-radius: 16px;
+  padding: 18px 18px 14px;
+  margin-bottom: 12px;
   cursor: pointer;
-  transition: all .15s;
-  border: none;
+  transition: transform .15s, box-shadow .15s;
+  border-left: 5px solid transparent;
   -webkit-tap-highlight-color: transparent;
   position: relative;
-  border-left: 4px solid transparent;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
-/* 緊急度グラデーション */
 .ship-item-card.danger-high {
-  background: linear-gradient(135deg, #ffe0e0 0%, #ffd0d0 100%);
+  background: #fff5f5;
   border-left-color: #e53e3e;
-  box-shadow: 0 3px 12px rgba(229,62,62,.15);
+  box-shadow: 0 3px 14px rgba(229,62,62,.14);
 }
 .ship-item-card.danger-mid {
-  background: linear-gradient(135deg, #fff0f0 0%, #ffe5e5 100%);
+  background: #fff8f8;
   border-left-color: var(--red);
-  box-shadow: 0 2px 8px rgba(217,41,63,.1);
+  box-shadow: 0 2px 10px rgba(217,41,63,.1);
 }
 .ship-item-card.danger-low {
-  background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%);
+  background: #fff8f8;
   border-left-color: #f87171;
-  box-shadow: 0 2px 6px rgba(248,113,113,.1);
+  box-shadow: 0 2px 8px rgba(248,113,113,.1);
 }
 .ship-item-card.warning {
-  background: linear-gradient(135deg, #fffbeb 0%, #fff3cc 100%);
+  background: #fffdf0;
   border-left-color: var(--amber);
-  box-shadow: 0 2px 8px rgba(200,121,10,.1);
+  box-shadow: 0 2px 10px rgba(200,121,10,.1);
 }
 .ship-item-card.safe {
-  background: linear-gradient(135deg, #f0fdf4 0%, #eefaf0 100%);
+  background: #f6fdf8;
   border-left-color: var(--green);
-  box-shadow: 0 2px 6px rgba(26,158,98,.08);
+  box-shadow: 0 2px 8px rgba(26,158,98,.08);
 }
-.ship-item-card:hover  { transform:translateY(-2px); filter:brightness(1.01); }
-.ship-item-card:active { transform:scale(.99) }
+.ship-item-card:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+.ship-item-card:active { transform: scale(.98); }
 
-.ship-card-name { font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
-.ship-card-code { font-family:var(--mono);font-size:11px;color:var(--text3);background:rgba(255,255,255,.7);padding:1px 6px;border-radius:4px;display:inline-block;margin-bottom:8px }
-.ship-card-nums { display:flex;align-items:baseline;gap:16px }
-.ship-card-shortage-block { display:flex;flex-direction:column;gap:0 }
-.ship-card-shortage-label { font-size:10px;font-weight:700;color:#c0392b;letter-spacing:.3px }
-.ship-card-shortage-val { font-family:var(--mono);font-size:28px;font-weight:900;color:#c0392b;line-height:1;letter-spacing:-1px }
-.ship-item-card.warning .ship-card-shortage-label { color:#a16207 }
-.ship-item-card.warning .ship-card-shortage-val { color:#a16207 }
-.ship-item-card.safe .ship-card-shortage-label { color:var(--green);opacity:.7;font-size:9px }
-.ship-item-card.safe .ship-card-shortage-val { color:var(--green);font-size:20px;font-weight:700 }
-.ship-card-ship-block { display:flex;flex-direction:column;gap:0 }
-.ship-card-ship-label { font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.3px }
-.ship-card-ship-val { font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text2);line-height:1 }
-.ship-card-dest { font-size:11px;color:var(--text3);margin-top:6px }
+/* カードヘッダー行：品名 + 日付 */
+.ship-card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ship-card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ship-card-date-tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  background: rgba(0,0,0,0.04);
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.ship-card-date-tag.urgent { color: #e53e3e; background: #fff0f0; }
+.ship-card-date-tag.soon   { color: var(--amber); background: var(--amber-bg); }
+
+/* 主役エリア：数値 + 状態ラベル */
+.ship-card-main-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ship-card-shortage-val {
+  font-family: var(--mono);
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: var(--red);
+}
+.ship-item-card.warning .ship-card-shortage-val { color: var(--amber); }
+.ship-item-card.safe .ship-card-shortage-val    { color: var(--green); font-size: 30px; }
+.ship-card-state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+.ship-card-state-badge.ng   { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd); }
+.ship-card-state-badge.warn { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+.ship-card-state-badge.ok   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+
+/* サブ情報行 */
+.ship-card-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text3);
+  flex-wrap: wrap;
+}
+.ship-card-info-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ship-card-info-label { font-weight: 600; color: var(--text3); }
+.ship-card-info-val   { font-weight: 700; color: var(--text2); font-family: var(--mono); }
+
+/* 出荷先 */
+.ship-card-dest {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* カード区切り線 */
+.ship-card-divider {
+  height: 1px;
+  background: rgba(0,0,0,0.05);
+  margin: 10px 0 0;
+}
 
 /* ── 日付詳細ヘッダー（旧） ── */
 .ship-detail-header { display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px;gap:8px;flex-wrap:wrap }
@@ -2643,7 +2762,7 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner { display: block; overflow-x: hidden; }
 .ship-inner .tab-bar { position: sticky; top: 0; z-index: 40; }
 
-.ship-inner {box-sizing:border-box;margin:0;padding:0;max-width:100%;overflow-x:hidden}
+.ship-inner {box-sizing:border-box;margin:0 auto;padding:0;max-width:1400px;width:100%;overflow-x:hidden}
 .ship-inner {font-family:var(--font);background:var(--bg);color:var(--text)}
 .ship-inner .app-header {background:#1a6b45;color:#fff;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.15);position:sticky;top:0;z-index:50}
 .ship-inner .app-logo {font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
@@ -2657,9 +2776,10 @@ input[type=number] { -moz-appearance: textfield; }
 .ship-inner .tab-btn {padding:12px 20px;font-size:13px;font-weight:600;color:#999;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .ship-inner .tab-btn.active {color:#1a6b45;border-bottom-color:#1a6b45}
 .ship-inner .tab-btn:hover:not(.active) {color:#555}
-.ship-inner .main {max-width:1100px;margin:0 auto;padding:16px 12px calc(80px + env(safe-area-inset-bottom, 0px))}
+.ship-inner .main {max-width:1400px;margin:0 auto;padding:12px 12px calc(80px + env(safe-area-inset-bottom, 0px))}
+@media screen and (min-width:768px){.ship-inner .main{padding-left:16px;padding-right:16px}}
 @media screen and (max-width:767px){.ship-inner .main{padding-left:8px;padding-right:8px}}
-@media (max-width:480px){.ship-inner .main{padding-left:10px;padding-right:10px}}
+@media (max-width:480px){.ship-inner .main{padding-left:8px;padding-right:8px}}
 .ship-inner .toolbar {display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .ship-inner .page-title {font-size:17px;font-weight:700;color:#1a1a1a}
 .ship-inner .nav-group {display:flex;align-items:center;gap:6px;margin-left:auto}
@@ -3958,7 +4078,7 @@ input[type=number] { -moz-appearance: textfield; }
   border-top: 0px solid var(--border);
 }
 .fc-expanded .fc-body {
-  max-height: 3600px;
+  max-height: 2400px;
   padding: 12px 14px 14px;
   border-top: 1px solid var(--border);
 }
@@ -5044,9 +5164,12 @@ input[type=number] { -moz-appearance: textfield; }
 
   /* ── 出荷モード（PC）── */
   #ship-mode .ship-inner {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 20px 24px 40px;
+    padding: 0;
+  }
+  #tab-cal {
+    padding: 16px 16px 0 !important;
   }
   .ship-week-grid {
     grid-template-columns: repeat(7, 1fr);
@@ -5503,7 +5626,7 @@ input[type=number] { -moz-appearance: textfield; }
           <option value="3">③</option><option value="4" selected>④</option>
           <option value="5">⑤</option><option value="6">⑥</option>
         </select>
-        <button class="group-add-btn" onclick="addProcessGroup()">＋ 追加</button>
+        <button type="button" class="group-add-btn" onclick="addProcessGroup()">＋ 追加</button>
       </div>
     </div>
     <div class="modal-actions">
@@ -5692,10 +5815,10 @@ input[type=number] { -moz-appearance: textfield; }
 <div id="toast-container"></div>
 
 <div id="ship-mode" style="display:none">
-  <div class="ship-inner admin-mode" id="ship-inner" style="padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));width:100%;max-width:100%;overflow-x:hidden;box-sizing:border-box">
+  <div class="ship-inner" id="ship-inner" style="width:100%;overflow-x:hidden;box-sizing:border-box">
 <span class="sync-badge" id="sync-badge" style="display:none"></span>
 
-<div id="tab-cal" style="padding:12px 12px 0;box-sizing:border-box;width:100%">
+<div id="tab-cal" style="padding:0;box-sizing:border-box;width:100%">
 
     <!-- ① 検索 -->
     <div class="action-area" style="margin-bottom:10px">
@@ -5749,12 +5872,13 @@ input[type=number] { -moz-appearance: textfield; }
     </div>
 
     <!-- ⑤ フィルター -->
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap">
       <div class="ship-filter-row" style="flex:1;padding:0;margin:0;gap:6px">
-        <button class="ship-filter-chip active" id="sfchip-ng" onclick="setShipFilter('ng')">🔴 不足のみ</button>
-        <button class="ship-filter-chip" id="sfchip-3d" onclick="setShipFilter('3d')">⚡ 3日以内</button>
+        <button class="ship-filter-chip active" id="sfchip-ng" onclick="setShipFilter('ng')">🔴 不足<span class="sf-count" id="sfcount-ng">0</span></button>
+        <button class="ship-filter-chip" id="sfchip-3d" onclick="setShipFilter('3d')">🟡 3日以内<span class="sf-count" id="sfcount-3d">0</span></button>
+        <button class="ship-filter-chip" id="sfchip-ok" onclick="setShipFilter('ok')">🟢 OK<span class="sf-count" id="sfcount-ok">0</span></button>
       </div>
-      <button id="sfchip-all" onclick="setShipFilter('all')" style="flex-shrink:0;padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent">全件</button>
+      <button id="sfchip-all" onclick="setShipFilter('all')" style="flex-shrink:0;padding:7px 13px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;font-family:var(--font);-webkit-tap-highlight-color:transparent">全件</button>
     </div>
 
     <!-- ⑥ カード一覧 -->
@@ -6065,6 +6189,13 @@ loadDb();
     }
     // doneCount を index 7 の在庫と同期
     if(item.processCounts[7] > 0 && item.doneCount === 0) item.doneCount = item.processCounts[7];
+
+    // まとめ工程の対象インデックスを自動アクティブ化（既存データ修正）
+    (item.processGroups||[]).forEach(g=>{
+      for(let i=g.start-1; i<=g.end-1 && i<6; i++){
+        if(item.processConfig[i]) item.processConfig[i].active = true;
+      }
+    });
   });
   saveDb(); // マイグレーション結果を保存
 })();
@@ -6081,14 +6212,15 @@ function buildDisplayActives(item){
   const displayList = [];
   const covered = new Set();
 
-  // 各グループについて、アクティブな工程を収集（0件でもグループとして追加）
+  // 各グループについて、アクティブな工程を収集
   for(const g of groups){
     const si = g.start - 1; // 0-indexed
     const ei = g.end - 1;
     const ga = actives.filter(a => a.idx >= si && a.idx <= ei);
-    // アクティブ工程がなくてもグループ設定があれば表示する
-    ga.forEach(a => covered.add(a.idx));
-    displayList.push({ isGroup:true, group:g, groupActives:ga });
+    if(ga.length > 0){
+      ga.forEach(a => covered.add(a.idx));
+      displayList.push({ isGroup:true, group:g, groupActives:ga });
+    }
   }
   // グループ外のアクティブ工程を個別エントリとして追加
   for(const p of actives){
@@ -6098,47 +6230,35 @@ function buildDisplayActives(item){
   }
   // 先頭のインデックス順にソート
   displayList.sort((a,b)=>{
-    const ai = a.isGroup ? (a.group.start - 1) : a.process.idx;
-    const bi = b.isGroup ? (b.group.start - 1) : b.process.idx;
+    const ai = a.isGroup ? a.groupActives[0].idx : a.process.idx;
+    const bi = b.isGroup ? b.groupActives[0].idx : b.process.idx;
     return ai - bi;
   });
   return displayList;
 }
 
-// まとめ工程ブロックのレンダリング（新デザイン: 2行カード形式）
+// まとめ工程ブロックのレンダリング（工程ボタン風・パープル系）
 function renderGroupBlock(item, entry, di, displayList){
   const { group, groupActives } = entry;
   const count = groupActives.reduce((s,a) => s + item.processCounts[a.idx], 0);
 
-  // 次工程を特定（グループ終端より後の最初のアクティブ工程）
   const allActives = getActives(item);
-  const ei = group.end - 1; // 0-indexed
+  const ei = group.end - 1;
   const nextProc = allActives.find(a => a.idx > ei);
   const canMove = count > 0 && !!nextProc;
 
-  // 表示名: 工程①〜⑤ 形式
-  const startLabel = GRP_LABELS[group.start-1] || group.start;
-  const endLabel   = GRP_LABELS[group.end-1]   || group.end;
-  const rangeLabel = '工程' + startLabel + '〜' + endLabel;
-
-  // 遷移先ラベル
-  var destLabel = '';
-  if(nextProc){
-    var cfg = item.processConfig ? item.processConfig[nextProc.idx] : null;
-    var ntype = cfg ? cfg.type : null;
-    var nname = ntype==='deburr' ? 'バリ取り' : ntype==='done' ? '完成品' : PNAMES[nextProc.idx];
-    destLabel = '→ ' + nname;
-  }
-
-  var onclickStr = canMove
+  const rangeLabel = '工程' + group.start + '〜' + group.end;
+  const stockCls = count > 0 ? ' has-stock' : '';
+  const disabledCls = canMove ? '' : ' batch-card-disabled';
+  const onclickStr = canMove
     ? "handleAction('まとめ移動',{itemId:'" + item.id + "',groupStart:" + group.start + ",groupEnd:" + group.end + "})"
     : 'void(0)';
 
-  return '<div class="batch-card' + (canMove ? ' has-stock' : '') + (canMove ? '' : ' batch-card-disabled') + '" onclick="' + onclickStr + '">'
-    + '<span class="batch-card-label">' + rangeLabel + '</span>'
+  return '<div class="batch-card' + stockCls + disabledCls + '" onclick="' + onclickStr + '">'
+    + '<span class="batch-card-label">まとめ</span>'
+    + '<span class="batch-card-range">' + rangeLabel + '</span>'
     + '<span class="batch-card-count' + (count === 0 ? ' zero' : '') + '">' + formatQty(count) + '</span>'
-    + (destLabel ? '<span class="batch-card-dest">' + destLabel + '</span>' : '')
-    + (canMove ? '<span class="batch-card-arrow">→</span>' : '')
+    + '<span class="batch-card-arrow">→</span>'
   + '</div>';
 }
 
@@ -6149,10 +6269,16 @@ function openGroupOp(itemId, groupStart, groupEnd){
   const allActives = getActives(item);
   const si = groupStart - 1;
   const ei = groupEnd - 1;
-  const groupActives = allActives.filter(a => a.idx >= si && a.idx <= ei);
-  const groupCount = groupActives.reduce((s,a) => s + item.processCounts[a.idx], 0);
+  // processCounts を直接合算（active状態に依存しない）
+  let groupCount = 0;
+  for(let i=si;i<=ei&&i<item.processCounts.length;i++) groupCount+=item.processCounts[i];
   const nextProcess = allActives.find(a => a.idx > ei);
   if(!nextProcess){ toast('次工程がありません','error'); return; }
+  // 移動元: 範囲内の全インデックス（active不問）
+  const groupActives = [];
+  for(let i=si;i<=ei&&i<item.processCounts.length;i++){
+    if(item.processCounts[i]>0) groupActives.push({idx:i});
+  }
 
   const displayName = `${GRP_LABELS[groupStart-1]}〜${GRP_LABELS[groupEnd-1]}`;
   pendingOp = {
@@ -6502,10 +6628,37 @@ function renderItemCard(item){
   const doneProc   = allActivesForBody.find(p => p.type === 'done');
   const doneCntForBody = doneProc ? item.processCounts[doneProc.idx] : 0;
 
-  // 加工グループ
-  let kakouGridHtml = '';
-  if(kakouProcs.length > 0){
-    const btns = kakouProcs.map(p => {
+  // まとめ工程ボタン（kakouProcs とは独立して生成）
+  const batchGroups = (item.processGroups||[]).filter(g=>g.start>=1&&g.end<=6&&g.start<=g.end);
+  const coveredByBatch = new Set();
+  batchGroups.forEach(g=>{ for(let i=g.start-1;i<=g.end-1;i++) coveredByBatch.add(i); });
+
+  // ── 通常工程 + まとめ工程を統一配列にして工程番号順にソート ──
+  const allKakouEntries = [];
+
+  // 通常工程（まとめ対象外）を追加
+  kakouProcs
+    .filter(p => !coveredByBatch.has(p.idx))
+    .forEach(p => {
+      allKakouEntries.push({ type: 'normal', startIdx: p.idx, process: p });
+    });
+
+  // まとめ工程を追加
+  batchGroups.forEach(g => {
+    allKakouEntries.push({ type: 'group', startIdx: g.start - 1, group: g });
+  });
+
+  // 開始工程番号でソート（同じ場合は normal → group の順）
+  allKakouEntries.sort((a, b) => {
+    if(a.startIdx !== b.startIdx) return a.startIdx - b.startIdx;
+    if(a.type === b.type) return 0;
+    return a.type === 'normal' ? -1 : 1;
+  });
+
+  // ボタンHTMLを生成
+  const sortedKakouBtns = allKakouEntries.map(entry => {
+    if(entry.type === 'normal'){
+      const p = entry.process;
       const cnt = item.processCounts[p.idx];
       const nextActives = allActivesForBody.filter(a => a.idx > p.idx);
       const canMove = cnt > 0 && nextActives.length > 0;
@@ -6516,18 +6669,30 @@ function renderItemCard(item){
         +'<span class="proc-btn-cnt'+(cnt===0?' zero':'')+'">'+cnt+'</span>'
         +(canMove?'<span class="proc-btn-move-hint">→</span>':'')
         +'</button>';
-    }).join('');
+    } else {
+      const g = entry.group;
+      const si=g.start-1, ei=g.end-1;
+      let cnt=0;
+      for(let i=si;i<=ei&&i<item.processCounts.length;i++) cnt+=item.processCounts[i];
+      const nextProc=allActivesForBody.find(a=>a.idx>ei);
+      const canMove=cnt>0&&!!nextProc;
+      const rangeLabel='工程'+GRP_LABELS[g.start-1]+'〜'+GRP_LABELS[g.end-1];
+      return '<button class="proc-btn proc-btn-batch-grid'+(cnt>0?' has-stock':'')+'" '
+        +(canMove?'':'disabled ')
+        +'onclick="handleAction(\'まとめ移動\',{itemId:\''+item.id+'\',groupStart:'+g.start+',groupEnd:'+g.end+'})">'
+        +'<span class="proc-btn-name">'+rangeLabel+'</span>'
+        +'<span class="proc-btn-cnt'+(cnt===0?' zero':'')+'">'+formatQty(cnt)+'</span>'
+        +(canMove?'<span class="proc-btn-move-hint">→</span>':'')
+        +'</button>';
+    }
+  }).join('');
 
-    // まとめ工程カードを工程グリッドの下に追加
-    const groupBlocks = displayList
-      .filter(e => e.isGroup)
-      .map((entry, di) => renderGroupBlock(item, entry, di, displayList))
-      .join('');
-
+  // 加工グループ（ソート済み）
+  let kakouGridHtml = '';
+  if(allKakouEntries.length > 0){
     kakouGridHtml = '<div class="proc-group-arrow">▼ 加工</div>'
       +'<div class="proc-group proc-group-kakou">'
-      +'<div class="proc-kakou-grid">'+btns+'</div>'
-      +(groupBlocks ? '<div class="batch-area" style="margin-top:8px">'+groupBlocks+'</div>' : '')
+      +'<div class="proc-kakou-grid">'+sortedKakouBtns+'</div>'
       +'</div>';
   }
 
@@ -6587,13 +6752,14 @@ function renderItemCard(item){
       +'<span class="fc-name">'+escH(item.name)+(item.maker?'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:5px">'+escH(item.maker)+'</span>':'')+'</span>'
       +'<span class="fc-code">'+escH(item.code)+'</span>'
     +'</div>'
-    // 主役数量 / 内訳 / セパレータ
+    // 主役数量 / 内訳 / ステータス / セパレータ
     +statsRowHtml
     // 操作エリア
     +'<div class="fc-actions">'
       +'<button class="fc-btn-detail fc-btn-toggle-op" onclick="event.stopPropagation();toggleCard(\''+item.id+'\')" title="工程詳細">✏ 作業を入力</button>'
     +'</div>'
-    // 工程詳細ボディ（まとめ工程含む）
+
+    // 工程詳細ボディ
     +detailBodyHtml
   +'</div>';
 }
@@ -6678,7 +6844,18 @@ function _doReceive(itemId, qty){
   if(!item) return;
   const actives = getActives(item);
   if(!actives.length){ toast('工程が設定されていません','error'); return; }
-  const firstIdx = actives[0].idx;
+
+  // まとめ工程がある場合は最小インデックスを優先
+  const batchGroups = (item.processGroups||[]).filter(g=>g.start>=1&&g.end<=6&&g.start<=g.end);
+  let firstIdx = actives[0].idx;
+  if(batchGroups.length > 0){
+    // バッチ対象の中で最小インデックスを入庫先にする
+    const batchMinIdx = Math.min(...batchGroups.map(g=>g.start-1));
+    if(batchMinIdx < firstIdx) firstIdx = batchMinIdx;
+    // processCounts の範囲外チェック
+    if(firstIdx < 0 || firstIdx >= item.processCounts.length) firstIdx = actives[0].idx;
+  }
+
   item.processCounts[firstIdx] += qty;
   const txId = addTx(itemId,'入庫',qty,null,firstIdx,'',_getRecvMachine(itemId));
   saveDb();
@@ -8174,9 +8351,22 @@ function saveItem(){
   if(editingItem){
     editingItem.code=code; editingItem.name=name; editingItem.unit=unit; editingItem.maker=maker; editingItem.processConfig=config;
     editingItem.processGroups=[...formGroups];
+    // まとめ工程の対象インデックスを自動アクティブ化
+    formGroups.forEach(g=>{
+      for(let i=g.start-1;i<=g.end-1&&i<6;i++){
+        if(!editingItem.processConfig[i]) editingItem.processConfig[i]={type:'process',active:true};
+        else editingItem.processConfig[i].active=true;
+      }
+    });
     saveDb();
     toast(`${name} を更新しました`,'success');
   } else {
+    // まとめ工程の対象インデックスを自動アクティブ化
+    formGroups.forEach(g=>{
+      for(let i=g.start-1;i<=g.end-1&&i<6;i++){
+        if(config[i]) config[i].active=true;
+      }
+    });
     db.items.push({id:genId(),code,name,unit,maker,processCounts:[0,0,0,0,0,0,0,0],doneCount:0,defectiveCount:0,shippedCount:0,processConfig:config,processGroups:[...formGroups]});
     saveDb();
     toast(`${name} を登録しました`,'success');
@@ -9113,28 +9303,30 @@ function goToday(){ shipPeriod==='week'?goThisWeek():goThisMonth(); }
 /* ── フィルター ── */
 function setShipFilter(f){
   shipFilter=f;
-  ['ng','3d'].forEach(k=>{
+  ['ng','3d','ok'].forEach(k=>{
     const el=document.getElementById('sfchip-'+k); if(!el) return;
     el.className='ship-filter-chip';
-    if(k===f) el.className+=f==='ng'?' active':' active-warn';
+    if(k===f){
+      if(f==='ng')  el.className+=' active';
+      else if(f==='3d') el.className+=' active-warn';
+      else if(f==='ok') el.className+=' active-ok';
+    }
   });
-  // 全件ボタンは常にスタイル変えない（サブ扱い）
   renderDayDetail();
 }
 
-/* ── ドット生成ヘルパー ── */
+/* ── ドット生成ヘルパー：最高優先度1ドットのみ ── */
 function _buildDots(d){
   const di=[];
   SHIPS.forEach((s,idx)=>{ const sd=new Date(s.d[0],s.d[1]-1,s.d[2]); if(sameDay(sd,d)) di.push(idx); });
   if(!di.length) return '';
   const dayStatuses=getDayStatuses(di);
-  const counts={ng:0,cond:0,ok:0};
-  di.forEach(idx=>{ const s=SHIPS[idx]; counts[s.shipped?'ok':(dayStatuses[idx]||'ok')]++; });
-  let h='';
-  if(counts.ng)   h+=`<div class="ship-day-dot mcal-dot" style="color:#dc2626">🔴${counts.ng}</div>`;
-  if(counts.cond) h+=`<div class="ship-day-dot mcal-dot" style="color:#d97706">🟡${counts.cond}</div>`;
-  if(counts.ok)   h+=`<div class="ship-day-dot mcal-dot" style="color:#16a34a">🟢${counts.ok}</div>`;
-  return h;
+  let hasNg=false, hasCond=false, hasOk=false;
+  di.forEach(idx=>{ const s=SHIPS[idx]; const st=s.shipped?'ok':(dayStatuses[idx]||'ok'); if(st==='ng') hasNg=true; else if(st==='cond') hasCond=true; else hasOk=true; });
+  if(hasNg)   return '<div class="ship-day-dot dot-ng"></div>';
+  if(hasCond) return '<div class="ship-day-dot dot-warn"></div>';
+  if(hasOk)   return '<div class="ship-day-dot dot-ok"></div>';
+  return '';
 }
 
 /* ── 週カレンダー描画 ── */
@@ -9248,13 +9440,21 @@ function renderDayDetail(){
   });
   // フィルター
   const in3=new Date(now.getTime()+3*86400000);
+  const ngCnt  = allItems.filter(x=>x.st==='ng').length;
+  const condCnt= allItems.filter(x=>x.st==='cond').length;
+  const okCnt  = allItems.filter(x=>x.st==='ok').length;
+  const in3Cnt = allItems.filter(x=>x.d<=in3).length;
+  // バッジカウント更新
+  ['ng','3d','ok'].forEach(k=>{
+    const el=document.getElementById('sfcount-'+k); if(!el) return;
+    el.textContent=k==='ng'?ngCnt:k==='3d'?in3Cnt:okCnt;
+  });
   let filtered=allItems;
   if(shipFilter==='ng')      filtered=allItems.filter(x=>x.st==='ng');
   else if(shipFilter==='3d') filtered=allItems.filter(x=>x.d<=in3);
-  // バッジ
+  else if(shipFilter==='ok') filtered=allItems.filter(x=>x.st==='ok');
+  // バッジ（ステータスバー）
   const badge=document.getElementById('detail-summary-badge');
-  const ngCnt=allItems.filter(x=>x.st==='ng').length;
-  const condCnt=allItems.filter(x=>x.st==='cond').length;
   if(badge){
     if(ngCnt>0)        badge.innerHTML=`<span class="ship-status-pill ng">🔴 不足 ${ngCnt}件</span>`;
     else if(condCnt>0) badge.innerHTML=`<span class="ship-status-pill warn">🟡 注意 ${condCnt}件</span>`;
@@ -9271,9 +9471,9 @@ function renderDayDetail(){
   filtered.sort((a,b)=>{
     const dateDiff=a.d-b.d;
     if(dateDiff!==0) return dateDiff;
-    const shortageDiff=a.shortage-b.shortage; // 不足大（負が大きい）→先
+    const shortageDiff=a.shortage-b.shortage;
     if(shortageDiff!==0) return shortageDiff;
-    return b.s.qty-a.s.qty; // 出荷数多い順
+    return b.s.qty-a.s.qty;
   });
   el.innerHTML=filtered.map(({s,i,p,futureStock,shortage,st,d,diff})=>{
     const absShortage=Math.abs(shortage);
@@ -9283,32 +9483,26 @@ function renderDayDetail(){
     } else {
       cardCls=st==='cond'?'warning':'safe';
     }
-    const shortLabel=st==='ng'?'不足':st==='cond'?'注意（不足）':'在庫';
-    const shortVal=st==='safe'?futureStock.toLocaleString():absShortage.toLocaleString();
-    const dayTag=diff===0?'今日':diff===1?'明日':diff+'日後';
-    const dayColor=diff<=3?'#e53e3e':diff<=7?'#d97706':'#888';
-    const dateStr=`${s.d[1]}/${s.d[2]}（${DOW_NAMES[d.getDay()]}）`;
+    const stateLabel=st==='ng'?'⚠ 不足':st==='cond'?'⚠ 注意':'✔ OK';
+    const stateCls  =st==='ng'?'ng':st==='cond'?'warn':'ok';
+    const shortVal  =st==='ok'?futureStock.toLocaleString():absShortage.toLocaleString();
+    const dateStr   =`${s.d[1]}/${s.d[2]}（${DOW_NAMES[d.getDay()]}）`;
+    const dateCls   =diff<=0?'urgent':diff<=3?'soon':'';
     return `<div class="ship-item-card ${cardCls}" onclick="showShipDetail(${i})">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-        <div class="ship-card-name" style="flex:1">${escSH(p.name)}${s.name&&s.name!==p.name?` <span style="font-weight:400;font-size:11px;color:var(--text3)">${escSH(s.name||s.item||'')}</span>`:''}</div>
-        <span style="font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0;margin-left:8px">${dateStr}</span>
+      <div class="ship-card-header-row">
+        <span class="ship-card-name">${escSH(p.name)}${s.name&&s.name!==p.name?` <span style="font-weight:400;font-size:11px;color:var(--text3)">${escSH(s.name||s.item||'')}</span>`:''}</span>
+        <span class="ship-card-date-tag ${dateCls}">${dateStr}</span>
       </div>
-      ${s.code||p.code?`<span class="ship-card-code">${escSH(s.code||p.code||'')}</span>`:''}
-      <div class="ship-card-nums">
-        <div class="ship-card-shortage-block">
-          <span class="ship-card-shortage-label">${shortLabel}</span>
-          <span class="ship-card-shortage-val">${shortVal}</span>
-        </div>
-        <div class="ship-card-ship-block">
-          <span class="ship-card-ship-label">出荷数</span>
-          <span class="ship-card-ship-val">${s.qty.toLocaleString()}</span>
-        </div>
-        <div class="ship-card-ship-block" style="margin-left:4px">
-          <span class="ship-card-ship-label" style="color:${diff<=3?'#e53e3e':diff<=7?'#d97706':'#888'}">${diff<=0?'⚠':'📅'} 期日</span>
-          <span class="ship-card-ship-val" style="font-size:14px;color:${dayColor}">${dayTag}</span>
-        </div>
+      <div class="ship-card-main-row">
+        <span class="ship-card-shortage-val">${shortVal}</span>
+        <span class="ship-card-state-badge ${stateCls}">${stateLabel}</span>
       </div>
-      <div class="ship-card-dest">${escSH(s.dest||'')}</div>
+      <div class="ship-card-info-row">
+        <span class="ship-card-info-item"><span class="ship-card-info-label">出荷予定</span><span class="ship-card-info-val">${s.qty.toLocaleString()}個</span></span>
+        <span class="ship-card-info-item"><span class="ship-card-info-label">在庫</span><span class="ship-card-info-val">${futureStock.toLocaleString()}個</span></span>
+        ${diff<=3?`<span class="ship-card-info-item" style="color:${diff<=0?'#e53e3e':'var(--amber)'}"><span style="font-weight:700">${diff<=0?'⚠ 今日':diff===1?'明日':diff+'日後'}</span></span>`:''}
+      </div>
+      ${s.dest?`<div class="ship-card-dest">📍 ${escSH(s.dest)}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -10767,6 +10961,26 @@ function resetAllData(){
 }
 .proc-btn-kakou:hover:not(:disabled) .proc-btn-move-hint { color: #fff; opacity: 0.8; }
 
+/* ===== まとめ工程ボタン（グリッド内・パープル系）===== */
+.proc-btn-batch-grid {
+  background: #fff;
+  border-color: #c8b8e8;
+  color: var(--text2);
+}
+.proc-btn-batch-grid .proc-btn-name { color: var(--text3); }
+.proc-btn-batch-grid .proc-btn-cnt  { color: var(--purple); }
+.proc-btn-batch-grid .proc-btn-move-hint { color: var(--purple); }
+.proc-btn-batch-grid.has-stock {
+  background: #f3eeff;
+  border-color: var(--purple);
+  box-shadow: 0 2px 6px rgba(124,92,191,0.15);
+}
+.proc-btn-batch-grid.has-stock .proc-btn-name { color: #6040a8; }
+.proc-btn-batch-grid:hover:not(:disabled) { background: var(--purple); border-color: var(--purple); }
+.proc-btn-batch-grid:hover:not(:disabled) .proc-btn-name,
+.proc-btn-batch-grid:hover:not(:disabled) .proc-btn-cnt  { color: #fff; }
+.proc-btn-batch-grid:hover:not(:disabled) .proc-btn-move-hint { color: #fff; opacity: 0.8; }
+
 /* バリ取りボタン */
 .proc-btn-deburr {
   background: #fff;
@@ -11134,52 +11348,6 @@ function resetAllData(){
   font-family: var(--mono);
   white-space: nowrap;
 }
-
-/* ===== スマホ: 横スクロール完全防止 ===== */
-@media (max-width: 768px) {
-  html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-  }
-  * {
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  /* 横はみ出しやすい要素を制限 */
-  .field-mode,
-  .admin-mode,
-  #ship-mode,
-  #settings-mode {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-  /* テーブル・横スクロールエリアは内側だけスクロール */
-  .data-table-wrap,
-  .process-grid,
-  .fc-procflow,
-  .acv2-machine-section,
-  .ship-inner {
-    overflow-x: auto !important;
-    max-width: 100% !important;
-  }
-  /* モーダルが画面外に出ないよう */
-  .modal {
-    max-width: calc(100vw - 24px) !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  /* カード類 */
-  .fc,
-  .admin-card,
-  .item-card,
-  .sn-machine-card {
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-}
 </style>
 
 <div id="settings-mode" style="display:none">
@@ -11429,4 +11597,245 @@ function _syncSwipeNum(inputId) {
 </script>
 
 </script>
+
+<!-- ================================================================
+     まとめ工程 自動制御 (差分実装 v1.0)
+     ■ 既存コードを破壊せず、関数オーバーライド方式で追加
+     ================================================================ -->
+<style>
+/* ---- まとめ対象：ロック状態スタイル ---- */
+.process-config-item.grouped-locked {
+  background: #f3f4f7 !important;
+  border-color: #dcdfea !important;
+  pointer-events: none;
+  cursor: default;
+}
+.process-config-item.grouped-locked .process-config-label {
+  color: #999 !important;
+}
+.grouped-locked-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 2px 0;
+}
+.grouped-locked-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: #b0b4c8;
+  border-radius: 3px;
+  padding: 3px 8px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+/* ---- 初回ツールチップ ---- */
+.grouped-intro-tip {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(28, 28, 50, 0.91);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 9px 18px;
+  border-radius: 20px;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+  animation: _gtip 2.6s ease forwards;
+}
+@keyframes _gtip {
+  0%   { opacity:0; transform:translateX(-50%) translateY(6px); }
+  12%  { opacity:1; transform:translateX(-50%) translateY(0); }
+  72%  { opacity:1; }
+  100% { opacity:0; }
+}
+</style>
+
+<script>
+/* ================================================================
+   syncGroupedLocks()
+   formGroups に基づいて formPC[0..5] の locked フラグを同期し
+   UIを即時更新する。
+   ================================================================ */
+function syncGroupedLocks() {
+  // 1. グループ対象インデックスセット（1-based → 0-based）
+  const lockedSet = new Set();
+  formGroups.forEach(function(g) {
+    for (var i = g.start - 1; i <= g.end - 1 && i < 6; i++) {
+      lockedSet.add(i);
+    }
+  });
+
+  // 2. 各工程を更新
+  for (var i = 0; i < 6; i++) {
+    var wasLocked = !!formPC[i].locked;
+    var isLocked  = lockedSet.has(i);
+    formPC[i].locked = isLocked;
+
+    if (isLocked && !wasLocked) {
+      // 新規ロック → active を true に強制
+      formPC[i].active = true;
+    } else if (!isLocked && wasLocked) {
+      // ロック解除 → ボタンを再生成してからリセット
+      _rebuildPCToggle(i);
+      formPC[i].active = false;
+    }
+    // UI更新（オーバーライド済み updatePCUI を呼ぶ）
+    updatePCUI(i);
+  }
+
+  // 3. 初回ツールチップ（セッション内1回のみ）
+  if (lockedSet.size > 0 && !sessionStorage.getItem('_grp_tip')) {
+    sessionStorage.setItem('_grp_tip', '1');
+    var tip = document.createElement('div');
+    tip.className = 'grouped-intro-tip';
+    tip.textContent = 'まとめ対象の工程は自動制御されます';
+    document.body.appendChild(tip);
+    setTimeout(function() { if (tip.parentNode) tip.parentNode.removeChild(tip); }, 2700);
+  }
+}
+
+/* ================================================================
+   _rebuildPCToggle(i)
+   ロック解除時にトグルボタンを再生成する。
+   ================================================================ */
+function _rebuildPCToggle(i) {
+  // process-config-grid の i 番目の子要素（0-based）を探す
+  var grid = gid('process-config-grid');
+  if (!grid) return;
+  var items = grid.querySelectorAll('.process-config-item');
+  var configItem = items[i];
+  if (!configItem) return;
+
+  // ロック中はトグル div の中身がバッジになっているので再生成
+  var toggle = configItem.querySelector('.grouped-locked-toggle');
+  if (toggle) {
+    toggle.className = 'process-toggle';
+    toggle.innerHTML =
+      '<button class="type-btn" id="pc-off-' + i + '" onclick="setPC(' + i + ',\'off\')">なし</button>' +
+      '<button class="type-btn" id="pc-process-' + i + '" onclick="setPC(' + i + ',\'process\')">通常</button>';
+  }
+  configItem.classList.remove('grouped-locked');
+}
+
+/* ================================================================
+   updatePCUI オーバーライド
+   ロック状態の場合は「まとめ対象」バッジを表示。
+   それ以外は元の処理へ委譲。
+   ================================================================ */
+var _origUpdatePCUI = updatePCUI;
+updatePCUI = function(i) {
+  // バリ取り・完成品は対象外
+  if (i >= 6) { _origUpdatePCUI(i); return; }
+
+  if (formPC[i] && formPC[i].locked) {
+    // ── ロック状態 ──
+    var offBtn = gid('pc-off-' + i);
+    if (!offBtn) return; // まだ DOM がない（initFormPC 前）
+
+    var toggle = offBtn.parentElement;
+    if (!toggle) return;
+
+    // バッジに差し替え
+    toggle.className = 'grouped-locked-toggle';
+    toggle.innerHTML = '<span class="grouped-locked-badge">まとめ対象</span>';
+
+    // 親に locked クラス
+    var configItem = toggle.closest('.process-config-item');
+    if (configItem) configItem.classList.add('grouped-locked');
+
+  } else {
+    // ── 通常状態 ──
+    // ボタンが消えていたら再生成
+    if (!gid('pc-off-' + i)) {
+      _rebuildPCToggle(i);
+    } else {
+      // locked クラスだけ除去
+      var btn = gid('pc-off-' + i);
+      if (btn) {
+        var ci = btn.closest('.process-config-item');
+        if (ci) ci.classList.remove('grouped-locked');
+      }
+    }
+    _origUpdatePCUI(i);
+  }
+};
+
+/* ================================================================
+   setPC オーバーライド
+   ロック中の工程は操作を無視する。
+   ================================================================ */
+var _origSetPC = setPC;
+setPC = function(i, type) {
+  if (i < 6 && formPC[i] && formPC[i].locked) return; // ロック中は無視
+  _origSetPC(i, type);
+};
+
+/* ================================================================
+   addProcessGroup オーバーライド
+   ・重複チェック強化（同工程が複数グループに入らない）
+   ・追加後に syncGroupedLocks() を呼ぶ
+   ================================================================ */
+addProcessGroup = function() {
+  var s = parseInt(gid('gc-start').value);
+  var e = parseInt(gid('gc-end').value);
+  if (s > e) { toast('開始≤終了になるよう指定してください', 'error'); return; }
+  if (formGroups.some(function(g) { return g.start === s && g.end === e; })) {
+    toast('同じグループがすでに存在します', 'error'); return;
+  }
+  // 重複工程バリデーション（既存グループと範囲が重なる場合は拒否）
+  var existingNums = new Set();
+  formGroups.forEach(function(g) {
+    for (var n = g.start; n <= g.end; n++) existingNums.add(n);
+  });
+  for (var n = s; n <= e; n++) {
+    if (existingNums.has(n)) {
+      toast('工程' + GRP_LABELS[n-1] + 'はすでに別のまとめ工程に含まれています', 'error');
+      return;
+    }
+  }
+
+  formGroups.push({ start: s, end: e });
+  renderFormGroups();
+  syncGroupedLocks(); // ← 追加
+  toast('まとめ工程 ' + GRP_LABELS[s-1] + '〜' + GRP_LABELS[e-1] + ' を追加しました', 'success');
+};
+
+/* ================================================================
+   removeProcessGroup オーバーライド
+   ・削除後にボタンを再生成し、syncGroupedLocks() でロック解除
+   ================================================================ */
+removeProcessGroup = function(idx) {
+  formGroups.splice(idx, 1);
+  renderFormGroups();
+  // ロック解除前に全ボタンを再生成
+  for (var i = 0; i < 6; i++) {
+    if (formPC[i].locked) _rebuildPCToggle(i);
+    formPC[i].locked = false;
+  }
+  syncGroupedLocks(); // ← 残っているグループで再ロック
+};
+
+/* ================================================================
+   openItemFormEdit オーバーライド
+   フォームを開いた後（formGroups ロード済み）に syncGroupedLocks()
+   ================================================================ */
+var _origOpenItemFormEdit = openItemFormEdit;
+openItemFormEdit = function(itemId) {
+  _origOpenItemFormEdit(itemId);
+  // _origOpenItemFormEdit 内で formGroups がセットされているので
+  // ここで同期するだけでよい
+  syncGroupedLocks();
+};
+</script>
+<!-- /まとめ工程 自動制御 -->
+
 </html>
