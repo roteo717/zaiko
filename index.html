@@ -10492,11 +10492,15 @@ function resetAllData(){
 .stt-sub {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.25s ease;
+  transition: max-height 0.3s ease;
   background: #f8f9fc;
   border-top: 0;
 }
-.stt-sub.open { max-height: 400px; }
+.stt-sub.open {
+  max-height: 800px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .stt-sub-inner {
   padding: 12px 16px 16px;
   border-top: 1px solid #eceef5;
@@ -10524,13 +10528,23 @@ function resetAllData(){
   line-height: 1;
   margin-left: 2px;
 }
-.stt-add-row { display: flex; gap: 6px; }
+.stt-add-row {
+  display: flex;
+  gap: 6px;
+  position: sticky;
+  bottom: 0;
+  background: #f8f9fc;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid #eceef5;
+}
 .stt-add-row input {
   flex: 1;
+  min-width: 0;
   padding: 9px 12px;
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-family: var(--font);
   background: #fff;
   outline: none;
@@ -10538,6 +10552,7 @@ function resetAllData(){
 }
 .stt-add-row input:focus { border-color: var(--teal); }
 .stt-add-row button {
+  flex-shrink: 0;
   padding: 9px 14px;
   background: var(--teal);
   color: #fff;
