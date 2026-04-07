@@ -2366,15 +2366,15 @@ input[type=number] { -moz-appearance: textfield; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 12px 16px;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  box-shadow: 0 1px 6px rgba(0,0,0,.07);
   gap: 10px;
 }
 .ship-date-status-label {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--text);
 }
@@ -2722,7 +2722,7 @@ input[type=number] { -moz-appearance: textfield; }
 .mcal-cell.sun-c .mcal-dnum{color:#e53e3e}
 .mcal-cell.sat-c .mcal-dnum{color:#3182ce}
 .mcal-dnum{font-size:12px;font-weight:700;color:var(--text);line-height:1;width:22px;text-align:center}
-.mcal-dots{display:flex;flex-direction:column;gap:1px;width:100%;align-items:center}
+.mcal-dots{display:flex;flex-direction:column;gap:2px;width:100%;align-items:center}
 .mcal-dot{font-size:8px;line-height:1.3;font-weight:700;white-space:nowrap}
 .ship-alert-panel{background:var(--red-bg);border:1px solid var(--red-bd);border-radius:var(--r);padding:10px 14px;margin-bottom:10px}
 .ship-alert-panel.ship-alert-ok{background:var(--green-bg);border-color:var(--green-bd)}
@@ -9521,21 +9521,37 @@ function showDetail(idx){
   const stOk=futureStock>=s.qty,stCond=!stOk&&p&&(futureStock+wip>=s.qty);
   const st=stOk?'safe':stCond?'warn':'danger';
   const stIcon=stOk?'🟢':stCond?'🟡':'🔴';
-  const stText=stOk?`出荷可能（在庫 ${futureStock.toLocaleString()}個）`:stCond?`完成品不足（仕掛品込みで対応可）　不足 ${Math.abs(shortage).toLocaleString()}個`:`不足　${Math.abs(shortage).toLocaleString()}個（仕掛品含めても不足）`;
+  const absShortage=Math.abs(shortage);
+  const stText=stOk?`出荷可能（在庫 ${futureStock.toLocaleString()}個）`:stCond?`完成品不足（仕掛品込みで対応可）　不足 ${absShortage.toLocaleString()}個`:`不足　${absShortage.toLocaleString()}個（仕掛品含めても不足）`;
   const title=s.name||s.item||(p?p.name:'');
+  const diffMs=new Date(s.d[0],s.d[1]-1,s.d[2])-new Date(); const diff=Math.round(diffMs/86400000);
+  const dayTag=diff<0?`${Math.abs(diff)}日超過`:diff===0?'今日':diff===1?'明日':`${diff}日後`;
+  const dayColor=diff<=0?'#e53e3e':diff<=3?'var(--amber)':'var(--text2)';
   document.getElementById('modal-wrap').innerHTML=`
     <div class="ship-modal-bg" id="mbg" onclick="if(event.target.id==='mbg')shipCloseModal()">
       <div class="ship-modal-box">
         <div class="ship-modal-handle"></div>
         <div class="ship-modal-head">
-          <div class="ship-modal-title">${escSH(title)}</div>
+          <div>
+            <div class="ship-modal-title">${escSH(title)}</div>
+            <div style="font-size:12px;color:${dayColor};font-weight:700;margin-top:2px">📅 ${s.d[1]}/${s.d[2]}（${DOW_NAMES[d.getDay()]}）　${dayTag}</div>
+          </div>
           <button class="ship-modal-close" onclick="shipCloseModal()">✕</button>
         </div>
+
+        ${!stOk?`<div class="ship-modal-block" style="background:${st==='danger'?'#fff5f5':'#fffdf0'}">
+          <div style="font-size:10px;font-weight:700;color:${st==='danger'?'#c0392b':'var(--amber)'};letter-spacing:.5px;margin-bottom:4px">${st==='danger'?'⚠ 不足数':'⚠ 注意（不足）'}</div>
+          <div class="ship-modal-big-val ${st}">${absShortage.toLocaleString()}</div>
+        </div>`:`<div class="ship-modal-block" style="background:#f6fdf8">
+          <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.5px;margin-bottom:4px">✔ 出荷可能</div>
+          <div class="ship-modal-big-val safe">${futureStock.toLocaleString()}</div>
+        </div>`}
+
         <div class="ship-modal-block">
-          <div class="ship-modal-row"><span class="ship-modal-lbl">出荷日</span><span class="ship-modal-val">${s.d[0]}/${s.d[1]}/${s.d[2]}（${DOW_NAMES[d.getDay()]}）</span></div>
-          <div class="ship-modal-row"><span class="ship-modal-lbl">出荷数</span><span class="ship-modal-val" style="font-size:22px;color:var(--accent)">${s.qty.toLocaleString()}</span></div>
-          ${s.dest?`<div class="ship-modal-row"><span class="ship-modal-lbl">出荷先</span><span class="ship-modal-val" style="font-size:13px">${escSH(s.dest)}</span></div>`:''}
+          <div class="ship-modal-row"><span class="ship-modal-lbl">出荷予定数</span><span class="ship-modal-val" style="font-size:20px;font-weight:800;color:var(--text)">${s.qty.toLocaleString()}個</span></div>
+          ${s.dest?`<div class="ship-modal-row"><span class="ship-modal-lbl">📍 出荷先</span><span class="ship-modal-val" style="font-size:13px">${escSH(s.dest)}</span></div>`:''}
         </div>
+
         <div class="ship-modal-block">
           <div class="ship-modal-status-label">在庫状況</div>
           <div class="ship-modal-stock-row">
@@ -9543,13 +9559,11 @@ function showDetail(idx){
             <div class="ship-modal-stock-item"><div class="ship-modal-stock-lbl">仕掛品</div><div class="ship-modal-stock-num wip">${wip.toLocaleString()}</div></div>
             <div class="ship-modal-stock-item"><div class="ship-modal-stock-lbl">出荷日在庫</div><div class="ship-modal-stock-num" style="color:${stOk?'var(--green)':'#c0392b'}">${futureStock.toLocaleString()}</div></div>
           </div>
-          ${wc?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:3px">${wc}</div>`:''}
         </div>
-        <div class="ship-modal-block">
-          <div class="ship-modal-shortage-badge ${st}">${stIcon} ${escSH(stText)}</div>
-        </div>
+
         <div class="ship-modal-actions">
-          <button class="ship-modal-btn-primary" onclick="shipCloseModal();openEdit(${idx})">編集</button>
+          <button class="ship-modal-btn-sub" onclick="shipCloseModal();openEdit(${idx})">✏ 編集</button>
+          <button class="ship-modal-btn-primary" onclick="shipCloseModal();markShipped(${idx})" style="background:var(--green)">✔ 出荷済みにする</button>
         </div>
       </div>
     </div>`;
@@ -10176,13 +10190,57 @@ function renderSnNippo(){
 }
 
 function exportSnNippoPdf(){
-  const origPicking=_nippoPicking;
-  _nippoPicking=_snNippoPicking;
-  const panel=gid('nippo-panel');
-  panel.classList.add('open');
-  _buildNippoFilters();renderNippo();
-  exportNippoPdf();
-  setTimeout(()=>{_nippoPicking=origPicking;},4000);
+  const el = gid('sn-nippo-list');
+  if(!el){ toast('日報エリアが見つかりません','error'); return; }
+
+  // 現在の絞り込み条件で件数確認
+  let txs = _getSnTodayTxs();
+  const machineFilter = (gid('sn-machine-filter')||{value:''}).value;
+  const userFilter    = (gid('sn-user-filter')||{value:''}).value;
+  const typeFilter    = (gid('sn-type-filter')||{value:''}).value;
+  if(machineFilter) txs = txs.filter(tx=>(tx.machine||'—')===machineFilter);
+  if(userFilter)    txs = txs.filter(tx=>tx.userId===userFilter);
+  if(typeFilter)    txs = txs.filter(tx=>tx.type===typeFilter);
+  if(!txs.length){ toast('出力するデータがありません','error'); return; }
+
+  const btn = document.querySelector('.nippo-pdf-btn');
+  if(btn){ btn.disabled = true; btn.textContent = '生成中…'; }
+
+  const dateStr  = _snNippoPicking || _getTodayDate();
+  const datePart = dateStr.replace(/\//g,'-').replace(/(\d+)-(\d+)-(\d+)/,
+    (_,y,m,d)=>`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+  const userPart = (userFilter||'全作業者').replace(/[\s\\/:*?"<>|]/g,'_');
+  const filename = `日報_${datePart}_${userPart}.pdf`;
+
+  // overflow:hidden の祖先を一時解除
+  const clipped = [];
+  let node = el.parentElement;
+  while(node && node !== document.body){
+    const ov = getComputedStyle(node).overflow;
+    const ovY = getComputedStyle(node).overflowY;
+    if(ov==='hidden' || ovY==='hidden'){
+      clipped.push({el:node, overflow:node.style.overflow, overflowY:node.style.overflowY});
+      node.style.overflow='visible'; node.style.overflowY='visible';
+    }
+    node = node.parentElement;
+  }
+
+  const opt = {
+    margin:      [10,10,10,10],
+    filename:    filename,
+    image:       { type:'jpeg', quality:0.98 },
+    html2canvas: { scale:1.5, useCORS:true, logging:false, backgroundColor:'#ffffff', scrollY:0 },
+    jsPDF:       { unit:'mm', format:'a4', orientation:'landscape' },
+    pagebreak:   { mode:['css','legacy'], avoid:['.no-break'] }
+  };
+
+  html2pdf().set(opt).from(el).save()
+    .then(()=>{ toast('PDFを出力しました：'+filename,'success'); })
+    .catch(()=>{ toast('PDF出力に失敗しました','error'); })
+    .finally(()=>{
+      clipped.forEach(c=>{ c.el.style.overflow=c.overflow; c.el.style.overflowY=c.overflowY; });
+      if(btn){ btn.disabled=false; btn.textContent='⬇ PDF'; }
+    });
 }
 
 // ===== 設定パネル内 履歴サブページ =====
@@ -10274,6 +10332,7 @@ function resetAllData(){
   width: 100%;
   background: #f0f1f7;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 .stt-header {
   text-align: center;
@@ -10492,15 +10551,11 @@ function resetAllData(){
 .stt-sub {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.25s ease;
   background: #f8f9fc;
   border-top: 0;
 }
-.stt-sub.open {
-  max-height: 800px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
+.stt-sub.open { max-height: 600px; }
 .stt-sub-inner {
   padding: 12px 16px 16px;
   border-top: 1px solid #eceef5;
@@ -10528,23 +10583,13 @@ function resetAllData(){
   line-height: 1;
   margin-left: 2px;
 }
-.stt-add-row {
-  display: flex;
-  gap: 6px;
-  position: sticky;
-  bottom: 0;
-  background: #f8f9fc;
-  padding-top: 8px;
-  margin-top: 4px;
-  border-top: 1px solid #eceef5;
-}
+.stt-add-row { display: flex; gap: 6px; }
 .stt-add-row input {
   flex: 1;
-  min-width: 0;
   padding: 9px 12px;
   border: 1.5px solid var(--border);
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-family: var(--font);
   background: #fff;
   outline: none;
@@ -10552,7 +10597,6 @@ function resetAllData(){
 }
 .stt-add-row input:focus { border-color: var(--teal); }
 .stt-add-row button {
-  flex-shrink: 0;
   padding: 9px 14px;
   background: var(--teal);
   color: #fff;
@@ -10595,7 +10639,7 @@ function resetAllData(){
   font-weight: 600;
   color: var(--text2);
   user-select: none;
-  touch-action: none;
+  touch-action: pan-y;
   transition: box-shadow 0.15s, transform 0.15s;
 }
 .stt-drag-handle {
@@ -10605,6 +10649,7 @@ function resetAllData(){
   line-height: 1;
   padding: 0 2px;
   flex-shrink: 0;
+  touch-action: none;
 }
 .stt-drag-handle:active { cursor: grabbing; }
 .stt-drag-label { white-space: nowrap; }
@@ -11160,6 +11205,17 @@ function resetAllData(){
   padding: 10px 14px;
   background: var(--bg3);
   border-bottom: 1px solid var(--border);
+  overflow-x: hidden;
+}
+.stt-nippo-filters .nippo-date-input {
+  flex: 1 1 130px;
+  min-width: 0;
+  font-size: 16px;
+}
+.stt-nippo-filters .nippo-filter-select {
+  flex: 1 1 90px;
+  min-width: 0;
+  font-size: 16px;
 }
 .stt-nippo-content {
   padding: 0 0 24px;
